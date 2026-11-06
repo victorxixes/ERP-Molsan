@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanButton from "../../components/ui/MolsanButton";
 import "../../css/HerramientasPremium.css";
 
 const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
@@ -42,14 +44,15 @@ export default function FirmasEmail() {
     }
   }
 
-  return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-    <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-      <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <Link to="/herramientas/catalogos" className="text-xs font-bold text-blue-600 hover:text-blue-700">← Volver a Catálogos</Link>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Firma corporativa de email</h1>
-          <p className="mt-1 text-sm text-slate-500">Configura el pie común que acompaña a la firma personal del empleado remitente.</p>
+  return <main className="molsan-page-stack catalogos-premium-page min-h-full ">
+    <header className="molsan-page-header">
+      <div className="molsan-page-header__identity">
+        <div className="molsan-page-header__mark"><MolsanIcon name="mail" size={24} tone="ocean" /></div>
+        <div className="min-w-0">
+          <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+          <h1 className="molsan-page-header__title">Firma corporativa de email</h1>
+          <p className="molsan-page-header__description">Configura el pie común que acompaña a la firma personal del empleado remitente.</p>
+          <Link to="/catalogos" className="molsan-page-back-link">← Volver a catálogos</Link>
         </div>
       </div>
     </header>
@@ -70,7 +73,7 @@ export default function FirmasEmail() {
         <textarea rows={6} value={firmaPie} onChange={(e) => setFirmaPie(e.target.value)} placeholder={"MOLSAN\nGestoría y tramitación\nTel. · Web · Dirección"} className={inputClass} />
       </label>
       <div className="flex justify-end">
-        <button type="button" onClick={guardar} disabled={guardando} className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-60">{guardando ? "Guardando…" : "Guardar firma corporativa"}</button>
+        <MolsanButton type="button" onClick={guardar} disabled={guardando} loading={guardando} icon="check" variant="success">Guardar firma corporativa</MolsanButton>
       </div>
     </section>}
   </main>;

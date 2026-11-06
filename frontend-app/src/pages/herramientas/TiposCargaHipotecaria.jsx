@@ -1,3 +1,5 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import { API_BASE as API_ROOT } from "../../api/config";
 import React, {
   useEffect,
   useMemo,
@@ -5,17 +7,14 @@ import React, {
 } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
 
 
 // ============================================================
 // CONFIGURACIÓN API
 // ============================================================
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
-
-const API_BASE =
-  `${API_ORIGEN}/api/tipos-carga-hipotecaria`;
+const API_BASE = `${API_ROOT}/tipos-carga-hipotecaria`;
 
 
 // ============================================================
@@ -577,7 +576,7 @@ export default function TiposCargaHipotecaria() {
   return (
     <div
       className="
-        catalogo-maestro-page-premium herramientas-subpagina-premium
+        catalogos-premium-page catalogo-maestro-page-premium herramientas-subpagina-premium
         erp-page
         space-y-5
       "
@@ -587,35 +586,12 @@ export default function TiposCargaHipotecaria() {
           CABECERA
       ==================================================== */}
 
-      <section
-        className="
-          erp-card
-          max-w-[1700px]
-          mx-auto
-          p-5
-        "
-      >
+      <header className="molsan-page-header">
 
-        <div
-          className="
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-4
-          "
-        >
+        <div className="flex w-full min-w-0 flex-wrap items-center justify-between gap-4">
 
-          <div>
-
-            <div
-              className="
-                flex
-                items-center
-                gap-3
-              "
-            >
+          <div className="min-w-0 flex-1">
+            <div className="molsan-page-header__identity">
 
               <div
                 className="
@@ -631,7 +607,7 @@ export default function TiposCargaHipotecaria() {
                   text-xl
                 "
               >
-                🏠
+                <MolsanIcon name="home" size={20} />
               </div>
 
               <div>
@@ -666,7 +642,7 @@ export default function TiposCargaHipotecaria() {
           <button
             type="button"
             onClick={abrirNuevo}
-            className="
+            className="molsan-btn molsan-btn--primary
               inline-flex
               items-center
               justify-center
@@ -693,7 +669,7 @@ export default function TiposCargaHipotecaria() {
 
         </div>
 
-      </section>
+      </header>
 
 
       {/* ====================================================
@@ -968,265 +944,15 @@ export default function TiposCargaHipotecaria() {
           "
         >
 
-          <table
-            className="
-              w-full
-              text-sm
-            "
-          >
-
-            <thead>
-
-              <tr
-                className="
-                  bg-[var(--erp-primary)]
-                  text-white
-                "
-              >
-
-                <th
-                  className="
-                    px-5
-                    py-3
-                    text-left
-                    font-semibold
-                  "
-                >
-                  Tipo de carga
-                </th>
-
-                <th
-                  className="
-                    px-5
-                    py-3
-                    text-center
-                    font-semibold
-                  "
-                >
-                  Estado
-                </th>
-
-                <th
-                  className="
-                    px-5
-                    py-3
-                    text-right
-                    font-semibold
-                  "
-                >
-                  Acciones
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody>
-
-              {cargando ? (
-
-                <tr>
-
-                  <td
-                    colSpan={3}
-                    className="
-                      px-5
-                      py-12
-                      text-center
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-                    Cargando catálogo…
-                  </td>
-
-                </tr>
-
-              ) : tipos.length === 0 ? (
-
-                <tr>
-
-                  <td
-                    colSpan={3}
-                    className="
-                      px-5
-                      py-12
-                      text-center
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-                    No hay tipos de carga para los filtros seleccionados.
-                  </td>
-
-                </tr>
-
-              ) : (
-
-                tipos.map(
-                  (tipo) => (
-
-                    <tr
-                      key={tipo.id}
-                      className="
-                        border-t
-                        border-[var(--erp-border)]
-                        hover:bg-[var(--erp-primary-soft)]
-                        transition
-                      "
-                    >
-
-                      <td
-                        className="
-                          px-5
-                          py-4
-                          text-[var(--erp-text)]
-                          font-medium
-                        "
-                      >
-                        {tipo.nombre}
-                      </td>
-
-
-                      <td
-                        className="
-                          px-5
-                          py-4
-                          text-center
-                        "
-                      >
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            cambiarEstado(
-                              tipo
-                            )
-                          }
-                          className="
-                            inline-flex
-                            items-center
-                            rounded-full
-                            px-3
-                            py-1
-                            text-xs
-                            font-semibold
-                            transition
-                          "
-                          title="Cambiar estado"
-                        >
-
-                          {tipo.activo ? (
-
-                            <span
-                              className="
-                                rounded-full
-                                bg-green-100
-                                text-green-700
-                                px-3
-                                py-1
-                              "
-                            >
-                              Activo
-                            </span>
-
-                          ) : (
-
-                            <span
-                              className="
-                                rounded-full
-                                bg-slate-100
-                                text-slate-600
-                                px-3
-                                py-1
-                              "
-                            >
-                              Inactivo
-                            </span>
-
-                          )}
-
-                        </button>
-
-                      </td>
-
-
-                      <td
-                        className="
-                          px-5
-                          py-4
-                          text-right
-                        "
-                      >
-
-                        <div
-                          className="
-                            inline-flex
-                            items-center
-                            gap-2
-                          "
-                        >
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              abrirEditar(
-                                tipo
-                              )
-                            }
-                            className="
-                              rounded-lg
-                              border
-                              border-[var(--erp-border)]
-                              bg-white
-                              px-3
-                              py-2
-                              text-xs
-                              font-semibold
-                              text-[var(--erp-text)]
-                              hover:bg-slate-50
-                            "
-                          >
-                            Editar
-                          </button>
-
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              eliminar(
-                                tipo
-                              )
-                            }
-                            className="
-                              rounded-lg
-                              border
-                              border-red-200
-                              bg-red-50
-                              px-3
-                              py-2
-                              text-xs
-                              font-semibold
-                              text-red-600
-                              hover:bg-red-100
-                            "
-                          >
-                            Eliminar
-                          </button>
-
-                        </div>
-
-                      </td>
-
-                    </tr>
-
-                  )
-                )
-
-              )}
-
-            </tbody>
-
-          </table>
+          <MolsanDataTable
+            rows={tipos}
+            rowKey="id"
+            columns={[
+              { key: "nombre", header: "Tipo de carga", accessor: "nombre", sortType: "text" },
+              { key: "activo", header: "Estado", accessor: "activo", sortType: "boolean", render: (value, tipo) => <button type="button" onClick={() => cambiarEstado(tipo)} className="rounded-full" title="Cambiar estado"><span className={value ? "rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700" : "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600"}>{value ? "Activo" : "Inactivo"}</span></button> },
+              { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (tipo) => tipo.id, render: (_, tipo) => <div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(tipo)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Editar</button><button type="button" onClick={() => eliminar(tipo)} className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-100">Eliminar</button></div> },
+            ]}
+          />
 
         </div>
 

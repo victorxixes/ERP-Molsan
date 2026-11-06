@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import MolsanIcon from "../ui/MolsanIcon";
 
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
 import axios from "../../api/axios";
@@ -648,7 +649,7 @@ export default function EnviarANotarioModal({
 
         {!inline && (
           <div className="flex shrink-0 items-center justify-end border-b border-slate-200 bg-white px-5 py-3 sm:px-7">
-            <button type="button" disabled={loading} onClick={onClose} aria-label="Cerrar modal" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50">✕</button>
+            <button type="button" disabled={loading} onClick={onClose} aria-label="Cerrar modal" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50"><MolsanIcon name="x" size={15} bare /></button>
           </div>
         )}
 
@@ -699,7 +700,7 @@ export default function EnviarANotarioModal({
                                 : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                             }`}
                           >
-                            {opcion === "Sí" ? "✓ Sí" : "○ No"}
+                            {opcion === "Sí" ? <><MolsanIcon name="check" size={14} bare /> Sí</> : <><MolsanIcon name="x" size={14} bare /> No</>}
                           </button>
                         );
                       })}
@@ -748,7 +749,7 @@ export default function EnviarANotarioModal({
                       onClick={() => seleccionarNotario(null)}
                       className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      ✕ Quitar notario y buscar otro
+                      <MolsanIcon name="x" size={14} bare /> Quitar notario y buscar otro
                     </button>
                   </div>
                 )}
@@ -791,6 +792,32 @@ export default function EnviarANotarioModal({
                         disabled={loading}
                         onChange={(v) => cambiarDatoNotario("provincia", v)}
                       />
+                    </div>
+
+                    <div className="sm:col-span-2 grid grid-cols-1 gap-3 border-t border-slate-200 pt-3 sm:grid-cols-2 xl:grid-cols-3">
+                      <CampoAutomatico label="Código CTN" valor={notario.codigo} />
+                      <CampoAutomatico label="Teléfono" valor={notario.telefono} />
+                      <CampoAutomatico label="Código postal" valor={notario.cp} />
+                      <div className="sm:col-span-2 xl:col-span-3">
+                        <CampoAutomatico label="Dirección" valor={notario.direccion} />
+                      </div>
+                      <CampoAutomatico label="Videoconferencia (VC)" valor={notario.vc} />
+                      <CampoAutomatico label="Apoderado S" valor={notario.apoderado_s} />
+                      <CampoAutomatico label="Departamento cancelaciones" valor={notario.departamento_cancelaciones} />
+                      <CampoAutomatico label="Departamento copias" valor={notario.departamento_copias} />
+                      <CampoAutomatico label="Otros departamentos" valor={notario.otros_departamentos} />
+                      <div className="sm:col-span-2 xl:col-span-3">
+                        <CampoAutomatico label="Observaciones CTN" valor={notario.observacion} />
+                      </div>
+                      <div className="sm:col-span-2 xl:col-span-3">
+                        <CampoAutomatico
+                          label="Notarios asociados"
+                          valor={(Array.isArray(notario.notarios_asociados) ? notario.notarios_asociados : [])
+                            .map((item) => item.nombre_completo || [item.nombre, item.apellidos].filter(Boolean).join(" "))
+                            .filter(Boolean)
+                            .join(" · ") || notario.notario_asociado}
+                        />
+                      </div>
                     </div>
                   </div>
                 )}

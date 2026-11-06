@@ -272,7 +272,14 @@ def listar_cargas_postfirma(db: Session):
     } for f in filas]
 
 
-def listar_registros_postfirma(db: Session, limit: int = 200, offset: int = 0, carga_id: int | None = None):
+def listar_registros_postfirma(
+    db: Session,
+    limit: int = 200,
+    offset: int = 0,
+    carga_id: int | None = None,
+    sort_by: str = "carga_id",
+    sort_dir: str = "desc",
+):
     _crear_almacen(db)
     if carga_id is not None:
         esquema = db.execute(text(
@@ -288,19 +295,43 @@ def listar_registros_postfirma(db: Session, limit: int = 200, offset: int = 0, c
             for esquema in esquemas
             for columna in json.loads(esquema[0] or "[]")
         ))
-    where = "WHERE carga_id = :carga_id" if carga_id is not None else ""
+
+    # El campo dinámico se pasa como parámetro JSONB, nunca como identificador
+    # SQL. Solo se permite ordenar por columnas originales del Excel o metadatos.
+    campos_sistema = {"carga_id", "archivo", "numero_fila", "fecha_carga"}
+    campo = sort_by if sort_by in campos_sistema or sort_by in columnas_informe else "carga_id"
+    direccion = "DESC" if str(sort_dir).lower() == "desc" else "ASC"
+    where = "WHERE r.carga_id = :carga_id" if carga_id is not None else ""
     params = {"limit": max(1, min(int(limit), 500)), "offset": max(0, int(offset))}
     if carga_id is not None:
         params["carga_id"] = int(carga_id)
+    if campo == "carga_id":
+        order_sql = f"r.carga_id {direccion}"
+    elif campo == "archivo":
+        order_sql = f"LOWER(c.nombre_archivo) {direccion}"
+    elif campo == "numero_fila":
+        order_sql = f"r.numero_fila {direccion}"
+    elif campo == "fecha_carga":
+        order_sql = f"c.fecha_carga {direccion} NULLS LAST"
+    else:
+        params["sort_column"] = campo
+        valor_sql = "(r.datos_json::jsonb ->> :sort_column)"
+        # Orden numérico para valores Excel numéricos; texto natural para el resto.
+        order_sql = (
+            f"CASE WHEN {valor_sql} ~ '^[+-]?[0-9]+([.][0-9]+)?$' "
+            f"THEN ({valor_sql})::numeric END {direccion} NULLS LAST, "
+            f"LOWER(COALESCE({valor_sql}, '')) {direccion}"
+        )
+    params_count = {key: value for key, value in params.items() if key != "sort_column"}
     total = db.execute(text(
-        f"SELECT COUNT(*) FROM public.absis_postfirma_registros {where}"
-    ), params).scalar() or 0
+        f"SELECT COUNT(*) FROM public.absis_postfirma_registros r {where}"
+    ), params_count).scalar() or 0
     filas = db.execute(text(f"""
         SELECT r.id, r.carga_id, r.numero_fila, r.datos_json, c.nombre_archivo, c.fecha_carga
         FROM public.absis_postfirma_registros r
         JOIN public.absis_postfirma_cargas c ON c.id = r.carga_id
         {where}
-        ORDER BY r.carga_id DESC, r.numero_fila ASC
+        ORDER BY {order_sql}, r.carga_id DESC, r.numero_fila ASC
         LIMIT :limit OFFSET :offset
     """), params).mappings().all()
     return {
@@ -308,6 +339,8 @@ def listar_registros_postfirma(db: Session, limit: int = 200, offset: int = 0, c
         "limit": params["limit"],
         "offset": params["offset"],
         "columnas": columnas_informe,
+        "sort_by": campo,
+        "sort_dir": direccion.lower(),
         "items": [{
             "id": int(f["id"]),
             "carga_id": int(f["carga_id"]),

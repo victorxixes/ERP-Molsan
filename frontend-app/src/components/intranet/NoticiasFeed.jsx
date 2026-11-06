@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import MolsanIcon from "../ui/MolsanIcon";
 import { useIntranet } from "../../hooks/useIntranet";
 
 import "../../css/LayoutPortalesPremium.css";
@@ -79,7 +80,7 @@ export default function NoticiasFeed() {
               text-xl
             "
           >
-            📰
+            <MolsanIcon name="newspaper" size={32} />
           </div>
 
           <p
@@ -219,7 +220,7 @@ export default function NoticiasFeed() {
                       text-sm
                     "
                   >
-                    📰
+                    <MolsanIcon name="newspaper" size={32} />
                   </span>
 
                   <h3

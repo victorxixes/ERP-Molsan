@@ -1,3 +1,4 @@
+import MolsanIcon from "../ui/MolsanIcon";
 import {
   useEffect,
   useState,
@@ -266,9 +267,7 @@ function Toast({
             shadow-sm
           "
         >
-          {
-            configuracion.icono
-          }
+          <MolsanIcon name={configuracion.icono} size={18} bare />
         </div>
 
 
@@ -387,7 +386,7 @@ function obtenerConfiguracion(
     case "nuevo_mensaje":
 
       return {
-        icono: "💬",
+        icono: "message",
         titulo: "Nuevo mensaje",
         color: "bg-blue-400",
       };
@@ -396,7 +395,7 @@ function obtenerConfiguracion(
     case "nuevo_archivo":
 
       return {
-        icono: "📎",
+        icono: "attachment",
         titulo: "Nuevo archivo",
         color: "bg-purple-400",
       };
@@ -405,7 +404,7 @@ function obtenerConfiguracion(
     case "online":
 
       return {
-        icono: "🟢",
+        icono: "check",
         titulo: "Usuario conectado",
         color: "bg-emerald-400",
       };
@@ -414,7 +413,7 @@ function obtenerConfiguracion(
     case "offline":
 
       return {
-        icono: "⚫",
+        icono: "pause",
         titulo: "Usuario desconectado",
         color: "bg-slate-400",
       };
@@ -423,7 +422,7 @@ function obtenerConfiguracion(
     case "error":
 
       return {
-        icono: "⛔",
+        icono: "alert",
         titulo: "Error",
         color: "bg-red-400",
       };
@@ -432,7 +431,7 @@ function obtenerConfiguracion(
     case "warning":
 
       return {
-        icono: "⚠️",
+        icono: "alert",
         titulo: "Advertencia",
         color: "bg-yellow-400",
       };
@@ -441,7 +440,7 @@ function obtenerConfiguracion(
     default:
 
       return {
-        icono: "🔔",
+        icono: "bell",
         titulo: "Nueva notificación",
         color: "bg-blue-400",
       };

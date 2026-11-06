@@ -11,6 +11,7 @@ import VistaDia from "./VistaDia";
 import ModalNuevaCita from "../../components/agenda/ModalNuevaCita.jsx";
 import AgendaToast from "../../components/agenda/AgendaToast.jsx";
 import SelectSJ from "../../components/ui/SelectSJ";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "./Agenda.css";
 
 const MESES = [
@@ -416,10 +417,20 @@ export default function Agenda({ soloApoderado = false } = {}) {
   // ============================================================
 
   return (
-    <div className="agenda-premium-page space-y-5 p-6 text-[var(--erp-text)] animate-fade-in">
-      {/* CABECERA Y NAVEGACIÓN */}
+    <div className="molsan-page-stack agenda-premium-page text-[var(--erp-text)] animate-fade-in">
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="calendar" size={24} tone="ocean" /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Agenda · Vista {vista === "mes" ? "mensual" : vista === "semana" ? "semanal" : "diaria"}</h1>
+            <p className="molsan-page-header__description">{vista === "mes" ? "Consulta la actividad mensual y la distribución de citas." : vista === "semana" ? "Consulta la planificación semanal de citas y firmas." : "Consulta las citas y firmas organizadas por horas."}</p>
+          </div>
+        </div>
+      </header>
+      {/* NAVEGACIÓN Y FILTROS */}
 
-      <div className="erp-card p-4 shadow-sm">
+      <div className="erp-card relative z-20 overflow-visible p-4">
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
@@ -546,10 +557,10 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
       {/* INDICADORES DEL PERÍODO */}
       <section className="agenda-resumen-grid" aria-label="Resumen de citas del mes">
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-blue">▦</span><div><span className="agenda-stat-label">Citas del mes</span><strong>{citasDelPeriodo.length}</strong><small>{MESES[month - 1]} de {year}</small></div></article>
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-amber">◷</span><div><span className="agenda-stat-label">Por realizar</span><strong>{citasPorRealizar}</strong><small>Hoy y fechas futuras</small></div></article>
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-green">⌖</span><div><span className="agenda-stat-label">Presenciales</span><strong>{citasPresenciales}</strong><small>Según tipo de firma</small></div></article>
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-purple">▣</span><div><span className="agenda-stat-label">Videoconferencias</span><strong>{citasVideoconferencia}</strong><small>Según tipo de firma</small></div></article>
+        <article className="erp-card agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-blue" aria-hidden="true"><MolsanIcon name="calendar" size={18} bare /></span><div><span className="agenda-stat-label">Citas del mes</span><strong>{citasDelPeriodo.length}</strong><small>{MESES[month - 1]} de {year}</small></div></article>
+        <article className="erp-card agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-amber" aria-hidden="true"><MolsanIcon name="clock" size={18} bare /></span><div><span className="agenda-stat-label">Por realizar</span><strong>{citasPorRealizar}</strong><small>Hoy y fechas futuras</small></div></article>
+        <article className="erp-card agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-green" aria-hidden="true"><MolsanIcon name="pin" size={18} bare /></span><div><span className="agenda-stat-label">Presenciales</span><strong>{citasPresenciales}</strong><small>Según tipo de firma</small></div></article>
+        <article className="erp-card agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-purple" aria-hidden="true"><MolsanIcon name="video" size={18} bare /></span><div><span className="agenda-stat-label">Videoconferencias</span><strong>{citasVideoconferencia}</strong><small>Según tipo de firma</small></div></article>
       </section>
 
       {/* FILTROS Y CALENDARIO */}

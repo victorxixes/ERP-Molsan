@@ -544,6 +544,7 @@ export default function MonitorRealtime() {
 
       <div
         className="
+          monitor-realtime-section-header
           px-6
           py-5
           border-b
@@ -557,71 +558,7 @@ export default function MonitorRealtime() {
         "
       >
 
-        <div>
-
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-
-            <div
-              className="
-                w-11
-                h-11
-                rounded-2xl
-                bg-[var(--erp-primary-soft)]
-                border
-                border-[var(--erp-border)]
-                flex
-                items-center
-                justify-center
-                text-[var(--erp-primary)]
-              "
-            >
-
-              <svg
-                className="w-5 h-5"
-                aria-hidden="true"
-              >
-
-                <use
-                  href="/icons/icons.svg#activity"
-                />
-
-              </svg>
-
-            </div>
-
-            <div>
-
-              <h2
-                className="
-                  text-lg
-                  font-semibold
-                  text-[var(--erp-text)]
-                "
-              >
-                Monitor Realtime
-              </h2>
-
-              <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-0.5
-                "
-              >
-                Conexión WebSocket del sistema
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
+        {/* El estado de conexión se mantiene; se elimina la cabecera redundante. */}
 
         {/* ESTADO */}
 

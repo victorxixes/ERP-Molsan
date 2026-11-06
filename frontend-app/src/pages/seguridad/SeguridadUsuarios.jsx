@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSeguridad } from "../../hooks/useSeguridad";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import EmpleadosListado from "../empleados/EmpleadosListado";
 import { API_BASE } from "../../api/config";
 import { editarEmpleado } from "../../api/empleados";
@@ -311,24 +312,24 @@ export default function SeguridadUsuarios() {
           CABECERA
       ====================================================== */}
 
-      <div className="erp-page-header">
+      <div className="molsan-page-header">
 
-        <div>
-          <div className="erp-eyebrow">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__eyebrow">
             SEGURIDAD
           </div>
 
-          <h1 className="erp-page-title">
+          <h1 className="molsan-page-header__title">
             Usuarios y seguridad
           </h1>
 
-          <p className="erp-page-description">
+          <p className="molsan-page-header__description">
             Gestión de usuarios, permisos, estado de acceso,
             auditoría y actividad de seguridad.
           </p>
         </div>
 
-        <div className="erp-page-header-status">
+        <div className="molsan-page-header__actions">
           <span className="erp-badge erp-badge-primary">
             Centro de Seguridad
           </span>
@@ -532,7 +533,7 @@ export default function SeguridadUsuarios() {
                 <div className="erp-empty-state">
 
                   <div className="erp-empty-state-icon">
-                    🔐
+                    <MolsanIcon name="lock" size={24} />
                   </div>
 
                   <div>
@@ -561,11 +562,11 @@ export default function SeguridadUsuarios() {
               <div className="erp-card-body">
                 <div className="flex flex-wrap gap-2" role="tablist" aria-label="Secciones de seguridad del empleado">
                   {[
-                    { id: "resumen", label: "Resumen", icon: "◈" },
-                    { id: "modulos", label: "Módulos", icon: "▦" },
-                    { id: "permisos", label: "Permisos", icon: "⚿" },
-                    { id: "roles", label: "Roles", icon: "♙" },
-                    { id: "auditoria", label: "Auditoría", icon: "◷" },
+                    { id: "resumen", label: "Resumen", icon: "shield" },
+                    { id: "modulos", label: "Módulos", icon: "dashboard" },
+                    { id: "permisos", label: "Permisos", icon: "key" },
+                    { id: "roles", label: "Roles", icon: "person" },
+                    { id: "auditoria", label: "Auditoría", icon: "clock" },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -577,7 +578,7 @@ export default function SeguridadUsuarios() {
                         ? "border-[var(--erp-primary)] bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] shadow-sm"
                         : "border-[var(--erp-border)] bg-[var(--erp-surface)] text-[var(--erp-text-soft)] hover:bg-[var(--erp-bg)]"}`}
                     >
-                      <span className="mr-2" aria-hidden="true">{tab.icon}</span>{tab.label}
+                      <span className="mr-2 inline-flex" aria-hidden="true"><MolsanIcon name={tab.icon} size={16} /></span>{tab.label}
                     </button>
                   ))}
                 </div>
@@ -843,7 +844,7 @@ export default function SeguridadUsuarios() {
                 <div className="erp-empty-state">
 
                   <div className="erp-empty-state-icon">
-                    🛡️
+                    <MolsanIcon name="shield" size={24} />
                   </div>
 
                   <div>

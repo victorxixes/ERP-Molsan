@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import { formatEuro as euros } from "../../utils/formatters";
+import MolsanIcon from "../ui/MolsanIcon";
 
-const euros = (value) => value === null || value === undefined || value === "" || !Number.isFinite(Number(value))
-  ? "—"
-  : new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(value));
 
 const fecha = (value) => value ? new Date(value.length === 10 ? `${value}T12:00:00` : value).toLocaleDateString("es-ES") : "—";
 
@@ -179,16 +178,16 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
 
       {abierto && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center overflow-y-auto bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(event) => { if (event.target === event.currentTarget) setAbierto(false); }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="modal-traspaso-saldo-titulo" className="my-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-5">
-            <header className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <section role="dialog" aria-modal="true" aria-labelledby="modal-traspaso-saldo-titulo" className="modal-sj my-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto bg-white p-4 shadow-2xl sm:p-5">
+            <header className="molsan-modal-header mb-4 flex flex-wrap items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-xl">⇄</span>
+                <MolsanIcon name="arrowUpDown" size={24} tone="ocean" />
                 <div>
-                  <h3 id="modal-traspaso-saldo-titulo" className="text-sm font-extrabold text-slate-900">Control de traspasos de saldo</h3>
-                  <p className="mt-1 max-w-3xl text-xs leading-5 text-slate-600">Solo para expedientes relacionados con «Cancelación con provisión». Permite agrupar varios orígenes en un único receptor, verificar el importe manualmente y registrar el email al cliente.</p>
+                  <h3 id="modal-traspaso-saldo-titulo" className="text-sm font-extrabold">Control de traspasos de saldo</h3>
+                  <p className="mt-1 max-w-3xl text-xs leading-5">Solo para expedientes relacionados con «Cancelación con provisión». Permite agrupar varios orígenes en un único receptor, verificar el importe manualmente y registrar el email al cliente.</p>
                 </div>
               </div>
-              <button type="button" onClick={() => setAbierto(false)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">✕ Cerrar</button>
+              <button type="button" onClick={() => setAbierto(false)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50"><MolsanIcon name="x" size={14} bare /> Cerrar</button>
             </header>
             {cargando && <p className="mb-3 text-xs text-slate-500">Consultando expedientes relacionados…</p>}
             {error && <div role="alert" className="mb-3 rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800">{error}</div>}

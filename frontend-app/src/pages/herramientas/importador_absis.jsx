@@ -1,5 +1,7 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState } from "react";
 import axios from "../../api/axios";
+import MolsanButton from "../../components/ui/MolsanButton";
 import "../../css/ModalesHerramientasPremium.css";
 
 
@@ -155,87 +157,16 @@ export default function ImportadorAbsis() {
                 CABECERA
                 ================================================== */}
 
-            <section
-                className="
-                    bg-white
-                    border
-                    border-[var(--erp-border)]
-                    rounded-2xl
-                    p-5
-                    lg:p-6
-                    shadow-sm
-                "
-            >
-
-                <div
-                    className="
-                        flex
-                        items-center
-                        gap-4
-                    "
-                >
-
-                    {/* ICONO */}
-
-                    <div
-                        className="
-                            w-12
-                            h-12
-                            rounded-2xl
-                            bg-[var(--erp-primary-soft)]
-                            border
-                            border-[var(--erp-primary)]
-                            flex
-                            items-center
-                            justify-center
-                            flex-shrink-0
-                            shadow-sm
-                        "
-                    >
-
-                        <span
-                            className="
-                                text-xl
-                            "
-                        >
-                            📥
-                        </span>
-
-                    </div>
-
-
-                    {/* TEXTO */}
-
+            <header className="molsan-page-header">
+                <div className="molsan-page-header__identity">
+                    <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="download" size={22} tone="ocean" /></div>
                     <div className="min-w-0">
-
-                        <h1
-                            className="
-                                text-2xl
-                                lg:text-3xl
-                                font-bold
-                                tracking-tight
-                                text-[var(--erp-text)]
-                            "
-                        >
-                            Importador ABSIS
-                        </h1>
-
-                        <p
-                            className="
-                                text-sm
-                                text-[var(--erp-text-soft)]
-                                mt-1
-                            "
-                        >
-                            Importa expedientes desde el Excel matriz ABSIS
-                            seleccionando el día que deseas procesar.
-                        </p>
-
+                        <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+                        <h1 className="molsan-page-header__title">Importador ABSIS</h1>
+                        <p className="molsan-page-header__description">Importa expedientes desde el Excel matriz ABSIS seleccionando el día que deseas procesar.</p>
                     </div>
-
                 </div>
-
-            </section>
+            </header>
 
 
 
@@ -282,7 +213,7 @@ export default function ImportadorAbsis() {
                             justify-center
                         "
                     >
-                        📥
+                        <MolsanIcon name="download" size={20} />
                     </div>
 
                     <div>
@@ -331,7 +262,7 @@ export default function ImportadorAbsis() {
                         "
                     >
 
-                        <span>📅</span>
+                        <span><MolsanIcon name="calendar" size={20} /></span>
 
                         <span>
                             Fecha de importación
@@ -411,7 +342,7 @@ export default function ImportadorAbsis() {
                         "
                     >
 
-                        <span>📊</span>
+                        <span><MolsanIcon name="chart" size={20} /></span>
 
                         <span>
                             Archivo Excel
@@ -471,7 +402,7 @@ export default function ImportadorAbsis() {
                                     transition
                                 "
                             >
-                                {file ? "📊" : "📄"}
+                                <MolsanIcon name={file ? "chart" : "file"} size={22} />
                             </div>
 
 
@@ -519,7 +450,7 @@ export default function ImportadorAbsis() {
                                             font-semibold
                                         "
                                     >
-                                        <span>✓</span>
+                                        <MolsanIcon name="check" size={15} />
                                         Excel seleccionado
                                     </div>
 
@@ -596,146 +527,13 @@ export default function ImportadorAbsis() {
 
                     {/* IMPORTAR DÍA ACTUAL */}
 
-                    <button
-                        type="button"
-                        onClick={() =>
-                            importar("hoy")
-                        }
-                        disabled={
-                            cargando ||
-                            !file
-                        }
-                        className="
-                            min-h-[46px]
-                            px-5
-                            rounded-xl
-                            bg-[var(--erp-primary)]
-                            hover:brightness-95
-                            text-white
-                            font-semibold
-                            text-sm
-                            shadow-sm
-                            transition-all
-                            active:scale-[0.98]
-                            disabled:opacity-40
-                            disabled:cursor-not-allowed
-                        "
-                    >
-
-                        {cargando ? (
-
-                            <span
-                                className="
-                                    flex
-                                    items-center
-                                    justify-center
-                                    gap-2
-                                "
-                            >
-
-                                <span
-                                    className="
-                                        animate-spin
-                                        text-lg
-                                    "
-                                >
-                                    ⟳
-                                </span>
-
-                                Importando...
-
-                            </span>
-
-                        ) : (
-
-                            <span
-                                className="
-                                    flex
-                                    items-center
-                                    justify-center
-                                    gap-2
-                                "
-                            >
-                                📥
-                                Importar expedientes del día
-                            </span>
-
-                        )}
-
-                    </button>
+                    <MolsanButton icon="upload" variant="primary" className="min-h-[46px]" onClick={() => importar("hoy")} disabled={cargando || !file} loading={cargando}>Importar expedientes del día</MolsanButton>
 
 
 
                     {/* IMPORTAR FECHA */}
 
-                    <button
-                        type="button"
-                        onClick={() =>
-                            importar("fecha")
-                        }
-                        disabled={
-                            cargando ||
-                            !file ||
-                            !fecha
-                        }
-                        className="
-                            min-h-[46px]
-                            px-5
-                            rounded-xl
-                            bg-green-600
-                            hover:bg-green-700
-                            text-white
-                            font-semibold
-                            text-sm
-                            shadow-sm
-                            transition-all
-                            active:scale-[0.98]
-                            disabled:opacity-40
-                            disabled:cursor-not-allowed
-                        "
-                    >
-
-                        {cargando ? (
-
-                            <span
-                                className="
-                                    flex
-                                    items-center
-                                    justify-center
-                                    gap-2
-                                "
-                            >
-
-                                <span
-                                    className="
-                                        animate-spin
-                                        text-lg
-                                    "
-                                >
-                                    ⟳
-                                </span>
-
-                                Importando...
-
-                            </span>
-
-                        ) : (
-
-                            <span
-                                className="
-                                    flex
-                                    items-center
-                                    justify-center
-                                    gap-2
-                                "
-                            >
-                                📅
-                                Importar fecha seleccionada
-                            </span>
-
-                        )}
-
-                    </button>
+                    <MolsanButton icon="check" variant="success" className="min-h-[46px]" onClick={() => importar("fecha")} disabled={cargando || !file || !fecha} loading={cargando}>Importar fecha seleccionada</MolsanButton>
 
                 </div>
 
@@ -783,7 +581,7 @@ export default function ImportadorAbsis() {
                                 flex-shrink-0
                             "
                         >
-                            ⛔
+                            <MolsanIcon name="alert" size={20} />
                         </div>
 
 
@@ -863,7 +661,7 @@ export default function ImportadorAbsis() {
                                 text-green-600
                             "
                         >
-                            ✓
+                            <MolsanIcon name="check" size={20} />
                         </div>
 
 
@@ -1078,7 +876,7 @@ export default function ImportadorAbsis() {
                             "
                         >
 
-                            ⚠️ La importación terminó con{" "}
+                            <MolsanIcon name="alert" size={14} inline /> La importación terminó con{" "}
 
                             <strong>
                                 {resultado.errores}

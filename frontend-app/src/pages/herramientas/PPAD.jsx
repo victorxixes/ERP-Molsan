@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import { formatEuro as euros } from "../../utils/formatters";
 
 function fecha(valor) {
   if (!valor) return "—";
@@ -15,9 +17,7 @@ function fecha(valor) {
   return Number.isNaN(parsed.getTime()) ? texto : parsed.toLocaleDateString("es-ES");
 }
 
-function euros(valor) {
-  return new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(valor) || 0);
-}
+
 
 function coincide(item, texto) {
   if (!texto.trim()) return true;
@@ -110,16 +110,18 @@ export default function PPAD() {
   }
 
   return (
-    <div className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
-        <div className="h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-600">Utilidades · Control económico</p>
-            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Control de PPAD</h1>
-            <p className="mt-2 text-sm text-slate-500">Seguimiento de importes pendientes de compensar y compensados.</p>
+    <div className="molsan-page-stack herramienta-operativa-premium herramientas-subpagina-premium min-h-full">
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="wallet" size={22} tone="ocean" /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">Utilidades · Control económico</p>
+            <h1 className="molsan-page-header__title">Control de PPAD</h1>
+            <p className="molsan-page-header__description">Seguimiento de importes pendientes de compensar y compensados.</p>
           </div>
-          <Link to="/herramientas/utilidades" className="self-start rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>
+        </div>
+        <div className="molsan-page-header__actions">
+          <Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary">← Volver a Utilidades</Link>
         </div>
       </header>
 
@@ -187,7 +189,7 @@ function TablaPPAD({ titulo, lista, tipo, busqueda, setBusqueda, compensar, acci
                   {esPendiente && (
                     <td className="whitespace-nowrap px-3 py-3">
                       <button type="button" onClick={() => compensar(item)} disabled={accionId === item.id || !item.fecha_firma} title={!item.fecha_firma ? "Disponible cuando el expediente tenga fecha de firma." : "Registrar compensación"} className="rounded-lg bg-emerald-600 px-3 py-2 text-[11px] font-extrabold text-white hover:bg-emerald-700 disabled:opacity-50">
-                        {accionId === item.id ? "Guardando…" : "✓ Compensar"}
+                        {accionId === item.id ? "Guardando…" : <><MolsanIcon name="check" size={14} inline /> Compensar</>}
                       </button>
                       {!item.fecha_firma && <span className="ml-2 text-[10px] text-slate-500">Pendiente de fecha de firma</span>}
                     </td>

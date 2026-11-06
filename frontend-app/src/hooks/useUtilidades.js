@@ -1,7 +1,8 @@
 import { useState } from "react";
-import axios from "../api/axios";  
+import axios from "../api/axios";
+import { API_BASE } from "../api/config";  
 
-const API = import.meta.env.VITE_API_URL;
+const API = API_BASE;
 
 /**
  * Hook premium SJ‑2026
@@ -34,7 +35,7 @@ export function useUtilidades() {
       setResultado(res.data);
       return res.data;
     } catch (err) {
-      setError("Error al importar CTN");
+      setError(err?.response?.data?.detail || err?.message || "Error al importar CTN");
       return null;
     } finally {
       setLoading(false);

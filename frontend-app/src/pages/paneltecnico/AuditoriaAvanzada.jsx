@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import {
   getAuditoria,
   getAuditoriaMetricas,
@@ -87,121 +88,19 @@ export default function AuditoriaAvanzada() {
   // ============================================================
 
   return (
-    <div className="auditoria-avanzada-premium panel-tecnico-submodulo-premium space-y-6 animate-fade-in">
+    <div className="molsan-page-stack auditoria-avanzada-premium panel-tecnico-submodulo-premium">
 
       {/* ======================================================
           CABECERA
           ====================================================== */}
 
-      <div
-        className="
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-4
-        "
-      >
-
-        <div className="flex items-center gap-3">
-
-          <div
-            className="
-              w-11
-              h-11
-              rounded-2xl
-              bg-[var(--erp-primary-soft)]
-              text-[var(--erp-primary)]
-              border
-              border-[var(--erp-border)]
-              flex
-              items-center
-              justify-center
-            "
-          >
-            <svg className="w-5 h-5">
-              <use href="/icons/icons.svg#shield" />
-            </svg>
-          </div>
-
-          <div>
-
-            <h1
-              className="
-                text-2xl
-                font-bold
-                text-[var(--erp-text)]
-              "
-            >
-              Auditoría Avanzada
-            </h1>
-
-            <p
-              className="
-                text-sm
-                text-[var(--erp-text-soft)]
-                mt-0.5
-              "
-            >
-              Control y trazabilidad de la actividad del sistema
-            </p>
-
-          </div>
-
+      <div className="flex justify-end">
+        <div className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface-soft)] px-4 py-2 text-sm">
+          <span className="h-2 w-2 rounded-full bg-[var(--erp-primary)]" />
+          <span className="font-semibold text-[var(--erp-text)]">{filtrados.length}</span>
+          <span className="text-[var(--erp-text-soft)]">registros</span>
         </div>
-
-
-        {/* CONTADOR */}
-
-        <div
-          className="
-            inline-flex
-            items-center
-            gap-2
-            px-4
-            py-2
-            rounded-xl
-            bg-[var(--erp-surface)]
-            border
-            border-[var(--erp-border)]
-            shadow-sm
-            w-fit
-          "
-        >
-
-          <span
-            className="
-              w-2
-              h-2
-              rounded-full
-              bg-[var(--erp-primary)]
-            "
-          />
-
-          <span
-            className="
-              text-sm
-              font-semibold
-              text-[var(--erp-text)]
-            "
-          >
-            {filtrados.length}
-          </span>
-
-          <span
-            className="
-              text-sm
-              text-[var(--erp-text-soft)]
-            "
-          >
-            registros
-          </span>
-
-        </div>
-
       </div>
-
 
       {/* ======================================================
           MÉTRICAS
@@ -271,9 +170,7 @@ export default function AuditoriaAvanzada() {
                 justify-center
               "
             >
-              <svg className="w-4 h-4">
-                <use href="/icons/icons.svg#clipboard" />
-              </svg>
+              <MolsanIcon name="clipboard" size={16} bare />
             </div>
 
           </div>
@@ -337,9 +234,7 @@ export default function AuditoriaAvanzada() {
                   shadow-sm
                 "
               >
-                <svg className="w-5 h-5">
-                  <use href="/icons/icons.svg#clipboard" />
-                </svg>
+                <MolsanIcon name="clipboard" size={20} bare />
               </div>
 
             </div>
@@ -580,15 +475,7 @@ export default function AuditoriaAvanzada() {
 
                 </div>
 
-                <svg
-                  className="
-                    w-4
-                    h-4
-                    text-[var(--erp-text-soft)]
-                  "
-                >
-                  <use href="/icons/icons.svg#user" />
-                </svg>
+                <MolsanIcon name="user" size={16} bare />
 
               </div>
 
@@ -694,16 +581,7 @@ export default function AuditoriaAvanzada() {
           "
         >
 
-          <svg
-            className="
-              w-4
-              h-4
-              text-[var(--erp-text-soft)]
-              flex-shrink-0
-            "
-          >
-            <use href="/icons/icons.svg#search" />
-          </svg>
+          <MolsanIcon name="search" size={16} bare />
 
           <input
             type="text"
@@ -967,9 +845,7 @@ export default function AuditoriaAvanzada() {
                           justify-center
                         "
                       >
-                        <svg className="w-3.5 h-3.5">
-                          <use href="/icons/icons.svg#user" />
-                        </svg>
+                        <MolsanIcon name="user" size={14} bare />
                       </span>
 
                       {r.usuario || "—"}
@@ -1115,15 +991,7 @@ export default function AuditoriaAvanzada() {
               "
             >
 
-              <svg
-                className="
-                  w-5
-                  h-5
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                <use href="/icons/icons.svg#shield" />
-              </svg>
+              <MolsanIcon name="shield" size={20} bare />
 
             </div>
 

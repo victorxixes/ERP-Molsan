@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import "../../css/ModalesHerramientasPremium.css";
@@ -44,18 +45,20 @@ export default function LecturaCopias() {
   };
 
   return (
-    <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>
-        <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
+    <main className="molsan-page-stack herramienta-operativa-premium herramientas-subpagina-premium min-h-full">
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Lectura copias</h1>
+              <h1 className="molsan-page-header__title">Lectura copias</h1>
               <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-amber-700">Demostración · datos ficticios</span>
             </div>
-            <p className="mt-2 max-w-3xl text-sm text-slate-500">Selecciona la fecha de recepción y ejecuta el procesamiento de ejemplo para visualizar el progreso y el resultado esperado de la futura integración.</p>
+            <p className="molsan-page-header__description">Selecciona la fecha de recepción y ejecuta el procesamiento de ejemplo para visualizar el progreso y el resultado esperado de la futura integración.</p>
           </div>
+        </div>
+        <div className="molsan-page-header__actions">
+          <Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary">← Volver a Utilidades</Link>
         </div>
       </header>
 
@@ -116,7 +119,7 @@ export default function LecturaCopias() {
             </thead>
             <tbody>
               {filas.length === 0 ? (
-                <tr><td colSpan={5} className="px-5 py-14 text-center"><div className="text-3xl">📄</div><p className="mt-2 font-bold text-slate-700">{procesando ? "Preparando resultados de ejemplo…" : "Todavía no hay resultados"}</p><p className="mt-1 text-xs text-slate-500">Selecciona una fecha y pulsa «Procesar» para ver la maqueta.</p></td></tr>
+                <tr><td colSpan={5} className="px-5 py-14 text-center"><div className="text-3xl"><MolsanIcon name="file" size={20} /></div><p className="mt-2 font-bold text-slate-700">{procesando ? "Preparando resultados de ejemplo…" : "Todavía no hay resultados"}</p><p className="mt-1 text-xs text-slate-500">Selecciona una fecha y pulsa «Procesar» para ver la maqueta.</p></td></tr>
               ) : filas.map((fila, index) => (
                 <tr key={fila.expediente} className="border-b border-slate-100 align-top last:border-0 hover:bg-slate-50/70">
                   <td className="whitespace-nowrap px-4 py-4 font-extrabold text-blue-700">{fila.expediente}</td>

@@ -179,15 +179,11 @@ export default function EmpleadoFicha({
           CABECERA
       =================================================== */}
 
-      <section className="
-        erp-card
-        max-w-[1700px]
-        mx-auto
-        p-5
-      ">
+      <header className="molsan-page-header empleado-ficha-page-header">
 
         <div className="
           flex
+          w-full
           flex-col
           lg:flex-row
           lg:items-center
@@ -195,11 +191,7 @@ export default function EmpleadoFicha({
           gap-5
         ">
 
-          <div className="
-            flex
-            items-center
-            gap-4
-          ">
+          <div className="molsan-page-header__identity">
 
             <div className="
               w-16
@@ -234,18 +226,9 @@ export default function EmpleadoFicha({
 
             <div>
 
-              <div className="
-                text-sm
-                text-[var(--erp-text-soft)]
-              ">
-                Ficha de empleado
-              </div>
+              <p className="molsan-page-header__eyebrow">FICHA DE EMPLEADO</p>
 
-              <h1 className="
-                text-2xl
-                font-semibold
-                text-[var(--erp-text)]
-              ">
+              <h1 className="molsan-page-header__title">
                 {empleado.nombre}{" "}
                 {empleado.apellidos}
               </h1>
@@ -304,30 +287,19 @@ export default function EmpleadoFicha({
           </div>
 
 
-          <button
-            type="button"
-            onClick={() =>
-              setOpenModal(true)
-            }
-            className="
-              inline-flex
-              items-center
-              justify-center
-              px-4
-              py-2.5
-              rounded-xl
-              bg-[var(--erp-primary)]
-              hover:bg-[var(--erp-primary-dark)]
-              text-white
-              transition
-            "
-          >
-            Editar ficha
-          </button>
+          <div className="molsan-page-header__actions">
+            <button
+              type="button"
+              onClick={() => setOpenModal(true)}
+              className="molsan-btn molsan-btn--primary"
+            >
+              Editar ficha
+            </button>
+          </div>
 
         </div>
 
-      </section>
+      </header>
 
 
       {/* ===================================================

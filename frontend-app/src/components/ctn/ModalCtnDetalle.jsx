@@ -344,7 +344,7 @@ export default function ModalCtnDetalle({
       {/* CABECERA DE LA FICHA */}
 
       <header
-        className="ctn-modal-header molsan-page-header ctn-modal-header-unified"
+        className="ctn-modal-header molsan-modal-header"
       >
         <div className="ctn-modal-header-identity">
           <span className="ctn-modal-eyebrow">
@@ -353,12 +353,12 @@ export default function ModalCtnDetalle({
 
           <h2
             id="ctn-ficha-titulo"
-            className="ctn-modal-title"
+            className="mt-1"
           >
             {nombreNotario(datos)}
           </h2>
 
-          <p className="ctn-modal-meta">
+          <p className="mt-1">
             NIF: {valor(datos.nif)}
             {" · "}
             Código: {valor(datos.codigo)}

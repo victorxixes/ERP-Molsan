@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanButton from "../../components/ui/MolsanButton";
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import { formatPercent as fmt } from "../../utils/formatters";
 
 const VACIO = { nombre: "", categoria: "impuesto", impuesto: "IVA", porcentaje: "", territorio: "Territorio común", descripcion: "", activo: true };
-const fmt = (n) => n === null || n === undefined || n === "" ? "—" : `${Number(n).toLocaleString("es-ES", { maximumFractionDigits: 3 })}%`;
 
 export default function TiposImpositivos() {
   const [items, setItems] = useState([]);
@@ -62,12 +65,16 @@ export default function TiposImpositivos() {
   };
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-400" />
-        <p className="text-xs font-bold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027</p>
-        <h1 className="mt-2 text-2xl font-extrabold text-slate-900">Tipos impositivos</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Mantén en un único catálogo los impuestos indirectos y las retenciones utilizados en las órdenes de pago, gastos y otros procesos económicos.</p>
+    <main className="molsan-page-stack catalogos-premium-page min-h-full animate-fadeIn">
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="receipt" size={22} tone="ocean" /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · CATÁLOGOS ECONÓMICOS</p>
+            <h1 className="molsan-page-header__title">Tipos impositivos</h1>
+            <p className="molsan-page-header__description">Mantén en un único catálogo los impuestos indirectos y las retenciones utilizados en las órdenes de pago, gastos y otros procesos económicos.</p>
+          </div>
+        </div>
       </header>
 
       <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
@@ -77,7 +84,7 @@ export default function TiposImpositivos() {
       <section id="formulario-tipo-impositivo" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div><h2 className="text-lg font-bold text-slate-900">{editando ? "Editar tipo impositivo" : "Crear tipo impositivo"}</h2><p className="mt-1 text-sm text-slate-500">Los tipos desactivados no aparecerán en los desplegables nuevos.</p></div>
-          {editando && <button type="button" onClick={nuevo} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancelar edición</button>}
+          {editando && <MolsanButton type="button" onClick={nuevo} variant="warning">Cancelar edición</MolsanButton>}
         </div>
         <form onSubmit={guardar} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <label className="text-sm font-semibold text-slate-700">Nombre visible *
@@ -102,8 +109,8 @@ export default function TiposImpositivos() {
           </label>
           {editando && <label className="flex items-center gap-2 text-sm font-semibold text-slate-700"><input type="checkbox" checked={form.activo} onChange={(e) => setForm({ ...form, activo: e.target.checked })} />Activo y disponible en desplegables</label>}
           <div className="flex flex-wrap gap-2 sm:col-span-2 xl:col-span-3">
-            <button disabled={guardando} type="submit" className="rounded-xl bg-indigo-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-indigo-800 disabled:opacity-50">{guardando ? "Guardando…" : editando ? "Guardar cambios" : "Crear tipo impositivo"}</button>
-            <button type="button" onClick={nuevo} className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50">Limpiar</button>
+            <MolsanButton type="submit" disabled={guardando} loading={guardando} icon="check" variant="success">{editando ? "Guardar cambios" : "Crear tipo impositivo"}</MolsanButton>
+            <MolsanButton type="button" onClick={nuevo} variant="secondary">Limpiar</MolsanButton>
           </div>
         </form>
       </section>
@@ -117,19 +124,23 @@ export default function TiposImpositivos() {
           <div className="flex flex-wrap items-center gap-2">
             <select aria-label="Filtrar por categoría" value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"><option value="todos">Todos</option><option value="impuesto">Impuestos</option><option value="retencion">Retenciones</option></select>
             <label className="flex items-center gap-2 text-sm text-slate-600"><input type="checkbox" checked={mostrarInactivos} onChange={(e) => setMostrarInactivos(e.target.checked)} />Mostrar inactivos</label>
-            <button type="button" onClick={cargar} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold hover:bg-slate-50">Actualizar</button>
+            <MolsanButton type="button" onClick={cargar} icon="refresh" variant="secondary" className="molsan-btn--compact">Actualizar</MolsanButton>
           </div>
         </div>
         {cargando ? <p className="p-8 text-center text-sm text-slate-500">Cargando catálogo…</p> : filtrados.length === 0 ? <p className="p-8 text-center text-sm text-slate-500">No hay tipos para este filtro.</p> : (
-          <div className="overflow-x-auto"><table className="min-w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-4 py-3">Nombre</th><th className="px-4 py-3">Categoría</th><th className="px-4 py-3">Tributo</th><th className="px-4 py-3">Porcentaje</th><th className="px-4 py-3">Territorio</th><th className="px-4 py-3">Estado</th><th className="px-4 py-3 text-right">Acciones</th></tr></thead>
-            <tbody className="divide-y divide-slate-100">{filtrados.map((x) => <tr key={x.id} className="hover:bg-slate-50/70">
-              <td className="px-4 py-3"><div className="font-semibold text-slate-800">{x.nombre}</div>{x.descripcion && <div className="mt-1 max-w-sm text-xs text-slate-500">{x.descripcion}</div>}</td>
-              <td className="px-4 py-3">{x.categoria === "retencion" ? "Retención" : "Impuesto"}</td><td className="px-4 py-3">{x.impuesto}</td><td className="px-4 py-3 tabular-nums">{fmt(x.porcentaje)}</td><td className="px-4 py-3">{x.territorio}</td>
-              <td className="px-4 py-3"><span className={x.activo ? "rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700" : "rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-500"}>{x.activo ? "Activo" : "Inactivo"}</span></td>
-              <td className="px-4 py-3 text-right whitespace-nowrap"><button type="button" onClick={() => editar(x)} className="mr-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100">Editar</button>{x.activo && <button type="button" onClick={() => desactivar(x)} className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-50">Eliminar</button>}</td>
-            </tr>)}</tbody>
-          </table></div>
+          <MolsanDataTable
+            rows={filtrados}
+            rowKey="id"
+            columns={[
+              { key: "nombre", header: "Nombre", accessor: "nombre", sortType: "text", render: (value, item) => <><strong>{value}</strong>{item.descripcion && <small className="mt-1 block max-w-sm text-slate-500">{item.descripcion}</small>}</> },
+              { key: "categoria", header: "Categoría", accessor: (item) => item.categoria === "retencion" ? "Retención" : "Impuesto", sortType: "text" },
+              { key: "impuesto", header: "Tributo", accessor: "impuesto", sortType: "text" },
+              { key: "porcentaje", header: "Porcentaje", accessor: (item) => item.porcentaje == null ? null : Number(item.porcentaje), sortType: "percent", render: (value) => fmt(value) },
+              { key: "territorio", header: "Territorio", accessor: "territorio", sortType: "text" },
+              { key: "activo", header: "Estado", accessor: "activo", sortType: "boolean", render: (value) => <span className={value ? "rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700" : "rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-500"}>{value ? "Activo" : "Inactivo"}</span> },
+              { key: "acciones", header: "Acciones", sortable: false, align: "right", accessor: (item) => item.id, render: (_, item) => <div className="flex justify-end gap-2"><MolsanButton type="button" onClick={() => editar(item)} icon="edit" variant="secondary" className="molsan-btn--compact">Editar</MolsanButton>{item.activo && <MolsanButton type="button" onClick={() => desactivar(item)} icon="delete" variant="danger" className="molsan-btn--compact">Eliminar</MolsanButton>}</div> },
+            ]}
+          />
         )}
       </section>
     </main>

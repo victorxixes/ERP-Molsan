@@ -1,0 +1,1937 @@
+/* MOLSAN ERP PREMIUM 2027 · APODERAGEST
+   Estilos exclusivos del módulo. Sin dependencia de PortalProfesionalShared.css.
+*/
+.apoderagest *,
+.apoderagest *::before,
+.apoderagest *::after{
+  box-sizing: border-box;
+}
+
+
+@keyframes ag-girar{
+  to { transform: rotate(360deg); }
+}
+.apoderagest .ag-contenido{
+  position: relative;
+  min-width: 0;
+  animation: ag-aparecer .22s ease-out;
+}
+@keyframes ag-aparecer{
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.apoderagest .ag-titulo-seccion{
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 0 1px 20px;
+}
+.apoderagest .ag-titulo-seccion h2{
+  margin: 5px 0 5px;
+  color: #1b2a43;
+  font-size: clamp(20px, 2vw, 25px);
+  font-weight: 800;
+  letter-spacing: -.65px;
+  line-height: 1.25;
+}
+.apoderagest .ag-titulo-seccion p{
+  margin: 0;
+  color: #7a879b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.apoderagest .ag-actualizado,
+.apoderagest .ag-contador{
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 11px;
+  color: #63718a;
+  background: rgba(255, 255, 255, .72);
+  border: 1px solid #e0e7f1;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+.apoderagest .ag-grid-kpi{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.apoderagest .ag-kpi-superior{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.apoderagest .ag-kpi-titulo{
+  color: #75829a;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+.apoderagest .ag-kpi-valor{
+  position: relative;
+  z-index: 1;
+  margin-top: 13px;
+  color: #1c2b45;
+  font-size: clamp(24px, 2.4vw, 32px);
+  font-weight: 830;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.apoderagest .ag-kpi-detalle{
+  position: relative;
+  z-index: 1;
+  margin-top: 8px;
+  color: #9aa4b5;
+  font-size: 10px;
+  font-weight: 550;
+}
+
+
+
+
+.apoderagest .ag-grid-secundario{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+  margin-bottom: 24px;
+}
+.apoderagest .ag-grid-secundario .ag-kpi{
+  padding: 15px 18px;
+}
+.apoderagest .ag-grid-secundario .ag-kpi-valor{
+  font-size: clamp(20px, 2vw, 25px);
+}
+
+.apoderagest .ag-panel-proximas{
+  padding: 20px 21px 8px;
+}
+.apoderagest .ag-panel-cabecera{margin-bottom: 12px}
+.apoderagest .ag-panel-cabecera h3{margin: 4px 0 0}
+.apoderagest .ag-enlace-accion{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0 8px 8px;
+  color: var(--molsan-primary, #064675);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+}
+.apoderagest .ag-enlace-accion:hover{
+  color: var(--molsan-primary-hover, #04375B);
+}
+.apoderagest .ag-proximas-lista{
+  display: grid;
+}
+.apoderagest .ag-cita-item{
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 0;
+  padding: 14px 3px;
+  border-top: 1px solid #edf0f6;
+}
+.apoderagest .ag-cita-fecha{
+  display: flex;
+  flex: 0 0 55px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  color: var(--molsan-primary, #064675);
+  background: var(--molsan-primary-soft, #EAF2F8);
+  border: 1px solid #e2eaff;
+  border-radius: 12px;
+}
+.apoderagest .ag-cita-fecha strong{
+  font-size: 16px;
+  font-weight: 850;
+  line-height: 1.25;
+}
+.apoderagest .ag-cita-fecha span{
+  margin-top: 2px;
+  color: #7484ad;
+  font-size: 9px;
+  font-weight: 750;
+}
+.apoderagest .ag-cita-info{
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.apoderagest .ag-cita-info strong{
+  color: #293852;
+  font-size: 12px;
+  font-weight: 800;
+}
+.apoderagest .ag-cita-info span{
+  overflow: hidden;
+  color: #8792a5;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.apoderagest .ag-toolbar{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 15px 17px;
+  border-bottom: 1px solid #e9edf4;
+}
+.apoderagest .ag-busqueda{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(100%, 460px);
+  min-height: 40px;
+  padding: 0 13px;
+  color: #8b98ac;
+  background: #f8faff;
+  border: 1px solid #e3e9f3;
+  border-radius: 11px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.apoderagest .ag-busqueda:focus-within{
+  border-color: var(--molsan-border-strong, #B8CBD9);
+  box-shadow: 0 0 0 3px rgba(61, 103, 231, .09);
+}
+.apoderagest .ag-busqueda > span{
+  font-size: 21px;
+  line-height: 1;
+}
+.apoderagest .ag-busqueda input{
+  width: 100%;
+  min-width: 0;
+  padding: 9px 0;
+  color: #293852;
+  background: transparent;
+  border: 0;
+  outline: none;
+  font: inherit;
+  font-size: 11px;
+}
+.apoderagest .ag-busqueda input::placeholder{
+  color: #a0aabc;
+}
+.apoderagest .ag-resultados{
+  color: #8995a8;
+  font-size: 10px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+.apoderagest .ag-estado{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.apoderagest .ag-estado::before{
+  width: 5px;
+  height: 5px;
+  content: "";
+  background: currentColor;
+  border-radius: 50%;
+}
+.apoderagest .ag-estado-ok{
+  color: #14815f;
+  background: #e8f8f1;
+  border-color: #d4f1e4;
+}
+.apoderagest .ag-estado-pendiente{
+  color: #9b6b16;
+  background: #fff6df;
+  border-color: #f7e9bd;
+}
+.apoderagest .ag-estado-alerta{
+  color: #bd4b55;
+  background: #fff0f1;
+  border-color: #f8dfe1;
+}
+.apoderagest .ag-estado-neutro{
+  color: #697891;
+  background: #f0f3f8;
+  border-color: #e4e9f1;
+}
+.apoderagest .ag-vacio{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  padding: 28px 18px;
+  text-align: center;
+}
+.apoderagest .ag-vacio-icono{
+  display: grid;
+  width: 43px;
+  height: 43px;
+  place-items: center;
+  color: #7c91c9;
+  background: var(--molsan-primary-soft, #EAF2F8);
+  border: 1px solid #e1eaff;
+  border-radius: 14px;
+  font-size: 22px;
+}
+.apoderagest .ag-vacio h3{
+  margin: 13px 0 5px;
+  color: #3a4962;
+  font-size: 12px;
+  font-weight: 800;
+}
+.apoderagest .ag-vacio p{
+  max-width: 430px;
+  margin: 0;
+  color: #909bad;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.apoderagest .ag-alerta-error{
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  margin: 0 0 20px;
+  color: #9e3944;
+  background: rgba(255, 243, 244, .95);
+  border: 1px solid #f3d5d8;
+  border-radius: 13px;
+}
+.apoderagest .ag-alerta-icono{
+  display: grid;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  color: #fff;
+  background: #c75c66;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 900;
+}
+.apoderagest .ag-alerta-error > div{
+  flex: 1;
+  min-width: 0;
+}
+.apoderagest .ag-alerta-error strong{
+  font-size: 12px;
+}
+.apoderagest .ag-alerta-error p{
+  margin: 4px 0 0;
+  font-size: 11px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.apoderagest .ag-alerta-error button{
+  padding: 7px 10px;
+  color: #a23e49;
+  background: #fff;
+  border: 1px solid #f0cbd0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 800;
+}
+.apoderagest .ag-cargando{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 150px;
+  color: #77849a;
+  font-size: 12px;
+  font-weight: 650;
+}
+.apoderagest .ag-spinner{
+  width: 22px;
+  height: 22px;
+  border: 2px solid #dce5fb;
+  border-top-color: var(--molsan-primary-hover, #04375B);
+  border-radius: 50%;
+  animation: ag-girar .75s linear infinite;
+}
+.apoderagest .ag-footer{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 3px 1px;
+  margin-top: 23px;
+  color: #9aa4b5;
+  font-size: 9px;
+  letter-spacing: .3px;
+}
+.apoderagest .ag-footer strong{
+  color: #64738d;
+  font-weight: 850;
+}
+.apoderagest button:focus-visible,
+.apoderagest input:focus-visible{
+  outline: 3px solid rgba(61, 103, 231, .35);
+  outline-offset: 2px;
+}
+@media (max-width: 1100px){
+.apoderagest .ag-grid-kpi{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+@media (max-width: 700px){
+
+.apoderagest .ag-grid-kpi{
+    gap: 10px;
+  }
+
+
+.apoderagest .ag-kpi-valor{
+    font-size: 25px;
+  }
+.apoderagest .ag-grid-secundario{
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+.apoderagest .ag-grid-secundario .ag-kpi{
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0 12px;
+  }
+.apoderagest .ag-grid-secundario .ag-kpi-superior{
+    grid-column: 1 / -1;
+  }
+.apoderagest .ag-grid-secundario .ag-kpi-valor{
+    margin-top: 8px;
+  }
+.apoderagest .ag-grid-secundario .ag-kpi-detalle{
+    grid-column: 1;
+  }
+.apoderagest .ag-panel-proximas{
+    padding: 16px 14px 6px;
+  }
+.apoderagest .ag-cita-item{
+    gap: 10px;
+  }
+.apoderagest .ag-cita-fecha{
+    flex-basis: 48px;
+  }
+.apoderagest .ag-toolbar{
+    align-items: stretch;
+    padding: 12px;
+  }
+.apoderagest .ag-busqueda{
+    width: 100%;
+  }
+.apoderagest .ag-resultados{
+    align-self: flex-end;
+  }
+.apoderagest .ag-alerta-error{
+    flex-wrap: wrap;
+  }
+.apoderagest .ag-alerta-error button{
+    margin-left: 36px;
+  }
+.apoderagest .ag-footer{
+    font-size: 8px;
+  }
+
+}
+@media (max-width: 380px){
+.apoderagest .ag-grid-kpi{
+    grid-template-columns: 1fr;
+  }
+.apoderagest .ag-kpi-valor{
+    font-size: 28px;
+  }
+
+
+}
+@media (prefers-reduced-motion: reduce){
+.apoderagest *,
+.apoderagest *::before,
+.apoderagest *::after{
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+
+}
+.apoderagest .ag-encargos-detalle-lista{display:grid;gap:12px;padding:14px}
+.apoderagest .ag-encargo-detalle{overflow:hidden;border:1px solid #dce5f0;border-radius:14px;background:#fff}
+.apoderagest .ag-encargo-detalle-cabecera{display:flex;width:100%;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px;text-align:left;background: var(--molsan-surface-soft, #F2F7FB);border:0;cursor:pointer}
+.apoderagest .ag-encargo-detalle-cabecera>span:first-child{display:grid;gap:4px;min-width:0}
+.apoderagest .ag-encargo-detalle-cabecera strong{color:#172b4d;font-size:14px}
+.apoderagest .ag-encargo-detalle-cabecera small{color:#64748b;font-size:12px}
+.apoderagest .ag-encargo-detalle-cabecera>span:last-child{color:#3658a5;font-size:12px;font-weight:800;white-space:nowrap}
+.apoderagest .ag-encargo-resumen{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:12px 14px;border-top:1px solid var(--molsan-border-light, #e8edf4)}
+.apoderagest .ag-encargo-paneles{display:grid;gap:12px;padding:0 14px 14px}
+.apoderagest .ag-encargo-subpanel{min-width:0;padding:14px;border:1px solid #e4eaf2;border-radius:12px;background:#fbfcfe}
+.apoderagest .ag-encargo-subpanel h4{margin:0 0 12px;color:#1e355b;font-size:13px;font-weight:850}
+.apoderagest .ag-encargo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.apoderagest .ag-detalle-campo{display:flex;min-width:0;flex-direction:column;gap:4px;padding:9px 10px;border:1px solid var(--molsan-border-light, #e8edf4);border-radius:9px;background:#fff}
+.apoderagest .ag-detalle-campo>span{color:#718096;font-size:10px;font-weight:750;text-transform:uppercase;letter-spacing:.035em}
+.apoderagest .ag-detalle-campo>strong{overflow-wrap:anywhere;color:#26364d;font-size:12px;font-weight:650;white-space:pre-wrap}
+.apoderagest .ag-finca-registro{margin-top:10px;padding:12px;border:1px solid #dbe5f2;border-radius:10px;background:#fff}
+.apoderagest .ag-finca-registro:first-of-type{margin-top:0}
+.apoderagest .ag-encargo-vacio{margin:0;color:#77849a;font-size:12px}
+.apoderagest .ag-documentos-apoderado,
+.apoderagest .ag-observaciones-apoderado{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.apoderagest .ag-documentos-apoderado li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px;border:1px solid #e4eaf2;border-radius:9px;background:#fff}
+.apoderagest .ag-documentos-apoderado li>span{display:grid;min-width:0;gap:4px}
+.apoderagest .ag-documentos-apoderado strong{color:#26364d;font-size:12px}
+.apoderagest .ag-documentos-apoderado small,
+.apoderagest .ag-observaciones-apoderado small{color:#77849a;font-size:11px}
+.apoderagest .ag-documentos-apoderado button{flex-shrink:0;padding:7px 10px;border:1px solid #cbd8ed;border-radius:8px;background:var(--molsan-primary-soft, #EAF2F8);color:#2d4e91;font-size:11px;font-weight:800;cursor:pointer}
+.apoderagest .ag-observaciones-apoderado li{padding:12px;border-left:3px solid #6886c5;border-radius:7px;background:#fff}
+.apoderagest .ag-observaciones-apoderado p{margin:0 0 6px;color:#334155;font-size:12px;white-space:pre-wrap}
+.apoderagest .ag-firmar-panel>p{margin:-4px 0 12px;color:#64748b;font-size:12px}
+.apoderagest .ag-firmar-controles{display:grid;grid-template-columns:minmax(180px,.65fr) minmax(220px,1fr) auto;align-items:end;gap:12px}
+.apoderagest .ag-firmar-controles label{display:grid;gap:6px;color:#5c6b82;font-size:11px;font-weight:800}
+.apoderagest .ag-firmar-controles input{width:100%;min-height:38px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#1e293b;font-size:13px}
+.apoderagest .ag-firmar-controles button{min-height:38px;padding:9px 18px;border:1px solid #176b4a;border-radius:9px;background:#16805a;color:#fff;font-size:12px;font-weight:850;cursor:pointer}
+.apoderagest .ag-firmar-controles button:disabled{opacity:.6;cursor:wait}
+.apoderagest .ag-firma-error{margin:10px 0 0;color:#b42318;font-size:12px;font-weight:700}
+.apoderagest .ag-firma-ok{margin:10px 0 0;color:#13734f;font-size:12px;font-weight:700}
+@media(max-width:900px){
+.apoderagest .ag-encargo-resumen{grid-template-columns:repeat(2,minmax(0,1fr))}
+.apoderagest .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.apoderagest .ag-firmar-controles{grid-template-columns:1fr}
+.apoderagest .ag-encargo-detalle-cabecera{align-items:flex-start;flex-direction:column}
+
+}
+@media(max-width:560px){
+.apoderagest .ag-encargo-resumen,
+.apoderagest .ag-encargo-grid{grid-template-columns:1fr}
+.apoderagest .ag-documentos-apoderado li{align-items:flex-start;flex-direction:column}
+
+}
+.apoderagest .ag-visor-estado button{padding:9px 13px;border:1px solid var(--molsan-border, #D8E4EC);border-radius:var(--molsan-radius-control,9px);background:var(--molsan-surface-soft, #F2F7FB);color:var(--molsan-text-secondary,#526176);font-size:12px;font-weight:800;cursor:pointer}
+.apoderagest .ag-visor-pdf{display:block;width:100%;height:100%;min-height:500px;border:0;background:#fff}
+.apoderagest .ag-visor-imagen{display:block;max-width:100%;max-height:100%;object-fit:contain;box-shadow:0 8px 30px rgba(20,35,60,.18)}
+.apoderagest .ag-visor-estado{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:32px;color:#53647c;text-align:center;font-size:13px}
+@media(max-width:650px){
+.apoderagest .ag-visor-pdf{min-height:400px}
+
+}
+.apoderagest .ag-panel-proximas .ag-proximas-lista{display:grid;gap:10px}
+.apoderagest .ag-panel-proximas .ag-cita-item{display:grid;grid-template-columns:64px minmax(0,1fr) 18px;align-items:start;gap:14px;padding:14px;border:1px solid #e3eaf3;border-radius:12px;background:#fff;transition:border-color .18s,box-shadow .18s}
+.apoderagest .ag-panel-proximas .ag-cita-item:hover{border-color:#c6d5ed;box-shadow:0 5px 16px rgba(30,55,90,.06)}
+.apoderagest .ag-panel-proximas .ag-cita-fecha{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:56px;padding:8px 4px;border:1px solid #dbe6f6;border-radius:10px;background:#f2f6fd;color:#294b85;text-align:center}
+.apoderagest .ag-panel-proximas .ag-cita-fecha strong{font-size:19px;line-height:1.1;font-weight:850}
+.apoderagest .ag-panel-proximas .ag-cita-fecha span{margin-top:4px;font-size:10px;font-weight:750}
+.apoderagest .ag-panel-proximas .ag-cita-info{display:grid;min-width:0;gap:10px}
+.apoderagest .ag-panel-proximas .ag-cita-titulo-fila{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.apoderagest .ag-panel-proximas .ag-cita-titulo-fila>strong{color:#1e2f4b;font-size:13px;font-weight:850}
+.apoderagest .ag-panel-proximas .ag-cita-modalidad{display:inline-flex;align-items:center;padding:4px 8px;border:1px solid #d8e4f6;border-radius:999px;background:#f1f6ff;color:#355b98;font-size:10px;font-weight:800}
+.apoderagest .ag-panel-proximas .ag-cita-datos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px}
+.apoderagest .ag-panel-proximas .ag-cita-datos>span{display:flex;min-width:0;flex-wrap:wrap;align-items:baseline;gap:5px;color:#4d5e76;font-size:11px;overflow-wrap:anywhere}
+.apoderagest .ag-panel-proximas .ag-cita-datos b{color:#8290a4;font-size:9px;font-weight:850;letter-spacing:.04em;text-transform:uppercase}
+.apoderagest .ag-panel-proximas .ag-cita-datos .ag-cita-horario{color:#1d5b4b;font-weight:800}
+.apoderagest .ag-panel-proximas .ag-cita-datos .ag-cita-horario b{color:#6e8c82}
+@media(max-width:680px){
+.apoderagest .ag-panel-proximas .ag-cita-item{grid-template-columns:52px minmax(0,1fr);gap:10px;padding:11px}
+.apoderagest .ag-panel-proximas .ag-cita-datos{grid-template-columns:1fr}
+.apoderagest .ag-panel-proximas .ag-cita-fecha{min-height:50px}
+.apoderagest .ag-panel-proximas .ag-cita-fecha strong{font-size:17px}
+
+}
+.apoderagest .ag-alerta-bloqueo{display:flex;flex-direction:column;gap:5px;margin:0 14px 12px;padding:12px 14px;border:1px solid #f2c6c6;border-left:4px solid #b4232b;border-radius:10px;background:#fff3f3;color:#9f2028;font-size:12px}
+.apoderagest .ag-alerta-bloqueo strong{font-size:11px;letter-spacing:.04em}
+.apoderagest .ag-alerta-bloqueo span{color:#7f2730;line-height:1.5}
+.apoderagest .ag-encargos-agrupados{display:grid;gap:14px}
+.apoderagest .ag-grupo-notario{overflow:hidden;border:1px solid rgba(224,231,241,.95);border-radius:17px;background:rgba(255,255,255,.88);box-shadow:0 8px 24px rgba(31,48,79,.035)}
+.apoderagest .ag-notario-grupo-trigger{min-height:70px;padding:15px 18px;background:linear-gradient(135deg,rgba(248,250,255,.98),rgba(241,246,255,.92));border-bottom:1px solid #e9edf4}
+.apoderagest .ag-notario-grupo-info strong{color:#24334d;font-size:13px;font-weight:850}
+.apoderagest .ag-notario-grupo-info small{color:#8290a6;font-size:10px}
+.apoderagest .ag-encargos-detalle-lista.ag-ficha-premium{display:grid;gap:14px;padding:14px}
+.apoderagest .ag-encargo-detalle.ag-ficha-encargo{overflow:hidden;border:1px solid #e1e8f2;border-radius:15px;background:#fff;box-shadow:0 3px 12px rgba(26,43,74,.025)}
+.apoderagest .ag-encargo-detalle-cabecera{min-height:68px;padding:15px 18px;background:linear-gradient(120deg,#fff,#f8faff);border-bottom:1px solid #e9edf4}
+.apoderagest .ag-encargo-detalle-cabecera strong{color:#1e3352;font-size:15px;font-weight:850;letter-spacing:-.2px}
+.apoderagest .ag-encargo-detalle-cabecera small{color:#7e8ba0;font-size:11px}
+.apoderagest .ag-encargo-detalle-cabecera>span:last-child{padding:8px 10px;color:var(--molsan-primary, #064675);background:var(--molsan-primary-soft, #EAF2F8);border:1px solid var(--molsan-border, #D8E4EC);border-radius:9px;font-size:10px}
+.apoderagest .ag-ficha-resumen{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;padding:14px 16px;background:#fbfcff;border-top:0;border-bottom:1px solid #edf1f6}
+.apoderagest .ag-ficha-resumen .ag-detalle-campo{min-height:64px;padding:11px 12px;background:#f8faff;border:1px solid #edf1f8;border-radius:10px}
+.apoderagest .ag-ficha-resumen .ag-detalle-campo small{font-size:9px;color:#7c8aa2;font-weight:750}
+.apoderagest .ag-ficha-resumen .ag-detalle-campo strong{font-size:12px;color:#273853}
+.apoderagest .ag-encargo-paneles.ag-ficha-paneles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:16px;background:#fbfcff}
+.apoderagest .ag-ficha-paneles .ag-encargo-subpanel{min-width:0;padding:17px;background:rgba(255,255,255,.92);border:1px solid #e4eaf2;border-radius:14px;box-shadow:0 3px 12px rgba(26,43,74,.025)}
+.apoderagest .ag-ficha-paneles .ag-encargo-subpanel:first-child{grid-column:1/-1}
+.apoderagest .ag-ficha-bloque-heading{display:flex;flex-direction:column;gap:4px;margin:0 0 14px;padding-bottom:11px;border-bottom:1px solid #edf1f6}
+.apoderagest .ag-ficha-bloque-heading>span{color:#7183a3;font-size:9px;font-weight:850;letter-spacing:.12em}
+.apoderagest .ag-ficha-bloque-heading h4{margin:0;color:#1e3352;font-size:14px;font-weight:850;letter-spacing:-.2px}
+.apoderagest .ag-ficha-bloque-heading p{margin:3px 0 0;color:#7d8ba1;font-size:10px;line-height:1.5}
+.apoderagest .ag-ficha-paneles .ag-encargo-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.apoderagest .ag-ficha-paneles .ag-detalle-campo{padding:10px 11px;background:#f8faff;border:1px solid #edf1f8;border-radius:10px}
+.apoderagest .ag-ficha-paneles .ag-detalle-campo small{font-size:9px;color:#7c8aa2;font-weight:750}
+.apoderagest .ag-ficha-paneles .ag-detalle-campo strong{font-size:11px;line-height:1.45;color:#273853;overflow-wrap:anywhere}
+.apoderagest .ag-ficha-paneles .ag-documentos-apoderado li{border-color:#edf1f6;background:#fff;border-radius:10px;margin-top:8px;padding:11px}
+.apoderagest .ag-ficha-paneles .ag-documentos-apoderado li>span strong{color:#2c3c58;font-size:11px}
+.apoderagest .ag-ficha-paneles .ag-documentos-apoderado li>span small{color:#8491a5;font-size:10px}
+.apoderagest .ag-ficha-paneles .ag-documentos-apoderado button{padding:8px 10px;color:var(--molsan-primary, #064675);background:var(--molsan-primary-soft, #EAF2F8);border:1px solid var(--molsan-border, #D8E4EC);border-radius:9px;font-size:10px;font-weight:800}
+.apoderagest .ag-ficha-paneles .ag-observaciones-apoderado li{padding:12px 14px;background:#f6f8ff;border-left:3px solid #8ea8ef;border-radius:0 10px 10px 0}
+.apoderagest .ag-ficha-paneles .ag-observaciones-apoderado p{font-size:11px;color:#344256}
+.apoderagest .ag-ficha-paneles .ag-firmar-panel{background:linear-gradient(145deg,#fff,#f7f9ff);border-color:#dbe4f7}
+.apoderagest .ag-ficha-paneles .ag-firmar-controles input{min-height:40px;border:1px solid #e0e7f1;border-radius:10px;background:#f8faff}
+.apoderagest .ag-ficha-paneles .ag-firmar-controles button{min-height:40px;padding:0 16px;color:#fff;background:linear-gradient(135deg,var(--molsan-primary, #064675),var(--molsan-primary-hover, #04375B));border:1px solid rgba(255,255,255,.4);border-radius:11px;box-shadow:0 6px 16px rgba(49,94,232,.14);font-size:11px;font-weight:800}
+.apoderagest .ag-ficha-paneles .ag-firmar-controles button:hover:not(:disabled){filter:brightness(1.04);transform:translateY(-1px)}
+@media(max-width:1050px){
+.apoderagest .ag-ficha-paneles .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+}
+@media(max-width:760px){
+.apoderagest .ag-encargo-paneles.ag-ficha-paneles{grid-template-columns:minmax(0,1fr);padding:10px}
+.apoderagest .ag-ficha-paneles .ag-encargo-subpanel:first-child{grid-column:auto}
+.apoderagest .ag-ficha-resumen{grid-template-columns:repeat(2,minmax(0,1fr));padding:10px}
+.apoderagest .ag-ficha-paneles .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.apoderagest .ag-ficha-paneles .ag-encargo-subpanel{padding:13px}
+
+}
+@media(max-width:480px){
+.apoderagest .ag-ficha-resumen,
+.apoderagest .ag-ficha-paneles .ag-encargo-grid{grid-template-columns:minmax(0,1fr)}
+.apoderagest .ag-encargo-detalle-cabecera{align-items:flex-start;flex-direction:column}
+.apoderagest .ag-encargo-detalle-cabecera>span:last-child{align-self:flex-start}
+
+}
+.apoderagest .ag-encargo-paneles.ag-ficha-paneles{grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);align-items:stretch}
+.apoderagest .ag-ficha-paneles .ag-encargo-subpanel.ag-ficha-envio:first-child{grid-column:auto!important}
+.apoderagest .ag-ficha-paneles .ag-ficha-envio,
+.apoderagest .ag-ficha-paneles .ag-ficha-facturacion,
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo,
+.apoderagest .ag-ficha-paneles .ag-ficha-registral{grid-column:auto!important}
+.apoderagest .ag-ficha-paneles .ag-ficha-envio .ag-encargo-grid{grid-template-columns:minmax(0,1fr);gap:10px}
+.apoderagest .ag-ficha-paneles .ag-ficha-facturacion .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo,
+.apoderagest .ag-ficha-paneles .ag-ficha-registral{align-self:stretch}
+.apoderagest .ag-ficha-paneles .ag-ficha-registral .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.apoderagest .ag-ficha-paneles .ag-ficha-firma,
+.apoderagest .ag-ficha-paneles .ag-ficha-observaciones{grid-column:1/-1!important}
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles{display:grid;grid-template-columns:minmax(150px,.8fr) minmax(190px,1fr) minmax(230px,1.25fr) auto;align-items:end;gap:12px}
+.apoderagest .ag-ficha-paneles .ag-firmar-controles select{width:100%;min-width:0;min-height:40px;padding:9px 34px 9px 12px;border:1px solid #d7e0ef;border-radius:10px;outline:none;background-color:#f8faff;color:#24324b;font:inherit;font-size:13px;font-weight:600;box-shadow:inset 0 1px 2px rgba(31,51,86,.03);transition:border-color .18s,box-shadow .18s,background .18s}
+.apoderagest .ag-ficha-paneles .ag-firmar-controles select:focus{border-color:var(--molsan-primary, #064675);background:#fff;box-shadow:0 0 0 3px color-mix(in srgb, var(--molsan-primary, #064675) 12%, transparent)}
+.apoderagest .ag-ficha-paneles .ag-firmar-controles label{min-width:0}
+.apoderagest .ag-ficha-paneles .ag-firmar-controles input{box-sizing:border-box}
+.apoderagest .ag-ficha-paneles .ag-firmar-controles button{white-space:nowrap}
+.apoderagest .ag-ficha-paneles .ag-ficha-observaciones .ag-observaciones-apoderado{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.apoderagest .ag-ficha-paneles .ag-ficha-observaciones .ag-encargo-vacio{margin:0;padding:14px;background:#f8faff;border:1px dashed #dbe4f0;border-radius:10px}
+@media(max-width:900px){
+.apoderagest .ag-encargo-paneles.ag-ficha-paneles{grid-template-columns:minmax(0,1fr)}
+.apoderagest .ag-ficha-paneles .ag-ficha-envio,
+.apoderagest .ag-ficha-paneles .ag-ficha-facturacion,
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo,
+.apoderagest .ag-ficha-paneles .ag-ficha-registral,
+.apoderagest .ag-ficha-paneles .ag-ficha-firma,
+.apoderagest .ag-ficha-paneles .ag-ficha-observaciones{grid-column:1/-1!important}
+.apoderagest .ag-ficha-paneles .ag-ficha-envio .ag-encargo-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles{grid-template-columns:repeat(2,minmax(0,1fr))}
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles button{justify-self:start}
+
+}
+@media(max-width:600px){
+.apoderagest .ag-ficha-paneles .ag-ficha-facturacion .ag-encargo-grid,
+.apoderagest .ag-ficha-paneles .ag-ficha-registral .ag-encargo-grid,
+.apoderagest .ag-ficha-paneles .ag-ficha-observaciones .ag-observaciones-apoderado{grid-template-columns:minmax(0,1fr)}
+.apoderagest .ag-ficha-paneles .ag-ficha-envio .ag-encargo-grid{grid-template-columns:minmax(0,1fr)}
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles{grid-template-columns:minmax(0,1fr)}
+
+}
+.apoderagest .ag-carpetas-apoderado{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.apoderagest .ag-carpeta-apoderado{min-width:0;padding:12px;border:1px solid #e1e8f4;border-radius:13px;background:linear-gradient(145deg,#fff,#f8faff);box-shadow:0 4px 14px rgba(31,51,86,.035)}
+.apoderagest .ag-carpeta-apoderado-cabecera{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.apoderagest .ag-carpeta-apoderado-icono{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border:1px solid #dbe5fa;border-radius:10px;background:var(--molsan-primary-soft, #EAF2F8);color:#4265c7;font-size:19px}
+.apoderagest .ag-carpeta-apoderado-cabecera>div{display:grid;gap:3px;min-width:0}
+.apoderagest .ag-carpeta-apoderado-cabecera strong{color:#263752;font-size:12px;font-weight:850}
+.apoderagest .ag-carpeta-apoderado-cabecera small{color:#77859a;font-size:10px}
+.apoderagest .ag-carpeta-apoderado .ag-encargo-vacio{margin:0;padding:10px;border:1px dashed #dbe4f0;border-radius:9px;background:#fff;color:#7a879b;font-size:11px}
+.apoderagest .ag-carpeta-apoderado .ag-documentos-apoderado{margin-top:8px}
+.apoderagest .ag-carpetas-apoderado .ag-carpeta-apoderado:last-child:nth-child(3){grid-column:1/-1}
+@media(max-width:700px){
+.apoderagest .ag-carpetas-apoderado{grid-template-columns:minmax(0,1fr)}
+.apoderagest .ag-carpetas-apoderado .ag-carpeta-apoderado:last-child:nth-child(3){grid-column:auto}
+
+}
+.apoderagest .ag-aceptar-resumen{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:12px;align-items:end}
+.apoderagest .ag-aceptar-campo{display:flex;min-width:0;flex-direction:column;gap:6px}
+.apoderagest .ag-aceptar-campo>span{color:#738199;font-size:10px;font-weight:850;letter-spacing:.055em;text-transform:uppercase}
+.apoderagest .ag-aceptar-campo input{box-sizing:border-box;width:100%;min-width:0;min-height:39px;border:1px solid #d7e0ef;border-radius:10px;background:#fbfcff;padding:8px 10px;color:#25334b;font:inherit;font-size:12px;font-weight:650;outline:none}
+.apoderagest .ag-aceptar-campo input:focus{border-color:var(--molsan-primary, #064675);background:#fff;box-shadow:0 0 0 3px color-mix(in srgb, var(--molsan-primary, #064675) 12%, transparent)}
+.apoderagest .ag-aceptar-campo input:disabled{cursor:not-allowed;background:#edf0f5;color:#8a94a6}
+.apoderagest .ag-aceptar-accion{display:flex;align-items:end;min-height:39px}
+.apoderagest .ag-aceptar-accion button{min-height:39px;border:0;border-radius:10px;background:linear-gradient(135deg,#2458cf,#4279ef);padding:9px 20px;color:#fff;font-size:12px;font-weight:850;box-shadow:0 5px 14px rgba(37,87,205,.18);cursor:pointer}
+.apoderagest .ag-aceptar-accion button:disabled{cursor:not-allowed;background:#aab4c5;box-shadow:none}
+.apoderagest .ag-aceptar-resumen .ag-firma-error,
+.apoderagest .ag-aceptar-resumen .ag-firma-ok{grid-column:1/-1;margin:0}
+@media(max-width:1100px){
+.apoderagest .ag-aceptar-resumen{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+}
+@media(max-width:700px){
+.apoderagest .ag-aceptar-resumen{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+}
+@media(max-width:460px){
+.apoderagest .ag-aceptar-resumen{grid-template-columns:minmax(0,1fr)}
+
+}
+.apoderagest .ag-aceptar-resumen{grid-template-columns:minmax(105px,.75fr) minmax(125px,.95fr) minmax(125px,.95fr) minmax(125px,.95fr) minmax(125px,.95fr) minmax(95px,.7fr) auto;gap:8px;padding:8px 10px;align-items:end}
+.apoderagest .ag-aceptar-campo{gap:4px}
+.apoderagest .ag-aceptar-campo>span{font-size:9px;letter-spacing:.025em;white-space:nowrap}
+.apoderagest .ag-aceptar-campo input{min-height:32px;height:32px;padding:5px 7px;border-radius:7px;font-size:11px}
+.apoderagest .ag-aceptar-accion{min-height:32px}
+.apoderagest .ag-aceptar-accion button{min-height:32px;padding:6px 13px;border-radius:7px;font-size:11px;white-space:nowrap}
+.apoderagest .ag-aceptar-resumen .ag-detalle-campo{min-width:0;padding:4px 6px}
+.apoderagest .ag-aceptar-resumen .ag-detalle-campo>span{font-size:9px;white-space:nowrap}
+.apoderagest .ag-aceptar-resumen .ag-detalle-campo>strong{font-size:11px;overflow-wrap:anywhere}
+.apoderagest .ag-encargo-detalle-cabecera>span:first-child small{font-size:11px;font-weight:600;color:#52627a}
+@media(max-width:1000px){
+.apoderagest .ag-aceptar-resumen{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+}
+@media(max-width:650px){
+.apoderagest .ag-aceptar-resumen{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+
+}
+.apoderagest .ag-aceptar-resumen{
+  display:grid;
+  grid-template-columns:minmax(105px,.75fr) minmax(135px,1fr) minmax(135px,1fr) minmax(155px,1.15fr) minmax(90px,.6fr) minmax(90px,.6fr) auto;
+  align-items:end;
+  gap:8px;
+}
+.apoderagest .ag-aceptar-resumen>.ag-detalle-campo{min-width:0}
+.apoderagest .ag-aceptar-resumen .ag-aceptar-campo{min-width:0}
+.apoderagest .ag-aceptar-resumen .ag-aceptar-campo input{width:100%;min-width:0}
+@media(max-width:1150px){
+.apoderagest .ag-aceptar-resumen{grid-template-columns:minmax(100px,.7fr) minmax(115px,.9fr) minmax(115px,.9fr) minmax(135px,1fr) minmax(78px,.55fr) minmax(78px,.55fr) auto;gap:6px}
+
+}
+@media(max-width:850px){
+.apoderagest .ag-aceptar-resumen{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+}
+@media(max-width:560px){
+.apoderagest .ag-aceptar-resumen{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+}
+.apoderagest .ag-notario-grupo-trigger{
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  padding: 14px 18px;
+}
+.apoderagest .ag-notario-grupo-info{
+  display: block;
+  min-width: 0;
+}
+.apoderagest .ag-notario-linea-unica{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px 17px;
+  min-width: 0;
+  color: #52627c;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.55;
+}
+.apoderagest .ag-notario-linea-unica > strong{
+  color: #24334d;
+  font-size: 13px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+.apoderagest .ag-notario-dato-inline{
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.apoderagest .ag-notario-dato-inline b{
+  color: #8290a6;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .035em;
+  white-space: nowrap;
+}
+.apoderagest .ag-notario-contadores{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+  min-width: max-content;
+}
+.apoderagest .ag-contador-bloqueados{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 27px;
+  padding: 0 10px;
+  color: #78869b;
+  background: #f4f6fa;
+  border: 1px solid #e3e8f0;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.apoderagest .ag-contador-bloqueados.tiene-bloqueados{
+  color: #a82f3b;
+  background: #fff0f0;
+  border-color: #f0c5ca;
+  box-shadow: inset 0 0 0 1px rgba(168, 47, 59, .035);
+}
+@media (max-width: 900px){
+.apoderagest .ag-notario-grupo-trigger{
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    padding: 13px;
+  }
+.apoderagest .ag-notario-contadores{
+    grid-column: 2;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+.apoderagest .ag-notario-linea-unica{
+    gap: 6px 12px;
+  }
+
+}
+.apoderagest{
+  --ag-ink: var(--molsan-text, #17243a);
+  --ag-muted: var(--molsan-text-muted, #64748b);
+  --ag-line: var(--molsan-border, #D8E4EC);
+  --ag-panel: var(--molsan-surface, #fff);
+  --ag-blue: var(--molsan-primary, #064675);
+  --ag-blue-dark: var(--molsan-primary-hover, #04375B);
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  overflow: visible;
+  color: var(--molsan-text, #17243a);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+.apoderagest .ag-firma-indicador{
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: fit-content;
+  margin-top: 5px;
+  padding: 3px 7px;
+  border: 1px solid #f0d8a0;
+  border-radius: 999px;
+  color: #885c08;
+  background: #fff8e6;
+  font-size: 9px;
+  font-weight: 850;
+  line-height: 1.3;
+}
+.apoderagest .ag-firma-indicador.realizada{
+  color: #176847;
+  background: #e9f8f0;
+  border-color: #b9e7cf;
+}
+.apoderagest .ag-dashboard-inferior-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);align-items:stretch;gap:16px;margin-top:16px}
+.apoderagest .ag-dashboard-inferior-grid>.ag-panel{min-width:0;margin:0}
+.apoderagest .ag-panel-proximas,
+.apoderagest .ag-panel-estadistica-firma{padding:15px 16px}
+.apoderagest .ag-panel-proximas .ag-panel-cabecera,
+.apoderagest .ag-panel-estadistica-firma .ag-panel-cabecera{margin-bottom:10px}
+.apoderagest .ag-cita-item-compacta{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--molsan-border)}
+.apoderagest .ag-cita-item-compacta:last-child{border-bottom:0}
+.apoderagest .ag-cita-item-compacta .ag-cita-fecha{flex:0 0 42px;width:42px;min-width:42px}
+.apoderagest .ag-cita-item-compacta .ag-cita-info{flex:1;min-width:0}
+.apoderagest .ag-cita-item-compacta .ag-cita-titulo-fila{display:flex;align-items:center;flex-wrap:wrap;gap:5px 8px}
+.apoderagest .ag-cita-item-compacta .ag-cita-titulo-fila>strong{font-size:12px}
+.apoderagest .ag-cita-item-compacta .ag-cita-modalidad{font-size:10px}
+.apoderagest .ag-cita-item-compacta .ag-firma-indicador{margin:0;font-size:9px}
+.apoderagest .ag-cita-item-compacta .ag-cita-datos{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px;margin-top:5px;font-size:10px}
+.apoderagest .ag-cita-item-compacta .ag-cita-datos>span{display:inline-flex;align-items:baseline;gap:4px;min-width:0}
+.apoderagest .ag-cita-item-compacta .ag-cita-datos b{color:var(--molsan-text-muted);font-size:9px;font-weight:800}
+.apoderagest .ag-estadistica-anio{padding:4px 8px;border:1px solid var(--molsan-border);border-radius:8px;color:var(--molsan-text-muted);font-size:11px;font-weight:800}
+.apoderagest .ag-estadistica-resumen{display:flex;align-items:baseline;gap:8px;margin:0 0 12px}
+.apoderagest .ag-estadistica-resumen strong{color:var(--molsan-primary);font-size:25px;font-weight:850;line-height:1}
+.apoderagest .ag-estadistica-resumen span{color:var(--molsan-text-muted);font-size:10px}
+.apoderagest .ag-grafico-firmas{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));align-items:end;gap:5px;min-height:142px;padding-top:7px}
+.apoderagest .ag-grafico-mes{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;min-width:0;height:136px}
+.apoderagest .ag-grafico-valor{color:var(--molsan-text-muted);font-size:9px;font-weight:750;line-height:1.2}
+.apoderagest .ag-grafico-columna{display:flex;align-items:flex-end;justify-content:center;width:100%;height:92px;border-radius:5px 5px 2px 2px;background:var(--molsan-primary-soft);overflow:hidden}
+.apoderagest .ag-grafico-columna>span{display:block;width:100%;min-height:2px;border-radius:5px 5px 0 0;background:var(--molsan-primary);transition:height .2s ease}
+.apoderagest .ag-grafico-etiqueta{color:var(--molsan-text-muted);font-size:9px;font-weight:750}
+.apoderagest .ag-estadistica-nota{margin:10px 0 0;color:var(--molsan-text-muted);font-size:10px;line-height:1.45}
+@media(max-width:1050px){
+.apoderagest .ag-dashboard-inferior-grid{grid-template-columns:minmax(0,1fr)}
+
+}
+@media(max-width:560px){
+.apoderagest .ag-panel-proximas,
+.apoderagest .ag-panel-estadistica-firma{padding:12px}
+.apoderagest .ag-cita-item-compacta{align-items:flex-start;gap:8px}
+.apoderagest .ag-cita-item-compacta .ag-cita-fecha{flex-basis:36px;width:36px;min-width:36px}
+.apoderagest .ag-cita-item-compacta .ag-cita-datos{gap:4px 9px}
+.apoderagest .ag-grafico-firmas{gap:3px}
+.apoderagest .ag-grafico-etiqueta{font-size:8px}
+
+}
+.apoderagest .ag-ficha-paneles .ag-firmar-controles{grid-template-columns:minmax(170px,.7fr) minmax(95px,.38fr) minmax(150px,.62fr);gap:10px}
+.apoderagest .ag-ficha-paneles .ag-firmar-controles>label:nth-child(2){min-width:0}
+.apoderagest .ag-ficha-paneles .ag-firmar-controles>label:nth-child(2) input{min-width:0}
+.apoderagest .ag-comentario-gestor select,
+.apoderagest .ag-comentario-gestor textarea{width:100%;min-height:40px;padding:9px 11px;border:1px solid #dce4f0;border-radius:10px;background:#fff;color:#24334b;font:inherit;font-size:12px}
+.apoderagest .ag-comentario-gestor button{min-height:40px;padding:0 18px;border:1px solid var(--molsan-primary-hover, #04375B);border-radius:10px;background:#3158d8;color:#fff;font-size:11px;font-weight:850;cursor:pointer}
+.apoderagest .ag-comunicaciones-subtitulo{margin:14px 0 8px;color:#40516b;font-size:11px;font-weight:850}
+.apoderagest .ag-comentario-gestor{display:grid;gap:10px;margin-top:15px;padding:14px;border:1px solid #e0e7f2;border-radius:12px;background:#f8faff}
+.apoderagest .ag-comentario-gestor label{display:grid;gap:6px;color:#5c6b82;font-size:11px;font-weight:800}
+.apoderagest .ag-comentario-gestor textarea{resize:vertical;min-height:82px}
+.apoderagest .ag-comentario-gestor button{justify-self:start}
+.apoderagest .ag-comentario-gestor button:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:900px){
+.apoderagest .ag-ficha-paneles .ag-firmar-controles{grid-template-columns:1fr 1fr}
+
+}
+@media(max-width:560px){
+.apoderagest .ag-ficha-paneles .ag-firmar-controles{grid-template-columns:1fr}
+
+}
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles{display:grid;grid-template-columns:minmax(130px,.78fr) minmax(90px,.48fr) minmax(135px,.72fr) minmax(210px,1.25fr) auto;align-items:end;gap:8px}
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles>label{min-width:0;gap:5px;font-size:10px;white-space:nowrap}
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles input,
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles select{width:100%;min-width:0;min-height:36px;padding:7px 8px;font-size:11px}
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles .ag-firma-protocolo input{padding-right:5px}
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles .ag-firma-boton{align-self:end;min-height:36px;padding:0 13px;white-space:nowrap}
+.apoderagest .ag-ficha-paneles .ag-ficha-envio .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.apoderagest .ag-ficha-paneles .ag-ficha-facturacion .ag-encargo-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.apoderagest .ag-ficha-paneles .ag-ficha-envio .ag-detalle-campo,
+.apoderagest .ag-ficha-paneles .ag-ficha-facturacion .ag-detalle-campo{min-width:0;padding:9px 10px}
+@media(max-width:760px){
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles{grid-template-columns:repeat(3,minmax(0,1fr))}
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firma-notario{grid-column:span 2}
+.apoderagest .ag-ficha-paneles .ag-ficha-envio .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.apoderagest .ag-ficha-paneles .ag-ficha-facturacion .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+}
+@media(max-width:650px){
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles{grid-template-columns:repeat(2,minmax(0,1fr))}
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firma-notario{grid-column:1/-1}
+.apoderagest .ag-ficha-paneles .ag-ficha-firma .ag-firma-boton{width:100%}
+.apoderagest .ag-ficha-paneles .ag-ficha-envio .ag-encargo-grid,
+.apoderagest .ag-ficha-paneles .ag-ficha-facturacion .ag-encargo-grid{grid-template-columns:1fr}
+
+}
+.apoderagest .ag-encargo-paneles.ag-ficha-paneles{
+  grid-template-columns:minmax(0,1fr) minmax(0,1.08fr) minmax(0,1fr);
+  align-items:stretch;
+}
+.apoderagest .ag-ficha-paneles .ag-ficha-envio,
+.apoderagest .ag-ficha-paneles .ag-ficha-facturacion,
+.apoderagest .ag-ficha-paneles .ag-ficha-encargo-notarial{
+  grid-column:auto!important;
+  min-width:0;
+}
+.apoderagest .ag-ficha-paneles .ag-ficha-envio .ag-encargo-grid,
+.apoderagest .ag-ficha-paneles .ag-ficha-facturacion .ag-encargo-grid,
+.apoderagest .ag-ficha-paneles .ag-ficha-encargo-notarial .ag-encargo-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+}
+.apoderagest .ag-ficha-paneles .ag-ficha-encargo-notarial .ag-detalle-campo{
+  min-width:0;
+}
+@media(max-width:1200px){
+.apoderagest .ag-encargo-paneles.ag-ficha-paneles{grid-template-columns:repeat(2,minmax(0,1fr))}
+.apoderagest .ag-ficha-paneles .ag-ficha-envio,
+.apoderagest .ag-ficha-paneles .ag-ficha-facturacion,
+.apoderagest .ag-ficha-paneles .ag-ficha-encargo-notarial{grid-column:auto!important}
+
+}
+@media(max-width:760px){
+.apoderagest .ag-encargo-paneles.ag-ficha-paneles{grid-template-columns:minmax(0,1fr)}
+.apoderagest .ag-ficha-paneles .ag-ficha-envio,
+.apoderagest .ag-ficha-paneles .ag-ficha-facturacion,
+.apoderagest .ag-ficha-paneles .ag-ficha-encargo-notarial,
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo,
+.apoderagest .ag-ficha-paneles .ag-ficha-registral,
+.apoderagest .ag-ficha-paneles .ag-ficha-firma,
+.apoderagest .ag-ficha-paneles .ag-ficha-observaciones{grid-column:1/-1!important}
+.apoderagest .ag-ficha-paneles .ag-ficha-envio .ag-encargo-grid,
+.apoderagest .ag-ficha-paneles .ag-ficha-facturacion .ag-encargo-grid,
+.apoderagest .ag-ficha-paneles .ag-ficha-encargo-notarial .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+}
+.apoderagest .ag-ficha-paneles details.ag-encargo-subpanel{min-width:0;align-self:stretch}
+.apoderagest .ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;cursor:pointer;list-style:none}
+.apoderagest .ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading::-webkit-details-marker{display:none}
+.apoderagest .ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading::after{content:"＋";flex:0 0 auto;color:#6378a5;font-size:17px;font-weight:800}
+.apoderagest .ag-ficha-paneles details.ag-encargo-subpanel[open]>.ag-ficha-bloque-heading::after{content:"−"}
+.apoderagest .ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading h4{flex:1}
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo{grid-column:1!important}
+.apoderagest .ag-ficha-paneles .ag-ficha-registral{grid-column:2!important}
+.apoderagest .ag-visor-inline{min-width:0;min-height:190px;border:1px solid #dbe4f0;border-radius:12px;background:#f8faff;overflow:hidden}
+.apoderagest .ag-visor-inline-cabecera{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border-bottom:1px solid #e1e8f4;background:#fff}
+.apoderagest .ag-visor-inline-cabecera>strong{min-width:0;overflow-wrap:anywhere;color:#34445f;font-size:11px}
+.apoderagest .ag-visor-inline-cabecera>div{display:flex;gap:6px;flex:0 0 auto}
+.apoderagest .ag-visor-inline-cabecera button{padding:6px 9px;border:1px solid #d7e0ef;border-radius:8px;background:#fff;color:#33435e;font-size:11px;font-weight:750}
+.apoderagest .ag-visor-inline-contenido{height:390px;max-height:55vh;display:grid;place-items:stretch;background:#e9eef7}
+.apoderagest .ag-visor-inline-contenido .ag-visor-pdf{display:block;width:100%;height:100%;min-height:300px;border:0;background:#fff}
+.apoderagest .ag-visor-inline-contenido .ag-visor-imagen{display:block;max-width:100%;max-height:100%;margin:auto;object-fit:contain}
+.apoderagest .ag-visor-inline-vacio{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px;text-align:center;color:#71809a}
+.apoderagest .ag-visor-inline-vacio>span{font-size:28px;color:#5474c8}
+.apoderagest .ag-visor-inline-vacio strong{font-size:12px;color:#34445f}
+.apoderagest .ag-visor-inline-vacio p{max-width:320px;margin:0;font-size:11px;line-height:1.5}
+.apoderagest .ag-archivo-carpetas{min-width:0}
+.apoderagest .ag-carpeta-apoderado>summary{list-style:none;cursor:pointer}
+.apoderagest .ag-carpeta-apoderado>summary::-webkit-details-marker{display:none}
+.apoderagest .ag-carpeta-apoderado>summary::after{content:"＋";margin-left:auto;color:#6378a5;font-weight:800}
+.apoderagest .ag-carpeta-apoderado[open]>summary::after{content:"−"}
+@media(max-width:900px){
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo,
+.apoderagest .ag-ficha-paneles .ag-ficha-registral{grid-column:1/-1!important}
+.apoderagest .ag-visor-inline-contenido{height:340px}
+
+}
+@media(min-width:901px){
+.apoderagest .ag-encargo-paneles.ag-ficha-paneles{
+    grid-template-columns:minmax(0,1fr) minmax(0,1.08fr) minmax(0,1fr);
+    align-items:start;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-envio,
+.apoderagest .ag-ficha-paneles .ag-ficha-facturacion,
+.apoderagest .ag-ficha-paneles .ag-ficha-encargo-notarial{grid-column:auto!important}
+.apoderagest .ag-ficha-paneles .ag-ficha-encargo-notarial .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+}
+.apoderagest .ag-detalle-campo.ag-firma-urgente-activa{padding:8px 10px;border:1px solid #fecaca;border-radius:10px;background:#fff1f2}
+.apoderagest .ag-detalle-campo.ag-firma-urgente-activa>span{color:#b42318}
+.apoderagest .ag-detalle-campo.ag-firma-urgente-activa>strong{color:#b42318;font-weight:900}
+.apoderagest .ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading>small{flex-basis:100%;color:#77859a;font-size:10px;font-weight:500}
+@media(min-width:1101px){
+.apoderagest .ag-encargo-detalle-cabecera{gap:10px;padding:9px 12px}
+.apoderagest .ag-encargo-detalle-cabecera strong{font-size:12px;line-height:1.25}
+.apoderagest .ag-encargo-detalle-cabecera small{font-size:10px;line-height:1.25}
+.apoderagest .ag-encargo-detalle-cabecera>span:last-child{font-size:10px}
+.apoderagest .ag-aceptar-resumen{
+    grid-template-columns:minmax(105px,.78fr) minmax(105px,.78fr) minmax(100px,.72fr) minmax(112px,.88fr) minmax(112px,.88fr) minmax(112px,.88fr) minmax(84px,.62fr) minmax(84px,.62fr) auto!important;
+    gap:7px;
+    padding:7px 10px;
+    align-items:end;
+  }
+.apoderagest .ag-aceptar-resumen .ag-detalle-campo{padding:6px 8px;min-height:0}
+.apoderagest .ag-aceptar-resumen .ag-detalle-campo>span{font-size:8px;line-height:1.2;letter-spacing:0;white-space:normal}
+.apoderagest .ag-aceptar-resumen .ag-detalle-campo>strong{font-size:10px;line-height:1.2}
+.apoderagest .ag-aceptar-campo{gap:3px}
+.apoderagest .ag-aceptar-campo>span{font-size:8px;line-height:1.2;letter-spacing:0;white-space:normal}
+.apoderagest .ag-aceptar-campo input{height:30px;min-height:30px;padding:4px 6px;border-radius:7px;font-size:10px}
+.apoderagest .ag-aceptar-accion{min-height:30px}
+.apoderagest .ag-aceptar-accion button{min-height:30px;padding:5px 10px;font-size:10px;border-radius:7px}
+
+}
+@media(max-width:1100px){
+.apoderagest .ag-aceptar-resumen{grid-template-columns:repeat(4,minmax(0,1fr))}
+.apoderagest .ag-aceptar-campo>span{white-space:normal}
+
+}
+@media(max-width:460px){
+.apoderagest .ag-encargo-detalle-cabecera{gap:8px;padding:10px}
+.apoderagest .ag-encargo-detalle-cabecera>span:last-child{font-size:10px}
+
+}
+@media(min-width:901px){
+.apoderagest .ag-encargo-paneles.ag-ficha-paneles{
+    grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr) minmax(0,1fr);
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-registral{
+    grid-column:1!important;
+    grid-row:2;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo{
+    grid-column:2/4!important;
+    grid-row:2;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline{
+    position:sticky;
+    top:12px;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline-contenido{
+    height:min(62vh,620px);
+    min-height:390px;
+    max-height:620px;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline-contenido .ag-visor-pdf{
+    min-height:390px;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline-vacio{
+    min-height:390px;
+  }
+
+}
+@media(max-width:900px){
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo,
+.apoderagest .ag-ficha-paneles .ag-ficha-registral{
+    grid-column:1/-1!important;
+    grid-row:auto!important;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline{
+    position:static;
+  }
+
+}
+@media(min-width:901px){
+.apoderagest .ag-encargo-paneles.ag-ficha-paneles{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)!important;
+    align-items:stretch;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo{
+    grid-column:1!important;
+    grid-row:2;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-visor{
+    grid-column:2!important;
+    grid-row:2;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-registral{
+    grid-column:3!important;
+    grid-row:2;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-visor .ag-visor-inline{
+    position:sticky;
+    top:12px;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-visor .ag-visor-inline-contenido{
+    height:min(62vh,620px);
+    min-height:390px;
+    max-height:620px;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-visor .ag-visor-inline-contenido .ag-visor-pdf{
+    min-height:390px;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-visor .ag-visor-inline-vacio{
+    min-height:390px;
+  }
+
+}
+@media(max-width:900px){
+.apoderagest .ag-ficha-paneles .ag-ficha-archivo,
+.apoderagest .ag-ficha-paneles .ag-ficha-visor,
+.apoderagest .ag-ficha-paneles .ag-ficha-registral{
+    grid-column:1/-1!important;
+    grid-row:auto!important;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-visor .ag-visor-inline{
+    position:static;
+  }
+
+}
+.apoderagest .ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading{
+  align-items:center;
+}
+.apoderagest .ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading::after{
+  content:"⌃";
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 32px;
+  width:32px;
+  height:32px;
+  margin-left:auto;
+  border:1px solid #e2e8f0;
+  border-radius:8px;
+  background:#fff;
+  color:#64748b;
+  font-size:12px;
+  font-weight:700;
+  box-shadow:0 1px 2px rgba(15,23,42,.04);
+  transition:background .15s ease,color .15s ease;
+}
+.apoderagest .ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading:hover::after{
+  background:#f8fafc;
+  color:var(--molsan-primary);
+}
+.apoderagest .ag-ficha-paneles details.ag-encargo-subpanel:not([open])>.ag-ficha-bloque-heading::after{
+  content:"⌄";
+}
+@media(min-width:901px){
+.apoderagest .ag-ficha-paneles .ag-ficha-firma{
+    grid-column:1/2!important;
+    grid-row:3;
+  }
+.apoderagest .ag-ficha-paneles .ag-ficha-observaciones{
+    grid-column:2/4!important;
+    grid-row:3;
+  }
+
+}
+@media(max-width:900px){
+.apoderagest .ag-ficha-paneles .ag-ficha-firma,
+.apoderagest .ag-ficha-paneles .ag-ficha-observaciones{
+    grid-column:1/-1!important;
+    grid-row:auto!important;
+  }
+
+}
+@keyframes ag-firma-urgente-parpadeo{
+  0%, 100% { background:#fff1f2; border-color:#fecaca; box-shadow:0 0 0 0 rgba(220,38,38,0); }
+  50% { background:#fee2e2; border-color:#dc2626; box-shadow:0 0 0 3px rgba(220,38,38,.16); }
+}
+.apoderagest .ag-detalle-campo.ag-firma-urgente-activa{
+  animation:ag-firma-urgente-parpadeo 1.15s ease-in-out infinite;
+}
+@media(prefers-reduced-motion:reduce){
+.apoderagest .ag-detalle-campo.ag-firma-urgente-activa{animation:none; background:#fee2e2; border-color:#dc2626;}
+
+}
+.apoderagest .ag-print-tools{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:12px 0 16px}
+.apoderagest .ag-print-root{display:none}
+.apoderagest .ag-print-header{padding:0 0 14px;margin-bottom:16px;border-bottom:2px solid #263e70}
+.apoderagest .ag-print-header>strong,
+.apoderagest .ag-print-ficha header>strong{font-size:10px;letter-spacing:1.3px;color:var(--molsan-primary, #064675)}
+.apoderagest .ag-print-header h1{margin:8px 0 4px;font-size:24px;color:#17243a}
+.apoderagest .ag-print-header p{margin:0;color:#64748b;font-size:11px}
+.apoderagest .ag-print-table{width:100%;border-collapse:collapse;font-size:10px;color:#1f2937}
+.apoderagest .ag-print-table th{background:#eef2fa;color:#25385a;text-align:left;font-weight:800}
+.apoderagest .ag-print-table th,
+.apoderagest .ag-print-table td{padding:7px 8px;border:1px solid #d9e0ea;vertical-align:top}
+.apoderagest .ag-print-table td small{display:block;margin-top:3px;color:#64748b;font-size:9px}
+.apoderagest .ag-print-footer{margin-top:18px;padding-top:8px;border-top:1px solid #d9e0ea;color:#64748b;font-size:9px}
+.apoderagest .ag-print-fichas{display:none}
+.apoderagest .ag-print-ficha{padding:0 0 20px;margin:0 0 24px;border-bottom:1px solid #cbd5e1;break-inside:avoid-page;page-break-inside:avoid}
+.apoderagest .ag-print-ficha header{padding-bottom:10px;border-bottom:1px solid #d9e0ea}
+.apoderagest .ag-print-ficha header span{float:right;font-size:9px;font-weight:800;letter-spacing:1px;color:#64748b}
+.apoderagest .ag-print-ficha h2{margin:8px 0 0;font-size:19px;color:#17243a}
+.apoderagest .ag-print-ficha h3{margin:14px 0 7px;font-size:12px;color:#243a63}
+.apoderagest .ag-print-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.apoderagest .ag-print-grid>div{padding:7px 9px;border:1px solid #e0e6ef;border-radius:5px}
+.apoderagest .ag-print-grid small{display:block;margin-bottom:3px;color:#64748b;font-size:9px}
+.apoderagest .ag-print-grid strong{font-size:10px;color:#1f2937;overflow-wrap:anywhere}
+@media print{
+body.molsan-print-agenda  .apoderagest .ag-agenda-print-root,
+body.molsan-print-agenda  .apoderagest .ag-agenda-print-root *,
+body.molsan-print-encargos-lista  .apoderagest .ag-encargos-print-root,
+body.molsan-print-encargos-lista  .apoderagest .ag-encargos-print-root *,
+body.molsan-print-encargos-fichas  .apoderagest .ag-encargos-print-root,
+body.molsan-print-encargos-fichas  .apoderagest .ag-encargos-print-root *{visibility:visible!important}
+body.molsan-print-agenda  .apoderagest .ag-agenda-print-root,
+body.molsan-print-encargos-lista  .apoderagest .ag-encargos-print-root,
+body.molsan-print-encargos-fichas  .apoderagest .ag-encargos-print-root{display:block!important;position:absolute!important;inset:0 auto auto 0!important;width:100%!important;max-width:none!important;padding:0!important;margin:0!important;background:#fff!important;color:#111!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important;font-family:Arial,Helvetica,sans-serif!important}
+body.molsan-print-agenda  .apoderagest .ag-print-tools,
+body.molsan-print-encargos-lista  .apoderagest .ag-print-tools,
+body.molsan-print-encargos-fichas  .apoderagest .ag-print-tools{display:block!important}
+body.molsan-print-encargos-lista  .apoderagest .ag-print-fichas{display:none!important}
+body.molsan-print-encargos-fichas  .apoderagest .ag-encargos-print-root>.ag-print-header,
+body.molsan-print-encargos-fichas  .apoderagest .ag-encargos-print-root>.ag-print-table{display:none!important}
+body.molsan-print-encargos-fichas  .apoderagest .ag-print-fichas{display:block!important}
+body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha{break-after:page;page-break-after:always}
+body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break-after:auto;page-break-after:auto}
+.apoderagest .ag-print-table{font-size:9px!important}
+.apoderagest .ag-print-table th,
+.apoderagest .ag-print-table td{padding:5px 6px!important}
+
+}
+.apoderagest .ag-encargos-agrupados.ag-apoderados-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));
+  align-items:start;
+  gap:16px;
+}
+.apoderagest .ag-apoderados-grid>.ag-grupo-apoderado{min-width:0;width:100%}
+.apoderagest .ag-apoderado-grupo-trigger{width:100%;min-width:0}
+.apoderagest .ag-apoderado-grupo-trigger .ag-notario-grupo-info{min-width:0;flex:1}
+.apoderagest .ag-apoderado-grupo-trigger .ag-notario-contadores{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px}
+@media(max-width:760px){
+.apoderagest .ag-encargos-agrupados.ag-apoderados-grid{grid-template-columns:minmax(0,1fr)}
+.apoderagest .ag-apoderado-grupo-trigger{align-items:flex-start;flex-wrap:wrap;gap:10px}
+.apoderagest .ag-apoderado-grupo-trigger .ag-notario-contadores{width:100%;justify-content:flex-start}
+
+}
+.apoderagest .ag-estadistica-apoderados{padding:20px 22px;margin-top:18px}
+.apoderagest .ag-grafico-apoderados{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px 28px;padding:12px 0}
+.apoderagest .ag-apoderado-barra{min-width:0}
+.apoderagest .ag-apoderado-barra-cabecera{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:7px}
+.apoderagest .ag-apoderado-barra-cabecera strong{min-width:0;overflow:hidden;color:#34445f;font-size:11px;text-overflow:ellipsis;white-space:nowrap}
+.apoderagest .ag-apoderado-barra-cabecera span{flex:0 0 auto;color:var(--molsan-primary, #064675);font-size:12px;font-weight:850}
+.apoderagest .ag-apoderado-barra-fondo{height:9px;overflow:hidden;background:#eaf0fb;border-radius:999px}
+.apoderagest .ag-apoderado-barra-fondo span{display:block;height:100%;min-width:3px;background:linear-gradient(90deg,var(--molsan-primary-hover, #04375B),var(--molsan-primary, #064675));border-radius:999px;transition:width .25s ease}
+@media(max-width:700px){
+.apoderagest .ag-grafico-apoderados{grid-template-columns:minmax(0,1fr)}
+
+}
+.apoderagest .ag-kpi-interactiva{
+  appearance:none;-webkit-appearance:none;display:block;width:100%;min-width:0;
+  font:inherit;text-align:left;color:inherit;cursor:pointer;
+}
+.apoderagest .ag-kpi-interactiva:focus-visible{outline:3px solid #8bbcf2;outline-offset:3px}
+.apoderagest .ag-kpi-ver-expedientes{display:block;margin-top:9px;color:#4e718f;font-size:10px;font-weight:800;letter-spacing:.15px}
+.apoderagest .ag-kpi-interactiva:hover .ag-kpi-ver-expedientes{color:#176a83}
+.apoderagest .ag-resumen-modal-overlay{
+  position:fixed;inset:0;z-index:2500;display:flex;align-items:center;justify-content:center;
+  padding:18px;
+}
+.apoderagest .ag-resumen-modal{
+  display:flex;flex-direction:column;width:min(1550px,calc(100vw - 36px));max-height:92vh;
+  max-height:calc(100dvh - 36px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  overflow:hidden;
+
+}
+.apoderagest .ag-resumen-modal-cerrar{
+  display:grid;place-items:center;flex:0 0 auto;width:38px;height:38px;border:1px solid #dce5ef;
+  border-radius:var(--molsan-radius-control,9px);background:var(--molsan-surface,#fff);color:var(--molsan-text-secondary,#526176);font-size:17px;cursor:pointer;
+}
+.apoderagest .ag-resumen-modal-cerrar:hover{background:var(--molsan-primary-soft, #EAF2F8)}
+.apoderagest .ag-resumen-modal-cuerpo{min-height:120px;overflow:auto;padding:18px 22px 22px}
+.apoderagest .ag-resumen-tabla-wrap{width:100%;overflow:auto;border:1px solid #e1e8f1;border-radius:13px;background:#fff}
+.apoderagest .ag-resumen-tabla{width:100%;min-width:1120px;border-collapse:separate;border-spacing:0;font-size:12px}
+.apoderagest .ag-resumen-tabla th{position:sticky;top:0;z-index:1;padding:12px 13px;background:#f1f5fa;color:#61718a;text-align:left;font-size:10px;font-weight:850;white-space:nowrap}
+.apoderagest .ag-resumen-tabla td{padding:12px 13px;border-top:1px solid #edf1f6;color:#34445c;vertical-align:middle}
+.apoderagest .ag-resumen-tabla tbody tr:hover{background:#f7fafc}
+.apoderagest .ag-resumen-tabla td strong{color:#1e3150;font-weight:850}
+.apoderagest .ag-resumen-tabla td small{display:block;margin-top:3px;color:#7a8799;font-size:10px}
+.apoderagest .ag-resumen-ir-encargo{padding:7px 9px;border:1px solid #d6e7e5;border-radius:9px;background:#f0faf8;color:#22685f;font-size:10px;font-weight:850;white-space:nowrap;cursor:pointer}
+.apoderagest .ag-resumen-ir-encargo:hover{background:#dff4ef}
+@media(max-width:650px){
+.apoderagest .ag-resumen-modal-overlay{padding:8px}
+.apoderagest .ag-resumen-modal{width:100%;max-height:95vh;max-height:calc(100dvh - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));border-radius:15px}
+.apoderagest .ag-resumen-modal-cuerpo{padding:12px}
+
+}
+.apoderagest :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea){
+  max-width: 100%;
+  min-width: 0;
+  border-color: var(--molsan-border-strong, #c4d0df);
+  border-radius: var(--molsan-radius-control, 9px);
+  color: var(--molsan-text, #17243a);
+  font: inherit;
+  box-shadow: none;
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+.apoderagest :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select){
+  min-height: 38px;
+}
+.apoderagest :is(input, select, textarea):focus-visible{
+  outline: 2px solid var(--molsan-primary, #064675);
+  outline-offset: 2px;
+  border-color: var(--molsan-primary, #064675);
+  box-shadow: 0 0 0 3px rgb(49 86 179 / 13%);
+}
+.apoderagest :is(button, [role="button"]){
+  transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease, color .16s ease;
+}
+.apoderagest :is(button, [role="button"], a):focus-visible{
+  outline: 2px solid rgb(49 86 179 / 58%);
+  outline-offset: 2px;
+}
+.apoderagest table{
+  font-variant-numeric: tabular-nums;
+}
+.apoderagest table thead th{
+  color: var(--molsan-text-secondary, #526176);
+  background-color: var(--molsan-surface-soft, #F2F7FB);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .025em;
+}
+.apoderagest table :is(th, td){
+  border-bottom-color: var(--molsan-border-light, #e8edf4);
+}
+.apoderagest table tbody tr{
+  transition: background-color .14s ease;
+}
+.apoderagest table tbody tr:hover > td{
+  background-color: var(--molsan-primary-soft, #EAF2F8);
+}
+@media (max-width: 760px){
+.apoderagest{
+    padding: 14px;
+  }
+.apoderagest table{
+    max-width: 100%;
+  }
+
+}
+.apoderagest .ag-resumen-modal-overlay{
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.apoderagest .ag-resumen-modal{
+  min-width: 0;
+  max-height: calc(100dvh - 36px);
+}
+.apoderagest .ag-resumen-modal-cuerpo,
+.apoderagest .ag-resumen-tabla-wrap{
+  min-width: 0;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.apoderagest .ag-resumen-tabla-wrap{
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+}
+@media (max-width: 650px){
+.apoderagest .ag-resumen-modal-overlay{
+    padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
+  }
+.apoderagest .ag-visor-pdf{
+    min-height: 0;
+  }
+.apoderagest .ag-resumen-modal{
+    width: 100%;
+    max-height: calc(100dvh - 16px);
+    border-radius: 15px;
+  }
+.apoderagest .ag-resumen-modal-cuerpo{
+    min-height: 0;
+  }
+
+}
+.apoderagest .ag-visor-inline,
+.apoderagest .ag-visor-inline-contenido{
+  min-width: 0;
+  max-width: 100%;
+}
+.apoderagest .ag-visor-inline-contenido{
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.apoderagest .ag-visor-inline-contenido .ag-visor-pdf{
+  min-width: 0;
+  max-width: 100%;
+}
+@media (max-width: 560px){
+.apoderagest .ag-visor-inline-cabecera{
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+.apoderagest .ag-visor-inline-cabecera > strong{
+    flex: 1 1 100%;
+  }
+.apoderagest .ag-visor-inline-cabecera > div{
+    flex-wrap: wrap;
+  }
+.apoderagest .ag-visor-inline-contenido{
+    height: min(340px, 48dvh);
+    min-height: 220px;
+  }
+.apoderagest .ag-visor-inline-contenido .ag-visor-pdf{
+    min-height: 220px;
+  }
+.apoderagest .ag-visor-inline-contenido .ag-visor-imagen{
+    padding: 8px;
+  }
+
+}
+.apoderagest .ag-titulo-seccion.ag-panel-resumen-heading{
+  display:flex;
+  align-items:center;
+  min-height:92px;
+  margin:0 0 18px;
+  padding:17px 20px;
+  border:1px solid #D8E4EC;
+  border-radius:18px;
+  background:#FFFFFF;
+  box-shadow:0 6px 18px rgba(6,50,82,.045);
+}
+.apoderagest .ag-titulo-seccion.ag-panel-resumen-heading h2{ margin-top:3px; }
+.apoderagest .ag-titulo-seccion.ag-panel-resumen-heading p{ color:#617789; }
+.apoderagest .ag-vacio-icono .molsan-icon-3d{
+  display: inline-grid;
+  vertical-align: middle;
+}
+.apoderagest .ag-panel,
+.apoderagest .ag-grid-kpi > *,
+.apoderagest .ag-grid-secundario > *,
+.apoderagest .ag-dashboard-inferior-grid > *{
+  min-width: 0;
+}
+
+.apoderagest .ag-titulo-seccion{
+  border-color: var(--molsan-border, #D8E4EC);
+  background: var(--molsan-surface, #FFFFFF);
+}
+.apoderagest .ag-kicker,
+.apoderagest .ag-eyebrow:not(.molsan-page-header__eyebrow){
+  color: var(--molsan-text-muted, #617789);
+}
+.apoderagest button:focus-visible,
+.apoderagest a:focus-visible,
+.apoderagest input:focus-visible,
+.apoderagest select:focus-visible,
+.apoderagest textarea:focus-visible{
+  outline-color: color-mix(in srgb, var(--molsan-primary, #064675) 28%, transparent);
+}
+/* Superficies de tarjetas y paneles gestionadas por erp-card. */
+/* Elementos de ApoderaGest que completan su hoja autónoma. */
+.apoderagest .ag-print-tools .ag-print-action{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:38px;padding:9px 13px;color:var(--molsan-primary,#064675);
+  background:#FFFFFF;border:1px solid var(--molsan-border,#D8E4EC);
+  border-radius:var(--molsan-radius-control,9px);font-size:11px;font-weight:800;
+  cursor:pointer;transition:background-color .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+.apoderagest .ag-print-tools .ag-print-action:hover{
+  background:var(--molsan-primary-soft,#EAF2F8);
+  border-color:var(--molsan-border-strong,#B8CBD9);
+}
+.apoderagest .ag-print-tools .ag-print-action-secundario{
+  color:var(--molsan-text-secondary,#617789);
+  background:var(--molsan-surface-soft,#F2F7FB);
+}
+
+.apoderagest .ag-contador-firmas{
+  color:#13734F;background:#E8F8F1;border-color:#CDEFE0;
+}
+
+
+/* ============================================================
+   APODERAGEST · Acabado visual Premium 2027
+   Capa final de presentación: jerarquía, superficies y responsive.
+   ============================================================ */
+.apoderagest .ag-contenido{
+  display:grid;
+  gap:18px;
+  min-width:0;
+}
+.apoderagest .ag-titulo-seccion:not(.ag-panel-resumen-heading){
+  align-items:center;
+  margin:0 0 2px;
+  padding:0 2px;
+}
+.apoderagest .ag-titulo-seccion:not(.ag-panel-resumen-heading) h2{
+  color:var(--molsan-primary,#064675);
+  font-size:clamp(21px,2vw,25px);
+  letter-spacing:-.035em;
+}
+.apoderagest .ag-titulo-seccion:not(.ag-panel-resumen-heading) p{
+  max-width:900px;
+  color:var(--molsan-text-secondary,#617789);
+  font-size:12px;
+}
+.apoderagest .ag-panel-resumen-heading{
+  min-height:88px;
+  margin:0;
+  border-radius:var(--molsan-radius-card,14px);
+  box-shadow:var(--molsan-shadow-card,0 6px 18px rgba(6,50,82,.045));
+}
+.apoderagest .ag-grid-kpi{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  align-items:stretch;
+  gap:14px;
+  margin:0;
+}
+
+.apoderagest .ag-kpi-superior{min-height:36px}
+.apoderagest .ag-kpi-titulo{
+  color:var(--molsan-text-secondary,#617789);
+  font-size:11px;
+  font-weight:750;
+}
+
+.apoderagest .ag-kpi-valor{
+  margin-top:12px;
+  color:var(--molsan-primary,#064675);
+  font-size:clamp(25px,2.2vw,31px);
+  font-weight:850;
+  letter-spacing:-.045em;
+  font-variant-numeric:tabular-nums;
+}
+.apoderagest .ag-kpi-detalle{
+  margin-top:7px;
+  color:var(--molsan-text-muted,#617789);
+  font-size:10px;
+  line-height:1.45;
+}
+.apoderagest .ag-kpi-ver-expedientes{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-top:auto;
+  padding-top:12px;
+  color:var(--molsan-primary,#064675);
+  font-size:10px;
+  font-weight:800;
+}
+/* Hover y elevación heredados de erp-card. */
+.apoderagest .ag-grid-secundario{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  margin:0;
+}
+.apoderagest .ag-grid-secundario .ag-kpi{
+  min-height:126px;
+  padding:15px 17px;
+}
+.apoderagest .ag-grid-secundario .ag-kpi-valor{
+  font-size:clamp(21px,1.8vw,26px);
+}
+.apoderagest .ag-dashboard-inferior-grid{
+  gap:16px;
+  margin-top:0;
+}
+/* Las superficies de panel se heredan de erp-card. */
+.apoderagest .ag-panel-cabecera{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.apoderagest .ag-panel-cabecera h3{
+  color:var(--molsan-primary,#064675);
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:-.02em;
+}
+.apoderagest .ag-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:0 0 14px;
+  background:transparent;
+  border:0;
+}
+.apoderagest .ag-busqueda{
+  min-height:42px;
+  color:var(--molsan-text-secondary,#617789);
+  background:#FFFFFF;
+  border-color:var(--molsan-border,#D8E4EC);
+  border-radius:var(--molsan-radius-control,9px);
+}
+.apoderagest .ag-busqueda input{
+  color:var(--molsan-text,#173247);
+  font-size:12px;
+}
+.apoderagest .ag-resultados{
+  color:var(--molsan-text-secondary,#617789);
+  font-size:11px;
+}
+.apoderagest .ag-apoderados-grid{
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));
+  gap:16px;
+}
+.apoderagest .ag-grupo-apoderado{
+  border:1px solid var(--molsan-border,#D8E4EC);
+  border-radius:var(--molsan-radius-card,14px);
+  background:var(--molsan-surface,#FFFFFF);
+  box-shadow:var(--molsan-shadow-card,0 6px 18px rgba(6,50,82,.045));
+}
+.apoderagest .ag-apoderado-grupo-trigger{
+  min-height:82px;
+  grid-template-columns:42px minmax(0,1fr);
+  align-items:center;
+  gap:10px 13px;
+  padding:16px;
+  border:0;
+  background:var(--molsan-surface-soft,#F2F7FB);
+  border-bottom:1px solid var(--molsan-border,#D8E4EC);
+  transition:background-color .16s ease;
+}
+.apoderagest .ag-apoderado-grupo-trigger:hover{
+  background:#EAF2F8;
+}
+
+.apoderagest .ag-notario-grupo-info strong{
+  color:var(--molsan-primary,#064675);
+  font-size:13px;
+  font-weight:850;
+}
+.apoderagest .ag-notario-linea-unica{gap:6px 12px}
+.apoderagest .ag-notario-dato-inline{
+  color:var(--molsan-text-secondary,#617789);
+  font-size:10px;
+}
+.apoderagest .ag-notario-contadores{
+  display:flex;
+  grid-column:1/-1;
+  flex-wrap:wrap;
+  justify-content:flex-start;
+  gap:6px;
+}
+.apoderagest .ag-notario-contadores .ag-contador{
+  min-height:26px;
+  padding:0 9px;
+  color:var(--molsan-text-secondary,#617789);
+  background:#FFFFFF;
+  border-color:var(--molsan-border,#D8E4EC);
+  font-size:10px;
+}
+.apoderagest .ag-notario-contadores .ag-contador-firmas{
+  color:#13734F;
+  background:#E8F8F1;
+  border-color:#CDEFE0;
+}
+.apoderagest .ag-encargo-detalle{
+  border-color:var(--molsan-border,#D8E4EC);
+  border-radius:13px;
+  box-shadow:0 3px 12px rgba(6,50,82,.035);
+}
+.apoderagest .ag-encargo-detalle-cabecera{
+  min-height:64px;
+  flex-direction:row;
+  align-items:center;
+  padding:13px 16px;
+  background:var(--molsan-surface-soft,#F2F7FB);
+  border-bottom:1px solid var(--molsan-border,#D8E4EC);
+}
+.apoderagest .ag-encargo-detalle-cabecera strong{
+  color:var(--molsan-primary,#064675);
+  font-size:13px;
+}
+.apoderagest .ag-encargo-detalle-cabecera small{
+  color:var(--molsan-text-secondary,#617789);
+}
+.apoderagest .ag-expediente-toggle-label{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  flex:0 0 auto;
+  padding:7px 10px;
+  color:var(--molsan-primary,#064675);
+  background:#FFFFFF;
+  border:1px solid var(--molsan-border,#D8E4EC);
+  border-radius:8px;
+  font-size:10px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.apoderagest .ag-expediente-toggle-icono{
+  transition:transform .16s ease;
+}
+.apoderagest .ag-encargo-detalle-cabecera[aria-expanded="true"] .ag-expediente-toggle-icono{
+  transform:rotate(180deg);
+}
+.apoderagest .ag-ficha-resumen{
+  background:var(--molsan-surface-soft,#F2F7FB);
+  border-color:var(--molsan-border-light,#E8EDF4);
+}
+.apoderagest .ag-ficha-resumen .ag-detalle-campo,
+.apoderagest .ag-ficha-paneles .ag-detalle-campo{
+  border-color:var(--molsan-border-light,#E8EDF4);
+  background:#FFFFFF;
+}
+.apoderagest .ag-ficha-paneles{
+  background:var(--molsan-surface-soft,#F2F7FB);
+}
+.apoderagest .ag-ficha-paneles .ag-encargo-subpanel{
+  border-color:var(--molsan-border,#D8E4EC);
+  border-radius:12px;
+  background:#FFFFFF;
+  box-shadow:none;
+}
+.apoderagest .ag-ficha-bloque-heading{
+  border-bottom-color:var(--molsan-border-light,#E8EDF4);
+}
+.apoderagest .ag-ficha-bloque-heading h4{
+  color:var(--molsan-primary,#064675);
+}
+.apoderagest .ag-documentos-apoderado li{
+  border-color:var(--molsan-border-light,#E8EDF4);
+  border-radius:9px;
+}
+.apoderagest .ag-documentos-apoderado button{
+  color:var(--molsan-primary,#064675);
+  background:var(--molsan-primary-soft,#EAF2F8);
+  border-color:var(--molsan-border,#D8E4EC);
+}
+.apoderagest .ag-aceptar-campo input{
+  border-color:var(--molsan-border,#D8E4EC);
+  border-radius:var(--molsan-radius-control,9px);
+  background:#FFFFFF;
+  color:var(--molsan-text,#173247);
+}
+.apoderagest .ag-aceptar-accion button{
+  background:var(--molsan-primary,#064675);
+  border:1px solid var(--molsan-primary,#064675);
+  border-radius:var(--molsan-radius-control,9px);
+  box-shadow:none;
+}
+.apoderagest .ag-aceptar-accion button:hover:not(:disabled){
+  background:#04385D;
+}
+.apoderagest .ag-firmar-controles button{
+  background:var(--molsan-primary,#064675);
+  border-color:var(--molsan-primary,#064675);
+  border-radius:var(--molsan-radius-control,9px);
+}
+.apoderagest .ag-carpeta-apoderado{
+  border-color:var(--molsan-border,#D8E4EC);
+  border-radius:12px;
+  background:#FFFFFF;
+  box-shadow:none;
+}
+.apoderagest .ag-carpeta-apoderado-icono{
+  color:var(--molsan-primary,#064675);
+  background:var(--molsan-primary-soft,#EAF2F8);
+  border-color:var(--molsan-border,#D8E4EC);
+}
+.apoderagest.ag-grupo-modal-overlay{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:clamp(10px,2vw,24px);
+  background:rgba(12,31,48,.62);
+  backdrop-filter:blur(5px);
+}
+.apoderagest .ag-grupo-modal{
+  width:min(1500px,100%);
+  max-height:min(92vh,100dvh - 32px);
+  border:1px solid var(--molsan-border,#D8E4EC);
+  border-radius:16px;
+  background:#FFFFFF;
+  box-shadow:0 24px 70px rgba(4,35,58,.24);
+}
+.apoderagest .ag-grupo-modal-cerrar{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:38px;
+  border-color:var(--molsan-border,#D8E4EC);
+  border-radius:var(--molsan-radius-control,9px);
+  background:#FFFFFF;
+  color:var(--molsan-primary,#064675);
+  font-size:11px;
+}
+.apoderagest .ag-grupo-modal-cerrar:hover{
+  background:var(--molsan-primary-soft,#EAF2F8);
+}
+.apoderagest .ag-grupo-modal .ag-encargos-detalle-lista{
+  min-height:0;
+  overflow:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.apoderagest .ag-resumen-modal{
+  border-color:var(--molsan-border,#D8E4EC);
+  border-radius:var(--molsan-radius-dialog,16px);
+}
+.apoderagest .ag-resumen-modal-cabecera { flex:0 0 auto; }
+.apoderagest .ag-resumen-tabla{
+  min-width:1080px;
+}
+.apoderagest .ag-resumen-tabla th{
+  color:var(--molsan-text-secondary,#617789);
+  background:var(--molsan-surface-soft,#F2F7FB);
+}
+.apoderagest .ag-resumen-tabla td{
+  border-top-color:var(--molsan-border-light,#E8EDF4);
+}
+.apoderagest .ag-resumen-ir-encargo{
+  color:var(--molsan-primary,#064675);
+  background:var(--molsan-primary-soft,#EAF2F8);
+  border-color:var(--molsan-border,#D8E4EC);
+}
+.apoderagest .ag-resumen-ir-encargo:hover{
+  background:#DCEBF5;
+}
+.apoderagest :is(button,a,input,select,textarea):focus-visible{
+  outline:2px solid color-mix(in srgb,var(--molsan-primary,#064675) 42%,transparent);
+  outline-offset:2px;
+}
+@media(max-width:1100px){
+  .apoderagest .ag-grid-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .apoderagest .ag-apoderados-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .apoderagest .ag-grid-kpi{gap:10px}
+  
+  .apoderagest .ag-grid-secundario{grid-template-columns:1fr;gap:10px}
+  .apoderagest .ag-grid-secundario .ag-kpi{min-height:116px}
+  .apoderagest .ag-apoderados-grid{grid-template-columns:minmax(0,1fr)}
+  .apoderagest .ag-apoderado-grupo-trigger{
+    grid-template-columns:42px minmax(0,1fr);
+    padding:13px;
+  }
+  .apoderagest .ag-notario-contadores{gap:5px}
+  .apoderagest .ag-encargo-detalle-cabecera{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:10px;
+  }
+  .apoderagest .ag-grupo-modal{max-height:calc(100dvh - 16px);border-radius:13px}
+}
+@media(max-width:480px){
+  .apoderagest .ag-grid-kpi{grid-template-columns:1fr}
+  
+  .apoderagest .ag-kpi-ver-expedientes{padding-top:9px}
+  .apoderagest .ag-panel-resumen-heading{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:8px;
+    padding:14px;
+  }
+  .apoderagest.ag-grupo-modal-overlay{padding:8px}
+  .apoderagest .ag-grupo-modal-cabecera{gap:10px}
+}
+
+
+/* Iconografía visible y tridimensional · MOLSAN PREMIUM 2027 */
+
+
+
+
+
+
+
+
+
+.apoderagest .ag-vacio-icono{
+  display:grid;
+  width:66px;
+  height:66px;
+  place-items:center;
+  margin:0 auto 14px;
+  border:1px solid #D8E4EC;
+  border-radius:20px;
+  background:linear-gradient(145deg,#FFFFFF,#EAF2F8);
+  box-shadow:0 8px 18px rgba(6,50,82,.08);
+}
+.apoderagest .ag-vacio-icono .molsan-icon-3d{
+  filter:drop-shadow(0 3px 4px rgba(6,50,82,.16));
+}
+.apoderagest .ag-carpeta-apoderado-icono{
+  display:grid;
+  width:48px;
+  height:48px;
+  place-items:center;
+  border-radius:14px;
+  box-shadow:0 4px 11px rgba(6,50,82,.08);
+}
+.apoderagest .ag-carpeta-apoderado-icono .molsan-icon-3d{
+  filter:drop-shadow(0 2px 3px rgba(6,50,82,.15));
+}
+@media(max-width:760px){
+  
+}

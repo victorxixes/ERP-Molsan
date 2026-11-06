@@ -363,13 +363,15 @@ def obtener_registros_postfirma(
     limit: int = Query(default=200, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
     carga_id: int | None = Query(default=None, ge=1),
+    sort_by: str = Query(default="carga_id", max_length=200),
+    sort_dir: str = Query(default="desc", regex="^(asc|desc)$"),
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
     """Consulta paginada de filas originales; no aplica filtros de negocio."""
     require_perm_modulo(usuario, "utilidades", "ver")
     try:
-        return listar_registros_postfirma(db, limit=limit, offset=offset, carga_id=carga_id)
+        return listar_registros_postfirma(db, limit=limit, offset=offset, carga_id=carga_id, sort_by=sort_by, sort_dir=sort_dir)
     except Exception as exc:
         db.rollback()
         print("[CONSULTA REGISTROS POST FIRMA] ERROR:", exc, flush=True)

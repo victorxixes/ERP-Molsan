@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import MolsanIcon from "./ui/MolsanIcon";
 
 import "../css/LayoutPortalesPremium.css";
 /**
@@ -65,7 +66,7 @@ export default function PortalLogin({
             <div>
               <label htmlFor={idUsuario} className="block mb-2 text-sm font-semibold text-slate-700">{usernameLabel}</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none transition-colors" aria-hidden="true">👤</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none transition-colors" aria-hidden="true"><MolsanIcon name="person" size={20} bare /></span>
                 <input
                   id={idUsuario}
                   type="text"
@@ -84,7 +85,7 @@ export default function PortalLogin({
             <div>
               <label htmlFor={idPassword} className="block mb-2 text-sm font-semibold text-slate-700">Contraseña</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" aria-hidden="true">🔒</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" aria-hidden="true"><MolsanIcon name="lock" size={20} bare /></span>
                 <input
                   id={idPassword}
                   type={mostrarPass ? "text" : "password"}
@@ -103,7 +104,7 @@ export default function PortalLogin({
                   aria-label={mostrarPass ? "Ocultar contraseña" : "Mostrar contraseña"}
                   className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-9 h-9 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all disabled:opacity-30"
                 >
-                  {mostrarPass ? "🙈" : "👁️"}
+                  <MolsanIcon name={mostrarPass ? "eyeOff" : "eye"} size={20} bare />
                 </button>
               </div>
             </div>

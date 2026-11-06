@@ -1,11 +1,14 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
+import { formatEuro as euros } from "../../utils/formatters";
 
 const hoy = () => new Date().toLocaleDateString("sv-SE");
-const euros = (v) => Number(v || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
+
 const fecha = (v) => v ? String(v).slice(0, 10).split("-").reverse().join("/") : "—";
 
 export default function ComplementosSaldo() {
@@ -65,20 +68,25 @@ export default function ComplementosSaldo() {
     finally { setExportando(false); }
   }
 
-  return <div className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-    <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div><Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link><h1 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Complementos de saldo</h1><p className="mt-1 text-sm text-slate-500">Control de solicitudes, importes y estado de cada complemento.</p></div>
-        <button type="button" onClick={cargar} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">↻ Actualizar</button>
+  return <div className="molsan-page-stack herramienta-operativa-premium herramientas-subpagina-premium min-h-full">
+    <header className="molsan-page-header">
+      <div className="molsan-page-header__identity">
+        <div className="min-w-0">
+          <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+          <h1 className="molsan-page-header__title">Complementos de saldo</h1>
+          <p className="molsan-page-header__description">Control de solicitudes, importes y estado de cada complemento.</p>
+        </div>
+      </div>
+      <div className="molsan-page-header__actions">
+        <Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary"><MolsanIcon name="arrowLeft" size={13} inline /> Volver a Utilidades</Link>
       </div>
     </header>
 
     <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <Metrica titulo="Peticiones de complemento" valor={metricas.total} detalle="Solicitudes según los filtros" icono="▤" />
-      <Metrica titulo="Importe total solicitado" valor={euros(metricas.importe)} detalle="Suma de los complementos" icono="€" />
-      <Metrica titulo="Pendientes" valor={metricas.pendientes} detalle={`Importe abierto: ${euros(metricas.importePendiente)}`} icono="◷" alerta />
-      <Metrica titulo="Compensados" valor={metricas.cerrados} detalle="Solicitudes regularizadas" icono="✓" verde />
+      <Metrica titulo="Peticiones de complemento" valor={metricas.total} detalle="Solicitudes según los filtros" icono="clipboardList" />
+      <Metrica titulo="Importe total solicitado" valor={euros(metricas.importe)} detalle="Suma de los complementos" icono="euro" />
+      <Metrica titulo="Pendientes" valor={metricas.pendientes} detalle={`Importe abierto: ${euros(metricas.importePendiente)}`} icono="clock" alerta />
+      <Metrica titulo="Compensados" valor={metricas.cerrados} detalle="Solicitudes regularizadas" icono="check" verde />
     </section>
 
     <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
@@ -86,21 +94,30 @@ export default function ComplementosSaldo() {
         <label className="min-w-0 flex-1"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Buscar expediente</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="N.º de expediente…" className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" /></label>
         <label className="w-full xl:w-48"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Estado</span><select value={estadoFiltro} onChange={(e) => setEstadoFiltro(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm"><option value="">Todos</option><option value="Pendiente">Pendiente</option><option value="Compensado">Compensado</option></select></label>
         <label className="w-full xl:w-56"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Oficina</span><input value={oficinaFiltro} onChange={(e) => setOficinaFiltro(e.target.value)} placeholder="Todas las oficinas" className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm" /></label>
-        <button type="button" onClick={exportarExcel} disabled={exportando} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60">{exportando ? "Preparando…" : "↓ Descargar Excel"}</button>
+        <button type="button" onClick={exportarExcel} disabled={exportando} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60">{exportando ? "Preparando…" : <><MolsanIcon name="download" size={14} inline /> Descargar Excel</>}</button>
       </div></div>
 
       {error && <div role="alert" className="m-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</div>}
-      <div className="overflow-x-auto"><table className="w-full min-w-[1250px] border-collapse text-left text-sm">
-        <thead className="bg-white text-[10px] uppercase tracking-wider text-slate-500"><tr>{["Expediente", "Provisionado", "Saldo disponible", "Fecha de petición", "Saldo a solicitar", "Motivo", "Acciones", "Estado"].map((n) => <th key={n} className="border-b border-slate-200 px-4 py-3.5 font-extrabold">{n}</th>)}</tr></thead>
-        <tbody>{cargando ? <tr><td colSpan={8} className="px-5 py-14 text-center text-slate-500">Cargando solicitudes…</td></tr>
-          : items.length === 0 ? <tr><td colSpan={8} className="px-5 py-14 text-center"><div className="text-3xl">📋</div><p className="mt-2 font-bold text-slate-700">No hay solicitudes que mostrar</p><p className="mt-1 text-xs text-slate-500">Cuando se solicite un complemento desde la ficha de un expediente, aparecerá aquí.</p></td></tr>
-          : items.map((item) => { const cerrado = ["compensado", "cerrado"].includes(String(item.estado).toLowerCase()); return <tr key={item.id} className="border-b border-slate-100 last:border-0 hover:bg-blue-50/40">
-            <td className="px-4 py-3.5"><Link to={item.expediente_id ? `/expedientes/${item.expediente_id}` : "/expedientes"} className="font-extrabold text-blue-700 hover:underline">{item.numero_expediente}</Link></td>
-            <td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{euros(item.provisionado)}</td><td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{euros(item.saldo_disponible)}</td><td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{fecha(item.fecha_solicitud)}</td><td className="whitespace-nowrap px-4 py-3.5 font-extrabold tabular-nums text-slate-900">{euros(item.importe)}</td><td className="max-w-[280px] whitespace-normal px-4 py-3.5 text-slate-600">{item.motivo || item.observaciones || "—"}</td>
-                        <td className="px-4 py-3.5"><button type="button" disabled={cerrado} onClick={() => cambiarEstado(item)} className={`rounded-lg border px-3 py-2 text-xs font-bold ${cerrado ? "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100" : "border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"}`}>{cerrado ? "Regularizado" : "Compensar"}</button></td>
-            <td className="px-4 py-3.5"><span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-bold ${cerrado ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>{cerrado ? "Compensado" : "Pendiente"}</span></td>
-          </tr>; })}</tbody>
-      </table></div>
+      <MolsanDataTable
+        rows={items}
+          pagination
+          pageSize={25}
+
+        rowKey="id"
+        minWidth="1350px"
+        initialSort={{ key: "fecha_solicitud", direction: "desc" }}
+        emptyText={cargando ? "Cargando solicitudes…" : "No hay solicitudes que mostrar. Cuando se solicite un complemento desde la ficha de un expediente, aparecerá aquí."}
+        columns={[
+          { key: "numero_expediente", header: "Expediente", accessor: "numero_expediente", sortType: "text", render: (value, item) => <Link to={item.expediente_id ? `/expedientes/${item.expediente_id}` : "/expedientes"} className="font-extrabold text-blue-700 hover:underline">{value}</Link> },
+          { key: "provisionado", header: "Provisionado", accessor: "provisionado", sortType: "currency", align: "right", render: (value) => euros(value) },
+          { key: "saldo_disponible", header: "Saldo disponible", accessor: "saldo_disponible", sortType: "currency", align: "right", render: (value) => euros(value) },
+          { key: "fecha_solicitud", header: "Fecha de petición", accessor: "fecha_solicitud", sortType: "date", render: (value) => fecha(value) },
+          { key: "importe", header: "Saldo a solicitar", accessor: "importe", sortType: "currency", align: "right", render: (value) => <strong className="tabular-nums">{euros(value)}</strong> },
+          { key: "motivo", header: "Motivo", accessor: (item) => item.motivo || item.observaciones, sortType: "text", render: (value) => value || "—" },
+          { key: "acciones", header: "Acciones", sortable: false, accessor: (item) => item.id, render: (_, item) => { const cerrado = ["compensado", "cerrado"].includes(String(item.estado).toLowerCase()); return <button type="button" disabled={cerrado} onClick={() => cambiarEstado(item)} className={`rounded-lg border px-3 py-2 text-xs font-bold ${cerrado ? "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100" : "border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"}`}>{cerrado ? "Regularizado" : "Compensar"}</button>; } },
+          { key: "estado", header: "Estado", accessor: (item) => ["compensado", "cerrado"].includes(String(item.estado).toLowerCase()) ? "Compensado" : "Pendiente", sortType: "text", render: (value) => <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-bold ${value === "Compensado" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>{value}</span> },
+        ]}
+      />
       <footer className="flex flex-col gap-1 border-t border-slate-200 bg-slate-50/70 px-4 py-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between"><span>{items.length} solicitud(es) en el resultado actual</span><span>Los indicadores se actualizan con los filtros aplicados.</span></footer>
     </section>
   </div>;
@@ -108,6 +125,6 @@ export default function ComplementosSaldo() {
 
 function Metrica({ titulo, valor, detalle, icono, alerta = false, verde = false }) {
   return <div className={`rounded-2xl border p-4 shadow-sm ${alerta ? "border-amber-200 bg-amber-50/70" : verde ? "border-emerald-200 bg-emerald-50/60" : "border-slate-200 bg-white"}`}>
-    <div className="flex items-start justify-between gap-2"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{titulo}</p><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/80 text-lg font-extrabold text-slate-600 shadow-sm">{icono}</span></div><p className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900">{valor}</p><p className="mt-1 text-xs text-slate-500">{detalle}</p>
+    <div className="flex items-start justify-between gap-2"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{titulo}</p><span className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--molsan-border)] bg-white/80 text-[var(--molsan-primary)] shadow-sm"><MolsanIcon name={icono} size={20} /></span></div><p className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900">{valor}</p><p className="mt-1 text-xs text-slate-500">{detalle}</p>
   </div>;
 }

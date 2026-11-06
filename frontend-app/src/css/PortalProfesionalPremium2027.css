@@ -1,0 +1,144 @@
+/* MOLSAN ERP PREMIUM 2027
+   Hoja canónica única para ApoderaGest, EncargaGest y NotarGest.
+   Se importa al final desde main.jsx para normalizar las hojas heredadas. */
+:root{
+  --molsan-prof-bg:#FFFFFF;
+  --molsan-prof-surface:#FFFFFF;
+  --molsan-prof-soft:#F2F7FB;
+  --molsan-prof-table:#EAF2F8;
+  --molsan-prof-border:#D8E4EC;
+  --molsan-prof-blue:#064675;
+  --molsan-prof-muted:#617789;
+  --molsan-prof-text:#173247;
+  --molsan-prof-shadow:0 6px 18px rgba(6,50,82,.055);
+}
+.erp-page.molsan-professional-shell,
+.ng-admin-notarias{
+  box-sizing:border-box!important;width:100%!important;max-width:none!important;
+  min-width:0!important;margin:0!important;color:var(--molsan-prof-text)!important;
+  background:transparent!important;
+}
+.erp-page.molsan-professional-shell *,
+.erp-page.molsan-professional-shell *::before,
+.erp-page.molsan-professional-shell *::after,
+.ng-admin-notarias *,
+.ng-admin-notarias *::before,
+.ng-admin-notarias *::after{box-sizing:border-box}
+.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias{
+  color:var(--molsan-prof-text)!important;
+}
+.apoderagest,.encargagest,.notargest.ng-content{
+  width:100%!important;max-width:none!important;min-width:0!important;
+}
+.apoderagest .ag-contenido,.encargagest .eg-main,.notargest.ng-content{
+  min-width:0!important;
+}
+.encargagest .eg-main{
+  display:flex!important;flex-direction:column!important;gap:18px!important;
+  width:100%!important;max-width:none!important;margin:0!important;
+  padding:4px 0 24px!important;
+}
+.apoderagest .ag-grid-kpi,.apoderagest .ag-grid-secundario,
+.encargagest .eg-main>section.grid,.notargest.ng-content .ng-dashboard-graficos{
+  gap:12px!important;
+}
+/* Las cabeceras de portales usan ahora directamente .molsan-page-header,
+   definido por el sistema global. Se eliminan aquí las variantes de tamaño. */
+/* Contenido y distribución de KPI; la superficie la define erp-card. */
+.apoderagest .ag-kpi,.encargagest .eg-kpi,.ng-admin-notarias .ng-admin-kpi-button,
+.notargest.ng-content .ng-dashboard-kpi,.notargest.ng-content .ng-kpi-card {
+  display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+  justify-content:space-between!important;gap:9px!important;min-width:0!important;
+  min-height:136px!important;margin:0!important;text-align:left;
+}
+.apoderagest .ag-kpi-titulo,.encargagest .eg-kpi>p:first-child,
+.ng-admin-notarias .ng-admin-kpi-button>span:first-child {
+  color:var(--molsan-prof-muted)!important;font-size:11px!important;font-weight:800!important;
+  letter-spacing:.08em!important;line-height:1.4!important;text-transform:uppercase;
+}
+.apoderagest .ag-kpi-valor,.encargagest .eg-kpi strong,
+.ng-admin-notarias .ng-admin-kpi-button>strong {
+  color:var(--molsan-prof-blue)!important;font-size:clamp(26px,2vw,32px)!important;
+  font-weight:850!important;line-height:1.1!important;letter-spacing:-.035em!important;
+  font-variant-numeric:tabular-nums;
+}
+.apoderagest .ag-kpi-detalle,.encargagest .eg-kpi>p:last-child {
+  color:var(--molsan-prof-muted)!important;font-size:11px!important;line-height:1.45!important;
+}
+.apoderagest .ag-kpi-ver-expedientes {
+  display:inline-flex!important;align-items:center!important;gap:5px!important;
+  color:var(--molsan-prof-blue)!important;font-size:10px!important;font-weight:800!important;
+}
+.ng-admin-notarias .ng-admin-kpis,.ng-admin-notarias .ng-admin-kpis-global {
+  display:grid!important;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))!important;gap:12px!important;
+}
+.ng-admin-notarias .ng-admin-kpi-button { width:100%!important;min-height:136px!important;appearance:none!important;-webkit-appearance:none!important; }
+.ng-admin-notarias .ng-admin-kpi-button>strong { margin:auto 0 0!important; }
+.ng-admin-notarias .ng-admin-kpi-button>small { color:var(--molsan-prof-blue)!important;font-size:10px!important;font-weight:800!important; }
+
+/* Títulos interiores: estructura común, sin fondo ni línea independiente. */
+.apoderagest .ag-panel-cabecera,.apoderagest .ag-titulo-seccion,
+.encargagest .eg-panel-head,.notargest.ng-content .ng-panel-titulo,
+.notargest.ng-content .ng-bloque-heading,
+.encargagest .eg-directorio-cabecera {
+  display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;
+  margin:0 0 12px!important;padding:0 0 12px!important;color:var(--molsan-prof-blue)!important;
+  border:0!important;border-radius:0!important;background:transparent!important;
+}
+.apoderagest .ag-panel-cabecera h3,.apoderagest .ag-titulo-seccion h2,
+.encargagest .eg-panel-head h2,.encargagest .eg-panel-head h3,
+.notargest.ng-content .ng-panel-titulo h2,.notargest.ng-content .ng-bloque-heading h3,
+.encargagest .eg-directorio-cabecera h2 { margin:0!important;color:var(--molsan-prof-blue)!important;font-weight:800!important; }
+
+/* Tablas: cabecera corporativa común y separadores discretos. */
+.apoderagest .ag-panel table thead th,.encargagest .eg-panel table thead th,
+.encargagest .eg-directorio-tabla thead th,.notargest.ng-content .ng-tabla th,
+.notargest.ng-content .ng-panel table thead th {
+  color:var(--molsan-prof-blue)!important;background:var(--molsan-prof-table)!important;
+  border-color:var(--molsan-prof-border)!important;
+}
+.apoderagest .ag-panel table td,.encargagest .eg-panel table td,
+.encargagest .eg-directorio-tabla td,.notargest.ng-content .ng-tabla td,
+.notargest.ng-content .ng-panel table td { border-color:var(--molsan-prof-border)!important; }
+
+/* Distribución de gráficos, formularios y estados; superficies en erp-card. */
+.notargest.ng-content .ng-dashboard-graficos { display:grid!important;gap:14px!important; }
+.notargest.ng-content .ng-dashboard-grafico { padding:16px!important; }
+.notargest.ng-content .ng-dashboard-grafico>.ng-bloque-heading { padding:0 0 12px!important;margin:0 0 12px!important; }
+.notargest.ng-content .ng-dashboard-grafico>.ng-bloque-heading h3 { color:var(--molsan-prof-blue)!important; }
+.notargest.ng-content .ng-barra-pista,.notargest.ng-content .ng-media-pista { background:var(--molsan-prof-table)!important; }
+.notargest.ng-content .ng-barra-pista span,.notargest.ng-content .ng-media-pista span { background:linear-gradient(180deg,#0D638C,#064675)!important; }
+.notargest.ng-content .ng-ficha-cuerpo,.notargest.ng-content .ng-ficha-premium { background:transparent!important; }
+.notargest.ng-content .ng-dato,.notargest.ng-content .ng-documento,.notargest.ng-content .ng-categoria-documental {
+  border-color:var(--molsan-prof-border)!important;border-radius:12px!important;background:#fff!important;
+}
+.encargagest .eg-directorio { min-width:0!important;padding:20px!important;overflow:visible!important; }
+.encargagest .eg-directorio-cabecera { border-radius:0!important; }
+.apoderagest .ag-busqueda,.encargagest .eg-directorio-input-wrap { display:flex!important;align-items:center!important;gap:9px!important;min-width:0!important; }
+.apoderagest .ag-busqueda>input,.encargagest .eg-directorio-input-wrap>input { min-width:0!important; }
+.apoderagest button:focus-visible,.encargagest button:focus-visible,.notargest.ng-content button:focus-visible,.ng-admin-notarias button:focus-visible {
+  outline:3px solid rgba(6,70,117,.22)!important;outline-offset:2px!important;
+}
+.apoderagest .molsan-icon-3d,.encargagest .molsan-icon-3d,.notargest .molsan-icon-3d,.ng-admin-notarias .molsan-icon-3d { flex-shrink:0; }
+
+/* Modales de las tres áreas: misma identidad, contraste y jerarquía. */
+.apoderagest .ag-resumen-modal-overlay,.encargagest .eg-modal-overlay,.notargest .ng-modal-overlay{
+  background:rgba(3,28,46,.58)!important;backdrop-filter:blur(4px)!important;-webkit-backdrop-filter:blur(4px)!important;
+}
+.apoderagest .ag-resumen-modal,.encargagest .eg-modal-form,.notargest .ng-modal{
+  color:var(--molsan-prof-text)!important;border:1px solid var(--molsan-prof-border)!important;
+  border-radius:18px!important;background:#fff!important;box-shadow:0 24px 64px rgba(3,28,46,.24)!important;
+}
+/* Los encabezados de modales heredan el estándar global: superficie azul hielo,
+   texto azul corporativo y separador fino, igual en los tres portales. */
+.apoderagest .ag-resumen-modal-cuerpo,.encargagest .eg-modal-layout,.notargest .ng-modal-lista{
+  background:#fff!important;
+}
+.apoderagest .ag-resumen-tabla-wrap{border-color:var(--molsan-prof-border)!important}
+.apoderagest .ag-resumen-tabla th{color:var(--molsan-prof-blue)!important;background:var(--molsan-prof-table)!important}
+.encargagest .eg-modal-section,.notargest .ng-modal-vacio,.notargest .ng-aviso-item{
+  border-color:var(--molsan-prof-border)!important;border-radius:12px!important;
+}
+@media(max-width:760px){
+  .apoderagest .ag-resumen-modal-cuerpo{padding:14px!important}
+}

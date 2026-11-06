@@ -1,3 +1,7 @@
+import MolsanButton from "../../components/ui/MolsanButton";
+import { API_BASE as API_ROOT } from "../../api/config";
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   useEffect,
   useMemo,
@@ -57,11 +61,7 @@ import "../../css/CatalogosMaestrosPremium.css";
    BACKEND
 ============================================================ */
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
-
-const API_BASE =
-  `${API_ORIGEN}/api/entidades-bancarias`;
+const API_BASE = `${API_ROOT}/entidades-bancarias`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;
@@ -161,6 +161,8 @@ async function leerRespuestaServidor(
 ============================================================ */
 
 export default function EntidadesBancarias() {
+  const [searchParams] = useSearchParams();
+
 
 
   // ==========================================================
@@ -204,7 +206,7 @@ export default function EntidadesBancarias() {
   const [
     ordenColumna,
     setOrdenColumna
-  ] = useState("nombre");
+  ] = useState(null);
 
 
   const [
@@ -525,6 +527,7 @@ export default function EntidadesBancarias() {
 
 
   const entidadesOrdenadas = useMemo(() => {
+    if (!ordenColumna) return entidadesFiltradas;
     const copia = [...entidadesFiltradas];
     copia.sort((a, b) => {
       const valorA = ordenColumna === "entidad_actual"
@@ -544,10 +547,13 @@ export default function EntidadesBancarias() {
 
 
   function ordenarPor(columna) {
-    if (ordenColumna === columna) {
-      setOrdenAscendente((actual) => !actual);
-    } else {
+    if (ordenColumna !== columna) {
       setOrdenColumna(columna);
+      setOrdenAscendente(true);
+    } else if (ordenAscendente) {
+      setOrdenAscendente(false);
+    } else {
+      setOrdenColumna(null);
       setOrdenAscendente(true);
     }
     setPagina(1);
@@ -1519,15 +1525,19 @@ export default function EntidadesBancarias() {
   // ==========================================================
   // RENDER
   // ==========================================================
+  useEffect(() => {
+    if (searchParams.get("importar") === "1") abrirImportacionExcel();
+  }, [searchParams]);
+
 
   return (
 
     <div
-      className="entidades-bancarias-premium herramientas-subpagina-premium catalogo-maestro-modal-premium 
+      className="molsan-page-stack catalogos-premium-page entidades-bancarias-premium herramientas-subpagina-premium catalogo-maestro-modal-premium 
         min-h-full
-        p-4 sm:p-6 lg:p-8
-        space-y-6
-        animate-fadeIn
+        w-full
+        min-w-0
+        
       "
     >
 
@@ -1535,75 +1545,25 @@ export default function EntidadesBancarias() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          relative
-          overflow-hidden
-          rounded-[24px]
-          border
-          border-slate-200/80
-          bg-white/80
-          p-6 sm:p-7
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          backdrop-blur-xl
-        "
-      >
-
-        <div
-          className="
-            absolute
-            inset-x-0
-            top-0
-            h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/60
-            to-transparent
-          "
-        />
+      <header className="molsan-page-header">
 
 
-        <div
-          className="
-            relative
-            flex
-            flex-col
-            gap-5
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-          "
-        >
 
-          <div
-            className="
-              flex
-              items-center
-              gap-4
-            "
-          >
 
-            <div
-              className="
-                flex
-                h-14
-                w-14
-                shrink-0
-                items-center
-                justify-center
-                rounded-2xl
-                border
-                border-indigo-100
-                bg-indigo-50
-                text-2xl
-                shadow-sm
-              "
-            >
-              🏦
+        <div className="flex w-full min-w-0 flex-wrap items-center justify-between gap-4">
+
+          <div className="molsan-page-header__identity">
+
+            <div className="molsan-page-header__mark">
+              <MolsanIcon name="bank" size={22} tone="ocean" />
             </div>
 
 
             <div>
+
+              <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+
+              <Link to="/catalogos" className="molsan-page-back-link">← Volver a catálogos</Link>
 
               <h1
                 className="
@@ -1638,107 +1598,21 @@ export default function EntidadesBancarias() {
               BOTONES
           ================================================= */}
 
-          <div
-            className="
-              flex
-              flex-col
-              gap-2
-              sm:flex-row
-            "
-          >
+          <div className="molsan-page-header__actions molsan-page-header__actions">
 
-            <button
-              type="button"
-              onClick={
-                abrirImportacionExcel
-              }
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                border
-                border-emerald-200
-                bg-emerald-50
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-emerald-700
-                shadow-sm
-                transition-all
-                hover:-translate-y-0.5
-                hover:border-emerald-300
-                hover:bg-emerald-100
-                active:scale-[0.98]
-              "
-            >
-
-              <span className="text-lg">
-                📊
-              </span>
-
-              Importar Excel
-
-            </button>
+            
 
 
-            <button
-              type="button"
-              onClick={descargarExcel}
-              disabled={cargando || entidadesOrdenadas.length === 0}
-              className="
-                inline-flex items-center justify-center gap-2 rounded-xl
-                border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold
-                text-slate-700 shadow-sm transition hover:border-indigo-200
-                hover:bg-indigo-50 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-50
-              "
-              title="Descargar el catálogo filtrado en Excel"
-            >
-              <span className="text-lg">⬇️</span>
-              Descargar Excel
-            </button>
+            <MolsanButton type="button" onClick={descargarExcel} disabled={cargando || entidadesOrdenadas.length === 0} icon="download" variant="excel" title="Descargar el catálogo filtrado en Excel">Descargar Excel</MolsanButton>
 
 
-            <button
-              type="button"
-              onClick={
-                abrirNuevo
-              }
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                bg-blue-600
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-white
-                shadow-[0_8px_20px_rgba(37,99,235,0.20)]
-                transition-all
-                hover:-translate-y-0.5
-                hover:bg-blue-700
-                active:scale-[0.98]
-              "
-            >
-
-              <span className="text-lg">
-                +
-              </span>
-
-              Nueva entidad
-
-            </button>
+            <MolsanButton type="button" onClick={abrirNuevo} icon="plus" variant="success">Nueva entidad</MolsanButton>
 
           </div>
 
         </div>
 
-      </div>
+      </header>
 
 
       {/* =====================================================
@@ -1850,7 +1724,7 @@ export default function EntidadesBancarias() {
                   text-slate-400
                 "
               >
-                🔎
+                <MolsanIcon name="search" size={20} />
               </span>
 
 
@@ -1964,28 +1838,7 @@ export default function EntidadesBancarias() {
 
           {/* LIMPIAR */}
 
-          <button
-            type="button"
-            onClick={
-              limpiarFiltros
-            }
-            className="
-              rounded-xl
-              border
-              border-slate-200
-              bg-white
-              px-4
-              py-2.5
-              text-sm
-              font-medium
-              text-slate-600
-              transition
-              hover:border-slate-300
-              hover:bg-slate-50
-            "
-          >
-            Limpiar filtros
-          </button>
+          <MolsanButton type="button" onClick={limpiarFiltros} variant="secondary">Limpiar filtros</MolsanButton>
 
         </div>
 
@@ -2142,7 +1995,7 @@ export default function EntidadesBancarias() {
                 text-2xl
               "
             >
-              🏦
+              <MolsanIcon name="bank" size={42} />
             </div>
 
 
@@ -2555,7 +2408,7 @@ export default function EntidadesBancarias() {
                               hover:text-blue-600
                             "
                           >
-                            ✏️
+                            <MolsanIcon name="pen" size={15} />
                           </button>
 
 
@@ -2584,7 +2437,7 @@ export default function EntidadesBancarias() {
                               hover:text-red-600
                             "
                           >
-                            🗑️
+                            <MolsanIcon name="trash" size={18} />
                           </button>
 
                         </div>
@@ -2896,7 +2749,7 @@ function ModalImportarExcel({
                   text-xl
                 "
               >
-                📊
+                <MolsanIcon name="chart" size={20} />
               </div>
 
 
@@ -2951,7 +2804,7 @@ function ModalImportarExcel({
                 disabled:opacity-40
               "
             >
-              ✕
+              <MolsanIcon name="x" size={16} />
             </button>
 
           </div>
@@ -3102,7 +2955,7 @@ function ModalImportarExcel({
                   shadow-sm
                 "
               >
-                📁
+                <MolsanIcon name="folder" size={20} />
               </div>
 
 
@@ -3176,7 +3029,7 @@ function ModalImportarExcel({
                     shadow-sm
                   "
                 >
-                  📄
+                  <MolsanIcon name="file" size={20} />
                 </div>
 
 
@@ -3288,58 +3141,7 @@ function ModalImportarExcel({
           </button>
 
 
-          <button
-            type="button"
-            disabled={
-              !archivo ||
-              importando
-            }
-            onClick={
-              onImportar
-            }
-            className="
-              inline-flex
-              min-w-[190px]
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-emerald-600
-              px-5
-              py-2.5
-              text-sm
-              font-semibold
-              text-white
-              shadow-[0_8px_20px_rgba(5,150,105,0.18)]
-              transition
-              hover:bg-emerald-700
-              disabled:cursor-not-allowed
-              disabled:opacity-50
-            "
-          >
-
-            {importando && (
-
-              <span
-                className="
-                  h-4
-                  w-4
-                  animate-spin
-                  rounded-full
-                  border-2
-                  border-white/40
-                  border-t-white
-                "
-              />
-
-            )}
-
-
-            {importando
-              ? "Importando..."
-              : "Importar entidades"}
-
-          </button>
+          <MolsanButton type="button" icon="upload" variant="excel" loading={importando} disabled={!archivo || importando} onClick={onImportar} className="min-w-[190px]">{importando ? "Importando..." : "Importar entidades"}</MolsanButton>
 
         </div>
 
@@ -3539,7 +3341,7 @@ function ModalEntidadBancaria({
                 disabled:opacity-50
               "
             >
-              ✕
+              <MolsanIcon name="x" size={16} />
             </button>
 
           </div>

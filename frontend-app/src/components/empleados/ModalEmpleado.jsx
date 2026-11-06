@@ -1,4 +1,5 @@
 import "../../css/ModalesOperativosPremium.css";
+import MolsanIcon from "../ui/MolsanIcon";
 
 import {
   useEffect,
@@ -2102,20 +2103,20 @@ const permisosDisponibles =
   ========================================================== */
 
   const pestanasEmpleado = [
-    { id: "basicos", label: "Datos básicos", icon: "👤" },
-    { id: "personales", label: "Datos personales", icon: "🏠" },
-    { id: "laborales", label: "Datos laborales", icon: "💼" },
-    ...(esAdministrador && Boolean(empleadoFormulario?.es_colaborador) ? [{ id: "honorarios", label: "Honorarios", icon: "💶" }] : []),
-    ...(esAdministrador ? [{ id: "visibilidad-tablas", label: "Visibilidad tablas", icon: "📊" }] : []),
-    ...(esPropiaFicha ? [{ id: "mi-visibilidad", label: "Mi visibilidad de tablas", icon: "📊" }] : []),
-    { id: "seguridad", label: "Seguridad", icon: "🛡️" },
-    { id: "auditoria", label: "Auditoría", icon: "📋" },
+    { id: "basicos", label: "Datos básicos", icon: "person" },
+    { id: "personales", label: "Datos personales", icon: "home" },
+    { id: "laborales", label: "Datos laborales", icon: "briefcase" },
+    ...(esAdministrador && Boolean(empleadoFormulario?.es_colaborador) ? [{ id: "honorarios", label: "Honorarios", icon: "euro" }] : []),
+    ...(esAdministrador ? [{ id: "visibilidad-tablas", label: "Visibilidad tablas", icon: "chart" }] : []),
+    ...(esPropiaFicha ? [{ id: "mi-visibilidad", label: "Mi visibilidad de tablas", icon: "chart" }] : []),
+    { id: "seguridad", label: "Seguridad", icon: "shield" },
+    { id: "auditoria", label: "Auditoría", icon: "clipboard" },
   ];
 
   // Las opciones administrativas también están disponibles en la ficha de cada empleado.
   const pestanasAdministracion = [
-    { id: "asignaciones", label: "Asignaciones", icon: "⚖️" },
-    { id: "visibilidad-tablas", label: "Visibilidad tablas", icon: "📊" },
+    { id: "asignaciones", label: "Asignaciones", icon: "scale" },
+    { id: "visibilidad-tablas", label: "Visibilidad tablas", icon: "chart" },
   ];
   const pestanasVisibles = modoAdministracion
     ? (esAdministrador ? pestanasAdministracion.filter((item) => item.id === pestanaInicial) : [])
@@ -2192,6 +2193,7 @@ const permisosDisponibles =
 
       <div
         className="
+          modal-sj
           relative
           z-10
           flex
@@ -2201,11 +2203,8 @@ const permisosDisponibles =
           max-h-[94vh]
           flex-col
           overflow-hidden
-          rounded-[28px]
-          border
-          border-slate-200/80
           bg-white
-          shadow-[0_30px_100px_rgba(15,23,42,0.30)]
+          shadow-2xl
           animate-slideUp
         "
         onClick={(
@@ -2221,36 +2220,8 @@ const permisosDisponibles =
         ==================================================== */}
 
         <div
-          className="
-            relative
-            shrink-0
-            overflow-hidden
-            border-b
-            border-slate-200
-            bg-gradient-to-br
-            from-slate-50
-            via-white
-            to-blue-50/60
-            px-5
-            py-5
-            sm:px-7
-          "
+          className="molsan-modal-header flex shrink-0 items-center justify-between gap-4"
         >
-
-          <div
-            className="
-              pointer-events-none
-              absolute
-              -right-20
-              -top-20
-              h-56
-              w-56
-              rounded-full
-              bg-blue-400/10
-              blur-3xl
-            "
-          />
-
 
           <div
             className="
@@ -2330,14 +2301,7 @@ const permisosDisponibles =
                 >
 
                   <h2
-                    className="
-                      truncate
-                      text-xl
-                      font-bold
-                      tracking-tight
-                      text-slate-900
-                      sm:text-2xl
-                    "
+                    className="truncate font-bold tracking-tight"
                   >
                     {nombreEmpleado}
                   </h2>
@@ -2363,11 +2327,7 @@ const permisosDisponibles =
 
 
                 <p
-                  className="
-                    mt-1
-                    text-sm
-                    text-slate-500
-                  "
+                  className="mt-1 text-sm"
                 >
                   Ficha de empleado
                   {empleadoId
@@ -2406,12 +2366,12 @@ const permisosDisponibles =
               "
               aria-label="Cerrar"
             >
-              ×
+              <MolsanIcon name="close" size={18} tone="slate" />
             </button>
 
           </div>
 
-        </div>
+        </header>
 
 
         {/* ====================================================
@@ -2464,7 +2424,7 @@ const permisosDisponibles =
               >
 
                 <span className="mr-2">
-                  {item.icon}
+                  <MolsanIcon name={item.icon} size={22} bare />
                 </span>
 
                 {item.label}
@@ -4493,7 +4453,7 @@ const permisosDisponibles =
                           >
 
                             <div className="text-3xl">
-                              📋
+                              <MolsanIcon name="clipboard" size={20} bare />
                             </div>
 
                             <p

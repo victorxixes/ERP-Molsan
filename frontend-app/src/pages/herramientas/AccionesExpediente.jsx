@@ -1,3 +1,9 @@
+import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import { API_BASE as API_ROOT } from "../../api/config";
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import { sortRows } from "../../utils/sortRows";
+import MolsanButton from "../../components/ui/MolsanButton";
+import { Link, useSearchParams } from "react-router-dom";
 import "../../css/ModalesHerramientasPremium.css";
 import React, {
   useCallback,
@@ -17,11 +23,7 @@ import React, {
 // API
 // ============================================================
 
-const API_ORIGEN =
-  "https://agenda-intranet-b.onrender.com";
-
-const API_BASE =
-  `${API_ORIGEN}/api/acciones-expediente`;
+const API_BASE = `${API_ROOT}/acciones-expediente`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;
@@ -122,20 +124,9 @@ async function leerRespuestaServidor(
 // ICONO
 // ============================================================
 
-function Icono({
-  name,
-  className = "w-5 h-5",
-}) {
-  return (
-    <svg
-      className={className}
-      aria-hidden="true"
-    >
-      <use
-        href={`/icons/icons.svg#${name}`}
-      />
-    </svg>
-  );
+function Icono({ name, className = "w-5 h-5" }) {
+  const size = className.includes("w-6") ? 24 : className.includes("w-4") ? 16 : 20;
+  return <MolsanIcon name={name} size={size} bare className={className} />;
 }
 
 
@@ -287,6 +278,8 @@ function CampoSelect({
 // ============================================================
 
 export default function AccionesExpediente() {
+  const [searchParams] = useSearchParams();
+
 
   // ==========================================================
   // ESTADO
@@ -296,6 +289,8 @@ export default function AccionesExpediente() {
     acciones,
     setAcciones,
   ] = useState([]);
+
+  const [ordenTabla, setOrdenTabla] = useState({ key: "departamento", direction: "asc" });
 
   const [
     loading,
@@ -689,13 +684,24 @@ export default function AccionesExpediente() {
     );
 
 
-  const accionesPagina =
-    acciones.slice(
-      (pagina - 1) *
-        POR_PAGINA,
-      pagina *
-        POR_PAGINA
-    );
+  const accionesOrdenadas = useMemo(
+    () => sortRows(acciones, {
+      key: ordenTabla.key,
+      accessor: (item) => item?.[ordenTabla.key],
+      sortType: ordenTabla.key === "activo" ? "boolean" : "text",
+    }, ordenTabla.direction),
+    [acciones, ordenTabla]
+  );
+
+  const accionesPagina = accionesOrdenadas.slice(
+    (pagina - 1) * POR_PAGINA,
+    pagina * POR_PAGINA
+  );
+
+  const cambiarOrdenTabla = (next) => {
+    setOrdenTabla(next.key ? next : { key: "departamento", direction: "asc" });
+    setPagina(1);
+  };
 
 
   useEffect(() => {
@@ -1238,15 +1244,16 @@ export default function AccionesExpediente() {
   // ==========================================================
   // RENDER
   // ==========================================================
+  useEffect(() => {
+    if (searchParams.get("importar") === "1") abrirImportar();
+  }, [searchParams]);
+
 
   return (
     <div
       className="
-        herramientas-subpagina-premium erp-page
+        catalogos-premium-page herramientas-subpagina-premium erp-page
         min-h-full
-        p-4
-        sm:p-6
-        lg:p-8
         text-[var(--erp-text)]
         space-y-6
         animate-fade-in
@@ -1257,170 +1264,22 @@ export default function AccionesExpediente() {
           CABECERA
       ===================================================== */}
 
-      <div
-        className="
-          max-w-[1700px]
-          mx-auto
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-5
-        "
-      >
-
-        <div
-          className="
-            flex
-            items-center
-            gap-4
-          "
-        >
-
-          <div
-            className="
-              w-12
-              h-12
-              rounded-2xl
-              bg-[var(--erp-primary-soft)]
-              text-[var(--erp-primary)]
-              border
-              border-[var(--erp-border)]
-              flex
-              items-center
-              justify-center
-              shrink-0
-            "
-          >
-
-            <Icono
-              name="clipboard"
-              className="
-                w-6
-                h-6
-              "
-            />
-
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">
+            <MolsanIcon name="clipboardList" size={22} tone="ocean" />
           </div>
-
-
-          <div>
-
-            <h1
-              className="
-                text-2xl
-                sm:text-3xl
-                font-bold
-                text-[var(--erp-text)]
-              "
-            >
-              Acciones del expediente
-            </h1>
-
-            <p
-              className="
-                text-sm
-                text-[var(--erp-text-soft)]
-                mt-0.5
-              "
-            >
-              Catálogo de acciones y actividades
-              disponibles para los expedientes
-            </p>
-
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Acciones del expediente</h1>
+            <Link to="/herramientas" className="molsan-page-back-link">← Volver a herramientas</Link>
+            <p className="molsan-page-header__description">Catálogo de acciones y actividades disponibles para los expedientes.</p>
           </div>
-
         </div>
-
-
-        <div
-          className="
-            flex
-            flex-wrap
-            items-center
-            gap-2
-          "
-        >
-
-          <button
-            type="button"
-            onClick={
-              abrirImportar
-            }
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-4
-              py-2.5
-              rounded-xl
-              bg-white
-              border
-              border-[var(--erp-border)]
-              text-[var(--erp-text)]
-              text-sm
-              font-semibold
-              shadow-sm
-              hover:bg-[var(--erp-primary-soft)]
-              hover:text-[var(--erp-primary)]
-              hover:border-[var(--erp-primary)]
-              transition-all
-              duration-200
-            "
-          >
-
-            <Icono
-              name="database"
-              className="
-                w-4
-                h-4
-              "
-            />
-
-            Importar Excel
-
-          </button>
-
-
-          <button
-            type="button"
-            onClick={
-              abrirNueva
-            }
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-4
-              py-2.5
-              rounded-xl
-              bg-[var(--erp-primary)]
-              hover:brightness-95
-              text-white
-              text-sm
-              font-semibold
-              shadow-sm
-              transition
-            "
-          >
-
-            <span
-              className="
-                text-lg
-                leading-none
-              "
-            >
-              +
-            </span>
-
-            Nueva acción
-
-          </button>
-
+        <div className="molsan-page-header__actions">
+          <MolsanButton type="button" onClick={abrirNueva} icon="plus" variant="success">Nueva acción</MolsanButton>
         </div>
-
-      </div>
+      </header>
 
 
       {/* =====================================================
@@ -1431,8 +1290,8 @@ export default function AccionesExpediente() {
 
         <div
           className="
-            max-w-[1700px]
-            mx-auto
+            w-full
+            min-w-0
             rounded-xl
             border
             border-green-200
@@ -1453,8 +1312,8 @@ export default function AccionesExpediente() {
 
         <div
           className="
-            max-w-[1700px]
-            mx-auto
+            w-full
+            min-w-0
             rounded-xl
             border
             border-red-200
@@ -1477,8 +1336,8 @@ export default function AccionesExpediente() {
 
       <section
         className="
-          max-w-[1700px]
-          mx-auto
+          w-full
+          min-w-0
           grid
           grid-cols-1
           sm:grid-cols-3
@@ -1594,8 +1453,8 @@ export default function AccionesExpediente() {
       <section
         className="
           erp-card
-          max-w-[1700px]
-          mx-auto
+          w-full
+          min-w-0
           p-4
         "
       >
@@ -1864,8 +1723,8 @@ export default function AccionesExpediente() {
       <section
         className="
           erp-card
-          max-w-[1700px]
-          mx-auto
+          w-full
+          min-w-0
           overflow-hidden
         "
       >
@@ -1912,277 +1771,23 @@ export default function AccionesExpediente() {
         </div>
 
 
-        <div className="overflow-x-auto">
-
-          <table
-            className="
-              w-full
-              min-w-[1100px]
-              text-sm
-              text-[var(--erp-text)]
-            "
-          >
-
-            <thead>
-
-              <tr
-                className="
-                  bg-[var(--erp-primary)]
-                  text-white
-                  text-left
-                "
-              >
-
-                <th className="px-4 py-3 font-semibold">
-                  Departamento
-                </th>
-
-                <th className="px-4 py-3 font-semibold">
-                  Sección
-                </th>
-
-                <th className="px-4 py-3 font-semibold">
-                  Actividad
-                </th>
-
-                <th className="px-4 py-3 font-semibold">
-                  Descripción
-                </th>
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    text-center
-                  "
-                >
-                  Estado
-                </th>
-
-                <th
-                  className="
-                    px-4
-                    py-3
-                    font-semibold
-                    text-center
-                  "
-                >
-                  Acciones
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody>
-
-              {loading &&
-              accionesPagina.length ===
-                0 ? (
-
-                <tr>
-
-                  <td
-                    colSpan="6"
-                    className="
-                      px-4
-                      py-14
-                      text-center
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-                    Cargando acciones…
-                  </td>
-
-                </tr>
-
-              ) : accionesPagina.length ===
-                0 ? (
-
-                <tr>
-
-                  <td
-                    colSpan="6"
-                    className="
-                      px-4
-                      py-14
-                      text-center
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-                    No hay acciones del expediente.
-                  </td>
-
-                </tr>
-
-              ) : (
-
-                accionesPagina.map(
-                  (accion) => (
-
-                    <tr
-                      key={
-                        accion.id
-                      }
-                      className="
-                        border-b
-                        border-[var(--erp-border)]
-                        hover:bg-[var(--erp-primary-soft)]
-                        transition-colors
-                      "
-                    >
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
-                      >
-                        {
-                          accion.departamento ||
-                          "—"
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
-                      >
-                        {
-                          accion.seccion ||
-                          "—"
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                          font-medium
-                        "
-                      >
-                        {
-                          accion.actividad ||
-                          "—"
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                          max-w-[520px]
-                        "
-                      >
-                        {
-                          accion.descripcion
-                        }
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                          text-center
-                        "
-                      >
-                        <BadgeActivo
-                          activo={
-                            accion.activo !==
-                            false
-                          }
-                        />
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3.5
-                        "
-                      >
-
-                        <div
-                          className="
-                            flex
-                            items-center
-                            justify-center
-                            gap-2
-                          "
-                        >
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              abrirEditar(
-                                accion
-                              )
-                            }
-                            className="
-                              w-9
-                              h-9
-                              rounded-xl
-                              bg-white
-                              border
-                              border-[var(--erp-border)]
-                              text-[var(--erp-primary)]
-                              hover:bg-[var(--erp-primary-soft)]
-                              hover:border-[var(--erp-primary)]
-                              transition
-                            "
-                            title="Editar"
-                          >
-                            ✎
-                          </button>
-
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              eliminarAccion(
-                                accion
-                              )
-                            }
-                            className="
-                              w-9
-                              h-9
-                              rounded-xl
-                              bg-white
-                              border
-                              border-red-200
-                              text-red-600
-                              hover:bg-red-50
-                              transition
-                            "
-                            title="Eliminar"
-                          >
-                            ×
-                          </button>
-
-                        </div>
-
-                      </td>
-
-                    </tr>
-
-                  )
-                )
-
-              )}
-
-            </tbody>
-
-          </table>
-
-        </div>
+        <MolsanDataTable
+          rows={accionesPagina}
+          rowKey="id"
+          minWidth="1100px"
+          sortMode="server"
+          initialSort={{ key: "departamento", direction: "asc" }}
+          onSortChange={cambiarOrdenTabla}
+          emptyText={loading ? "Cargando acciones…" : "No hay acciones del expediente."}
+          columns={[
+            { key: "departamento", header: "Departamento", accessor: "departamento", sortType: "text" },
+            { key: "seccion", header: "Sección", accessor: "seccion", sortType: "text" },
+            { key: "actividad", header: "Actividad", accessor: "actividad", sortType: "text" },
+            { key: "descripcion", header: "Descripción", accessor: "descripcion", sortType: "text" },
+            { key: "activo", header: "Estado", accessor: (item) => item.activo !== false, sortType: "boolean", render: (value) => <BadgeActivo activo={value} /> },
+            { key: "acciones", header: "Acciones", sortable: false, align: "center", accessor: (item) => item.id, render: (_, item) => <div className="flex items-center justify-center gap-2"><button type="button" onClick={() => abrirEditar(item)} title="Editar" className="w-9 h-9 rounded-xl bg-white border border-[var(--erp-border)] text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] transition"><MolsanIcon name="pen" size={15} /></button><button type="button" onClick={() => eliminarAccion(item)} title="Eliminar" className="w-9 h-9 rounded-xl bg-white border border-red-200 text-red-600 hover:bg-red-50 transition"><MolsanIcon name="x" size={15} /></button></div> },
+          ]}
+        />
 
 
         {/* ===================================================
@@ -2625,46 +2230,9 @@ export default function AccionesExpediente() {
                 "
               >
 
-                <button
-                  type="button"
-                  onClick={
-                    cerrarModal
-                  }
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-white
-                    border
-                    border-[var(--erp-border)]
-                    text-sm
-                    font-semibold
-                  "
-                >
-                  Cancelar
-                </button>
+                <MolsanButton type="button" onClick={cerrarModal} variant="warning">Cancelar</MolsanButton>
 
-
-                <button
-                  type="submit"
-                  disabled={
-                    loading
-                  }
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-[var(--erp-primary)]
-                    text-white
-                    text-sm
-                    font-semibold
-                    disabled:opacity-50
-                  "
-                >
-                  {loading
-                    ? "Guardando..."
-                    : "Guardar"}
-                </button>
+                <MolsanButton type="submit" disabled={loading} loading={loading} icon="check" variant="success">{loading ? "Guardando…" : "Guardar"}</MolsanButton>
 
               </div>
 
@@ -2982,27 +2550,7 @@ export default function AccionesExpediente() {
                 </button>
 
 
-                <button
-                  type="submit"
-                  disabled={
-                    !archivo ||
-                    importando
-                  }
-                  className="
-                    px-4
-                    py-2.5
-                    rounded-xl
-                    bg-[var(--erp-primary)]
-                    text-white
-                    text-sm
-                    font-semibold
-                    disabled:opacity-50
-                  "
-                >
-                  {importando
-                    ? "Importando..."
-                    : "Importar Excel"}
-                </button>
+                <MolsanButton type="submit" icon="upload" variant="excel" loading={importando} disabled={!archivo || importando}>{importando ? "Importando..." : "Importar Excel"}</MolsanButton>
 
               </div>
 

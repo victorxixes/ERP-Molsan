@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "./Logs.css";
 
 import { useLogs } from "../../hooks/useLogs";
@@ -99,102 +100,102 @@ export default function Logs() {
        AUTENTICACIÓN
     -------------------------------------------------------- */
 
-    login: "🔑",
-    LOGIN: "🔑",
+    login: "key",
+    LOGIN: "key",
 
-    login_success: "🔓",
-    LOGIN_SUCCESS: "🔓",
+    login_success: "lock",
+    LOGIN_SUCCESS: "lock",
 
-    login_error: "⛔",
-    LOGIN_ERROR: "⛔",
+    login_error: "alert",
+    LOGIN_ERROR: "alert",
 
-    logout: "🚪",
-    LOGOUT: "🚪",
+    logout: "door",
+    LOGOUT: "door",
 
 
     /* --------------------------------------------------------
        SEGURIDAD
     -------------------------------------------------------- */
 
-    security: "🔐",
-    SECURITY: "🔐",
+    security: "lock",
+    SECURITY: "lock",
 
-    security_error: "🛡️",
-    SECURITY_ERROR: "🛡️",
+    security_error: "shield",
+    SECURITY_ERROR: "shield",
 
-    permission_denied: "🚫",
-    PERMISSION_DENIED: "🚫",
+    permission_denied: "alert",
+    PERMISSION_DENIED: "alert",
 
 
     /* --------------------------------------------------------
        ERRORES
     -------------------------------------------------------- */
 
-    error: "⛔",
-    ERROR: "⛔",
+    error: "alert",
+    ERROR: "alert",
 
-    exception: "💥",
-    EXCEPTION: "💥",
+    exception: "alert",
+    EXCEPTION: "alert",
 
 
     /* --------------------------------------------------------
        AVISOS
     -------------------------------------------------------- */
 
-    warning: "⚠️",
-    WARNING: "⚠️",
+    warning: "alert",
+    WARNING: "alert",
 
 
     /* --------------------------------------------------------
        INFORMACIÓN
     -------------------------------------------------------- */
 
-    info: "ℹ️",
-    INFO: "ℹ️",
+    info: "help",
+    INFO: "help",
 
 
     /* --------------------------------------------------------
        OPERACIONES
     -------------------------------------------------------- */
 
-    create: "➕",
-    CREATE: "➕",
+    create: "plus",
+    CREATE: "plus",
 
-    update: "✏️",
-    UPDATE: "✏️",
+    update: "pen",
+    UPDATE: "pen",
 
-    delete: "🗑️",
-    DELETE: "🗑️",
+    delete: "trash",
+    DELETE: "trash",
 
 
     /* --------------------------------------------------------
        IMPORTACIONES / EXPORTACIONES
     -------------------------------------------------------- */
 
-    import: "📥",
-    IMPORT: "📥",
+    import: "download",
+    IMPORT: "download",
 
-    import_success: "📥",
-    IMPORT_SUCCESS: "📥",
+    import_success: "download",
+    IMPORT_SUCCESS: "download",
 
-    import_error: "⛔",
-    IMPORT_ERROR: "⛔",
+    import_error: "alert",
+    IMPORT_ERROR: "alert",
 
-    export: "📤",
-    EXPORT: "📤",
+    export: "upload",
+    EXPORT: "upload",
 
-    export_success: "📤",
-    EXPORT_SUCCESS: "📤",
+    export_success: "upload",
+    EXPORT_SUCCESS: "upload",
 
-    export_error: "⛔",
-    EXPORT_ERROR: "⛔",
+    export_error: "alert",
+    EXPORT_ERROR: "alert",
 
 
     /* --------------------------------------------------------
        DEFAULT
     -------------------------------------------------------- */
 
-    default: "📋",
+    default: "clipboard",
 
   };
 
@@ -220,128 +221,18 @@ export default function Logs() {
           CABECERA
       ===================================================== */}
 
-      <section
-        className="
-          relative
-          overflow-hidden
-          rounded-[24px]
-          border
-          border-white/80
-          bg-white/80
-          backdrop-blur-2xl
-          shadow-[0_15px_45px_rgba(15,23,42,0.08)]
-          p-6
-          sm:p-7
-        "
-      >
-
-        {/* Línea superior */}
-
-        <div
-          className="
-            absolute
-            top-0
-            left-0
-            right-0
-            h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/50
-            to-transparent
-          "
-        />
-
-
-        {/* Decoración */}
-
-        <div
-          className="
-            absolute
-            -top-20
-            -right-20
-            w-48
-            h-48
-            rounded-full
-            bg-blue-400/10
-            blur-3xl
-            pointer-events-none
-          "
-        />
-
-
-        <div
-          className="
-            relative
-            z-10
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-
-            <div
-              className="
-                flex
-                items-center
-                justify-center
-                w-11
-                h-11
-                rounded-xl
-                bg-blue-50
-                border
-                border-blue-100
-                shadow-sm
-              "
-            >
-
-              <span
-                className="text-xl"
-                aria-hidden="true"
-              >
-                📋
-              </span>
-
-            </div>
-
-
-            <div>
-
-              <h1
-                className="
-                  text-2xl
-                  sm:text-3xl
-                  font-bold
-                  tracking-tight
-                  text-slate-800
-                "
-              >
-                Logs del sistema
-              </h1>
-
-
-              <p
-                className="
-                  mt-1
-                  text-sm
-                  text-slate-500
-                "
-              >
-                Monitorización avanzada de eventos,
-                seguridad y actividad del ERP.
-              </p>
-
-            </div>
-
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true">
+            <MolsanIcon name="clipboard" size={22} tone="ocean" />
           </div>
-
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Logs del sistema</h1>
+            <p className="molsan-page-header__description">Monitorización avanzada de eventos, seguridad y actividad del ERP.</p>
+          </div>
         </div>
-
-      </section>
+      </header>
 
 
       {/* =====================================================
