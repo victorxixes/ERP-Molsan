@@ -190,12 +190,6 @@ function FirmaCard({ icono, titulo, total, porcentajeValor }) {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const fechaActual = new Intl.DateTimeFormat("es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
 
   const {
     totalExpedientes,
@@ -273,13 +267,6 @@ export default function Dashboard() {
         title="Dashboard"
         description="Resumen operativo de expedientes, actividad del circuito y firmas realizadas."
         className="dashboard-header"
-        actions={
-          <>
-            <div className="molsan-premium-header__date"><span aria-hidden="true" />{fechaActual}</div>
-            <button type="button" onClick={() => navigate("/modulos")} className="molsan-btn molsan-btn--secondary">Ir a módulos</button>
-            <button type="button" onClick={cargarDashboard} disabled={loading} className="molsan-btn molsan-btn--primary">{loading ? "Actualizando…" : "Actualizar datos"}</button>
-          </>
-        }
       />
 
       {/* ERRORES DE CARGA */}
