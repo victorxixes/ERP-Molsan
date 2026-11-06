@@ -2,7 +2,7 @@
 
 **Rama de trabajo:** `fix/molsan-css-selector-audit-round1`  
 **PR:** #409 (Draft)  
-**Último commit de código:** `cfd2b4c41dfcd7f84c74a34365a65eac123f84b3`  
+**Último commit de código:** `3551af019c3a12f30aee2c97f3f1b5cbb865daf2`  
 **Alcance de esta revisión:** frontend `frontend-app/src`; sin cambios en backend, API, Supabase, datos ni producción.
 
 ## 1. Inventario real del frontend
@@ -117,6 +117,8 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 - `Agenda.jsx` y `Layout.jsx`: reemplazadas las flechas Unicode de navegación de calendario y de Volver por `MolsanIcon` (`arrowLeft`/`arrowRight`). No se ha añadido ningún botón de actualización.
 - `SeguridadSubpaginasPremium.css`: retirado el bloque de layout específico `seguridad-usuarios-layout` (73 líneas), cuyo root no aparece en las páginas actuales. Se conservan las reglas compartidas que sí usan las subpáginas con `seguridad-subpagina-premium` y los estilos específicos de Resumen y Editor de roles.
 - `PanelTecnico.css`: retiradas 13 reglas de cabecera y monitor heredadas sin consumidor (`panel-tecnico-header*`, `panel-tecnico-operativo`, `panel-tecnico-seccion` y títulos legacy de Monitor Realtime). La hoja pasa de 68 a 24 líneas; la comparación con las cinco páginas técnicas no deja clases CSS sin consumidor. `PanelTecnicoSubmodulos.css` conserva sus dos clases activas.
+- `CtnListadoPage.css`: eliminadas 23 reglas de cuatro clases huérfanas (`ctn-modal-panel`, `ctn-modal-resultados` y dos clases de resumen notarial antiguo). La hoja pasa de 1.519 a 1.362 líneas; el contraste con listado, detalle, modal, pestañas de portal, importador CTN y portales confirma consumidores para todas las clases restantes.
+- `CtnDetallePage.css`: retirada una regla de metadatos que ya no se renderiza; la hoja conserva 35 clases, todas presentes en la página, modal, pestañas o `MolsanPageHeader`. En Canonical se retiraron siete referencias repetidas de `.accesos-notariales-resumen-card` y siete de `.ctn-detalle-info-card`, ambas sin consumidor actual.
 - Portales: retiradas las clases legacy `ag-hero`, `eg-hero`, `ng-hero` y `dashboard-header` de las cabeceras que ya usan `MolsanPageHeader`; ApoderaGest pasa a la marca `AP` (icono de usuarios), mientras Agenda conserva `AG` (calendario), EncargaGest `EG` (maletín), NotarGest `NG` (notaría) y CancelaGest `CG` (dashboard). Se retiró `.ng-hero` de la capa canónica al dejar de tener consumidores.
 - Accesibilidad de modales: `ExpedientesListado.jsx` incorpora `useAccessibleDialog` en sus dos diálogos inline (filtros y control de plazos); `FichaExpediente.jsx` ya usa el hook en sus tres diálogos económicos/PPAD y en el modal base. La comprobación estática confirma refs, foco, Escape y `aria-modal` en estos componentes.
 - `NotarGest.css`: retiradas 12 referencias obsoletas en 20 líneas netas (`ng-dashboard-ciclo`, `ng-dashboard-kpis`, `ng-dashboard-kpi`, `ng-kpi-card` y `ng-volver`), ausentes del único consumidor `NotarGest.jsx`. Se han conservado los selectores activos del panel de administración (`ng-admin-kpis`), cabeceras, tablas y modales.
