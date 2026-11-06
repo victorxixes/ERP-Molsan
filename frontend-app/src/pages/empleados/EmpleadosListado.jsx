@@ -8,8 +8,6 @@ import {
 } from "react";
 
 import AuthenticatedPhoto from "../../components/AuthenticatedPhoto";
-import "./EmpleadosListadoPremium.css";
-
 import {
   buscarEmpleados,
 } from "../../api/empleados";
