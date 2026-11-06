@@ -485,3 +485,15 @@ Corrección aplicada en `ApoderaGest.jsx`:
 Commits: `986b079`, `3559730` y `4dcd32b`.
 
 **Validación pendiente:** build del HEAD actual y prueba real de abrir/cerrar grupo, backdrop, Escape, ciclo Tab/Shift+Tab, restauración del foco y apertura de resumen. El commit desplegado anteriormente en Preview (`cdd387b`) todavía no incluye esta corrección; requiere nuevo despliegue de Preview.
+
+
+## 23. Revisión de estados de diálogo en FichaExpediente — 6 de noviembre de 2026
+
+La inspección estática de `FichaExpediente.jsx` (9.924 líneas) confirma que:
+
+- El wrapper `Modal` usa `useAccessibleDialog` y aplica `role=dialog`, `aria-modal` y referencias de foco.
+- Los diálogos propios de orden de pago, PPAD y registro de gasto tienen refs y llamadas explícitas a `useAccessibleDialog`; sus condiciones `open` coinciden con las condiciones de render.
+- Los componentes separados `EnviarANotarioModal`, `LiquidarExpedienteModal` y `CarpetaDigitalModal` se mantienen como propietarios de sus propios estados; deben verificarse en sus archivos respectivos antes de modificar sus capas visuales.
+- El panel de solicitud de complemento de saldo es una expansión inline dentro de Gestión económica, no un modal de bloqueo; no se fuerza `aria-modal` ni trampa de foco sobre él.
+
+No se modifica FichaExpediente en esta pasada porque la estructura de sus diálogos propios está correctamente conectada en el JSX revisado. La validación final sigue requiriendo abrir cada diálogo, comprobar Escape/Tab/Shift+Tab, backdrop, foco restaurado, scroll y responsive en Preview.
