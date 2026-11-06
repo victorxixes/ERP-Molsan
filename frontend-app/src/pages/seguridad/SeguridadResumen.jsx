@@ -7,8 +7,6 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
-import "./SeguridadSubpaginasPremium.css";
-
 export default function SeguridadResumen({ empleadoId }) {
   const {
     ficha,
