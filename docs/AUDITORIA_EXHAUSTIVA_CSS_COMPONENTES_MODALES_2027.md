@@ -1225,3 +1225,10 @@ Para el commit de código 790e76f:
 La búsqueda ampliada detectó más raíces de página con `animate-fadeIn`. Se retiró de Municipios, Mensajería Molsan, Modelos de documentos, Mensajería Solicitudes, Entidades bancarias, Registros de propiedad, Correspondencia tipificada y Reglas de actividades del expediente. Se mantiene en LoginPage y PortalLogin, y no se han retirado las animaciones de carga de spinners.
 
 Commits: 1e29d74, e8cc5b8, 8e02314, 298475d, b81f1a9, 57dad80, 95e11e9 y 8b71c1f.
+
+
+## 29. Ajuste del patrón de referencia Espacios de trabajo
+
+Se ha afinado la propia tarjeta de referencia `.workspace-app-card`: fondo blanco sólido, borde de 1,5 px #C5D8E5 y sombra más definida. El hover pasa a elevar 4 px con sombra reforzada, manteniendo la franja superior de acento, el icono tonal, la flecha circular y el movimiento de flecha del pie que identifican el patrón. Las tarjetas canónicas y KPI usan ya la misma geometría/valores de borde, sombra y elevación.
+
+Commit: 7022944.
