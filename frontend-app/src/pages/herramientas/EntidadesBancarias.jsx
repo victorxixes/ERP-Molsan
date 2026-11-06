@@ -2891,9 +2891,7 @@ function ModalImportarExcel({
               "
             >
 
-              <div className="text-lg">
-                ℹ️
-              </div>
+              <div className="shrink-0"><MolsanIcon name="help" size={19} tone="ocean" /></div>
 
 
               <div>
