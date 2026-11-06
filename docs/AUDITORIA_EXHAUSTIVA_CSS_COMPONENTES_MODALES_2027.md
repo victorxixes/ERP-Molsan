@@ -1218,3 +1218,10 @@ Para el commit de código 790e76f:
 - Workflow Frontend dependency security audit #481: success.
 - Workflow Validar Fichaje Molsan #3626: build del frontend success y sintaxis del backend de fichajes success.
 - Workflow MOLSAN frontend premium build #1181: cancelado por concurrencia durante la fase de build; no se interpreta como fallo. La compilación del frontend sí quedó confirmada en el job de build del workflow Validar Fichaje.
+
+
+### 25.1. Segunda pasada de animaciones de páginas
+
+La búsqueda ampliada detectó más raíces de página con `animate-fadeIn`. Se retiró de Municipios, Mensajería Molsan, Modelos de documentos, Mensajería Solicitudes, Entidades bancarias, Registros de propiedad, Correspondencia tipificada y Reglas de actividades del expediente. Se mantiene en LoginPage y PortalLogin, y no se han retirado las animaciones de carga de spinners.
+
+Commits: 1e29d74, e8cc5b8, 8e02314, 298475d, b81f1a9, 57dad80, 95e11e9 y 8b71c1f.
