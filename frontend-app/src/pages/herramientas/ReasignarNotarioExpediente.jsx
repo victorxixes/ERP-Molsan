@@ -88,18 +88,16 @@ export default function ReasignarNotarioExpediente() {
   return (
     <main className="molsan-page-stack herramientas-subpagina-premium min-h-full">
       <header className="molsan-page-header">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-3xl"><MolsanIcon name="courthouse" size={20} /></div>
-          <div className="min-w-0 flex-1">
-            <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">Reasignar expediente a notario</h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Busca el expediente para recuperar su ficha de Envío a notario, corregir sus datos y guardar la nueva asignación.
-            </p>
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="courthouse" size={22} tone="ocean" /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Reasignar expediente a notario</h1>
+            <p className="molsan-page-header__description">Busca el expediente para recuperar su ficha de Envío a notario, corregir sus datos y guardar la nueva asignación.</p>
           </div>
-          <Link to="/herramientas/utilidades" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
-            ← Volver a Utilidades
-          </Link>
+        </div>
+        <div className="molsan-page-header__actions">
+          <Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary">← Volver a Utilidades</Link>
         </div>
       </header>
 
