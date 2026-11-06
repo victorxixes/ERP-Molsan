@@ -154,3 +154,32 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 7. Actualizar esta auditoría con evidencia, commit, CI y resultado de Preview.
 
 **Conclusión:** el inventario de 41 CSS está realizado y se han localizado focos claros de cascada heredada. La limpieza global todavía no está terminada. Este documento registra el punto de partida verificable y evita presentar como completadas pruebas que aún no se han ejecutado.
+
+## 11. Revisión incremental de modales — 6 de noviembre de 2026
+
+Se ha profundizado en el flujo de Agenda y, especialmente, en FichaExpediente y sus modales de gestión documental/económica.
+
+### Componentes comprobados estáticamente
+
+- `Agenda.jsx` utiliza `MolsanPageHeader` y cuatro `MolsanPremiumCard` para los indicadores. Su `ModalNuevaCita` utiliza `useAccessibleDialog`, `role="dialog"` y `aria-modal="true"`.
+- `EnviarANotarioModal.jsx` utiliza `useAccessibleDialog` cuando se presenta como modal independiente; su variante inline no se declara como diálogo modal.
+- `LiquidarExpedienteModal.jsx` contiene dos diálogos apilables (liquidación y vista previa) y dos instancias del hook con refs independientes.
+- `CarpetaDigitalModal.jsx` separa el diálogo de carpeta, el panel inline de actividad y el visor documental. El visor usa un diálogo propio cuando se abre en modo actividad.
+- `FichaExpediente.jsx` tiene 9.883 líneas en el commit revisado y concentra estados de múltiples modales y formularios. No es seguro validar sus interacciones leyendo únicamente el JSX.
+
+### Defectos de accesibilidad encontrados y corrección aplicada
+
+1. El componente base `Modal` de `FichaExpediente.jsx` no declaraba `role="dialog"` / `aria-modal`, no tenía un ref de foco y no utilizaba el hook compartido. Se ha incorporado `useAccessibleDialog`, ref, etiqueta accesible y foco inicial/ciclo de Tab/Escape.
+2. Tres overlays propios de la ficha (orden de pago, PPAD y registro de gasto dentro de Gestión económica) declaraban el diálogo, pero no tenían ciclo de foco ni gestión de Escape. Se han conectado a refs independientes y a `useAccessibleDialog`, respetando las condiciones existentes para no cerrar mientras se guarda un pago/gasto y conservando la cancelación PPAD.
+
+Commits de corrección:
+- `2b620bd`: modal base de FichaExpediente.
+- `315f84c`: orden de pago, PPAD y registro de gasto.
+
+### Pendiente de validación
+
+- Confirmar build del commit `315f84c` y revisar cualquier fallo de CI.
+- En navegador, abrir/cerrar cada modal con ratón y teclado; comprobar foco inicial, Tab/Shift+Tab, Escape, restauración del foco, backdrop y scroll.
+- Probar especialmente anidamiento de vista previa de cierre y visor documental sobre sus diálogos padre.
+- Verificar estados de carga, validación, error, guardado y bloqueo de cierre durante operaciones.
+- No se declara completada la auditoría de modales de todos los módulos: esta pasada cubre los componentes indicados y no sustituye la matriz completa de rutas/subpáginas.
