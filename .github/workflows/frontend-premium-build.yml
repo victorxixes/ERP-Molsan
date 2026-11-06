@@ -11,6 +11,7 @@ on:
       - ".github/workflows/frontend-premium-build.yml"
   push:
     branches:
+      - fix/molsan-css-selector-audit-round1
       - fix/molsan-premium-2027-global-ui
       - molsan-premium-2027-global-consistency
       - molsan-premium-2027-page-gutters
