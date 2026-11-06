@@ -149,3 +149,29 @@ La alternativa técnicamente más segura es:
 ## 5. Regla de seguridad
 
 No se ha modificado `main`, producción, API ni base de datos. No se debe fusionar ni desplegar una entrega parcial como rediseño global.
+
+
+## 6. Cambios ejecutados después de la primera pasada — 2026-11-06
+
+Rama: `molsan-premium-2027-production-ready`.
+
+### Migración visual aplicada
+- `MolsanPageHeader` utiliza ahora el componente SVG compartido `MolsanIcon`; las marcas de texto AG/EG/NG/CG dejan de renderizarse como siglas.
+- ApoderaGest, EncargaGest, NotarGest, Dashboard y Espacio de trabajo usan el componente común de cabecera.
+- Se retiraron las clases de cabecera heredadas de los tres portales y los estilos específicos equivalentes de `PortalProfesionalShared.css`, `EncargaGest.css`, `NotarGest.css`, `DashboardCancelagest.css`, `molsan-design-system.css` y los bloques de cabecera portal de `MolsanRedesign2027.css`.
+- ApoderaGest ya no muestra fecha, «Ir a módulos» ni «Actualizar datos» en la cabecera. EncargaGest mantiene solo la acción de cierre de sesión cuando procede.
+- Las tarjetas de navegación de NotarGest se han migrado al patrón de Espacios de trabajo: franja superior, icono SVG, título, descripción, contador y acción de apertura.
+- Las tarjetas KPI de ApoderaGest y EncargaGest comparten la base visual y los iconos SVG.
+- Los botones de cabecera y las acciones principales/secundarias de NotarGest y EncargaGest usan las clases comunes `molsan-btn`.
+- Las tablas de NotarGest usan `molsan-table` y `molsan-table-wrap`; se retiraron sus reglas genéricas locales de tabla.
+- Los diálogos de NotarGest adoptan el shell común `molsan-modal-overlay` / `molsan-modal`; se retiraron las reglas base duplicadas de overlay y modal de esa hoja.
+
+### Comprobación
+- Build frontend y comprobaciones asociadas: **correctas** en el commit `edf92240d29d54cf98182ab52231f41d83ae67fd`.
+- El build emitió un aviso preexistente en `ModelosDocumentos.jsx` sobre un carácter `}` dentro de JSX; no impidió la compilación.
+- La comprobación de build no sustituye la revisión visual autenticada de Preview ni las pruebas de regresión de los diálogos.
+
+### Alcance que sigue abierto
+- No se considera migrado el frontend completo. Quedan pendientes las restantes páginas, subpáginas, tarjetas, formularios, tablas y modales de los 96 componentes de página y 107 rutas.
+- No se han retirado aún todas las hojas CSS particulares; solo se han retirado reglas de cabecera/controles/tablas sustituidas y verificadas en las familias indicadas.
+- No se ha fusionado la PR #410 ni se ha desplegado a producción. No se han tocado API ni base de datos.
