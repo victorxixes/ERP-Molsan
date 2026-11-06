@@ -1066,3 +1066,12 @@ Commits de código: d60cdf9, 70a0a49, 45a0a40, 21da073.
 Commits adicionales: af8e1f7, 1b19d50, 60b3b1a, 57f21aa, 1bc3459.
 
 **Pendiente:** build CI del nuevo HEAD y comprobación visual en Preview de las tres áreas de portal, incluidas fichas y estados responsive. La inspección estática no certifica que el resultado visual sea correcto.
+
+
+### 19.2. Fondos y botones compartidos
+
+- Las raíces de página incluidas en el canon fuerzan superficie blanca sólida para evitar que los fondos de módulo heredados vuelvan a teñir el lienzo.
+- El botón secundario EncargaGest deja de definir su propia piel (borde, radio, fondo, color y hover); conserva únicamente layout, tamaño y área interactiva, delegando el aspecto al sistema común.
+- Se mantienen las excepciones funcionales de estado (por ejemplo, botones deshabilitados y acciones de éxito) y las reglas de formularios/controles que no son tarjetas.
+
+Commits adicionales: 25193d7 y dd72d6d.
