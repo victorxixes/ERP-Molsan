@@ -1232,3 +1232,8 @@ Commits: 1e29d74, e8cc5b8, 8e02314, 298475d, b81f1a9, 57dad80, 95e11e9 y 8b71c1f
 Se ha afinado la propia tarjeta de referencia `.workspace-app-card`: fondo blanco sólido, borde de 1,5 px #C5D8E5 y sombra más definida. El hover pasa a elevar 4 px con sombra reforzada, manteniendo la franja superior de acento, el icono tonal, la flecha circular y el movimiento de flecha del pie que identifican el patrón. Las tarjetas canónicas y KPI usan ya la misma geometría/valores de borde, sombra y elevación.
 
 Commit: 7022944.
+
+
+### 26.3. Radio responsive de modales
+
+Los paneles modales especiales de EncargaGest/NotarGest y los paneles compartidos bajan a radio de 18 px en móvil, conservando 22 px en escritorio. Commit: b23585a.
