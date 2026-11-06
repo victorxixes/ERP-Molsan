@@ -1244,3 +1244,8 @@ Los paneles modales especiales de EncargaGest/NotarGest y los paneles compartido
 La Intranet ya utilizaba MolsanPageHeader, MolsanStatCard y MolsanIcon; se incorporó su raíz al canon de tarjetas heredadas, incluyendo los paneles con radio 26 px. Se retiró el fondo/borde azul del formulario de publicación anidado para que el formulario quede integrado dentro de la tarjeta principal, sin crear una tarjeta dentro de otra.
 
 Commits: e9fa1ec y 4d3dcec.
+
+
+### 30.1. Catálogos, mensajería y honorarios
+
+Se amplió la regla de tarjetas heredadas a las raíces `catalogos-premium-page`, `catalogos-maestros-premium`, `catalogos-maestros-page` y `honorarios-gestoria-premium`. Mensajería Molsan y Mensajería Solicitudes reutilizan la raíz de Catálogos, por lo que quedan cubiertas sin tocar sus operaciones. Commit: a961530.
