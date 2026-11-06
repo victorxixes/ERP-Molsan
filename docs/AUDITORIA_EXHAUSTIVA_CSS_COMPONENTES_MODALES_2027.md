@@ -937,3 +937,17 @@ Se han vuelto a leer los JSX actuales de ApoderaGest, EncargaGest y NotarGest y 
 - Se conservan los componentes y estados existentes; esta comprobación no cambia formularios ni acciones.
 
 **Límite:** se confirma el marcado y la asociación estática del hook, no el comportamiento real de tabulación, Escape, foco inicial/retorno, lector de pantalla, scroll interno ni viewport. Esas pruebas deben hacerse en navegador autenticado y en cada estado del modal.
+
+
+## 54. Inspección del hook compartido de accesibilidad de diálogos — 6 de noviembre de 2026
+
+Se ha revisado `components/ui/useAccessibleDialog.js`, usado por los 11 diálogos de los tres portales:
+
+- Al abrir, guarda el foco anterior y mueve el foco al primer elemento visible y habilitado; si no hay ninguno, enfoca el propio diálogo.
+- Mantiene el foco dentro del diálogo mediante `focusin`.
+- Intercepta `Tab` y `Shift+Tab` para recorrer cíclicamente los controles.
+- Solo el diálogo modal superior procesa Escape y Tab, permitiendo superposición de diálogos.
+- Al cerrar, retira los listeners y devuelve el foco al elemento previo si sigue conectado al documento.
+- Excluye elementos no visibles, deshabilitados, dentro de `aria-hidden` o de contenedores `inert`.
+
+No se han cambiado el hook ni sus consumidores. La lectura estática confirma el mecanismo; queda probar en navegador el comportamiento real de los 11 estados, especialmente cierres bloqueados durante guardado, modales anidados, scroll y retorno de foco.
