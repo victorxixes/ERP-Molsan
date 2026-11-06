@@ -651,63 +651,6 @@ export default function Mensajes({
       />
 
       {/* =================================================
-          FONDO PREMIUM
-      ================================================= */}
-
-      <div
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          overflow-hidden
-        "
-      >
-
-        <div
-          className="
-            absolute
-            -left-48
-            -top-48
-            h-[520px]
-            w-[520px]
-            rounded-full
-            bg-blue-400/10
-            blur-3xl
-          "
-        />
-
-        <div
-          className="
-            absolute
-            -bottom-48
-            -right-48
-            h-[520px]
-            w-[520px]
-            rounded-full
-            bg-cyan-300/10
-            blur-3xl
-          "
-        />
-
-        <div
-          className="
-            absolute
-            left-1/2
-            top-1/2
-            h-[700px]
-            w-[700px]
-            -translate-x-1/2
-            -translate-y-1/2
-            rounded-full
-            bg-white/70
-            blur-3xl
-          "
-        />
-
-      </div>
-
-
-      {/* =================================================
           CONTENIDO
       ================================================= */}
 
@@ -739,15 +682,15 @@ export default function Mensajes({
             rounded-[24px]
 
             border
-            border-white/80
+            border-[#C5D8E5]
 
-            bg-white/75
+            bg-white
 
-            backdrop-blur-2xl
+            
 
-            shadow-[0_20px_60px_rgba(15,23,42,0.10)]
+            
 
-            animate-slideUp
+            
 
             lg:flex
             lg:h-full
@@ -755,23 +698,6 @@ export default function Mensajes({
             lg:flex-col
           "
         >
-
-          {/* línea superior */}
-
-          <div
-            className="
-              absolute
-              left-0
-              right-0
-              top-0
-              h-px
-              bg-gradient-to-r
-              from-transparent
-              via-blue-400/50
-              to-transparent
-            "
-          />
-
 
           {/* CABECERA */}
 
@@ -1238,17 +1164,17 @@ export default function Mensajes({
             rounded-[24px]
 
             border
-            border-white/80
+            border-[#C5D8E5]
 
-            bg-white/75
+            bg-white
 
-            backdrop-blur-2xl
+            
 
-            shadow-[0_20px_60px_rgba(15,23,42,0.10)]
+            
 
             lg:col-span-2
 
-            animate-slideUp
+            
 
             lg:flex
             lg:h-full
