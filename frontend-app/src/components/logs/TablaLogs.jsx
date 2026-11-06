@@ -403,7 +403,7 @@ export default function TablaLogs({
 
   return (
     <div
-      className="space-y-5"
+      className="tabla-logs-premium space-y-5"
     >
 
       {/* =====================================================
