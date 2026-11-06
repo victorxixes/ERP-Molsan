@@ -2,7 +2,7 @@
 
 **Rama de trabajo:** `fix/molsan-css-selector-audit-round1`  
 **PR:** #409 (Draft)  
-**Último commit de código:** `3551af019c3a12f30aee2c97f3f1b5cbb865daf2`  
+**Último commit de código:** `4dcd32bdefb9e161e6f4ce19bb902bb628bca929`  
 **Alcance de esta revisión:** frontend `frontend-app/src`; sin cambios en backend, API, Supabase, datos ni producción.
 
 ## 1. Inventario real del frontend
@@ -86,12 +86,12 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 
 ## 4. Hallazgos de la primera pasada estática
 
-1. **Canonical Visual concentra 115 usos de `!important` en 321 líneas.** Es una capa de precedencia muy alta que impone cabeceras, tarjetas, botones y estados sobre clases de módulo. Debe reducirse mediante migración de consumidores y reglas semánticas, no eliminando prioridades sin sustitución.
-2. **EncargaGest.css tiene 117 `!important` en 905 líneas.** Es la mayor concentración dentro de las hojas de portal/módulo examinadas. Requiere comparar sus reglas con JSX y con Canonical Visual.
+1. **Canonical Visual concentra 110 usos de `!important` en 298 líneas.** Es una capa de precedencia muy alta que impone cabeceras, tarjetas, botones y estados sobre clases de módulo. Debe reducirse mediante migración de consumidores y reglas semánticas, no eliminando prioridades sin sustitución.
+2. **EncargaGest.css tiene 72 `!important` en 820 líneas.** Es la mayor concentración dentro de las hojas de portal/módulo examinadas. Requiere comparar sus reglas con JSX y con Canonical Visual.
 3. **ApoderaGest.css contiene 2.250 líneas y 747 bloques/reglas detectados por conteo estático.** Su tamaño exige una auditoría por secciones y consumidores; no se considera obsoleto por tamaño.
 4. **MolsanRedesign2027.css tiene 2.757 líneas; MolsanPremium2027.css 1.350.** Ambas hojas tienen responsabilidades que se cruzan con GlobalConsistency, Fase3, Design System y Canonical Visual. Debe decidirse qué capa conserva cada responsabilidad antes de retirar código.
 5. **SeguridadSubpaginasPremium.css tiene 369 líneas** y contiene bloques repetidos de tablas, botones, controles y accesibilidad dentro de varios selectores de seguridad; candidato a consolidación local tras verificar cada subpágina.
-6. **Agenda.css tiene 40 `!important` en 198 líneas.** Revisar si son realmente necesarios frente a las capas globales.
+6. **Agenda.css tiene 40 `!important` en 160 líneas.** Revisar si son realmente necesarios frente a las capas globales.
 7. **No se ha encontrado un duplicado exacto de bloque completo entre las cinco hojas globales comparadas** mediante una primera comparación textual de selectores. Esto no descarta declaraciones solapadas con selectores distintos ni conflictos de especificidad.
 8. **El recuento de `!important` no equivale a deuda eliminable:** algunos pueden ser necesarios en estados concretos o para neutralizar estilos legacy. Cada eliminación necesita evidencia de cascada y prueba.
 
@@ -113,7 +113,7 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 - Segunda pasada de `EncargaGest.css`: retiradas otras 5 reglas sin consumidor o filtradas al módulo equivocado (utilidades Tailwind antiguas, `.ag-fecha-actual` y duplicación de `.ag-estado`, que pertenece al portal ApoderaGest). El CSS restante se ha contrastado con EncargaGest, ApoderaGest y los componentes compartidos; no quedan clases sin consumidor en ese conjunto.
 - `DashboardCancelagest.css`: eliminadas 26 reglas de 7 clases que ya no existen en Dashboard/Cancelagest (`ag-fecha-actual`, `ag-punto-vivo`, `ag-boton-actualizar` y paneles/KPI legacy). La hoja pasa de 269 a 134 líneas; todas las clases restantes se encuentran en los consumidores actuales.
 - `Cancelagest.jsx`/`Cancelagest.css`: sustituida la iconografía Unicode de los accesos por `MolsanIcon` (incluidos los pictogramas de módulos, el distintivo de cabecera y la flecha de navegación); eliminado un cálculo de fecha no utilizado y retirados los estilos de cabecera legacy ya reemplazados por `MolsanPageHeader`.
-- `Agenda.css`: retiradas 13 reglas de iconografía KPI antigua (`agenda-stat-icon*` y `agenda-stat-label`) que ya no se renderiza; las tarjetas usan `MolsanPremiumCard`. La hoja pasa de 198 a 161 líneas y sus clases restantes tienen consumidores identificados, incluidas las vistas de mes/semana/día y `SelectSJ`.
+- `Agenda.css`: retiradas 13 reglas de iconografía KPI antigua (`agenda-stat-icon*` y `agenda-stat-label`) que ya no se renderiza; las tarjetas usan `MolsanPremiumCard`. La hoja pasa de 198 a 160 líneas y sus clases restantes tienen consumidores identificados, incluidas las vistas de mes/semana/día y `SelectSJ`.
 - `Agenda.jsx` y `Layout.jsx`: reemplazadas las flechas Unicode de navegación de calendario y de Volver por `MolsanIcon` (`arrowLeft`/`arrowRight`). No se ha añadido ningún botón de actualización.
 - `SeguridadSubpaginasPremium.css`: retirado el bloque de layout específico `seguridad-usuarios-layout` (73 líneas), cuyo root no aparece en las páginas actuales. Se conservan las reglas compartidas que sí usan las subpáginas con `seguridad-subpagina-premium` y los estilos específicos de Resumen y Editor de roles.
 - `PanelTecnico.css`: retiradas 13 reglas de cabecera y monitor heredadas sin consumidor (`panel-tecnico-header*`, `panel-tecnico-operativo`, `panel-tecnico-seccion` y títulos legacy de Monitor Realtime). La hoja pasa de 68 a 24 líneas; la comparación con las cinco páginas técnicas no deja clases CSS sin consumidor. `PanelTecnicoSubmodulos.css` conserva sus dos clases activas.
@@ -141,7 +141,7 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 | Migración completa a cabeceras/tarjetas canónicas | Pendiente |
 | Pruebas de permisos 401/403/200 | Pendiente; no se han ejecutado en esta ronda |
 | Pruebas funcionales de negocio y regresión | Pendiente; no se han ejecutado en navegador |
-| Build y despliegue Render Preview | Pendiente de validar y desplegar la última limpieza de Panel Técnico |
+| Build y despliegue Render Preview | Correctos; deploy `dep-dbmvlsqjnfac73bj64k0` en estado `live`, incluye el código `4dcd32b` |
 | Validación visual interactiva de Preview | Pendiente; la URL no ha podido abrirse con el navegador de consulta disponible |
 
 ## 8. Límites de seguridad de esta fase
@@ -212,7 +212,7 @@ La pasada ha calculado líneas y usos de `!important` y ha comparado selectores/
 | Hoja | Líneas | `!important` |
 |---|---:|---:|
 | `MolsanRedesign2027.css` | 2.757 | 57 |
-| `MolsanCanonicalVisual2027.css` | 321 | 115 |
+| `MolsanCanonicalVisual2027.css` | 298 | 110 |
 | `molsan-design-system.css` | 952 | 40 |
 | `MolsanPremium2027.css` | 1.350 | 18 |
 | `MolsanGlobalConsistency2027.css` | 226 | 5 |
@@ -275,7 +275,7 @@ La compilación confirma que las nuevas referencias y hooks compilan en conjunto
 
 ### Alcance todavía abierto
 
-Quedan por cerrar el inventario completo de modales embebidos que no declaran `role="dialog"`, las subpáginas restantes y la matriz de validación funcional. La rama está desplegada en Render Preview con commit `cfd2b4c`; la inspección visual interactiva y la regresión funcional siguen pendientes.
+Quedan por cerrar el inventario completo de modales embebidos que no declaran `role="dialog"`, las subpáginas restantes y la matriz de validación funcional. La rama está desplegada en Render Preview con commit `a82d38a` (incluye código `4dcd32b`); la inspección visual interactiva y la regresión funcional siguen pendientes.
 
 
 ## 12. Limpieza adicional de reglas vacías — 6 de noviembre de 2026
@@ -347,7 +347,7 @@ El commit de código `0c18516` (ajuste responsive de cabeceras de Catálogos) qu
 - Workflow `Frontend dependency security audit`, ejecución `#237` = **success**.
 - La ejecución `MOLSAN frontend premium build` `#663` aparece como `cancelled`; no se interpreta como fallo de compilación, porque el build del frontend del workflow `#3272` sí terminó correctamente para el mismo commit de código.
 
-El commit posterior `c8bb1d3` solo actualiza esta documentación. La validación automatizada no acredita todavía la inspección de navegador, las pruebas de modales, la matriz funcional ni el responsive visual. Render Preview no se ha desplegado desde esta rama en esta ronda; Producción, API y Supabase permanecen fuera del alcance.
+El commit posterior `c8bb1d3` solo actualiza esta documentación. La validación automatizada no acredita todavía la inspección de navegador, las pruebas de modales, la matriz funcional ni el responsive visual. Render Preview sí está desplegado en esta ronda (`dep-dbmvlsqjnfac73bj64k0`, `live`); Producción, API y Supabase permanecen fuera del alcance.
 
 
 ## 16. Consolidación no destructiva de cabeceras de Catálogos — 6 de noviembre de 2026
@@ -410,7 +410,7 @@ La capa Canonical reduce sus `!important` de 115 a 110 en esta pasada. El result
 - `Vite production build`: success.
 - `Sintaxis del backend de fichajes`: success.
 - `Frontend dependency security audit`: success.
-- Render Preview todavía necesita el despliegue de este commit; el último deploy previo no contiene esta consolidación.
+- Render Preview contiene esta consolidación en el deploy live `dep-dbmvlsqjnfac73bj64k0`.
 - La inspección visual interactiva y las pruebas de foco/hover en navegador siguen pendientes.
 
 
@@ -462,7 +462,7 @@ Los componentes de diálogo compartidos de Agenda, CTN, Empleados y Expedientes 
 - `MOLSAN frontend premium build`: success.
 - `Frontend dependency security audit`: success.
 - `Validar Fichaje Molsan`: success.
-- Render Preview `molsan-premium-2027-candidate-preview`: deploy live en el mismo commit `cdd387be`; auto-deploy permanece desactivado.
+- Render Preview `molsan-premium-2027-candidate-preview`: deploy live `dep-dbmvlsqjnfac73bj64k0`, commit `a82d38a` (documentación; código `4dcd32b`); auto-deploy permanece desactivado.
 
 Producción, API y base de datos principal no forman parte de estos cambios. El workflow separado `supabase-schema-audit` sigue apareciendo como fallo; se ha limitado su paso de commit de migración a la rama `release/molsan-premium-2027-candidate`, por lo que esta rama de auditoría no puede escribir una migración Supabase.
 
@@ -540,3 +540,14 @@ Se contrastaron los estados de render y los refs de los diálogos en seis módul
 - `Agenda.jsx` / `ModalNuevaCita.jsx`: diálogo con foco gestionado por el hook; corregido el cierre por Escape durante el guardado.
 
 En los cinco primeros no se detectó un desacoplamiento entre el estado que abre el modal y la condición de render en la inspección estática. No se han alterado porque la conexión de estado/ref es coherente. La comprobación de teclado, backdrop, scroll y foco restaurado sigue pendiente en navegador.
+## 25. Estado consolidado de la rama y colisiones resueltas — 6 de noviembre de 2026
+
+- `molsan-design-system.css` es ahora el único propietario del componente `MolsanPremiumCard`: franja superior única, hover, foco y título. `MolsanCanonicalVisual2027.css` ya no lo sobrescribe.
+- `MolsanPremium2027.css` es el único propietario del acabado base de `MolsanIcon`; se retiró la base duplicada de `molsan-design-system.css`.
+- `MolsanRedesign2027.css` ya no duplica `position/z-index` de `.mol-sidebar-premium` ni `color/background` de `.erp-app-shell`.
+- Canonical conserva 110 `!important` (antes 115); no se eliminan más sin validar especificidad y comportamiento de las páginas legacy.
+- El listener Escape manual de grupos de ApoderaGest se eliminó; `useAccessibleDialog` controla Escape para el diálogo real. La corrección del estado de apertura/cierre del grupo está en `4dcd32b`.
+- Render Preview está `live` en `dep-dbmvlsqjnfac73bj64k0`; auto-deploy sigue desactivado. El último commit desplegado es `a82d38a` (documentación) e incluye el código `4dcd32b`.
+- PR #409 sigue en Draft y sin merge. Producción, API y base de datos principal no se han tocado.
+- Build del frontend, auditoría de dependencias y sintaxis backend: correctos en los commits de código anteriores a este estado.
+- Pendiente: revisión visual autenticada en navegador, responsive real, prueba de foco/Tab/Shift+Tab/Escape/backdrop de cada modal, matriz de permisos 401/403/200 y regresión funcional por módulo. No se declara finalizada la auditoría global.
