@@ -2,10 +2,12 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 
 // ============================================================
@@ -352,6 +354,11 @@ export default function AccionesExpediente() {
     mostrarImportar,
     setMostrarImportar,
   ] = useState(false);
+
+  const accionDialogRef = useRef(null);
+  const importarAccionesDialogRef = useRef(null);
+  useAccessibleDialog({ open: mostrarModal, onClose: cerrarModal, dialogRef: accionDialogRef });
+  useAccessibleDialog({ open: mostrarImportar, onClose: () => { if (!importando) setMostrarImportar(false); }, dialogRef: importarAccionesDialogRef });
 
   const [
     modoEdicion,
@@ -2214,6 +2221,11 @@ export default function AccionesExpediente() {
         >
 
           <div
+            ref={accionDialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Formulario de acción de expediente"
             className="
               w-full
               max-w-3xl
@@ -2545,6 +2557,11 @@ export default function AccionesExpediente() {
         >
 
           <div
+            ref={importarAccionesDialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Importar acciones de expediente"
             className="
               w-full
               max-w-xl
