@@ -1,9 +1,7 @@
-/* MOLSAN ERP PREMIUM 2027 · SISTEMA COMPARTIDO DE TARJETAS
-   Acabado inspirado en las tarjetas de Espacio de trabajo.
-   Se aplica a las tarjetas semánticas existentes sin alterar datos,
-   acciones, permisos ni estructura funcional. */
-
-/* Las tarjetas se aplican mediante clases/componentes semánticos; no se infieren desde utilidades Tailwind. */
+/* MOLSAN ERP PREMIUM 2027 · AJUSTES DE COMPATIBILIDAD DE TARJETAS Y CABECERAS
+   Las bases compartidas de MolsanPremiumCard y MolsanStatCard pertenecen a
+   molsan-design-system.css. Esta hoja conserva únicamente ajustes locales
+   de Catálogos, accesos de Informes y compatibilidad responsive heredada. */
 
 /* ============================================================
    MOLSAN ERP PREMIUM 2027 · CATÁLOGOS Y TODAS SUS FICHAS
