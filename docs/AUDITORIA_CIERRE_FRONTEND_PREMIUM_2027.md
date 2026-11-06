@@ -2,15 +2,15 @@
 
 **Fecha:** 6 de noviembre de 2026  
 **Rama auditada:** `fix/molsan-css-selector-audit-round1`  
-**Último commit funcional de esta ronda:** `90cb63947ff879f63d4f01fbc6676d4c99d24555`  
-**Último commit de documentación de auditoría:** `14ff46f9107dc4d9011937c758bad31add5cf9e0`  
-**Último commit funcional desplegado y compilado por Render:** `90cb63947ff879f63d4f01fbc6676d4c99d24555` (incluido en el deploy `095efb9`)  
+**Último commit funcional desplegado:** `6b98941dd2dc9df924c6e1d93b8d2c59f3ed11cd`  
+**Último commit de documentación de auditoría:** `8bcfc4ca3cd650f826f150323af08de5ad195fac`  
+**Último commit funcional desplegado y compilado por Render:** `6b98941dd2dc9df924c6e1d93b8d2c59f3ed11cd` (deploy `dep-dbn0sj5g1s2s73c4m650`)  
 **PR:** [#409](https://github.com/victorxixes/ERP-Molsan/pull/409)  
 **Alcance de seguridad:** solo frontend y documentación en la rama de Preview. No se han modificado producción, API, base de datos ni datos de expedientes.
 
 ## Resultado ejecutivo
 
-> **Estado actualizado a 6 de noviembre de 2026:** la rama de auditoría ya está desplegada en Preview. El último commit funcional es `90cb639`; Render sirve el deploy `095efb9` en estado `live`. La PR #409 sigue en Draft. Producción, API y base de datos principal permanecen intactas. La inspección visual autenticada y las pruebas manuales siguen pendientes.
+> **Estado actualizado a 6 de noviembre de 2026:** Render Preview sirve en estado `live` el commit `6b98941` (deploy `dep-dbn0sj5g1s2s73c4m650`). La PR #409 sigue en Draft. Producción, API y base de datos principal permanecen intactas. La inspección visual autenticada y las pruebas manuales siguen pendientes.
 
 
 Esta auditoría distingue expresamente entre inspección estática, compilación y validación real en navegador. No se marca como validada una pantalla solo porque exista su componente o compile.
@@ -20,7 +20,7 @@ Esta auditoría distingue expresamente entre inspección estática, compilación
 - Se inspeccionaron los puntos de entrada de estilos en `main.jsx`, además de las capas globales CanonicalVisual, GlobalConsistency, GlassLuxeUnified, Premium2027 y Redesign2027.
 - Se inspeccionaron los componentes principales de Expedientes, Agenda, CTN, Fusiones, Provisiones, Mensajería, Informes, Catálogos, Seguridad y Panel Técnico.
 - GitHub Actions para el commit canónico `cdd387b`: `MOLSAN frontend premium build` #699, `Validar Fichaje Molsan` #3289 y `Frontend dependency security audit` #254 terminaron en `success`. Render completó además el build y deploy del commit `095efb9`, que incluye el último cambio funcional de Agenda (`90cb639`). Esto verifica compilación/despliegue, no la interacción visual autenticada.
-- Render Preview `molsan-premium-2027-candidate-preview` está `live` en el deploy `dep-dbmvmq5bedkc73dknrf0`, commit `095efb9`, que incluye el código `90cb639` de la rama `fix/molsan-css-selector-audit-round1`. El auto-deploy está desactivado; no se ha desplegado Producción ni la API.
+- Render Preview `molsan-premium-2027-candidate-preview` está `live` en el deploy `dep-dbn0sj5g1s2s73c4m650`, commit `6b98941` de la rama `fix/molsan-css-selector-audit-round1`. El auto-deploy está desactivado; el despliegue fue manual y limitado a Preview.
 - La apertura de la URL del Preview desde el lector web no ha sido posible; no se declara una inspección visual real de escritorio, tablet o móvil.
 - El build y despliegue del código actual están confirmados por Render en estado `live`. La validación visual autenticada en Preview y las pruebas funcionales siguen pendientes; por tanto, no se declara completado el punto de regresiones.
 
@@ -130,3 +130,31 @@ El trabajo solo puede declararse cerrado cuando:
 - Se eliminó `notargest_soporte_notaria` de `sessionStorage`: el portal no leía esa copia de metadatos. Se conserva el token temporal de soporte porque es credencial de sesión.
 - Persisten claves de autenticación/sesión: JWT general y snapshot del empleado en `authStore`, más tokens/selector de modo de los portales. No son expedientes ni conjuntos de datos de negocio. No se han eliminado porque el flujo actual depende de ellas para restaurar sesión y el backend actual expone `/auth/login`, pero no un endpoint general `/auth/me` para rehidratar el empleado desde servidor. Su sustitución debe hacerse junto con el flujo de identidad de Supabase/Auth o un endpoint de perfil equivalente, no borrando la caché a ciegas.
 - Los documentos y adjuntos operativos deben continuar su migración a buckets privados de Supabase Storage (por ejemplo, `expedientes-documentos`, `mensajes-adjuntos`, `intranet-documentos` y `empleados-fotos`), con autorización JWT y sin URLs públicas. Esta limpieza de frontend no cambia API ni almacenamiento documental.
+
+
+## 11. Ajustes de alineación de los portales y despliegue — 6 de noviembre de 2026
+
+Se ha realizado una comparación de los gutters exteriores de los tres portales prioritarios con el wrapper compartido de Layout. Se han corregido únicamente márgenes duplicados o inconsistentes, sin modificar la estructura funcional:
+
+- **NotarGest:** `.notargest.ng-content` deja de añadir `padding: 22px 26px 30px`, porque su wrapper JSX ya aplica `px-4 py-6 lg:px-6`. La vista administrativa `.ng-admin-notarias`, que no usa ese wrapper, recibe el mismo gutter: 16 px en móvil y 24 px desde 1024 px.
+- **ApoderaGest:** en móvil se neutraliza el padding adicional de 14 px únicamente en el shell `.erp-page.apoderagest`; se conserva el padding del wrapper exterior y no se altera el de los overlays/diálogos.
+- **EncargaGest:** el gutter de `.eg-main` en pantallas de hasta 560 px pasa de 12 a 16 px, coherente con los otros portales.
+
+### Evidencia de compilación y Preview
+
+Commit funcional: `6b98941dd2dc9df924c6e1d93b8d2c59f3ed11cd`.
+
+Los tres workflows asociados terminaron en `success`:
+- `MOLSAN frontend premium build` #919.
+- `Frontend dependency security audit` #362.
+- `Validar Fichaje Molsan` #3397.
+
+Render Preview `molsan-premium-2027-candidate-preview`:
+- Deploy: `dep-dbn0sj5g1s2s73c4m650`.
+- Commit desplegado: `6b98941dd2dc9df924c6e1d93b8d2c59f3ed11cd`.
+- Estado: `live`.
+- Auto-deploy: desactivado; se lanzó manualmente después de CI correcto.
+
+### Límites pendientes
+
+La URL del Preview no ha podido abrirse con el navegador de consulta disponible. Por tanto, no se afirma que se haya realizado una inspección visual autenticada ni pruebas manuales desktop/tablet/móvil. La compilación y el estado LIVE de Render no sustituyen esa comprobación. La PR #409 continúa en Draft y no se ha fusionado. Producción, API y base de datos principal no se han modificado.
