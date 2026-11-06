@@ -35,11 +35,11 @@ export default function MensajesHeader({
         gap-3
         rounded-2xl
         border
-        border-slate-200/80
-        bg-white/80
+        border-[var(--molsan-border)]
+        bg-white
         px-4
         py-3
-        shadow-sm
+        shadow-[var(--molsan-shadow-card)]
         
       "
     >
@@ -73,9 +73,9 @@ export default function MensajesHeader({
               w-12
               rounded-full
               border
-              border-slate-200
+              border-[var(--molsan-border)]
               object-cover
-              shadow-sm
+              shadow-[var(--molsan-shadow-card)]
             "
           />
 
@@ -106,7 +106,7 @@ export default function MensajesHeader({
               text-base
               font-bold
               tracking-tight
-              text-slate-700
+              text-[var(--molsan-primary)]
             "
           >
             {usuario?.nombre}{" "}
@@ -130,7 +130,7 @@ export default function MensajesHeader({
                 ${
                   usuario
                     ? "bg-emerald-500"
-                    : "bg-slate-300"
+                    : "bg-[var(--molsan-border-strong)]"
                 }
               `}
             />
@@ -139,7 +139,7 @@ export default function MensajesHeader({
               className={
                 usuario
                   ? "text-emerald-600"
-                  : "text-slate-400"
+                  : "text-[var(--molsan-text-secondary)]"
               }
             >
               {usuario
@@ -161,13 +161,13 @@ export default function MensajesHeader({
           items-center
           rounded-full
           border
-          border-blue-100
-          bg-blue-50
+          border-[var(--molsan-border)]
+          bg-[var(--molsan-primary-soft)]
           px-3
           py-1.5
           text-[11px]
           font-medium
-          text-blue-500
+          text-[var(--molsan-primary)]
         "
       >
         Mensajería interna
