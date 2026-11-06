@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 /**
  * Vista visual de demostración de FichaExpediente.
@@ -27,6 +28,50 @@ export default function FichaExpedienteDemo() {
     ["Nota simple registral", "Recibido", "29/10/2026"],
     ["Justificante de cancelación", "Pendiente", "—"],
   ];
+
+  const resumenes = {
+    "Documentación previa": {
+      icono: "fileCheck",
+      descripcion: "Validación de la documentación necesaria antes del envío a notaría.",
+      campos: [["Hoja de solicitud / encargo", "Recibida y validada"], ["Justificante de cancelación", "Pendiente de aportar"], ["Nota simple", "Recibida · 29/10/2026"], ["Estado de revisión", "Documentación incompleta"]],
+    },
+    "Sede notarial": {
+      icono: "courthouse",
+      descripcion: "Datos de remisión y preparación de la firma en notaría.",
+      campos: [["Notaría", "Notaría de demostración · Barcelona"], ["Notario", "Notario de prueba"], ["Fecha de envío", "30/10/2026"], ["Estado", "Pendiente de asignar cita"]],
+    },
+    "Sede notarial con protocolo": {
+      icono: "scroll",
+      descripcion: "Datos de firma, apoderado y protocolo asociados al expediente.",
+      campos: [["Apoderado", "Gestoría"], ["Fecha de firma", "04/11/2026"], ["Número de protocolo", "1.245 / 2026"], ["Estado de firma", "Firmado · Datos ficticios"]],
+    },
+    "Gestión económica": {
+      icono: "wallet",
+      descripcion: "Resumen de obligaciones, pagos confirmados y saldo pendiente.",
+      campos: [["Provisión inicial", "2.450,00 €"], ["Obligaciones", "1.820,00 €"], ["Pagos confirmados", "1.200,00 €"], ["Saldo pendiente", "620,00 €"]],
+    },
+    "Liquidación de impuestos": {
+      icono: "euro",
+      descripcion: "Seguimiento de AJD / ITP y justificantes tributarios.",
+      campos: [["Impuesto", "AJD · Ejemplo"], ["Fecha de presentación", "05/11/2026"], ["Justificante AJD / ITP", "Pendiente de adjuntar"], ["Estado", "En preparación"]],
+    },
+    "Tramitación inscripción": {
+      icono: "building",
+      descripcion: "Control de presentación e inscripción en el Registro de la Propiedad.",
+      campos: [["Registro", "Registro de la Propiedad de Barcelona"], ["Hoja de inscripción", "Pendiente"], ["Fecha de presentación", "—"], ["Estado registral", "Pendiente de presentación"]],
+    },
+    "Defectos registrales": {
+      icono: "alert",
+      descripcion: "Incidencias registrales, subsanación y seguimiento.",
+      campos: [["Defecto abierto", "No consta en este ejemplo"], ["Descripción", "Sin incidencias ficticias activas"], ["Subsanación", "No aplica"], ["Estado", "Sin defectos abiertos"]],
+    },
+    "Cierre del expediente": {
+      icono: "check",
+      descripcion: "Comprobaciones finales y entrega del expediente digital completo.",
+      campos: [["Checklist de cierre", "Pendiente de revisión"], ["Facturación", "Pendiente"], ["Entrega al cliente", "Pendiente"], ["Estado final", "No cerrado"]],
+    },
+  };
+  const resumenActividad = resumenes[actividad] || resumenes["Documentación previa"];
 
   return (
     <main className="ficha-expediente-premium erp-page space-y-5">
@@ -77,6 +122,29 @@ export default function FichaExpedienteDemo() {
             ))}
           </div>
         </div>
+      </section>
+
+      <section className="molsan-card p-5" aria-live="polite">
+        <div className="mb-4 flex items-center gap-3">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border" style={{ color: "var(--molsan-blue)", background: "var(--molsan-panel)", borderColor: "var(--molsan-border)" }}>
+            <MolsanIcon name={resumenActividad.icono} size={22} tone="ocean" bare />
+          </span>
+          <div>
+            <h2 className="font-semibold" style={{ color: "var(--molsan-blue)" }}>Resumen de actividad · {actividad}</h2>
+            <p className="mt-1 text-sm" style={{ color: "var(--molsan-muted)" }}>{resumenActividad.descripcion}</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2 xl:grid-cols-4">
+          {resumenActividad.campos.map(([label, value]) => (
+            <div className="ficha-dato min-w-0" key={label}>
+              <p className="ficha-dato__label">{label}</p>
+              <div className="ficha-dato__value">{value}</div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-4 rounded-xl border px-3 py-2 text-xs" style={{ color: "var(--molsan-muted)", borderColor: "var(--molsan-border)", background: "var(--molsan-panel)" }}>
+          Ejemplo visual con información ficticia: no representa un expediente real ni guarda cambios.
+        </p>
       </section>
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
