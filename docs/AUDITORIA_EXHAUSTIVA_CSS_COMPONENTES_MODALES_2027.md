@@ -597,3 +597,17 @@ Commits: `9a5a9a0` y `256fa92`.
 - No quedan selectores vacíos en estas cuatro hojas inspeccionadas (`CatalogosMaestrosPremium.css`, `MolsanCardsPremium2027.css`, `EncargaGest.css` y `NotarGest.css`).
 - Las coincidencias de selectores que permanecen se han clasificado como responsive, variantes de modal/perfil o reglas con distinta especificidad; no se consideran duplicados eliminables sin pruebas de navegador.
 - **Validación pendiente:** ejecutar build sobre los commits de esta pasada y revisar visualmente Catálogos (incluidas fichas), EncargaGest y NotarGest en Preview, con escritorio/tablet/móvil y modales abiertos.
+
+
+## 23. Validación de la segunda pasada y despliegue de Preview — 6 de noviembre de 2026
+
+Para el commit funcional `7e7a9db` (limpieza de EncargaGest/NotarGest y retirada del selector de Catálogos sin uso):
+
+- `Validar Fichaje Molsan` #3320: **success**, incluyendo compilación del frontend y sintaxis del backend de fichajes.
+- `Frontend dependency security audit` #285: **success**.
+- `MOLSAN frontend premium build` #763: la primera ejecución se canceló durante la instalación por concurrencia; se ha solicitado repetir el job. La compilación del frontend ya quedó confirmada como correcta en el workflow #3320.
+- Render Preview: se ha iniciado un nuevo despliegue manual `dep-dbmvqquc6qcc73cmnt8g` desde el HEAD documental `0884cf2`, que contiene el código validado `7e7a9db`. Estado final pendiente de confirmar.
+
+El workflow `.github/workflows/supabase-schema-audit.yml` registró un fallo en este push, aunque no se ha cambiado ningún fichero de Supabase, esquema, API ni datos en esta pasada. No se atribuye a la limpieza CSS ni se presenta como validación satisfactoria; queda fuera de alcance y requiere diagnóstico separado si persiste.
+
+La validación automatizada no sustituye la comprobación visual autenticada de Catálogos, EncargaGest y NotarGest en Preview (incluidos submódulos, fichas, estados de modal y breakpoints).
