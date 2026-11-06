@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
-import "../../css/CtnListadoPage.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 const API_BASE = (
