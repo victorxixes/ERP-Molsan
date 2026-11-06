@@ -130,17 +130,17 @@
 
 /* Botones de acción con icono (Excel, imprimir, importar, exportar, descargar):
    tratamiento de acceso de Espacios de trabajo, sin cambiar el significado cromático. */
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(button,a,[role="button"])
 :where(.molsan-icon-3d,.molsan-btn__icon,.molsan-icon-wrap) {
   transition: transform .2s ease,filter .2s ease,box-shadow .2s ease !important;
 }
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(button,a,[role="button"]):hover
 :where(.molsan-icon-3d,.molsan-btn__icon,.molsan-icon-wrap) {
   transform: translateY(-2px) scale(1.05);
 }
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(.molsan-btn,.erp-btn,.ctn-btn,.agenda-open-cita,.agenda-today-action,
   .eg-secondary,.eg-button-primary,.cg-button-primary,.molsan-page-back-button) {
   min-height: 38px;
@@ -149,14 +149,14 @@
   font-weight: 700;
   transition: transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease;
 }
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(.molsan-btn--secondary,.molsan-btn--ghost,.eg-secondary,.molsan-page-back-button) {
   color: #064675 !important;
   border: 1px solid #D0E0EA !important;
   background: linear-gradient(145deg,#FFFFFF,#F2F7FB) !important;
   box-shadow: 0 2px 7px rgba(6,70,117,.055) !important;
 }
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(.molsan-btn--secondary,.molsan-btn--ghost,.eg-secondary,.molsan-page-back-button):hover {
   color: #043B60 !important;
   border-color: #AFCFDF !important;
@@ -164,14 +164,14 @@
   box-shadow: 0 6px 14px rgba(6,70,117,.10) !important;
   transform: translateY(-1px);
 }
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(.molsan-btn--primary,.erp-btn-primary,.eg-button-primary,.cg-button-primary) {
   color: #FFFFFF !important;
   border: 1px solid #064675 !important;
   background: linear-gradient(135deg,#075487,#064675) !important;
   box-shadow: 0 4px 12px rgba(6,70,117,.16) !important;
 }
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(.molsan-btn--primary,.erp-btn-primary,.eg-button-primary,.cg-button-primary):hover {
   box-shadow: 0 8px 18px rgba(6,70,117,.22) !important;
   transform: translateY(-1px);
@@ -219,12 +219,12 @@
 }
 
 /* Formularios y selectores comparten alturas, bordes y foco, sin inflar controles. */
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea,.select-sj > button) {
   border-color: #D0E0EA;
   border-radius: 10px;
 }
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea,.select-sj > button):focus-visible {
   outline: 3px solid rgba(6,70,117,.18);
   outline-offset: 1px;
@@ -244,7 +244,7 @@
 .agenda-upcoming-card,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
   .notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card),
-  :where(.erp-route-content,.apoderagest,.encargagest,.notargest) * {
+  :where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest) * {
     transition-duration: .01ms !important;
   }
   :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
