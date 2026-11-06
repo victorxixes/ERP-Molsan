@@ -12,7 +12,6 @@ const ACTIVIDADES = [
   { key: "documentacion-previa", label: "Documentación previa", icon: "file" },
   { key: "sede-notarial", label: "Sede notarial", icon: "courthouse" },
   { key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icon: "scroll" },
-  { key: "gestion-economica", label: "Gestión económica", icon: "briefcase" },
   { key: "liquidacion-impuestos", label: "Liquidación de impuestos", icon: "euro" },
   { key: "tramitacion-inscripcion", label: "Tramitación inscripción", icon: "building" },
   { key: "defectos-registrales", label: "Defectos registrales", icon: "alert" },
@@ -91,11 +90,10 @@ const CAMPOS = {
 };
 
 const GRUPOS_DATOS = [
-  { title: "Datos generales del expediente", icon: "folder", fields: ["N.º expediente", "Estado expediente", "Estado actividad", "Fecha de alta", "Actividad actual", "Oficina"] },
+  { title: "Titulares y solicitantes", icon: "users", fields: ["N.º expediente", "Estado expediente", "Estado actividad", "Fecha de alta", "Actividad actual", "Oficina"] },
   { title: "Titulares y solicitantes", icon: "users", fields: ["Nombre titular", "NIF titular", "Nombre solicitante", "NIF solicitante", "Teléfono", "Correo electrónico"] },
-  { title: "Información crediticia y operación", icon: "landmark", fields: ["Entidad", "Capital", "Importe", "Saldo real", "Saldo disponible", "Contrato", "Tipo operación", "Subtipo operación"] },
-  { title: "Notaría y firma", icon: "scroll", fields: ["Notario", "NIF notario", "Apoderado", "Fecha de firma", "Número de protocolo", "Población / provincia"] },
-  { title: "Finca y Registro", icon: "building", fields: ["Registro de la Propiedad", "Finca", "CRU / IDUFIR", "Población", "Provincia", "Entidad original"] },
+  { title: "Información crediticia", icon: "landmark", fields: ["Entidad", "Capital", "Importe", "Saldo real", "Saldo disponible", "Contrato", "Tipo operación", "Subtipo operación"] },
+  { title: "Notario", icon: "scroll", fields: ["Notario", "NIF notario", "Apoderado", "Fecha de firma", "Número de protocolo", "Población / provincia"] },
 ];
 
 function Field({ label, type = "text", value, onChange, placeholder = "Pendiente de completar", wide = false }) {
@@ -174,8 +172,8 @@ export default function FichaExpedienteDemo() {
 
     <section className="molsan-card overflow-hidden">
       <SectionHeading icon="workflow" title="Actividades del expediente" subtitle="Selecciona una fase para consultar y completar sus campos específicos" action={<button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => setModal("Datos de actividad")}>Editar datos de actividad</button>} />
-      <div className="grid grid-cols-1 gap-2 p-4 sm:grid-cols-2 xl:grid-cols-4">
-        {ACTIVIDADES.map((item, index) => <button key={item.key} type="button" aria-pressed={actividad === item.key} onClick={() => setActividad(item.key)} className="group relative flex min-h-[76px] items-center gap-3 overflow-hidden rounded-xl border bg-white p-3 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: actividad === item.key ? "var(--molsan-blue,#064675)" : "var(--molsan-border,#D8E4EC)", background: actividad === item.key ? "var(--molsan-panel,#F2F7FB)" : "#fff" }}>
+      <div className="flex gap-2 overflow-x-auto p-4">
+        {ACTIVIDADES.map((item, index) => <button key={item.key} type="button" aria-pressed={actividad === item.key} onClick={() => setActividad(item.key)} className="group relative flex h-[84px] w-[190px] min-w-[190px] shrink-0 items-center gap-3 overflow-hidden rounded-xl border bg-white p-3 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: actividad === item.key ? "var(--molsan-blue,#064675)" : "var(--molsan-border,#D8E4EC)", background: actividad === item.key ? "var(--molsan-panel,#F2F7FB)" : "#fff" }}>
           <span className="absolute inset-x-0 top-0 h-[3px] transition-all group-hover:h-1" style={{ background: actividad === item.key ? "var(--molsan-blue,#064675)" : "#B8D1E2" }} />
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl" style={{ color: "var(--molsan-blue,#064675)", background: "var(--molsan-panel,#F2F7FB)" }}><MolsanIcon name={item.icon} size={21} tone="ocean" bare /></span>
           <span className="min-w-0 flex-1"><span className="block text-[10px] font-bold" style={{ color: "var(--molsan-secondary-text,#617789)" }}>FASE {String(index + 1).padStart(2,"0")}</span><span className="mt-0.5 block text-sm font-semibold" style={{ color: "var(--molsan-blue,#064675)" }}>{item.label}</span></span>
