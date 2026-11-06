@@ -171,15 +171,10 @@ export default function CrearNoticia() {
                 px-6 py-3
                 text-sm font-semibold
                 text-white
-                bg-gradient-to-r
-                from-purple-600
-                to-purple-500
-                shadow-[0_10px_25px_rgba(147,51,234,0.20)]
-                transition-all duration-200
-                hover:from-purple-500
-                hover:to-purple-400
-                hover:shadow-[0_14px_30px_rgba(147,51,234,0.25)]
-                active:scale-[0.98]
+                bg-[#064675]
+                shadow-sm
+                transition-colors duration-150
+                hover:bg-[#04375B]
                 disabled:opacity-40
                 disabled:cursor-not-allowed
               "
