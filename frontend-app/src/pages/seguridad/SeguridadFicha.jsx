@@ -1,5 +1,7 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanStatCard from "../../components/ui/MolsanStatCard";
+import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
 import {
   useCallback,
   useEffect,
@@ -1588,42 +1590,32 @@ const permisosGlobales =
         title={`${textoSeguro(empleado.nombre)}${empleado.apellidos ? ` ${empleado.apellidos}` : ""}`}
         description={`Centro de seguridad · @${empleado.usuario || "-"} · ID #${empleadoIdSeguro}`}
         actions={
-          <>
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <Chip tone="purple">{nombreRol}</Chip>
             <Chip tone={empleado.activo ? "success" : "danger"}>{empleado.activo ? "Cuenta activa" : "Cuenta bloqueada"}</Chip>
-          </>
+            <button
+              type="button"
+              onClick={cambiarVisibilidadEmpleado}
+              disabled={guardandoVisibilidad}
+              className={`molsan-btn ${empleado.visible_en_listado === false ? "molsan-btn--primary" : "molsan-btn--secondary"}`}
+            >
+              {guardandoVisibilidad ? "Guardando…" : empleado.visible_en_listado === false ? "Mostrar en Empleados" : "Ocultar de Empleados"}
+            </button>
+            {empleado.activo ? (
+              <button type="button" onClick={() => bloquear(empleadoIdSeguro)} className="molsan-btn molsan-btn--danger">Bloquear usuario</button>
+            ) : (
+              <button type="button" onClick={() => desbloquear(empleadoIdSeguro)} className="molsan-btn molsan-btn--primary">Desbloquear usuario</button>
+            )}
+          </div>
         }
       />
+      {mensajeVisibilidad && <p className="text-sm text-[var(--erp-text-soft)]" role="status">{mensajeVisibilidad}</p>}
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {[
-          ["Módulos", modulosVisibles.length],
-          ["Permisos", totalPermisos],
-          ["Auditoría", auditoriaFiltrada.length],
-          ["Logs", logsFiltrados.length],
-        ].map(([label, value]) => (
-          <article key={label} className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-4 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--erp-text-soft)]">{label}</p>
-            <p className="mt-1 text-2xl font-bold text-[var(--erp-primary)]">{value}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="flex flex-wrap items-center gap-2 rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-4">
-        <button
-          type="button"
-          onClick={cambiarVisibilidadEmpleado}
-          disabled={guardandoVisibilidad}
-          className={`molsan-btn ${empleado.visible_en_listado === false ? "molsan-btn--primary" : "molsan-btn--secondary"}`}
-        >
-          {guardandoVisibilidad ? "Guardando…" : empleado.visible_en_listado === false ? "Mostrar en Empleados" : "Ocultar de Empleados"}
-        </button>
-        {empleado.activo ? (
-          <button type="button" onClick={() => bloquear(empleadoIdSeguro)} className="molsan-btn molsan-btn--danger">Bloquear usuario</button>
-        ) : (
-          <button type="button" onClick={() => desbloquear(empleadoIdSeguro)} className="molsan-btn molsan-btn--primary">Desbloquear usuario</button>
-        )}
-        {mensajeVisibilidad && <p className="w-full text-sm text-[var(--erp-text-soft)]" role="status">{mensajeVisibilidad}</p>}
+        <MolsanStatCard title="Módulos" value={modulosVisibles.length} icon="folder" tone="ocean" />
+        <MolsanStatCard title="Permisos" value={totalPermisos} icon="key" tone="violet" />
+        <MolsanStatCard title="Auditoría" value={auditoriaFiltrada.length} icon="clipboard" tone="cyan" />
+        <MolsanStatCard title="Logs" value={logsFiltrados.length} icon="activity" tone="amber" />
       </section>
 
 
@@ -1631,16 +1623,7 @@ const permisosGlobales =
           DATOS
       ====================================================== */}
 
-      <section
-        className="
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-4
-          shadow-sm
-        "
-      >
+      <MolsanPremiumCard as="section" icon="user" title="Datos de empleado" className="seguridad-ficha-datos-card">
 
         <div
           className="
@@ -1677,10 +1660,6 @@ const permisosGlobales =
               <div
                 key={item[0]}
                 className="
-                  rounded-xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-[var(--erp-bg)]
                   px-3
                   py-2.5
                 "
@@ -1720,7 +1699,7 @@ const permisosGlobales =
 
         </div>
 
-      </section>
+      </MolsanPremiumCard>
 
 
       {/* ======================================================
