@@ -19,585 +19,585 @@ import { useNotificacionesStore } from "../../store/notificacionesStore";
 
 export default function Notificaciones() {
 
-  const {
-    notificaciones,
-    clearNotificaciones,
-  } = useNotificacionesStore();
-
-  // ==========================================================
-  // LISTA ESTABLE
-  // ==========================================================
-
-  const lista = useMemo(
-    () =>
-      Array.isArray(notificaciones)
-        ? notificaciones
-        : [],
-    [notificaciones]
-  );
-
-  // ==========================================================
-  // ICONOS POR TIPO
-  // ==========================================================
-
-  const iconosTipo = {
-    error: "alert",
-    security: "shield",
-    warning: "alert",
-    success: "check",
-    info: "help",
-    noticia: "newspaper",
-    sistema: "settings",
-    default: "bell",
-  };
-
-  // ==========================================================
-  // ESTILOS POR TIPO
-  // ==========================================================
-
-  const estilosTipo = {
-
-    error: {
-      borde: "border-red-200",
-      fondo: "bg-red-50",
-      icono: "bg-red-50 border-red-200 text-red-600",
-      barra: "bg-red-500",
-    },
-
-    security: {
-      borde: "border-purple-200",
-      fondo: "bg-purple-50",
-      icono: "bg-purple-50 border-purple-200 text-purple-600",
-      barra: "bg-purple-500",
-    },
-
-    warning: {
-      borde: "border-amber-200",
-      fondo: "bg-amber-50",
-      icono: "bg-amber-50 border-amber-200 text-amber-600",
-      barra: "bg-amber-500",
-    },
-
-    success: {
-      borde: "border-emerald-200",
-      fondo: "bg-emerald-50",
-      icono: "bg-emerald-50 border-emerald-200 text-emerald-600",
-      barra: "bg-emerald-500",
-    },
-
-    noticia: {
-      borde: "border-blue-200",
-      fondo: "bg-blue-50",
-      icono: "bg-blue-50 border-blue-200 text-blue-600",
-      barra: "bg-blue-500",
-    },
-
-    sistema: {
-      borde: "border-cyan-200",
-      fondo: "bg-cyan-50",
-      icono: "bg-cyan-50 border-cyan-200 text-cyan-600",
-      barra: "bg-cyan-500",
-    },
-
-    info: {
-      borde: "border-sky-200",
-      fondo: "bg-sky-50",
-      icono: "bg-sky-50 border-sky-200 text-sky-600",
-      barra: "bg-sky-500",
-    },
-
-    default: {
-      borde: "border-[var(--erp-border)]",
-      fondo: "bg-white",
-      icono: "bg-[var(--erp-primary-soft)] border-[var(--erp-border)] text-[var(--erp-primary)]",
-      barra: "bg-[var(--erp-primary)]",
-    },
-
-  };
-
-  // ==========================================================
-  // HELPERS
-  // ==========================================================
-
-  const obtenerTipo = (tipo) => {
+ const {
+ notificaciones,
+ clearNotificaciones,
+ } = useNotificacionesStore();
+
+ // ==========================================================
+ // LISTA ESTABLE
+ // ==========================================================
+
+ const lista = useMemo(
+ () =>
+ Array.isArray(notificaciones)
+ ? notificaciones
+ : [],
+ [notificaciones]
+ );
+
+ // ==========================================================
+ // ICONOS POR TIPO
+ // ==========================================================
+
+ const iconosTipo = {
+ error: "alert",
+ security: "shield",
+ warning: "alert",
+ success: "check",
+ info: "help",
+ noticia: "newspaper",
+ sistema: "settings",
+ default: "bell",
+ };
+
+ // ==========================================================
+ // ESTILOS POR TIPO
+ // ==========================================================
+
+ const estilosTipo = {
+
+ error: {
+ borde: "border-red-200",
+ fondo: "bg-red-50",
+ icono: "bg-red-50 border-red-200 text-red-600",
+ barra: "bg-red-500",
+ },
+
+ security: {
+ borde: "border-purple-200",
+ fondo: "bg-purple-50",
+ icono: "bg-purple-50 border-purple-200 text-purple-600",
+ barra: "bg-purple-500",
+ },
+
+ warning: {
+ borde: "border-amber-200",
+ fondo: "bg-amber-50",
+ icono: "bg-amber-50 border-amber-200 text-amber-600",
+ barra: "bg-amber-500",
+ },
+
+ success: {
+ borde: "border-emerald-200",
+ fondo: "bg-emerald-50",
+ icono: "bg-emerald-50 border-emerald-200 text-emerald-600",
+ barra: "bg-emerald-500",
+ },
+
+ noticia: {
+ borde: "border-blue-200",
+ fondo: "bg-blue-50",
+ icono: "bg-blue-50 border-blue-200 text-blue-600",
+ barra: "bg-blue-500",
+ },
+
+ sistema: {
+ borde: "border-cyan-200",
+ fondo: "bg-cyan-50",
+ icono: "bg-cyan-50 border-cyan-200 text-cyan-600",
+ barra: "bg-cyan-500",
+ },
+
+ info: {
+ borde: "border-sky-200",
+ fondo: "bg-sky-50",
+ icono: "bg-sky-50 border-sky-200 text-sky-600",
+ barra: "bg-sky-500",
+ },
+
+ default: {
+ borde: "border-[var(--erp-border)]",
+ fondo: "bg-white",
+ icono: "bg-[var(--erp-primary-soft)] border-[var(--erp-border)] text-[var(--erp-primary)]",
+ barra: "bg-[var(--erp-primary)]",
+ },
+
+ };
+
+ // ==========================================================
+ // HELPERS
+ // ==========================================================
+
+ const obtenerTipo = (tipo) => {
 
-    if (!tipo) {
-      return "default";
-    }
+ if (!tipo) {
+ return "default";
+ }
 
-    const valor = String(tipo).toLowerCase();
+ const valor = String(tipo).toLowerCase();
 
-    return estilosTipo[valor]
-      ? valor
-      : "default";
-  };
+ return estilosTipo[valor]
+ ? valor
+ : "default";
+ };
 
-
-  const obtenerIcono = (tipo) => {
+
+ const obtenerIcono = (tipo) => {
 
-    const tipoNormalizado = obtenerTipo(tipo);
-
-    return (
-      iconosTipo[tipoNormalizado] ||
-      iconosTipo.default
-    );
-  };
+ const tipoNormalizado = obtenerTipo(tipo);
+
+ return (
+ iconosTipo[tipoNormalizado] ||
+ iconosTipo.default
+ );
+ };
 
 
-  const obtenerEstilo = (tipo) => {
-
-    const tipoNormalizado = obtenerTipo(tipo);
-
-    return (
-      estilosTipo[tipoNormalizado] ||
-      estilosTipo.default
-    );
-  };
-
-
-  const formatearFecha = (fecha) => {
-
-    if (!fecha) {
-      return "Fecha no disponible";
-    }
-
-    try {
-
-      const fechaObj = new Date(fecha);
-
-      if (
-        Number.isNaN(
-          fechaObj.getTime()
-        )
-      ) {
-        return String(fecha);
-      }
-
-      return fechaObj.toLocaleString(
-        "es-ES",
-        {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        }
-      );
-
-    } catch {
-
-      return String(fecha);
-
-    }
-
-  };
-
-
-  // ==========================================================
-  // RENDER
-  // ==========================================================
-
-  return (
-
-    <div
-      className="
-        notificaciones-premium-page
-        p-4
-        md:p-6
-        space-y-6
-        text-[var(--erp-text)]
-        animate-fade-in
-      "
-    >
-
-      {/* ======================================================
-          CABECERA
-          ====================================================== */}
-
-      <MolsanPageHeader
-        mark="NO"
-        title="Notificaciones"
-        description="Actividad y avisos en tiempo real del ERP."
-        actions={
-          <>
-            <span className="molsan-status molsan-status--info">{lista.length} avisos</span>
-            <button
-              type="button"
-              onClick={clearNotificaciones}
-              disabled={lista.length === 0}
-              className="molsan-btn molsan-btn--danger"
-            >
-              Limpiar
-            </button>
-          </>
-        }
-      />
-
-      {/* ======================================================
-          ESTADO VACÍO
-          ====================================================== */}
-
-      {lista.length === 0 ? (
-
-        <div
-          className="
-            min-h-[320px]
-            flex
-            flex-col
-            items-center
-            justify-center
-            text-center
-            bg-white
-            border
-            border-[var(--erp-border)]
-            rounded-2xl
-            shadow-sm
-            px-6
-          "
-        >
-
-          <div
-            className="
-              w-20
-              h-20
-              rounded-2xl
-              bg-[var(--erp-primary-soft)]
-              border
-              border-[var(--erp-border)]
-              flex
-              items-center
-              justify-center
-              text-4xl
-              shadow-sm
-              mb-5
-            "
-          >
-            <MolsanIcon name="bell" size={38} tone="ocean" />
-          </div>
-
-
-          <h2
-            className="
-              text-lg
-              font-semibold
-              text-[var(--erp-text)]
-            "
-          >
-            No hay notificaciones
-          </h2>
-
-
-          <p
-            className="
-              text-sm
-              text-[var(--erp-text-soft)]
-              mt-2
-              max-w-md
-            "
-          >
-            Cuando se produzca una nueva actividad
-            o evento del sistema, aparecerá
-            automáticamente aquí.
-          </p>
-
-
-          <div
-            className="
-              mt-5
-              inline-flex
-              items-center
-              gap-2
-              px-3
-              py-1.5
-              rounded-full
-              bg-emerald-50
-              border
-              border-emerald-200
-              text-emerald-600
-              text-xs
-            "
-          >
-
-            <span
-              className="
-                w-2
-                h-2
-                rounded-full
-                bg-emerald-500
-                animate-pulse
-              "
-            />
-
-            Conexión en tiempo real activa
-
-          </div>
-
-        </div>
-
-      ) : (
-
-        /* ====================================================
-           LISTA
-           ==================================================== */
-
-        <div
-          className="
-            space-y-3
-          "
-        >
-
-          {lista.map((n, index) => {
-
-            const tipo =
-              obtenerTipo(n.tipo);
-
-            const estilo =
-              obtenerEstilo(n.tipo);
-
-            const icono =
-              obtenerIcono(n.tipo);
-
-            return (
-
-              <div
-                key={
-                  n.id ??
-                  `notificacion-${index}`
-                }
-                className={`
-                  group
-                  relative
-                  overflow-hidden
-                  rounded-2xl
-                  border
-                  ${estilo.borde}
-                  ${estilo.fondo}
-                  p-4
-                  md:p-5
-                  shadow-sm
-                  transition-all
-                  duration-200
-                  hover:-translate-y-[1px]
-                  hover:shadow-md
-                  animate-fade-in
-                `}
-              >
-
-                {/* ==================================================
-                    BARRA LATERAL
-                    ================================================== */}
-
-                <div
-                  className={`
-                    absolute
-                    left-0
-                    top-4
-                    bottom-4
-                    w-[3px]
-                    rounded-r-full
-                    ${estilo.barra}
-                  `}
-                />
-
-
-                <div
-                  className="
-                    flex
-                    gap-4
-                  "
-                >
-
-                  {/* ==================================================
-                      ICONO
-                      ================================================== */}
-
-                  <div
-                    className={`
-                      flex-shrink-0
-                      w-11
-                      h-11
-                      rounded-xl
-                      ${estilo.icono}
-                      border
-                      flex
-                      items-center
-                      justify-center
-                      text-xl
-                      shadow-sm
-                    `}
-                  >
-                    <MolsanIcon name={icono} size={22} tone="ocean" />
-                  </div>
-
-
-                  {/* ==================================================
-                      CONTENIDO
-                      ================================================== */}
-
-                  <div
-                    className="
-                      flex-1
-                      min-w-0
-                    "
-                  >
-
-                    <div
-                      className="
-                        flex
-                        flex-col
-                        md:flex-row
-                        md:items-start
-                        md:justify-between
-                        gap-2
-                      "
-                    >
-
-                      <div
-                        className="
-                          min-w-0
-                        "
-                      >
-
-                        <h2
-                          className="
-                            text-base
-                            md:text-lg
-                            font-semibold
-                            text-[var(--erp-text)]
-                            break-words
-                          "
-                        >
-                          {n.titulo || "Notificación"}
-                        </h2>
-
-                      </div>
-
-
-                      <span
-                        className="
-                          flex-shrink-0
-                          text-xs
-                          text-[var(--erp-text-soft)]
-                          whitespace-nowrap
-                        "
-                      >
-                        {formatearFecha(n.fecha)}
-                      </span>
-
-                    </div>
-
-
-                    {/* ==================================================
-                        DESCRIPCIÓN
-                        ================================================== */}
-
-                    {n.descripcion && (
-
-                      <p
-                        className="
-                          mt-2
-                          text-sm
-                          leading-relaxed
-                          text-[var(--erp-text-soft)]
-                          break-words
-                        "
-                      >
-                        {n.descripcion}
-                      </p>
-
-                    )}
-
-
-                    {/* ==================================================
-                        FOOTER
-                        ================================================== */}
-
-                    <div
-                      className="
-                        flex
-                        flex-wrap
-                        items-center
-                        gap-2
-                        mt-4
-                      "
-                    >
-
-                      <span
-                        className="
-                          inline-flex
-                          items-center
-                          gap-1.5
-                          px-2.5
-                          py-1
-                          rounded-lg
-                          bg-white
-                          border
-                          border-[var(--erp-border)]
-                          text-[11px]
-                          text-[var(--erp-text-soft)]
-                        "
-                      >
-
-                        <span
-                          className="
-                            text-[10px]
-                          "
-                        >
-                          <MolsanIcon name="tag" size={13} tone="ocean" bare />
-                        </span>
-
-                        {n.tipo || "general"}
-
-                      </span>
-
-
-                      <span
-                        className="
-                          inline-flex
-                          items-center
-                          gap-1.5
-                          px-2.5
-                          py-1
-                          rounded-lg
-                          bg-emerald-50
-                          border
-                          border-emerald-200
-                          text-[11px]
-                          text-emerald-600
-                        "
-                      >
-
-                        <span
-                          className="
-                            w-1.5
-                            h-1.5
-                            rounded-full
-                            bg-emerald-500
-                          "
-                        />
-
-                        Tiempo real
-
-                      </span>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            );
-
-          })}
-
-        </div>
-
-      )}
-
-    </div>
-
-  );
+ const obtenerEstilo = (tipo) => {
+
+ const tipoNormalizado = obtenerTipo(tipo);
+
+ return (
+ estilosTipo[tipoNormalizado] ||
+ estilosTipo.default
+ );
+ };
+
+
+ const formatearFecha = (fecha) => {
+
+ if (!fecha) {
+ return "Fecha no disponible";
+ }
+
+ try {
+
+ const fechaObj = new Date(fecha);
+
+ if (
+ Number.isNaN(
+ fechaObj.getTime()
+ )
+ ) {
+ return String(fecha);
+ }
+
+ return fechaObj.toLocaleString(
+ "es-ES",
+ {
+ day: "2-digit",
+ month: "2-digit",
+ year: "numeric",
+ hour: "2-digit",
+ minute: "2-digit",
+ }
+ );
+
+ } catch {
+
+ return String(fecha);
+
+ }
+
+ };
+
+
+ // ==========================================================
+ // RENDER
+ // ==========================================================
+
+ return (
+
+ <div
+ className="
+ notificaciones-premium-page
+ p-4
+ md:p-6
+ space-y-6
+ text-[var(--erp-text)]
+ 
+ "
+ >
+
+ {/* ======================================================
+ CABECERA
+ ====================================================== */}
+
+ <MolsanPageHeader
+ mark="NO"
+ title="Notificaciones"
+ description="Actividad y avisos en tiempo real del ERP."
+ actions={
+ <>
+ <span className="molsan-status molsan-status--info">{lista.length} avisos</span>
+ <button
+ type="button"
+ onClick={clearNotificaciones}
+ disabled={lista.length === 0}
+ className="molsan-btn molsan-btn--danger"
+ >
+ Limpiar
+ </button>
+ </>
+ }
+ />
+
+ {/* ======================================================
+ ESTADO VACÍO
+ ====================================================== */}
+
+ {lista.length === 0 ? (
+
+ <div
+ className="
+ min-h-[320px]
+ flex
+ flex-col
+ items-center
+ justify-center
+ text-center
+ bg-white
+ border
+ border-[var(--erp-border)]
+ rounded-2xl
+ shadow-sm
+ px-6
+ "
+ >
+
+ <div
+ className="
+ w-20
+ h-20
+ rounded-2xl
+ bg-[var(--erp-primary-soft)]
+ border
+ border-[var(--erp-border)]
+ flex
+ items-center
+ justify-center
+ text-4xl
+ shadow-sm
+ mb-5
+ "
+ >
+ <MolsanIcon name="bell" size={38} tone="ocean" />
+ </div>
+
+
+ <h2
+ className="
+ text-lg
+ font-semibold
+ text-[var(--erp-text)]
+ "
+ >
+ No hay notificaciones
+ </h2>
+
+
+ <p
+ className="
+ text-sm
+ text-[var(--erp-text-soft)]
+ mt-2
+ max-w-md
+ "
+ >
+ Cuando se produzca una nueva actividad
+ o evento del sistema, aparecerá
+ automáticamente aquí.
+ </p>
+
+
+ <div
+ className="
+ mt-5
+ inline-flex
+ items-center
+ gap-2
+ px-3
+ py-1.5
+ rounded-full
+ bg-emerald-50
+ border
+ border-emerald-200
+ text-emerald-600
+ text-xs
+ "
+ >
+
+ <span
+ className="
+ w-2
+ h-2
+ rounded-full
+ bg-emerald-500
+ animate-pulse
+ "
+ />
+
+ Conexión en tiempo real activa
+
+ </div>
+
+ </div>
+
+ ) : (
+
+ /* ====================================================
+ LISTA
+ ==================================================== */
+
+ <div
+ className="
+ space-y-3
+ "
+ >
+
+ {lista.map((n, index) => {
+
+ const tipo =
+ obtenerTipo(n.tipo);
+
+ const estilo =
+ obtenerEstilo(n.tipo);
+
+ const icono =
+ obtenerIcono(n.tipo);
+
+ return (
+
+ <div
+ key={
+ n.id ??
+ `notificacion-${index}`
+ }
+ className={`
+ group
+ relative
+ overflow-hidden
+ rounded-2xl
+ border
+ ${estilo.borde}
+ ${estilo.fondo}
+ p-4
+ md:p-5
+ shadow-sm
+ transition-all
+ duration-200
+ hover:-translate-y-[1px]
+ hover:shadow-md
+ 
+ `}
+ >
+
+ {/* ==================================================
+ BARRA LATERAL
+ ================================================== */}
+
+ <div
+ className={`
+ absolute
+ left-0
+ top-4
+ bottom-4
+ w-[3px]
+ rounded-r-full
+ ${estilo.barra}
+ `}
+ />
+
+
+ <div
+ className="
+ flex
+ gap-4
+ "
+ >
+
+ {/* ==================================================
+ ICONO
+ ================================================== */}
+
+ <div
+ className={`
+ flex-shrink-0
+ w-11
+ h-11
+ rounded-xl
+ ${estilo.icono}
+ border
+ flex
+ items-center
+ justify-center
+ text-xl
+ shadow-sm
+ `}
+ >
+ <MolsanIcon name={icono} size={22} tone="ocean" />
+ </div>
+
+
+ {/* ==================================================
+ CONTENIDO
+ ================================================== */}
+
+ <div
+ className="
+ flex-1
+ min-w-0
+ "
+ >
+
+ <div
+ className="
+ flex
+ flex-col
+ md:flex-row
+ md:items-start
+ md:justify-between
+ gap-2
+ "
+ >
+
+ <div
+ className="
+ min-w-0
+ "
+ >
+
+ <h2
+ className="
+ text-base
+ md:text-lg
+ font-semibold
+ text-[var(--erp-text)]
+ break-words
+ "
+ >
+ {n.titulo || "Notificación"}
+ </h2>
+
+ </div>
+
+
+ <span
+ className="
+ flex-shrink-0
+ text-xs
+ text-[var(--erp-text-soft)]
+ whitespace-nowrap
+ "
+ >
+ {formatearFecha(n.fecha)}
+ </span>
+
+ </div>
+
+
+ {/* ==================================================
+ DESCRIPCIÓN
+ ================================================== */}
+
+ {n.descripcion && (
+
+ <p
+ className="
+ mt-2
+ text-sm
+ leading-relaxed
+ text-[var(--erp-text-soft)]
+ break-words
+ "
+ >
+ {n.descripcion}
+ </p>
+
+ )}
+
+
+ {/* ==================================================
+ FOOTER
+ ================================================== */}
+
+ <div
+ className="
+ flex
+ flex-wrap
+ items-center
+ gap-2
+ mt-4
+ "
+ >
+
+ <span
+ className="
+ inline-flex
+ items-center
+ gap-1.5
+ px-2.5
+ py-1
+ rounded-lg
+ bg-white
+ border
+ border-[var(--erp-border)]
+ text-[11px]
+ text-[var(--erp-text-soft)]
+ "
+ >
+
+ <span
+ className="
+ text-[10px]
+ "
+ >
+ <MolsanIcon name="tag" size={13} tone="ocean" bare />
+ </span>
+
+ {n.tipo || "general"}
+
+ </span>
+
+
+ <span
+ className="
+ inline-flex
+ items-center
+ gap-1.5
+ px-2.5
+ py-1
+ rounded-lg
+ bg-emerald-50
+ border
+ border-emerald-200
+ text-[11px]
+ text-emerald-600
+ "
+ >
+
+ <span
+ className="
+ w-1.5
+ h-1.5
+ rounded-full
+ bg-emerald-500
+ "
+ />
+
+ Tiempo real
+
+ </span>
+
+ </div>
+
+ </div>
+
+ </div>
+
+ </div>
+
+ );
+
+ })}
+
+ </div>
+
+ )}
+
+ </div>
+
+ );
 
 }
