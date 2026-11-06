@@ -89,7 +89,7 @@ export default function Verifacti() {
   }
 
   return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
+    <div className="verifacti-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
       <MolsanPageHeader mark="VF" title="Verifacti" description="Panel de control de facturación electrónica y registros VERI*FACTU." />
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[245px_minmax(0,1fr)]">
