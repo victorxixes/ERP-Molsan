@@ -1143,11 +1143,11 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
 
       {modalNuevo && (
         <div
-          className="eg-modal-overlay"
+          className="molsan-modal-overlay eg-modal-overlay"
           role="presentation"
           onMouseDown={(e) => { if (e.target === e.currentTarget && !guardando) setModalNuevo(false); }}
         >
-          <form onSubmit={crearEncargo} className="eg-modal-form">
+          <form onSubmit={crearEncargo} className="molsan-modal eg-modal-form">
             <datalist id="eg-catalogo-municipios-registro">
               {catalogoMunicipiosRegistro.map((item) => <option key={item.id} value={item.municipio}>{item.provincia}</option>)}
             </datalist>
