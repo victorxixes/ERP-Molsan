@@ -775,3 +775,11 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - Panel Técnico: el estado «Sistema operativo» pasa a la propiedad `actions` de `MolsanPageHeader`; deja de existir un contenedor flex externo que separaba el estado de la cabecera canónica.
 - Las tarjetas de empleados del Panel Técnico ya estaban basadas en `MolsanPremiumCard`; se mantienen sin duplicar su estructura.
 - Pendiente build y revisión visual autenticada de ambas pantallas, especialmente el comportamiento de la cabecera en móvil.
+
+## 41. Maestros — sustitución completa de sprites SVG heredados (6 de noviembre de 2026)
+
+- Sustituidos los cinco usos de sprites externos `/icons/icons.svg` por `MolsanIcon`: iconos de tipo de maestro, alta, estado vacío, edición y eliminación.
+- Los iconos conservan su contexto, tamaño aproximado y contraste según el estado activo/inactivo de las pestañas.
+- No se han modificado acciones CRUD, confirmaciones, llamadas API, selección de tipo ni formularios.
+- La cabecera ya utilizaba `MolsanPageHeader`; no se ha alterado su geometría.
+- Pendiente build de Preview y revisión visual de los estados activo/inactivo y de los botones de fila.
