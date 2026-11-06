@@ -1,4 +1,3 @@
-import "../../css/ModalesHerramientasPremium.css";
 import React, {
   useCallback,
   useEffect,
