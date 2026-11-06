@@ -681,20 +681,7 @@ color:#fff}
   border-color:var(--molsan-prof-border);border-radius:12px;
 }
 
-.notargest.ng-content .ng-dashboard-kpi::before,
-.notargest.ng-content .ng-kpi-card::before {
 
-  content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  right: 18px;
-  left: 18px;
-  height: 3px;
-  border-radius: 0 0 6px 6px;
-  background: linear-gradient(90deg, #064675 0%, #2696A5 70%, #8BC8D8 100%);
-  pointer-events: none;
-}
 
 /* NotarGest · estilos del selector administrativo y del portal, aislados del resto de portales. */
 .ng-admin-notarias {
@@ -751,8 +738,7 @@ box-sizing:border-box}
 .ng-admin-notarias .ng-admin-kpi-button {
 width:100%;min-height:136px;appearance:none;-webkit-appearance:none}
 
-.ng-admin-notarias .ng-admin-kpi-button::before {
-display:none}
+
 
 .ng-admin-notarias .ng-admin-kpi-button>strong {
 margin:auto 0 0}
@@ -781,16 +767,4 @@ outline:3px solid rgba(6,70,117,.22);outline-offset:2px}
 .ng-admin-notarias .molsan-icon-3d {
 flex-shrink:0}
 
-.ng-admin-notarias .ng-admin-kpi-button::before {
 
-  content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  right: 18px;
-  left: 18px;
-  height: 3px;
-  border-radius: 0 0 6px 6px;
-  background: linear-gradient(90deg, #064675 0%, #2696A5 70%, #8BC8D8 100%);
-  pointer-events: none;
-}
