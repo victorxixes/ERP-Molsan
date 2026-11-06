@@ -395,24 +395,10 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
-
-
-/* NotarGest externo: pestañas en cuadrícula debajo de la cabecera principal */
-.notargest .ng-modulos-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;width:100%;margin:0 0 20px}
-.notargest .ng-modulo-card{display:flex;position:relative;flex-direction:column;align-items:stretch;gap:0;min-width:0;min-height:210px;padding:22px 20px 17px;overflow:hidden;border:1px solid #d8e4ec;border-radius:18px;background:#fff;color:#064675;text-align:left;box-shadow:0 7px 22px rgba(6,70,117,.055);cursor:pointer;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
-.notargest .ng-modulo-card:hover{transform:translateY(-3px);border-color:#a9c5d8;box-shadow:0 16px 32px rgba(6,70,117,.11)}
-.notargest .ng-modulo-card.activa{border-color:#064675;box-shadow:0 0 0 2px rgba(6,70,117,.1),0 12px 28px rgba(6,70,117,.08)}
-.notargest .ng-modulo-icono{display:grid;place-items:center;width:48px;height:48px;border:1px solid #d8e4ec;border-radius:14px;background:#f2f7fb;color:#064675}
-.notargest .ng-modulo-card.activa .ng-modulo-icono{border-color:#c5d9e8;background:#eaf2f8;color:#064675}
-.notargest .ng-modulo-label{display:block;margin-top:18px;color:#064675;font-size:15px;font-weight:850;line-height:1.3}
-.notargest .ng-modulo-count{display:grid;place-items:center;min-width:28px;height:28px;padding:0 8px;border:1px solid #d8e4ec;border-radius:9px;background:#f2f7fb;color:#064675;font-size:12px;font-weight:850;font-variant-numeric:tabular-nums}
-.notargest .ng-modulo-card.urgente{border-color:#f1c6c6;background:#fff}
-.notargest .ng-modulo-card.urgente .ng-modulo-icono{border-color:#f1c6c6;background:#fff4f4;color:#a32129}
-.notargest .ng-modulo-card.urgente.activa{border-color:#a32129;background:#fff8f8}
-@media(max-width:1250px){.notargest .ng-modulos-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
-@media(max-width:950px){.notargest .ng-modulos-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:680px){.notargest .ng-modulos-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.notargest .ng-modulo-card{display:flex;position:relative;flex-direction:column;align-items:stretch;gap:0;min-width:0;min-height:210px;padding:22px 20px 17px;overflow:hidden;border:1px solid #d8e4ec;border-radius:18px;background:#fff;color:#064675;text-align:left;box-shadow:0 7px 22px rgba(6,70,117,.055);cursor:pointer;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}.notargest .ng-modulo-icono{display:grid;place-items:center;width:48px;height:48px;border:1px solid #d8e4ec;border-radius:14px;background:#f2f7fb;color:#064675}.notargest .ng-modulo-label{display:block;margin-top:18px;color:#064675;font-size:15px;font-weight:850;line-height:1.3}}
-@media(max-width:390px){.notargest .ng-modulos-grid{grid-template-columns:1fr}}
+@media(max-width:1250px){}
+@media(max-width:950px){}
+@media(max-width:680px){}
+@media(max-width:390px){}
 
 
 /* Ficha de perfil NotarGest: modal amplio para evitar que los datos queden comprimidos */
@@ -877,17 +863,29 @@
     max-height: calc(100dvh - 16px);
   }
 }
+@media(prefers-reduced-motion:reduce){}
 
-.notargest .ng-modulos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:16px;margin:0 0 24px}
+.notargest .molsan-table{min-width:760px}
+.notargest .ng-tabla-pagos{min-width:1120px}
+
+/* NotarGest · tarjetas de navegación con el patrón de Espacios de trabajo */
+.notargest .ng-modulos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:16px;width:100%;margin:0 0 24px}
+.notargest .ng-modulo-card{display:flex;position:relative;flex-direction:column;align-items:stretch;gap:0;min-width:0;min-height:210px;padding:22px 20px 17px;overflow:hidden;border:1px solid #d8e4ec;border-radius:18px;background:#fff;color:#064675;text-align:left;box-shadow:0 7px 22px rgba(6,70,117,.055);cursor:pointer;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.notargest .ng-modulo-card:hover{transform:translateY(-3px);border-color:#a9c5d8;box-shadow:0 16px 32px rgba(6,70,117,.11)}
+.notargest .ng-modulo-card.activa{border-color:#064675;box-shadow:0 0 0 2px rgba(6,70,117,.1),0 12px 28px rgba(6,70,117,.08)}
 .notargest .ng-modulo-acento{position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,#064675,#78a8c8)}
 .notargest .ng-modulo-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.notargest .ng-modulo-icono{display:grid;place-items:center;width:48px;height:48px;border:1px solid #d8e4ec;border-radius:14px;background:#f2f7fb;color:#064675}
+.notargest .ng-modulo-card.activa .ng-modulo-icono{border-color:#c5d9e8;background:#eaf2f8;color:#064675}
+.notargest .ng-modulo-label{display:block;margin-top:18px;color:#064675;font-size:15px;font-weight:850;line-height:1.3}
 .notargest .ng-modulo-description{display:block;margin-top:7px;color:#617789;font-size:12px;line-height:1.55}
+.notargest .ng-modulo-count{display:grid;place-items:center;min-width:28px;height:28px;padding:0 8px;border:1px solid #d8e4ec;border-radius:9px;background:#f2f7fb;color:#064675;font-size:12px;font-weight:850;font-variant-numeric:tabular-nums}
 .notargest .ng-modulo-open{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:15px;border-top:1px solid #eaf0f4;color:#064675;font-size:11px;font-weight:800}
 .notargest .ng-modulo-open span{transition:transform .18s ease}
 .notargest .ng-modulo-card:hover .ng-modulo-open span{transform:translateX(4px)}
 .notargest .ng-modulo-card:focus-visible{outline:3px solid rgba(6,70,117,.2);outline-offset:3px}
+.notargest .ng-modulo-card.urgente{border-color:#f1c6c6;background:#fff}
+.notargest .ng-modulo-card.urgente .ng-modulo-icono{border-color:#f1c6c6;background:#fff4f4;color:#a32129}
 .notargest .ng-modulo-card.urgente .ng-modulo-acento{background:linear-gradient(90deg,#a32129,#e8a1a1)}
+.notargest .ng-modulo-card.urgente.activa{border-color:#a32129;background:#fff8f8}
 @media(prefers-reduced-motion:reduce){.notargest .ng-modulo-card,.notargest .ng-modulo-open span{transition:none}}
-
-.notargest .molsan-table{min-width:760px}
-.notargest .ng-tabla-pagos{min-width:1120px}
