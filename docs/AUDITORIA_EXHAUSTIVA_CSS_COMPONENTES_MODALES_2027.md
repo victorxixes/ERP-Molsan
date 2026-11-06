@@ -1149,3 +1149,10 @@ Commit: 37a0042. Pendiente build del nuevo HEAD y revisión visual de botones pr
 - Se preservan las llamadas, condiciones de permisos, acciones de bloqueo/desbloqueo y el mensaje de guardado.
 
 Commit: 35851f0. Pendiente build y revisión visual de la cabecera con acciones en anchuras móvil/tablet.
+
+
+## 24. Capa de migración para tarjetas Tailwind en subpáginas
+
+Se añadió una regla de compatibilidad acotada a raíces de Seguridad, Panel Técnico, Empleados, Maestros, Informes, Notificaciones, Logs, Herramientas/Utilidades, Provisiones, Fichajes, Mensajes, CTN y Agenda. Las tarjetas heredadas explícitas (`section/article/div.rounded-2xl.border`) reciben fondo blanco, borde reforzado, franja superior, sombra y hover suave del patrón Espacios de trabajo. Se neutralizan separadores inferiores de encabezados directos dentro de esas tarjetas. Los diálogos con `role=dialog`, `.modal` o `.erp-modal` quedan excluidos para no alterar modales.
+
+Commits: 78bf3f6 y 02d6d2d. Esta capa es de migración: a medida que cada consumidor se pase a MolsanPremiumCard, deben retirarse los estilos Tailwind de presentación y reducirse los selectores de compatibilidad. Pendiente inspección de subpáginas y revisión de posibles tarjetas anidadas.
