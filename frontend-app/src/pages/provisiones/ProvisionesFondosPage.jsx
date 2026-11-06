@@ -760,7 +760,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
       className="provisiones-page-header"
       actions={
         <>
-          <button type="button" onClick={nueva} className={`${boton} shrink-0 bg-blue-600 text-white shadow-sm hover:bg-blue-700`}>＋ Nueva provisión</button>
+          <button type="button" onClick={nueva} className={`${boton} shrink-0 bg-blue-600 text-white shadow-sm hover:bg-blue-700`}><MolsanIcon name="plus" size={15} tone="inherit" /> Nueva provisión</button>
           {form.id && <span className="inline-flex items-center rounded-xl border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800">Editando {form.numero || `provisión #${form.id}`}</span>}
         </>
       }
