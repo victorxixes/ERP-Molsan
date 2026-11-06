@@ -702,3 +702,11 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - Las alturas responsive se han trasladado al selector real `.molsan-stat-card`: 138 px hasta 760 px y 126 px hasta 480 px. Se conserva `.ag-grid-kpi` porque sigue controlando la distribución de la cuadrícula.
 - Verificación estática: no quedan selectores locales `.ag-kpi` obsoletos; 269/269 llaves equilibradas.
 - Los cuatro KPI de ApoderaGest y los cinco KPI de EncargaGest usan el componente compartido; no se cambian sus valores ni acciones.
+
+## 32. EncargaGest y NotarGest — cobertura de accesibilidad de diálogos (6 de noviembre de 2026)
+
+- EncargaGest: 5 diálogos con `role="dialog"` y `aria-modal="true"`; los cinco disponen de ref y llamada a `useAccessibleDialog`.
+- NotarGest: 4 diálogos con `role="dialog"` y `aria-modal="true"`; los cuatro disponen de ref y llamada al mismo hook.
+- El hook implementa cierre por Escape, contención del foco con Tab/Mayús+Tab, devolución del foco al elemento previo al cerrar y prioridad del diálogo superior cuando hay anidamiento.
+- Verificación CSS: NotarGest limita la altura de los modales al viewport y los adapta a ancho completo en móvil; EncargaGest reorganiza el formulario a una columna, reduce paddings y adapta el footer en pantallas estrechas.
+- Alcance: comprobación estática de código y estilos. La prueba manual de teclado, lector de pantalla y viewport real en Preview sigue pendiente.
