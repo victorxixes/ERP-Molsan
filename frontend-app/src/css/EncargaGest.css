@@ -54,29 +54,8 @@
 }
 
 
-/* Modal de nueva solicitud · MOLSAN ERP Premium / Glass Luxe */
-.eg-modal-overlay {
-  position: fixed;
-  z-index: 10000;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  padding: 18px;
-  }
-.eg-modal-form {
-  display: flex;
-  flex-direction: column;
-  width: min(100%, 1480px);
-  max-height: calc(100dvh - 36px);
-  min-height: 0;
-  overflow: hidden;
-  color: var(--molsan-text, #17243a);
-  background: var(--molsan-surface, #fff);
-  border: 1px solid var(--molsan-border, #dce4ef);
-  border-radius: var(--molsan-radius-dialog, 16px);
-  box-shadow: 0 16px 44px rgba(25,42,70,.16);
-}
+
+.eg-modal-form{width:min(100%,1480px);max-height:calc(100dvh - 36px);min-height:0;overflow:hidden}
 .eg-modal-header {
   position: relative;
   display: flex;
@@ -292,14 +271,14 @@
 .eg-modal-footer .eg-secondary,
 .eg-modal-footer .eg-button-primary { min-height: 40px; }
 @media (max-width: 1100px) {
-  .eg-modal-overlay { padding: 10px; }
-  .eg-modal-form { max-height: calc(100dvh - 20px); }
+  
+  .eg-modal-form{width:min(100%,1480px);max-height:calc(100dvh - 36px);min-height:0;overflow:hidden}
   .eg-modal-layout { grid-template-columns: minmax(0, 1fr); gap: 13px; }
   .eg-modal-carpeta { grid-row: auto; }
 }
 @media (max-width: 650px) {
-  .eg-modal-overlay { padding: 7px; }
-  .eg-modal-form { max-height: calc(100dvh - 14px); border-radius: 17px; }
+  
+  .eg-modal-form{width:min(100%,1480px);max-height:calc(100dvh - 36px);min-height:0;overflow:hidden}
   .eg-modal-header { gap: 10px; padding: 14px; }
   .eg-modal-brand { flex-basis: 43px; width: 43px; height: 43px; border-radius: 13px; font-size: 15px; }
   .eg-modal-heading h2 { font-size: 19px; }
@@ -436,7 +415,6 @@
 .encargagest .eg-main button:not([class*="bg-rose-"]):not([class*="bg-emerald-"]):not([class*="bg-red-"]) {
   transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease, transform .16s ease;
 }
-.encargagest .eg-modal-form,
 .encargagest .eg-modal-section,
 .encargagest .eg-modal-carpeta-contrato {
   border-color: #dbeafe;
