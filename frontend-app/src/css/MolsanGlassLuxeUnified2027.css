@@ -36,9 +36,9 @@
   border: 1px solid var(--molsan-glass-border) !important;
   border-radius: 18px !important;
   background:
-    radial-gradient(ellipse at 88% 8%, rgba(255,255,255,.90), transparent 46%),
-    linear-gradient(112deg, rgba(234,244,250,.82) 0%, rgba(222,237,246,.78) 58%, rgba(238,246,250,.82) 100%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(128%) !important;
+    radial-gradient(ellipse at 88% 8%, rgba(255,255,255,.96), transparent 46%),
+    linear-gradient(112deg, rgba(234,244,250,.96) 0%, rgba(226,239,247,.94) 58%, rgba(241,247,251,.96) 100%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(116%) !important;
   backdrop-filter: blur(24px) saturate(128%) !important;
   box-shadow: var(--molsan-glass-shadow) !important;
   animation: none !important;
@@ -144,7 +144,7 @@
   position: relative !important;
   min-width: 0 !important;
   border: 1px solid var(--molsan-card-border) !important;
-  border-top: 3px solid #6CC5D9 !important;
+  border-top: 1px solid var(--molsan-card-border) !important;
   border-radius: 18px !important;
   background: linear-gradient(150deg,#fff 0%,#fff 62%,#F2F7FB 100%) !important;
   box-shadow: var(--molsan-card-shadow) !important;
@@ -298,4 +298,154 @@ button:is([class~="bg-red-50"],[class~="bg-rose-50"],[class~="bg-red-100"],[clas
 button:focus-visible {
   outline: 3px solid rgba(6,70,117,.22);
   outline-offset: 2px;
+}
+
+
+/* =========================================================
+   ESPACIOS DE TRABAJO · patrón maestro de tarjetas
+   Se replica la composición premium (sin franja horizontal
+   superior): acento integrado, icono protagonista y hover
+   elevado con movimiento suave.
+========================================================= */
+:where(
+  .workspace-app-card,
+  .erp-card,.card-sj,.dashboard-kpi,
+  .apoderagest .molsan-stat-card,
+  .encargagest .eg-kpi,
+  .notargest.ng-content .ng-dashboard-grafico,
+  .notargest.ng-content .ng-dashboard-kpis article,
+  .ng-admin-notarias .ng-admin-kpi-button,
+  .ng-admin-notarias .ng-admin-notaria-card
+) {
+  overflow: hidden !important;
+  border: 1px solid #D8E4EC !important;
+  border-top: 1px solid #D8E4EC !important;
+  border-radius: 20px !important;
+  background: linear-gradient(145deg,#FFFFFF 0%,#FFFFFF 58%,#F2F7FB 100%) !important;
+  box-shadow: 0 7px 20px rgba(6,70,117,.065) !important;
+  transition: transform .24s cubic-bezier(.2,.75,.25,1), box-shadow .24s ease, border-color .24s ease, background .24s ease !important;
+}
+:where(
+  .workspace-app-card,
+  .erp-card,.card-sj,.dashboard-kpi,
+  .apoderagest .molsan-stat-card,
+  .encargagest .eg-kpi,
+  .notargest.ng-content .ng-dashboard-grafico,
+  .notargest.ng-content .ng-dashboard-kpis article,
+  .ng-admin-notarias .ng-admin-kpi-button,
+  .ng-admin-notarias .ng-admin-notaria-card
+):hover {
+  transform: translateY(-4px) !important;
+  border-color: #B9D7E6 !important;
+  box-shadow: 0 16px 34px rgba(6,70,117,.13) !important;
+}
+.workspace-app-card {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 0 !important;
+  min-height: 232px !important;
+  padding: 22px !important;
+  color: #064675 !important;
+  text-align: left !important;
+  text-decoration: none !important;
+  isolation: isolate !important;
+}
+.workspace-app-card::before {
+  position: absolute !important;
+  z-index: -1 !important;
+  inset: 0 !important;
+  content: "" !important;
+  pointer-events: none !important;
+  opacity: .75 !important;
+  background: radial-gradient(circle at 92% 8%,rgba(108,197,217,.16),transparent 38%) !important;
+}
+.workspace-card-accent {
+  position: absolute !important;
+  top: 16px !important;
+  bottom: 16px !important;
+  left: 0 !important;
+  width: 4px !important;
+  border-radius: 0 8px 8px 0 !important;
+  background: linear-gradient(180deg,#6CC5D9,#064675) !important;
+  opacity: .9 !important;
+  transition: width .22s ease, opacity .22s ease !important;
+}
+.workspace-app-card:hover .workspace-card-accent {
+  width: 5px !important;
+  opacity: 1 !important;
+}
+.workspace-card-topline {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  margin-bottom: 16px !important;
+}
+.workspace-app-icon {
+  filter: drop-shadow(0 5px 8px rgba(6,70,117,.12)) !important;
+  transition: transform .24s ease, filter .24s ease !important;
+}
+.workspace-app-card:hover .workspace-app-icon {
+  transform: translateY(-2px) scale(1.045) !important;
+  filter: drop-shadow(0 8px 12px rgba(6,70,117,.18)) !important;
+}
+.workspace-card-open {
+  display: grid !important;
+  place-items: center !important;
+  width: 34px !important;
+  height: 34px !important;
+  color: #064675 !important;
+  border: 1px solid #D8E4EC !important;
+  border-radius: 11px !important;
+  background: rgba(255,255,255,.82) !important;
+  transition: transform .22s ease,background .22s ease,border-color .22s ease !important;
+}
+.workspace-app-card:hover .workspace-card-open {
+  transform: translateX(3px) !important;
+  border-color: #B9D7E6 !important;
+  background: #EAF2F8 !important;
+}
+.workspace-app-category {
+  margin-bottom: 6px !important;
+  color: #7890A2 !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: .09em !important;
+}
+.workspace-app-title {
+  display: block !important;
+  color: #064675 !important;
+  font-size: 16px !important;
+  font-weight: 750 !important;
+  line-height: 1.35 !important;
+  letter-spacing: -.015em !important;
+}
+.workspace-app-description {
+  display: block !important;
+  margin-top: 7px !important;
+  color: #617789 !important;
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+}
+.workspace-card-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin-top: auto !important;
+  padding-top: 16px !important;
+  color: #064675 !important;
+  font-size: 12px !important;
+  font-weight: 750 !important;
+}
+.workspace-tone-cyan .workspace-card-accent { background: linear-gradient(180deg,#75D4E2,#279BBE) !important; }
+.workspace-tone-ocean .workspace-card-accent { background: linear-gradient(180deg,#7CB5D7,#064675) !important; }
+.workspace-tone-cyan .workspace-app-icon { color: #168EAE !important; }
+.workspace-tone-ocean .workspace-app-icon { color: #064675 !important; }
+@media (prefers-reduced-motion: reduce) {
+  .workspace-app-card,.workspace-app-icon,.workspace-card-open,.workspace-card-accent { transition:none !important; }
+  .workspace-app-card:hover,.workspace-app-card:hover .workspace-app-icon,.workspace-app-card:hover .workspace-card-open { transform:none !important; }
 }
