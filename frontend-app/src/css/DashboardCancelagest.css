@@ -86,10 +86,6 @@
 
 
 
-@media (max-width: 640px) {
-  .dashboard-cancelagest .dashboard-signatures-wrap .dashboard-kpi { min-height: 0; }
-  .dashboard-cancelagest .dashboard-signatures-wrap .erp-card { padding: 14px; }
-}
 
 
 /* =========================================================
