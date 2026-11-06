@@ -57,26 +57,6 @@
   gap: 15px;
   margin-bottom: 15px;
 }
-.apoderagest .ag-kpi-azul{
-  --ag-kpi-color: var(--molsan-primary, #064675);
-  --ag-kpi-icon-bg: var(--molsan-primary-soft, #EAF2F8);
-  --ag-kpi-halo: rgba(72, 111, 235, .075);
-}
-.apoderagest .ag-kpi-verde{
-  --ag-kpi-color: #15996c;
-  --ag-kpi-icon-bg: #e6f8f0;
-  --ag-kpi-halo: rgba(27, 185, 128, .08);
-}
-.apoderagest .ag-kpi-ambar{
-  --ag-kpi-color: #b87917;
-  --ag-kpi-icon-bg: #fff4dc;
-  --ag-kpi-halo: rgba(241, 181, 57, .10);
-}
-.apoderagest .ag-kpi-violeta{
-  --ag-kpi-color: #7854ce;
-  --ag-kpi-icon-bg: #f0eaff;
-  --ag-kpi-halo: rgba(143, 108, 230, .08);
-}
 .apoderagest .ag-panel{min-width: 0; padding: 0; overflow: hidden; backdrop-filter: none; -webkit-backdrop-filter: none}
 .apoderagest .ag-panel-proximas{
   padding: 20px 21px 8px;
@@ -247,7 +227,6 @@
 .apoderagest .ag-grid-kpi{
     gap: 10px;
   }
-.apoderagest .ag-kpi{padding: 14px}
 .apoderagest .ag-panel-proximas{
     padding: 16px 14px 6px;
   }
@@ -960,7 +939,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 }
 @media(max-width:760px){
   .apoderagest .ag-grid-kpi{gap:10px}
-  .apoderagest .ag-kpi{min-height:138px;padding:14px}
   .apoderagest .ag-apoderado-grupo-trigger{
     grid-template-columns:42px minmax(0,1fr);
     padding:13px;
@@ -972,7 +950,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 }
 @media(max-width:480px){
   .apoderagest .ag-grid-kpi{grid-template-columns:1fr}
-  .apoderagest .ag-kpi{min-height:126px}
   .apoderagest .ag-panel-resumen-heading{
     align-items:flex-start;
     flex-direction:column;
@@ -983,10 +960,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   .apoderagest .ag-grupo-modal-cabecera{gap:10px}
 }
 
-.apoderagest .ag-kpi-azul{--ag-kpi-icon-bg:#E4F0FA}
-.apoderagest .ag-kpi-verde{--ag-kpi-icon-bg:#E1F5EC}
-.apoderagest .ag-kpi-ambar{--ag-kpi-icon-bg:#FFF1D9}
-.apoderagest .ag-kpi-violeta{--ag-kpi-icon-bg:#F0EAFE}
 .apoderagest .ag-notario-grupo-icono{
   display:grid;
   flex:0 0 48px;
@@ -1035,13 +1008,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   gap:12px;
 }
 
-.apoderagest .ag-kpi {
-
-  position:relative;display:flex;flex-direction:column;align-items:flex-start;
-  justify-content:space-between;gap:9px;min-width:0;min-height:136px;
-  margin:0;padding:17px 18px;color:var(--molsan-prof-text);
-  text-align:left;
-}
 
 .apoderagest .ag-panel {
 
@@ -1114,11 +1080,13 @@ color:#fff}
   box-shadow:0 5px 13px rgba(62,43,117,.10);
 }
 
-/* ApoderaGest · prioridad responsive tras la consolidación del bloque KPI.
-   La regla base final de .ag-kpi no debe anular las alturas móviles anteriores. */
+
+
+
+/* ApoderaGest · alturas responsive de las KPI compartidas. */
 @media (max-width:760px) {
-  .apoderagest .ag-kpi { min-height:138px; }
+  .apoderagest .molsan-stat-card { min-height:138px; }
 }
 @media (max-width:480px) {
-  .apoderagest .ag-kpi { min-height:126px; }
+  .apoderagest .molsan-stat-card { min-height:126px; }
 }
