@@ -118,7 +118,7 @@ export default function TiposExpediente() {
           <div><h2 id="tipo-expediente-modal-title" className="text-lg font-bold text-slate-800">{editando ? "Editar tipo de expediente" : "Nuevo tipo de expediente"}</h2><p className="mt-1 text-sm text-slate-500">Los identificadores históricos se conservan; las nuevas altas reciben un ID automático.</p></div>
           <button type="button" onClick={cerrarModal} disabled={guardando} aria-label="Cerrar ventana" className="molsan-btn molsan-btn--secondary">Cerrar ✕</button>
         </header>
-        <form onSubmit={guardar} className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-12">
+        <form onSubmit={guardar} className="mt-0 grid grid-cols-1 gap-4 p-5 sm:p-6 md:grid-cols-12">
           <label className="text-sm font-semibold text-slate-700 md:col-span-5">Descripción
             <input className={`${CAMPO} mt-2`} value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={250} required placeholder="Nombre del tipo de expediente" />
           </label>
