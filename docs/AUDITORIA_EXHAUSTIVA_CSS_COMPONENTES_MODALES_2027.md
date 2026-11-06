@@ -576,7 +576,7 @@ Se inspeccionó `CatalogosMaestrosPremium.css` junto con `MolsanCardsPremium2027
 
 Se retiraron un selector vacío `.encargagest .eg-panel-head {}` y una redefinición de `min-width:0` en `.encargagest .eg-main` que ya estaba en la regla base. Se revisó la capa final de estilos exclusivos trasladados: las coincidencias restantes afectan al modal de perfil, breakpoints de 600/760 px, superficie de paneles, cabecera y overlays; no se borran en bloque porque parte de ellas son overrides con distinta especificidad o corresponden a la ficha de perfil y al formulario principal, que son diálogos distintos.
 
-Commit: `abcd2b2`.
+Commits: `abcd2b2`, `75e45ac` y `e479aaa`. La segunda consolidación integra la superficie del panel en una sola regla, retira el bloque duplicado de cabecera del panel y unifica el overlay del modal con su valor final de blur (incluido el prefijo WebKit). Se ha eliminado también una repetición exacta del color de títulos de modal.
 
 ### NotarGest
 
