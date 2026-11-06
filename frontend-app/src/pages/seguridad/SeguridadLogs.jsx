@@ -942,6 +942,7 @@ export default function SeguridadLogs() {
 
           <div
             className="
+              molsan-page-header__actions
               inline-flex
               items-center
               gap-2
