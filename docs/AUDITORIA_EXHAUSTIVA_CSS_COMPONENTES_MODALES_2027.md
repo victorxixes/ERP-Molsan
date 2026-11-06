@@ -107,7 +107,7 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 - `MolsanFase3.css`: consolidados en un único bloque base los estilos y el contrato de tamaño/scroll de diálogos legacy con `role=dialog`; unificadas las reglas móviles que repetían ancho/alto y conservado el radio móvil de 14px. Se mantienen las exclusiones de overlays y modales propios.
 - `MolsanPageHeader.jsx`: añadido el mapeo `CG → dashboard` a `MolsanIcon`, porque el Dashboard ya utiliza `MolsanPageHeader` con `mark="CG"` y antes mostraba el texto de marca en vez del icono corporativo.
 - `FichaExpediente.jsx`: corregidos dos cierres JSX con una llave adicional en los botones de registro ABSIS y validación de actividad. Eran los dos avisos de análisis JSX que aparecían en el build anterior; el cambio no modifica las condiciones ni las acciones.
-- Commits de esta ronda: `c052422` (inventario), `6465ffa` (regla vacía), `0a0b8df` y `633914f` (consolidación/estilo de diálogos), `54fe050` (icono CG).
+- Commits de esta ronda: `c052422` (inventario), `6465ffa` (regla vacía), `0a0b8df` y `633914f` (consolidación/estilo de diálogos), `54fe050` (icono CG), `321a44d` (cierres JSX de FichaExpediente).
 
 ## 7. Estado de ejecución — no confundir auditoría estática con validación
 
@@ -124,7 +124,8 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 | Migración completa a cabeceras/tarjetas canónicas | Pendiente |
 | Pruebas de permisos 401/403/200 | Pendiente; no se han ejecutado en esta ronda |
 | Pruebas funcionales de negocio y regresión | Pendiente; no se han ejecutado en navegador |
-| Build y despliegue Render Preview | Correctos; deploy `dep-dbmuu11srm7s73a0a3m0` en estado `live` para commit `666114d` |\n| Validación visual interactiva de Preview | Pendiente; la URL no ha podido abrirse con el navegador de consulta disponible |
+| Build y despliegue Render Preview | Correctos; deploy `dep-dbmuu11srm7s73a0a3m0` en estado `live` para commit `666114d` |
+| Validación visual interactiva de Preview | Pendiente; la URL no ha podido abrirse con el navegador de consulta disponible |
 
 ## 8. Límites de seguridad de esta fase
 
