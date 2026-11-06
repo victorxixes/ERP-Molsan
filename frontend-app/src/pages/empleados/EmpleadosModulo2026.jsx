@@ -1,119 +1,119 @@
 import {
-  useState,
-  useCallback,
+ useState,
+ useCallback,
 } from "react";
 
 import EmpleadosListado
-  from "./EmpleadosListado";
+ from "./EmpleadosListado";
 
 import ModalEmpleado
-  from "../../components/empleados/ModalEmpleado";
+ from "../../components/empleados/ModalEmpleado";
 
 
 export default function EmpleadosModulo2026() {
 
-  const [
-    seleccionado,
-    setSeleccionado,
-  ] = useState(null);
+ const [
+ seleccionado,
+ setSeleccionado,
+ ] = useState(null);
 
-  const [
-    modalOpen,
-    setModalOpen,
-  ] = useState(false);
-
-
-  const abrirFicha =
-    useCallback(
-      (id) => {
-
-        const idNum =
-          Number(id);
-
-        if (
-          !Number.isFinite(idNum) ||
-          idNum <= 0
-        ) {
-          return;
-        }
-
-        setSeleccionado(
-          idNum
-        );
-
-        setModalOpen(
-          true
-        );
-      },
-      []
-    );
+ const [
+ modalOpen,
+ setModalOpen,
+ ] = useState(false);
 
 
-  const cerrarModal =
-    useCallback(
-      () => {
+ const abrirFicha =
+ useCallback(
+ (id) => {
 
-        setModalOpen(
-          false
-        );
+ const idNum =
+ Number(id);
 
-        setSeleccionado(
-          null
-        );
-      },
-      []
-    );
+ if (
+ !Number.isFinite(idNum) ||
+ idNum <= 0
+ ) {
+ return;
+ }
 
+ setSeleccionado(
+ idNum
+ );
 
-  return (
-
-    <div className="
-      erp-page
-      empleados-premium-page
-      space-y-6
-      animate-fade-in
-    ">
-
-      {/* =====================================================
-          LISTADO
-      ===================================================== */}
-
-      <section className="
-        erp-card
-        w-full
-        p-5
-      ">
-
-        <EmpleadosListado
-          onSeleccionar={
-            abrirFicha
-          }
-        />
-
-      </section>
+ setModalOpen(
+ true
+ );
+ },
+ []
+ );
 
 
-      {/* =====================================================
-          MODAL
-      ===================================================== */}
+ const cerrarModal =
+ useCallback(
+ () => {
 
-      {modalOpen &&
-        Number.isFinite(
-          seleccionado
-        ) && (
+ setModalOpen(
+ false
+ );
 
-        <ModalEmpleado
-          open={true}
-          onClose={
-            cerrarModal
-          }
-          empleadoId={
-            seleccionado
-          }
-        />
+ setSeleccionado(
+ null
+ );
+ },
+ []
+ );
 
-      )}
 
-    </div>
-  );
+ return (
+
+ <div className="
+ erp-page
+ empleados-premium-page
+ space-y-6
+ 
+ ">
+
+ {/* =====================================================
+ LISTADO
+ ===================================================== */}
+
+ <section className="
+ erp-card
+ w-full
+ p-5
+ ">
+
+ <EmpleadosListado
+ onSeleccionar={
+ abrirFicha
+ }
+ />
+
+ </section>
+
+
+ {/* =====================================================
+ MODAL
+ ===================================================== */}
+
+ {modalOpen &&
+ Number.isFinite(
+ seleccionado
+ ) && (
+
+ <ModalEmpleado
+ open={true}
+ onClose={
+ cerrarModal
+ }
+ empleadoId={
+ seleccionado
+ }
+ />
+
+ )}
+
+ </div>
+ );
 }
