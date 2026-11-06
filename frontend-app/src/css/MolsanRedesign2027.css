@@ -2355,7 +2355,7 @@ body {
   border-radius: 0 !important;
   box-shadow: none !important;
 }:where(
-  .notargest .ng-panel, .notargest .ng-contador, .notargest .ng-acceso,
+  .notargest .ng-panel,
   .apoderagest .ag-panel,
   .encargagest .eg-kpi,
   .ctn-listado-page .ctn-panel, .expedientes-page .expediente-card,
@@ -2447,7 +2447,7 @@ table :is(th, td) {
     padding: 14px !important;
     overflow-x: clip;
   }
-  :where(.notargest .ng-contadores, .apoderagest .ag-grid-kpi) {
+  :where(.apoderagest .ag-grid-kpi) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -2558,7 +2558,7 @@ table :is(th, td) {
 :where(.empleados-listado-premium, .seguridad-usuarios-premium, .ctn-listado-page, .ctn-detalle-page)
   tbody tr:hover {
   background-color: var(--molsan-primary-soft, #EAF2F8);
-}:where(.notargest, .apoderagest, .encargagest) :is(.ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ag-panel, .ag-kpi, .eg-panel, .eg-kpi, .eg-modal-section) {
+}:where(.notargest, .apoderagest, .encargagest) :is(.ng-panel, .ag-panel, .ag-kpi, .eg-panel, .eg-kpi, .eg-modal-section) {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
@@ -2650,7 +2650,7 @@ table :is(th, td) {
 ) {
   color: var(--molsan-text, #173247);
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
-}:where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ag-panel, .ag-kpi, .eg-panel, .eg-kpi, .eg-modal-section) {
+}:where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-panel, .ag-panel, .ag-kpi, .eg-panel, .eg-kpi, .eg-modal-section) {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
