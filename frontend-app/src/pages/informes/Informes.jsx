@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useRef, useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
@@ -8,6 +8,7 @@ import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
 import MolsanStatCard from "../../components/ui/MolsanStatCard";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 const MESES = [
   { value: 1, label: "Enero" },
   { value: 2, label: "Febrero" },
@@ -3325,6 +3326,8 @@ function InformeFacturacion() {
   const [error, setError] = useState("");
   const [exportando, setExportando] = useState(false);
   const [modalAbierto, setModalAbierto] = useState(false);
+  const modalFacturacionRef = useRef(null);
+  useAccessibleDialog({ open: modalAbierto, onClose: () => setModalAbierto(false), dialogRef: modalFacturacionRef });
   const [recarga, setRecarga] = useState(0);
 
   useEffect(() => {
@@ -3530,7 +3533,7 @@ function InformeFacturacion() {
 
       {modalAbierto && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-5" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-white/70 bg-white shadow-2xl">
+          <section ref={modalFacturacionRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-white/70 bg-white shadow-2xl">
             <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 px-5 py-4">
               <div><h2 id="modal-facturacion-titulo" className="text-xl font-bold text-slate-800">Detalle de facturación</h2><p className="mt-1 text-sm text-slate-500">Tabla Excel con los registros que cumplen los filtros seleccionados.</p></div>
               <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50"><MolsanIcon name="x" size={15} tone="ocean" bare /> Cerrar</button>
