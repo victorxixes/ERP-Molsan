@@ -271,14 +271,10 @@
 .eg-modal-footer .eg-secondary,
 .eg-modal-footer .eg-button-primary { min-height: 40px; }
 @media (max-width: 1100px) {
-  
-  .eg-modal-form{width:min(100%,1480px);max-height:calc(100dvh - 36px);min-height:0;overflow:hidden}
   .eg-modal-layout { grid-template-columns: minmax(0, 1fr); gap: 13px; }
   .eg-modal-carpeta { grid-row: auto; }
 }
 @media (max-width: 650px) {
-  
-  .eg-modal-form{width:min(100%,1480px);max-height:calc(100dvh - 36px);min-height:0;overflow:hidden}
   .eg-modal-header { gap: 10px; padding: 14px; }
   .eg-modal-brand { flex-basis: 43px; width: 43px; height: 43px; border-radius: 13px; font-size: 15px; }
   .eg-modal-heading h2 { font-size: 19px; }
