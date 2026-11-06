@@ -238,7 +238,7 @@ export default function ModulosSelector() {
         actions={
           <>
             <span className="molsan-premium-header__status"><span aria-hidden="true" />Sesión activa</span>
-            <button type="button" onClick={() => { logout(); navigate("/login", { replace: true }); }} className="molsan-premium-header__logout">Cerrar sesión</button>
+            <button type="button" onClick={() => { logout(); navigate("/login", { replace: true }); }} className="molsan-btn molsan-btn--secondary">Cerrar sesión</button>
           </>
         }
       />
