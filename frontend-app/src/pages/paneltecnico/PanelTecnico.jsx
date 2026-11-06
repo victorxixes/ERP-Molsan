@@ -81,7 +81,7 @@ export default function PanelTecnico() {
 
         </div>
 
-        <MonitorSistema />
+        <MonitorSistema embedded />
 
       </section>
 
@@ -116,7 +116,7 @@ export default function PanelTecnico() {
 
         </div>
 
-        <AuditoriaAvanzada />
+        <AuditoriaAvanzada embedded />
 
       </section>
 
@@ -151,7 +151,7 @@ export default function PanelTecnico() {
 
         </div>
 
-        <LogsAvanzados />
+        <LogsAvanzados embedded />
 
       </section>
 
