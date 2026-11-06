@@ -1612,9 +1612,13 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   letter-spacing:-.02em;
 }
 .apoderagest .ag-toolbar{
-  padding:16px 18px;
-  background:var(--molsan-surface-soft,#F2F7FB);
-  border-bottom:1px solid var(--molsan-border,#D8E4EC);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:0 0 14px;
+  background:transparent;
+  border:0;
 }
 .apoderagest .ag-busqueda{
   min-height:42px;
