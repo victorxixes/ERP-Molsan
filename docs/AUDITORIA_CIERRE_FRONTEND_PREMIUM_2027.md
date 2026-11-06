@@ -2,15 +2,15 @@
 
 **Fecha:** 6 de noviembre de 2026  
 **Rama auditada:** `fix/molsan-css-selector-audit-round1`  
-**Último commit funcional desplegado:** `6b98941dd2dc9df924c6e1d93b8d2c59f3ed11cd`  
-**Último commit de documentación de auditoría:** `2550a23dfc6d3425de3342cfbf7a1b22890326c3`  
-**Último commit funcional desplegado y compilado por Render:** `6b98941dd2dc9df924c6e1d93b8d2c59f3ed11cd` (deploy `dep-dbn0sj5g1s2s73c4m650`)  
+**Último commit funcional desplegado:** `fb03640ed90271cea7888eeabc94f4637f2998f5`  
+**Último commit de documentación de auditoría:** `0b288e25c1bd5ba4e00a143b8fa81917c57b8bac`  
+**Último commit funcional desplegado y compilado por Render:** `fb03640ed90271cea7888eeabc94f4637f2998f5` (deploy `dep-dbn0udou01pc73fr0q30`)  
 **PR:** [#409](https://github.com/victorxixes/ERP-Molsan/pull/409)  
 **Alcance de seguridad:** solo frontend y documentación en la rama de Preview. No se han modificado producción, API, base de datos ni datos de expedientes.
 
 ## Resultado ejecutivo
 
-> **Estado actualizado a 6 de noviembre de 2026:** Render Preview sirve en estado `live` el commit `6b98941` (deploy `dep-dbn0sj5g1s2s73c4m650`). La PR #409 sigue en Draft. Producción, API y base de datos principal permanecen intactas. La inspección visual autenticada y las pruebas manuales siguen pendientes.
+> **Estado actualizado a 6 de noviembre de 2026:** Render Preview sirve en estado `live` el commit `fb03640` (deploy `dep-dbn0udou01pc73fr0q30`). La PR #409 sigue en Draft. Producción, API y base de datos principal permanecen intactas. La inspección visual autenticada y las pruebas manuales siguen pendientes.
 
 
 Esta auditoría distingue expresamente entre inspección estática, compilación y validación real en navegador. No se marca como validada una pantalla solo porque exista su componente o compile.
@@ -158,3 +158,12 @@ Render Preview `molsan-premium-2027-candidate-preview`:
 ### Límites pendientes
 
 La URL del Preview no ha podido abrirse con el navegador de consulta disponible. Por tanto, no se afirma que se haya realizado una inspección visual autenticada ni pruebas manuales desktop/tablet/móvil. La compilación y el estado LIVE de Render no sustituyen esa comprobación. La PR #409 continúa en Draft y no se ha fusionado. Producción, API y base de datos principal no se han modificado.
+
+
+## 12. Consolidación de accesibilidad de movimiento reducido — 6 de noviembre de 2026
+
+Se ha eliminado el bloque duplicado de `prefers-reduced-motion` del shell: la regla queda centralizada en `MolsanRedesign2027.css`, que ahora incluye tanto `.erp-app-shell` como sus descendientes. `MolsanPremium2027.css` conserva la presentación Glass Luxe y de Espacios de trabajo, sin repetir esa regla de accesibilidad.
+
+CI del commit `fb03640`: build #937, auditoría de dependencias #371 y validación de Fichaje #3406, todos `success`. El informe npm de la auditoría registra cero vulnerabilidades.
+
+Render Preview `molsan-premium-2027-candidate-preview`: deploy `dep-dbn0udou01pc73fr0q30`, commit `fb03640`, estado `live`. Producción, API y BBDD principal siguen fuera del alcance. La validación visual autenticada y las pruebas manuales siguen pendientes.
