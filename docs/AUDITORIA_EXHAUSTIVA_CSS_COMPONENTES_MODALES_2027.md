@@ -964,3 +964,20 @@ Se han contrastado las clases reales de los componentes con los selectores globa
 - `MolsanCanonicalVisual2027.css` define la geometría y la apariencia de la cabecera, pero no reintroduce una animación de montaje.
 
 La coincidencia de clases y orden de importación confirma que las reglas alcanzan ambos JSX. El parpadeo queda corregido en el código estático; no se afirma la comprobación visual en navegador autenticado.
+
+## 56. Catálogos — migración de tarjetas al patrón Espacios de trabajo (6 de noviembre de 2026)
+
+- `Catalogos.jsx` sustituye las tarjetas construidas con Tailwind local por la estructura compartida `workspace-app-card` ya utilizada por Utilidades y Espacios de trabajo.
+- Se reutilizan los tonos semánticos, el acento, el icono MolsanIcon, el título, la descripción, el acceso y el hover definidos en el sistema compartido.
+- Se conservan las 18 rutas, la agrupación, la distinción de destacados y el aviso de construcción. No se modifica ningún destino ni dato del catálogo.
+- Commit: `479461e9f727b7e90da59b10a28ee206eb44ac71`.
+
+## 57. Mensajería — iconos corporativos en acciones de alta (6 de noviembre de 2026)
+
+- Las cuatro acciones de alta de Mensajería (nueva solicitud, servicio y tarifa, registrar albarán y registrar factura) sustituyen el prefijo Unicode «+» por `MolsanIcon name="plus"`.
+- Se conserva el texto de cada acción, su handler y su estado de habilitación; se ajusta únicamente la composición del botón para alinear icono y texto.
+- Commit: `92c7ad4ac7dfe38ab48742c73f109a330fa693aa`.
+- Render Preview `molsan-premium-2027-candidate-preview`: deploy `dep-dbn1mogn74is73dh3id0`, commit `92c7ad4ac7dfe38ab48742c73f109a330fa693aa`, estado `LIVE`. La compilación de Render terminó y publicó este commit.
+- Producción, API y base de datos no se han desplegado ni modificado.
+
+La validación visual autenticada de estas pantallas, sus estados responsive y las interacciones reales continúa pendiente; el estado LIVE acredita el despliegue/build, no sustituye esa inspección.
