@@ -279,32 +279,21 @@ export default function MantenimientoTecnico() {
   return (
     <main className="molsan-page-stack min-h-full">
       <header className="molsan-page-header">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
-                <MolsanIcon name="settings" size={14} /> HERRAMIENTAS DEL SISTEMA
-              </span>
-              <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-bold ${validacionTecnica ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-800"}`}>
-                <span className={`h-2 w-2 rounded-full ${validacionTecnica ? "bg-emerald-500" : "bg-amber-500"}`} />
-                {validacionTecnica ? "Diagnóstico técnico correcto" : "Pendiente de validación técnica"}
-              </span>
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-              Mantenimiento técnico
-            </h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-              Centro de diagnóstico y mantenimiento integrado en el ERP. Ejecuta primero las comprobaciones y revisa el resultado antes de realizar cambios.
-            </p>
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="settings" size={22} tone="ocean" /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · HERRAMIENTAS DEL SISTEMA</p>
+            <h1 className="molsan-page-header__title">Mantenimiento técnico</h1>
+            <p className="molsan-page-header__description">Centro de diagnóstico y mantenimiento integrado en el ERP. Ejecuta primero las comprobaciones y revisa el resultado antes de realizar cambios.</p>
+            <span className={`mt-2 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-bold ${validacionTecnica ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-800"}`}>
+              <span className={`h-2 w-2 rounded-full ${validacionTecnica ? "bg-emerald-500" : "bg-amber-500"}`} />
+              {validacionTecnica ? "Diagnóstico técnico correcto" : "Pendiente de validación técnica"}
+            </span>
           </div>
-          <button
-            type="button"
-            disabled={Boolean(cargando)}
-            onClick={ejecutarDiagnosticoCompleto}
-            className="shrink-0 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-wait disabled:opacity-50"
-          >
-            {cargando === "diagnostico-completo" ? "Ejecutando diagnóstico…" : "▶ Ejecutar diagnóstico completo"}
+        </div>
+        <div className="molsan-page-header__actions">
+          <button type="button" disabled={Boolean(cargando)} onClick={ejecutarDiagnosticoCompleto} className="molsan-btn molsan-btn--primary shrink-0">
+            {cargando === "diagnostico-completo" ? "Ejecutando diagnóstico…" : "Ejecutar diagnóstico completo"}
           </button>
         </div>
       </header>
