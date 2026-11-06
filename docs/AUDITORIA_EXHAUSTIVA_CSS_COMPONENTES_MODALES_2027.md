@@ -1301,3 +1301,15 @@ La inspección de `MolsanCanonicalVisual2027.css` detectó que la lista global d
 **Cambio aplicado:** se retiraron esas seis clases de las siete listas repetidas de selectores que gobiernan la superficie, hover, animación de icono y foco de las tarjetas globales. Se mantienen los selectores de tarjetas identificables (`.ag-grupo-apoderado`, `.ag-grupo-notario`, `.ag-carpeta-apoderado`, `.ng-admin-individual-panel`, etc.) y los paneles conservan sus reglas de módulo para estructura, bordes y espaciado. No se han borrado hojas CSS ni estilos funcionales específicos.
 
 **Validación estática:** las siete listas objetivo se sustituyeron de forma exacta; no se tocó ningún otro bloque. Falta ejecutar build/lint y revisar visualmente Preview en Dashboard, ficha/detalle y modales de los tres portales, con especial atención a tarjetas KPI frente a paneles de contenido.
+
+
+## 27. Reubicación de acciones de NotarGest fuera de Sidebar — 6 de noviembre de 2026
+
+Se ha completado la incidencia estructural identificada en la sección 25:
+
+- Se retiró de las props `headerActions` de `Sidebar` la fecha dinámica y el botón «Actualizar datos». La fecha ya no se calcula ni se muestra en esa cabecera lateral.
+- La acción de actualización se conserva y se ha reubicado en la cabecera principal `MolsanPageHeader` del portal NotarGest. En el modo de administración global también queda disponible en la cabecera global, donde actualiza el catálogo de notarías.
+- Se conservan el handler `actualizarDatosSidebar`, los estados `cargando` / `cargandoSelectorNotaria`, los bloqueos durante la operación y el indicador de carga giratorio. No se ha eliminado funcionalidad ni se han cambiado endpoints.
+- Se retiraron de `NotarGest.css` los estilos obsoletos `.ng-sidebar-date`, `.ng-sidebar-live-dot` y `.ng-sidebar-refresh`. Se conserva `.ng-icono-girando`, que ahora utilizan las acciones reubicadas.
+
+**Comprobación estática posterior:** las cuatro clases/variables de la cabecera lateral antigua (`fechaActual`, `.ng-sidebar-date`, `.ng-sidebar-live-dot`, `.ng-sidebar-refresh`) ya no aparecen ni en el JSX ni en la hoja CSS. `actualizarDatosSidebar` sigue teniendo sus dos puntos de invocación (cabecera principal y cabecera global) además de su definición; `.ng-icono-girando` sigue teniendo consumidores JSX y regla CSS. La comprobación no sustituye build, navegación ni prueba visual autenticada, que continúan pendientes.
