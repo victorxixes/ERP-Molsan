@@ -719,3 +719,11 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - Eliminada una segunda regla idéntica de `backdrop-filter: none` aplicada a paneles de los portales en `MolsanRedesign2027.css`. La regla base equivalente permanece en su ubicación anterior, sin cambiar la cascada efectiva.
 - Verificación estática de las seis capas globales: no se detectan bloques con selector y declaraciones idénticos repetidos. Las redefiniciones con diferencias de estado, breakpoint o contexto se mantienen para no eliminar comportamiento intencionado.
 - Validación de la hoja modificada: 194/194 llaves equilibradas. Build frontend, validación de fichaje y auditoría de dependencias: success en el commit de esta pasada.
+
+## 34. Retirada de selectores KPI obsoletos de portales (6 de noviembre de 2026)
+
+- Tras migrar los KPI de ApoderaGest y EncargaGest a `MolsanStatCard`, se contrastaron los JSX de ambos portales y sus hojas locales: ya no consumen las clases antiguas `.ag-kpi` ni `.eg-kpi`.
+- Retiradas esas clases de los grupos visuales de `MolsanCanonicalVisual2027.css`, incluida la regla pseudo-elemento que aún afectaba a `.ag-kpi`.
+- Retiradas las referencias residuales de `MolsanRedesign2027.css`, tanto el tratamiento de fondo como la regla de movimiento reducido. Se mantienen intactos `.ag-panel`, `.eg-panel`, `.eg-modal-section` y las reglas de distribución/responsive.
+- Verificación estática posterior: ambas hojas conservan sus llaves equilibradas (CanonicalVisual: 41/41; Redesign: 194/194) y no quedan referencias a `.ag-kpi` ni `.eg-kpi` en ellas.
+- No se han eliminado las clases KPI de NotarGest ni las clases de tarjetas compartidas; sus usos requieren tratamiento separado.
