@@ -82,7 +82,7 @@ export default function CrearNoticia() {
 
           <div>
 
-            <label className="block mb-2 text-sm font-medium text-slate-700">
+            <label className="block mb-2 text-sm font-medium text-[var(--molsan-text)]">
               Título
             </label>
 
@@ -99,10 +99,10 @@ export default function CrearNoticia() {
                 w-full
                 rounded-xl
                 border border-slate-200
-                bg-slate-50/80
+                bg-[var(--molsan-surface-soft)]
                 px-4 py-3
-                text-slate-800
-                placeholder:text-slate-400
+                text-[var(--molsan-primary)]
+                placeholder:text-[var(--molsan-text-muted)]
                 outline-none
                 transition-all
                 focus:border-purple-400
@@ -120,7 +120,7 @@ export default function CrearNoticia() {
 
           <div>
 
-            <label className="block mb-2 text-sm font-medium text-slate-700">
+            <label className="block mb-2 text-sm font-medium text-[var(--molsan-text)]">
               Descripción
             </label>
 
@@ -138,10 +138,10 @@ export default function CrearNoticia() {
                 resize-y
                 rounded-xl
                 border border-slate-200
-                bg-slate-50/80
+                bg-[var(--molsan-surface-soft)]
                 px-4 py-3
-                text-slate-800
-                placeholder:text-slate-400
+                text-[var(--molsan-primary)]
+                placeholder:text-[var(--molsan-text-muted)]
                 outline-none
                 transition-all
                 focus:border-purple-400
