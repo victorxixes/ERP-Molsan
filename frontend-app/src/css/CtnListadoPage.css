@@ -235,12 +235,14 @@
 }
 
 .ctn-tabla-cabecera {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 15px 17px;
-  border-bottom: 1px solid var(--ctn-border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:0 0 12px;
+  margin-bottom:12px;
+  border:0;
+  background:transparent;
 }
 
 .ctn-tabla-cabecera h2 {
