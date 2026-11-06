@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { API_BASE } from "../api/config";
 import { configurarSesionEncargaGest } from "../api/encargagest";
+import MolsanPageHeader from "../components/ui/MolsanPageHeader";
 import "../css/ModalesHerramientasPremium.css";
 
 const MODULOS = {
@@ -231,20 +232,16 @@ export default function ModulosSelector() {
         className="pointer-events-none absolute -right-24 -top-28 -z-10 h-80 w-80 rounded-full border border-blue-100/70"
       />
 
-      <header className="molsan-premium-header">
-        <div className="molsan-premium-header__identity">
-          <span className="molsan-premium-header__mark" aria-hidden="true">M</span>
-          <div className="molsan-premium-header__copy">
-            <p className="molsan-premium-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
-            <h1 className="molsan-premium-header__title">Espacio de trabajo</h1>
-            <p className="molsan-premium-header__description">Hola, {empleado.nombre || empleado.usuario}. Selecciona el módulo al que quieres acceder.</p>
-          </div>
-        </div>
-        <div className="molsan-premium-header__actions">
-          <span className="molsan-premium-header__status"><span aria-hidden="true" />Sesión activa</span>
-          <button type="button" onClick={() => { logout(); navigate("/login", { replace: true }); }} className="molsan-premium-header__logout">Cerrar sesión</button>
-        </div>
-      </header>
+      <MolsanPageHeader
+        title="Espacio de trabajo"
+        description={`Hola, ${empleado.nombre || empleado.usuario}. Selecciona el módulo al que quieres acceder.`}
+        actions={
+          <>
+            <span className="molsan-premium-header__status"><span aria-hidden="true" />Sesión activa</span>
+            <button type="button" onClick={() => { logout(); navigate("/login", { replace: true }); }} className="molsan-premium-header__logout">Cerrar sesión</button>
+          </>
+        }
+      />
 
       <div className="mb-5">
         <p className="text-[10px] font-extrabold tracking-[0.17em] text-slate-400">
