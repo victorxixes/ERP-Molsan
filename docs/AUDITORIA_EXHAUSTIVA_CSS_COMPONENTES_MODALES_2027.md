@@ -2,7 +2,7 @@
 
 **Rama de trabajo:** `fix/molsan-css-selector-audit-round1`  
 **PR:** #409 (Draft)  
-**Último commit de código:** `b282f094ef79474fd2fa4ffbf8932aa229f57820`  
+**Último commit de código:** `9c2ad6262191d8b416579c2e1262151e1ab4262a`  
 **Alcance de esta revisión:** frontend `frontend-app/src`; sin cambios en backend, API, Supabase, datos ni producción.
 
 ## 1. Inventario real del frontend
@@ -120,7 +120,7 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 - `NotarGest.css`: retiradas 12 referencias obsoletas en 20 líneas netas (`ng-dashboard-ciclo`, `ng-dashboard-kpis`, `ng-dashboard-kpi`, `ng-kpi-card` y `ng-volver`), ausentes del único consumidor `NotarGest.jsx`. Se han conservado los selectores activos del panel de administración (`ng-admin-kpis`), cabeceras, tablas y modales.
 - `ApoderaGest.css`: retiradas 80 clases legacy que no aparecen en el JSX del portal ni en sus cinco consumidores integrados (Agenda, Intranet, Mensajes, CTN y ControlApoderados), más dos `@keyframes` sin referencias. La hoja pasa de 2.250 a 1.203 líneas; tras la limpieza, todas las clases restantes tienen consumidor en esos archivos o son generadas por `MolsanIcon`.
 - `frontend-app/package.json`: fijadas `tailwindcss` y `@tailwindcss/postcss` a `4.3.4`. El registro npm publica 4.3.4 como versión estable actual, mientras la instalación de CI intentaba descargar `@tailwindcss/oxide@4.3.5`, que devolvía 404. El pin alinea los paquetes de Tailwind y evita la resolución de esa versión inexistente.
-- Commits de esta ronda: `c052422` (inventario), `6465ffa` (regla vacía), `0a0b8df` y `633914f` (consolidación/estilo de diálogos), `54fe050` (icono CG), `321a44d` (cierres JSX de FichaExpediente), `31a200c` (KPI legacy de EncargaGest), `00c4f0a` (selectores NotarGest sin consumidor), `9b8aedc`/`7070e42`/`37a8015` (limpieza ApoderaGest), `f29b02d` (pin Tailwind).
+- Commits de esta ronda: `c052422` (inventario), `6465ffa` (regla vacía), `0a0b8df` y `633914f` (consolidación/estilo de diálogos), `54fe050` (icono CG), `321a44d` (cierres JSX de FichaExpediente), `31a200c` (KPI legacy de EncargaGest), `00c4f0a` (selectores NotarGest sin consumidor), `9b8aedc`/`7070e42`/`37a8015` (limpieza ApoderaGest), `f29b02d` (pin Tailwind), `f11f225` (Dashboard/Cancelagest), `6e238f4` (selectores globales), `f53383c`/`5468894` (Agenda), `4c04b72`/`b282f09` (cabeceras portales), `9c2ad62` (modales ExpedientesListado).
 
 ## 7. Estado de ejecución — no confundir auditoría estática con validación
 
