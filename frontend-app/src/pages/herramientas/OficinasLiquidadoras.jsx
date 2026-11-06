@@ -1100,7 +1100,6 @@ export default function OficinasLiquidadoras() {
         lg:p-8
         text-[var(--erp-text)]
         space-y-6
-        animate-fade-in
       "
     >
 
