@@ -504,3 +504,14 @@ No se modifica FichaExpediente en esta pasada porque la estructura de sus diálo
 La corrección del diálogo de grupo y la retirada de los listeners duplicados se incluyeron en el commit `a82d38a`. Render completó el despliegue `dep-dbmvlsqjnfac73bj64k0` con estado `live` sobre el servicio `molsan-premium-2027-candidate-preview`. El Preview ya contiene el cambio funcional de ApoderaGest y las consolidaciones CSS anteriores.
 
 El HEAD del PR añade después documentación de auditoría, sin cambios adicionales de código. Producción y API siguen intactas. Pendiente únicamente la prueba visual/funcional autenticada en navegador; el deploy live por sí solo no acredita foco real, comportamiento de teclado ni responsive.
+
+
+## 25. Componentes modales propios de FichaExpediente — 6 de noviembre de 2026
+
+Se revisaron también los tres componentes externos usados por la ficha:
+
+- `EnviarANotarioModal.jsx`: usa `useAccessibleDialog` para la variante modal; la variante `inline` no declara `aria-modal` ni se trata como diálogo bloqueante.
+- `LiquidarExpedienteModal.jsx`: usa un diálogo principal y un diálogo de vista previa anidado con refs independientes. `useAccessibleDialog` prioriza el diálogo superior para Escape y Tab.
+- `CarpetaDigitalModal.jsx`: distingue la carpeta modal de su uso en modo actividad inline y activa un segundo diálogo accesible para el visor de documento.
+
+No se modifican estos componentes en esta ronda porque sus condiciones de apertura y sus refs están conectadas a `useAccessibleDialog`. La comprobación visual debe validar especialmente el apilamiento de visor/preview sobre el modal principal, la restauración de foco al cerrar cada capa y que la variante inline no bloquee la pantalla.
