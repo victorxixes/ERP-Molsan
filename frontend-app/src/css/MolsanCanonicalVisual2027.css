@@ -100,11 +100,11 @@
 .ng-panel,.ng-detalle-bloque,.ng-admin-individual-panel,.ng-admin-global-resumen,.ng-admin-resumen-principal,.ng-admin-resumen,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
 .notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card):hover {
-  transform: translateY(-2px) !important;
+  transform: translateY(-4px) !important;
   border-color: #9FBFD2 !important;
   border-top-color: #064675 !important;
   background: #FFFFFF !important;
-  box-shadow: 0 12px 26px rgba(6,70,117,.13),0 2px 5px rgba(6,50,82,.055) !important;
+  box-shadow: 0 16px 34px rgba(6,70,117,.15) !important;
 }
 :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
@@ -175,7 +175,7 @@
   transform: translateY(-2px);
   border-color: #9FBFD2 !important;
   border-top-color: #064675 !important;
-  box-shadow: 0 12px 26px rgba(6,70,117,.13),0 2px 5px rgba(6,50,82,.055) !important;
+  box-shadow: 0 16px 34px rgba(6,70,117,.15) !important;
 }
 :where(
   .seguridad-premium-page, .seguridad-subpagina-premium,
