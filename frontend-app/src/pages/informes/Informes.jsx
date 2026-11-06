@@ -3584,11 +3584,11 @@ function InformeFacturacion() {
       <AvisoInforme error={error} />
 
       {modalAbierto && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-5" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-white/70 bg-white shadow-2xl">
-            <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 px-5 py-4">
+        <div className="molsan-modal-overlay" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="molsan-modal molsan-modal--wide max-h-[96vh] w-full max-w-[1800px]">
+            <header className="molsan-modal__header">
               <div><h2 id="modal-facturacion-titulo" className="text-xl font-bold text-slate-800">Detalle de facturación</h2><p className="mt-1 text-sm text-slate-500">Tabla Excel con los registros que cumplen los filtros seleccionados.</p></div>
-              <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">✕ Cerrar</button>
+              <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="molsan-btn molsan-btn--secondary">✕ Cerrar</button>
             </header>
             <form onSubmit={aplicar} className="grid grid-cols-1 gap-3 overflow-y-auto border-b border-slate-200 bg-slate-50/80 px-5 py-4 sm:grid-cols-2 xl:grid-cols-4">
               <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
