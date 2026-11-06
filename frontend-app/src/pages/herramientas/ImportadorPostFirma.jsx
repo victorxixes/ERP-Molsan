@@ -1,8 +1,6 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useState, useEffect } from "react";
 import axios from "../../api/axios";
-import "../../css/ModalesHerramientasPremium.css";
-
 const CAMPO = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-semibold file:text-blue-700";
 
 function Metrica({ titulo, valor, detalle }) {
