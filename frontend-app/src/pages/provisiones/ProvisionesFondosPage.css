@@ -37,10 +37,7 @@
   box-shadow: 0 10px 28px rgb(23 43 77 / 12%);
 }
 @media (max-width: 640px) {
-  .provisiones-fondos-page {
-    
-  }
-  .provisiones-fondos-page .sticky {
+.provisiones-fondos-page .sticky {
     position: static;
   }
 }
