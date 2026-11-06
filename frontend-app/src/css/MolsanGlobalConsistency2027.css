@@ -25,18 +25,18 @@
    Se neutraliza solo la entrada del shell/cabecera; no se tocan estados ni botones. */
 :where(.utilidades-premium-page,.catalogos-premium-page,.herramientas-subpagina-premium,.crear-noticia-premium).animate-fadeIn,
 :where(.utilidades-premium-page,.catalogos-premium-page,.herramientas-subpagina-premium,.crear-noticia-premium) :is(header,[data-page-header="true"],.molsan-page-header) {
-  animation: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
+  animation: none;
+  opacity: 1;
+  transform: none;
+  filter: none;
   backface-visibility: visible;
   will-change: auto;
 }
 :where(.utilidades-premium-page,.catalogos-premium-page,.herramientas-subpagina-premium,.crear-noticia-premium) :is(header,[data-page-header="true"],.molsan-page-header)::before,
 :where(.utilidades-premium-page,.catalogos-premium-page,.herramientas-subpagina-premium,.crear-noticia-premium) :is(header,[data-page-header="true"],.molsan-page-header)::after {
-  animation: none !important;
-  transition: none !important;
-  opacity: 1 !important;
+  animation: none;
+  transition: none;
+  opacity: 1;
 }
 
 /* Una sola caja de contenido para las rutas del ERP principal. */
