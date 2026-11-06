@@ -348,3 +348,12 @@ El commit de código `0c18516` (ajuste responsive de cabeceras de Catálogos) qu
 - La ejecución `MOLSAN frontend premium build` `#663` aparece como `cancelled`; no se interpreta como fallo de compilación, porque el build del frontend del workflow `#3272` sí terminó correctamente para el mismo commit de código.
 
 El commit posterior `c8bb1d3` solo actualiza esta documentación. La validación automatizada no acredita todavía la inspección de navegador, las pruebas de modales, la matriz funcional ni el responsive visual. Render Preview no se ha desplegado desde esta rama en esta ronda; Producción, API y Supabase permanecen fuera del alcance.
+
+
+## 16. Consolidación no destructiva de cabeceras de Catálogos — 6 de noviembre de 2026
+
+Tras corregir el orden responsive, se consolidaron en `MolsanCardsPremium2027.css` los bloques base repetidos de `.molsan-page-header`, `__identity` y `__actions` de Catálogos. Las declaraciones comunes se han reunido en una única definición por selector; los breakpoints permanecen separados y después de la base para conservar la cascada. Se mantienen intactas las reglas particulares de las fichas de Catálogos y los accesos de Informes.
+
+Commit: `eb2cefa`.
+
+La modificación es una consolidación de declaraciones equivalentes; requiere build y verificación visual junto con la corrección responsive anterior.
