@@ -2366,7 +2366,7 @@ const permisosDisponibles =
               "
               aria-label="Cerrar"
             >
-              ×
+              <MolsanIcon name="close" size={18} tone="slate" />
             </button>
 
           </div>
