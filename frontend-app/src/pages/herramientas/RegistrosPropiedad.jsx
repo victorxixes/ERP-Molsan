@@ -2528,7 +2528,7 @@ export default function RegistrosPropiedad() {
                         border-b
                         border-[var(--molsan-border-light)]
                         transition-colors
-                        hover:bg-[var(--molsan-primary-soft)]/40
+                        hover:bg-[var(--molsan-primary-soft)]
                       "
                     >
 
@@ -3799,7 +3799,7 @@ function ModalRegistroPropiedad({
             z-10
             border-b
             border-[var(--molsan-border-light)]
-            bg-[var(--molsan-surface-soft)]/95
+            bg-[var(--molsan-surface-soft)]
             px-6
             py-5
             backdrop-blur
@@ -3891,7 +3891,7 @@ function ModalRegistroPropiedad({
                 rounded-2xl
                 border
                 border-[var(--molsan-border)]
-                bg-[var(--molsan-surface-soft)]/50
+                bg-[var(--molsan-surface-soft)]
                 p-4
               "
             >
@@ -4246,7 +4246,7 @@ function ModalRegistroPropiedad({
                 rounded-2xl
                 border
                 border-[var(--molsan-border)]
-                bg-[var(--molsan-surface-soft)]/50
+                bg-[var(--molsan-surface-soft)]
                 p-4
               "
             >
@@ -4591,7 +4591,7 @@ function ModalRegistroPropiedad({
                 rounded-2xl
                 border
                 border-[var(--molsan-border)]
-                bg-[var(--molsan-surface-soft)]/50
+                bg-[var(--molsan-surface-soft)]
                 p-4
               "
             >
