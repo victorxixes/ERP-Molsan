@@ -694,3 +694,11 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - No se han modificado las reglas globales de las tarjetas de dashboard que siguen teniendo consumidores.
 - Verificación estática: 41/41 llaves equilibradas en la hoja canónica.
 - Ajuste de sintaxis posterior: al retirar el último selector se eliminó también la coma final de la lista `::before`; se volverá a validar la minificación CSS en el despliegue siguiente.
+
+## 31. ApoderaGest — retirada de estilos KPI locales ya sustituidos (6 de noviembre de 2026)
+
+- Confirmado que `TarjetaIndicador` ya delega la representación en `MolsanStatCard`; se retiraron de sus llamadas cuatro props de variante que no se consumían.
+- Eliminadas de `ApoderaGest.css` las reglas antiguas de `.ag-kpi` y sus cuatro variantes cromáticas, así como las alturas y paddings que ya no se aplicaban al DOM.
+- Las alturas responsive se han trasladado al selector real `.molsan-stat-card`: 138 px hasta 760 px y 126 px hasta 480 px. Se conserva `.ag-grid-kpi` porque sigue controlando la distribución de la cuadrícula.
+- Verificación estática: no quedan selectores locales `.ag-kpi` obsoletos; 269/269 llaves equilibradas.
+- Los cuatro KPI de ApoderaGest y los cinco KPI de EncargaGest usan el componente compartido; no se cambian sus valores ni acciones.
