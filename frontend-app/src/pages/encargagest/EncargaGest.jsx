@@ -1164,8 +1164,8 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
             <datalist id="eg-catalogo-municipios-registro">
               {catalogoMunicipiosRegistro.map((item) => <option key={item.id} value={item.municipio}>{item.provincia}</option>)}
             </datalist>
-            <header className="eg-modal-header">
-              <div className="eg-modal-brand" aria-hidden="true"><MolsanIcon name="fileCheck" size={34} tone="ocean" /></div>
+            <header className="eg-modal-header molsan-modal-header">
+              <MolsanIcon name="fileCheck" size={36} tone="ocean" />
               <div className="eg-modal-heading">
                 <span className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</span>
                 <h2>Registrar nuevo encargo</h2>
@@ -1299,7 +1299,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
             <datalist id="eg-catalogo-municipios-registro-edicion">
               {catalogoMunicipiosRegistro.map((item) => <option key={item.id} value={item.municipio}>{item.provincia}</option>)}
             </datalist>
-            <header className="eg-modal-header sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur sm:px-7">
+            <header className="eg-modal-header molsan-modal-header sticky top-0 z-10">
               <div><p className="text-[9px] font-black tracking-[0.18em] text-[var(--molsan-primary)]">ENCARGAGEST · EDICIÓN COMPARTIDA</p><h2 className="mt-1 text-xl font-black text-slate-900">Editar encargo {detalle.referencia}</h2><p className="mt-1 text-xs text-slate-500">Los cambios se guardan en el registro común y se mostrarán también en el portal de la notaría.</p></div>
               <button type="button" disabled={guardandoEdicion} onClick={() => setModalEditar(false)} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 text-slate-500" aria-label="Cerrar edición"><MolsanIcon name="x" size={20} tone="ocean" /></button>
             </header>
@@ -1351,7 +1351,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       {modalIncidencia && detalle && (
         <div className="eg-modal-overlay eg-modal-overlay--incidencia fixed inset-0 z-[60] grid place-items-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6">
           <form onSubmit={registrarIncidencia} className="eg-modal-form eg-modal-form--incidencia my-auto w-full max-w-xl overflow-hidden rounded-3xl border border-rose-100 bg-white shadow-2xl">
-            <div className="eg-modal-header eg-modal-header--warning border-b border-rose-100 bg-rose-50 px-5 py-4 sm:px-7">
+            <div className="eg-modal-header molsan-modal-header eg-modal-header--warning">
               <p className="text-[9px] font-extrabold tracking-[0.18em] text-slate-500">ENCARGAGEST · GESTIÓN DE INCIDENCIAS</p>
               <h2 className="mt-1 text-xl font-black text-slate-900">Indicar motivo de la incidencia</h2>
               <p className="mt-2 text-xs leading-5 text-slate-600">El motivo quedará registrado en el seguimiento y será visible para la notaría, para que pueda actuar y aportar lo que falte.</p>
@@ -1373,7 +1373,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       {perfilAbierto && modo === "externo" && (
         <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-4 lg:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget && !sesion?.requiere_cambio_password) setPerfilAbierto(false); }}>
           <section role="dialog" aria-modal="true" aria-labelledby="eg-perfil-titulo" className="eg-modal-perfil my-0 w-full max-w-[1180px] min-w-0 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
-            <header className="eg-perfil-cabecera flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-7">
+            <header className="eg-perfil-cabecera molsan-modal-header">
               <div><p className="text-[9px] font-extrabold tracking-[0.18em] text-[var(--molsan-primary)]">ENCARGAGEST · FICHA CTN</p><h2 id="eg-perfil-titulo" className="mt-1 text-xl font-black text-slate-900">Ficha del notario</h2><p className="mt-1 text-xs text-slate-500">Datos de la notaría registrados en el catálogo CTN.</p></div>
               <button type="button" onClick={() => setPerfilAbierto(false)} disabled={Boolean(sesion?.requiere_cambio_password)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500 disabled:cursor-not-allowed disabled:opacity-30" aria-label="Cerrar ventana"><MolsanIcon name="x" size={20} tone="ocean" /></button>
             </header>
@@ -1416,7 +1416,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
       {modalAccesos && (
         <div className="eg-modal-overlay eg-modal-overlay--accesos fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-slate-950/50 p-3 backdrop-blur-sm sm:p-6">
           <form onSubmit={guardarAcceso} className="eg-modal-form eg-modal-form--accesos my-auto w-full max-w-2xl overflow-hidden rounded-3xl border border-white/70 bg-white shadow-2xl">
-            <div className="eg-modal-header flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4 sm:px-7">
+            <div className="eg-modal-header molsan-modal-header">
               <div><p className="text-[9px] font-extrabold tracking-[0.18em] text-[var(--molsan-primary)]">ENCARGAGEST · CONTROL DE ACCESO</p><h2 className="mt-1 text-xl font-black text-slate-900">Accesos de notarías externas</h2><p className="mt-1 text-xs leading-5 text-slate-500">Las cuentas son independientes de NotarGest. El usuario de entrada se obtiene del NIF de CTN.</p></div>
               <button type="button" onClick={() => setModalAccesos(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500"><MolsanIcon name="x" size={20} tone="ocean" /></button>
             </div>
