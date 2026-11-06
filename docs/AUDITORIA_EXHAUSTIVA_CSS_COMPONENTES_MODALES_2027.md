@@ -1263,3 +1263,15 @@ Se amplió la regla de tarjetas heredadas a las raíces `catalogos-premium-page`
 Commits de código: 9088d8f, 52679ec, 74d6608, 325216b, 534d947, 33b13b3, 84de234, 65daa80, 5ae80fc, 6075174, d6ef950, 280ab9a, 661d2d9 y 05551d2.
 
 Pendiente en esta sección: build final del commit más reciente y comprobación de las rutas principales en Preview Render; no se considera validación visual cerrada hasta revisar el navegador.
+
+
+## 32. Validación del candidato en Preview
+
+- Commit de código revisado: `d6ef950527f8ac106df5b7eb957408b70c21e671`.
+- GitHub Actions sobre ese commit: **MOLSAN frontend premium build = success** (job Vite production build), **Frontend dependency security audit = success**, **Validar Fichaje Molsan = success** (incluye build del frontend y sintaxis del backend de fichajes).
+- Servicio Render: `molsan-premium-2027-candidate-preview`, rama `fix/molsan-css-selector-audit-round1`, auto-deploy desactivado.
+- Deploy candidato `dep-dbn2jpmgekts738nqdo0`, commit `daea3b483101c57f23277677f65f81ca0c7920e5`: estado **live**.
+- Logs de error desde el inicio del deploy: **0**.
+- El navegador de inspección disponible no pudo abrir el dominio público del Preview; por tanto, el deploy y la compilación están verificados, pero no se afirma una inspección visual real de cada ruta. La comprobación visual final de cabeceras, tarjetas, botones, tablas y modales sigue pendiente de una sesión de navegador accesible.
+
+URL del Preview: https://molsan-premium-2027-candidate-preview.onrender.com
