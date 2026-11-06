@@ -1728,7 +1728,7 @@ export default function RegistrosPropiedad() {
                 justify-center
                 gap-2
                 rounded-xl
-                bg-blue-600
+                bg-[var(--molsan-primary)]
                 px-5
                 py-2.5
                 text-sm
@@ -1737,7 +1737,7 @@ export default function RegistrosPropiedad() {
                 shadow-[0_8px_20px_rgba(37,99,235,0.20)]
                 transition-all
                 hover:-translate-y-0.5
-                hover:bg-blue-700
+                hover:bg-[var(--molsan-primary)]
                 active:scale-[0.98]
               "
             >
@@ -1813,7 +1813,7 @@ export default function RegistrosPropiedad() {
         className="
           rounded-[22px]
           border
-          border-slate-200/80
+          border-[var(--molsan-border)]
           bg-white/80
           p-5
           shadow-[0_12px_35px_rgba(15,23,42,0.06)]
@@ -1844,7 +1844,7 @@ export default function RegistrosPropiedad() {
                 font-semibold
                 uppercase
                 tracking-wide
-                text-slate-500
+                text-[var(--molsan-text-secondary)]
               "
             >
               Buscar
@@ -1860,7 +1860,7 @@ export default function RegistrosPropiedad() {
                   left-3
                   top-1/2
                   -translate-y-1/2
-                  text-slate-400
+                  text-[var(--molsan-text-muted)]
                 "
               >
                 <MolsanIcon name="search" size={18} tone="ocean" bare />
@@ -1882,18 +1882,18 @@ export default function RegistrosPropiedad() {
                   w-full
                   rounded-xl
                   border
-                  border-slate-200
+                  border-[var(--molsan-border)]
                   bg-white
                   py-2.5
                   pl-10
                   pr-4
                   text-sm
-                  text-slate-700
+                  text-[var(--molsan-text)]
                   outline-none
                   transition
-                  focus:border-blue-400
+                  focus:border-[var(--molsan-border-strong)]
                   focus:ring-4
-                  focus:ring-blue-100
+                  focus:ring-[var(--molsan-primary-soft)]
                 "
               />
 
@@ -1914,7 +1914,7 @@ export default function RegistrosPropiedad() {
                 font-semibold
                 uppercase
                 tracking-wide
-                text-slate-500
+                text-[var(--molsan-text-secondary)]
               "
             >
               Provincia
@@ -1934,17 +1934,17 @@ export default function RegistrosPropiedad() {
                 w-full
                 rounded-xl
                 border
-                border-slate-200
+                border-[var(--molsan-border)]
                 bg-white
                 px-3
                 py-2.5
                 text-sm
-                text-slate-700
+                text-[var(--molsan-text)]
                 outline-none
                 transition
-                focus:border-blue-400
+                focus:border-[var(--molsan-border-strong)]
                 focus:ring-4
-                focus:ring-blue-100
+                focus:ring-[var(--molsan-primary-soft)]
               "
             >
 
@@ -1987,7 +1987,7 @@ export default function RegistrosPropiedad() {
                 font-semibold
                 uppercase
                 tracking-wide
-                text-slate-500
+                text-[var(--molsan-text-secondary)]
               "
             >
               Población
@@ -2007,17 +2007,17 @@ export default function RegistrosPropiedad() {
                 w-full
                 rounded-xl
                 border
-                border-slate-200
+                border-[var(--molsan-border)]
                 bg-white
                 px-3
                 py-2.5
                 text-sm
-                text-slate-700
+                text-[var(--molsan-text)]
                 outline-none
                 transition
-                focus:border-blue-400
+                focus:border-[var(--molsan-border-strong)]
                 focus:ring-4
-                focus:ring-blue-100
+                focus:ring-[var(--molsan-primary-soft)]
               "
             >
 
@@ -2060,7 +2060,7 @@ export default function RegistrosPropiedad() {
                 font-semibold
                 uppercase
                 tracking-wide
-                text-slate-500
+                text-[var(--molsan-text-secondary)]
               "
             >
               Oficina liquidadora
@@ -2080,17 +2080,17 @@ export default function RegistrosPropiedad() {
                 w-full
                 rounded-xl
                 border
-                border-slate-200
+                border-[var(--molsan-border)]
                 bg-white
                 px-3
                 py-2.5
                 text-sm
-                text-slate-700
+                text-[var(--molsan-text)]
                 outline-none
                 transition
-                focus:border-blue-400
+                focus:border-[var(--molsan-border-strong)]
                 focus:ring-4
-                focus:ring-blue-100
+                focus:ring-[var(--molsan-primary-soft)]
               "
             >
 
@@ -2121,16 +2121,16 @@ export default function RegistrosPropiedad() {
             className="
               rounded-xl
               border
-              border-slate-200
+              border-[var(--molsan-border)]
               bg-white
               px-4
               py-2.5
               text-sm
               font-medium
-              text-slate-600
+              text-[var(--molsan-text-secondary)]
               transition
-              hover:border-slate-300
-              hover:bg-slate-50
+              hover:border-[var(--molsan-border-strong)]
+              hover:bg-[var(--molsan-surface-soft)]
             "
           >
             Limpiar filtros
@@ -2159,7 +2159,7 @@ export default function RegistrosPropiedad() {
         <div
           className="
             text-sm
-            text-slate-500
+            text-[var(--molsan-text-secondary)]
           "
         >
 
@@ -2168,7 +2168,7 @@ export default function RegistrosPropiedad() {
           <span
             className="
               font-semibold
-              text-slate-700
+              text-[var(--molsan-text)]
             "
           >
             {registrosFiltrados.length.toLocaleString(
@@ -2188,7 +2188,7 @@ export default function RegistrosPropiedad() {
               <span
                 className="
                   font-semibold
-                  text-slate-700
+                  text-[var(--molsan-text)]
                 "
               >
                 {registros.length.toLocaleString(
@@ -2205,7 +2205,7 @@ export default function RegistrosPropiedad() {
         <div
           className="
             text-xs
-            text-slate-400
+            text-[var(--molsan-text-muted)]
           "
         >
           Página {pagina} de {totalPaginas}
@@ -2223,7 +2223,7 @@ export default function RegistrosPropiedad() {
           overflow-hidden
           rounded-[22px]
           border
-          border-slate-200/80
+          border-[var(--molsan-border)]
           bg-white/90
           shadow-[0_12px_35px_rgba(15,23,42,0.06)]
         "
@@ -2238,7 +2238,7 @@ export default function RegistrosPropiedad() {
               items-center
               justify-center
               text-sm
-              text-slate-400
+              text-[var(--molsan-text-muted)]
             "
           >
 
@@ -2253,7 +2253,7 @@ export default function RegistrosPropiedad() {
                   animate-spin
                   rounded-full
                   border-2
-                  border-slate-200
+                  border-[var(--molsan-border)]
                   border-t-blue-500
                 "
               />
@@ -2287,7 +2287,7 @@ export default function RegistrosPropiedad() {
                 items-center
                 justify-center
                 rounded-2xl
-                bg-slate-50
+                bg-[var(--molsan-surface-soft)]
                 text-2xl
               "
             >
@@ -2299,7 +2299,7 @@ export default function RegistrosPropiedad() {
               className="
                 text-base
                 font-semibold
-                text-slate-700
+                text-[var(--molsan-text)]
               "
             >
               No se han encontrado registros
@@ -2310,7 +2310,7 @@ export default function RegistrosPropiedad() {
               className="
                 mt-1
                 text-sm
-                text-slate-400
+                text-[var(--molsan-text-muted)]
               "
             >
               Prueba con otro texto o limpia los filtros.
@@ -2335,8 +2335,8 @@ export default function RegistrosPropiedad() {
                 <tr
                   className="
                     border-b
-                    border-slate-200
-                    bg-slate-50/80
+                    border-[var(--molsan-border)]
+                    bg-[var(--molsan-surface-soft)]
                   "
                 >
 
@@ -2350,7 +2350,7 @@ export default function RegistrosPropiedad() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Registro
@@ -2367,7 +2367,7 @@ export default function RegistrosPropiedad() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Registrador
@@ -2384,7 +2384,7 @@ export default function RegistrosPropiedad() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Dirección
@@ -2401,7 +2401,7 @@ export default function RegistrosPropiedad() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     C.P.
@@ -2418,7 +2418,7 @@ export default function RegistrosPropiedad() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Población
@@ -2435,7 +2435,7 @@ export default function RegistrosPropiedad() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Provincia
@@ -2452,7 +2452,7 @@ export default function RegistrosPropiedad() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Teléfono
@@ -2469,7 +2469,7 @@ export default function RegistrosPropiedad() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Email
@@ -2486,7 +2486,7 @@ export default function RegistrosPropiedad() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Of. Liq.
@@ -2503,7 +2503,7 @@ export default function RegistrosPropiedad() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Acciones
@@ -2526,9 +2526,9 @@ export default function RegistrosPropiedad() {
                       className="
                         group
                         border-b
-                        border-slate-100
+                        border-[var(--molsan-border-light)]
                         transition-colors
-                        hover:bg-blue-50/40
+                        hover:bg-[var(--molsan-primary-soft)]/40
                       "
                     >
 
@@ -2547,7 +2547,7 @@ export default function RegistrosPropiedad() {
                             text-sm
                             font-semibold
                             leading-5
-                            text-slate-700
+                            text-[var(--molsan-text)]
                           "
                         >
                           {
@@ -2566,7 +2566,7 @@ export default function RegistrosPropiedad() {
                           py-3.5
                           align-top
                           text-sm
-                          text-slate-600
+                          text-[var(--molsan-text-secondary)]
                         "
                       >
                         {
@@ -2594,7 +2594,7 @@ export default function RegistrosPropiedad() {
                           align-top
                           text-sm
                           leading-5
-                          text-slate-500
+                          text-[var(--molsan-text-secondary)]
                         "
                       >
                         {
@@ -2622,7 +2622,7 @@ export default function RegistrosPropiedad() {
                           align-top
                           font-mono
                           text-sm
-                          text-slate-600
+                          text-[var(--molsan-text-secondary)]
                         "
                       >
                         {
@@ -2640,7 +2640,7 @@ export default function RegistrosPropiedad() {
                           py-3.5
                           align-top
                           text-sm
-                          text-slate-600
+                          text-[var(--molsan-text-secondary)]
                         "
                       >
                         {
@@ -2658,7 +2658,7 @@ export default function RegistrosPropiedad() {
                           py-3.5
                           align-top
                           text-sm
-                          text-slate-600
+                          text-[var(--molsan-text-secondary)]
                         "
                       >
                         {
@@ -2676,7 +2676,7 @@ export default function RegistrosPropiedad() {
                           py-3.5
                           align-top
                           text-sm
-                          text-slate-600
+                          text-[var(--molsan-text-secondary)]
                         "
                       >
                         {
@@ -2694,7 +2694,7 @@ export default function RegistrosPropiedad() {
                           py-3.5
                           align-top
                           text-xs
-                          text-slate-500
+                          text-[var(--molsan-text-secondary)]
                         "
                       >
 
@@ -2743,13 +2743,13 @@ export default function RegistrosPropiedad() {
                               inline-flex
                               rounded-full
                               border
-                              border-slate-200
-                              bg-slate-50
+                              border-[var(--molsan-border)]
+                              bg-[var(--molsan-surface-soft)]
                               px-3
                               py-1
                               text-xs
                               font-medium
-                              text-slate-500
+                              text-[var(--molsan-text-secondary)]
                             "
                           >
                             No
@@ -2794,13 +2794,13 @@ export default function RegistrosPropiedad() {
                               justify-center
                               rounded-lg
                               border
-                              border-slate-200
+                              border-[var(--molsan-border)]
                               bg-white
-                              text-slate-500
+                              text-[var(--molsan-text-secondary)]
                               transition
-                              hover:border-blue-200
-                              hover:bg-blue-50
-                              hover:text-blue-600
+                              hover:border-[var(--molsan-border-strong)]
+                              hover:bg-[var(--molsan-primary-soft)]
+                              hover:text-[var(--molsan-primary)]
                             "
                           >
                             <MolsanIcon name="pen" size={15} tone="ocean" bare />
@@ -2823,9 +2823,9 @@ export default function RegistrosPropiedad() {
                               justify-center
                               rounded-lg
                               border
-                              border-slate-200
+                              border-[var(--molsan-border)]
                               bg-white
-                              text-slate-500
+                              text-[var(--molsan-text-secondary)]
                               transition
                               hover:border-red-200
                               hover:bg-red-50
@@ -2869,7 +2869,7 @@ export default function RegistrosPropiedad() {
             justify-between
             rounded-[18px]
             border
-            border-slate-200/80
+            border-[var(--molsan-border)]
             bg-white/70
             px-4
             py-3
@@ -2893,15 +2893,15 @@ export default function RegistrosPropiedad() {
             className="
               rounded-lg
               border
-              border-slate-200
+              border-[var(--molsan-border)]
               bg-white
               px-3
               py-2
               text-sm
               font-medium
-              text-slate-600
+              text-[var(--molsan-text-secondary)]
               transition
-              hover:bg-slate-50
+              hover:bg-[var(--molsan-surface-soft)]
               disabled:cursor-not-allowed
               disabled:opacity-40
             "
@@ -2913,14 +2913,14 @@ export default function RegistrosPropiedad() {
           <span
             className="
               text-sm
-              text-slate-500
+              text-[var(--molsan-text-secondary)]
             "
           >
 
             Página{" "}
 
             <strong
-              className="text-slate-700"
+              className="text-[var(--molsan-text)]"
             >
               {pagina}
             </strong>
@@ -2928,7 +2928,7 @@ export default function RegistrosPropiedad() {
             {" "}de{" "}
 
             <strong
-              className="text-slate-700"
+              className="text-[var(--molsan-text)]"
             >
               {totalPaginas}
             </strong>
@@ -2954,15 +2954,15 @@ export default function RegistrosPropiedad() {
             className="
               rounded-lg
               border
-              border-slate-200
+              border-[var(--molsan-border)]
               bg-white
               px-3
               py-2
               text-sm
               font-medium
-              text-slate-600
+              text-[var(--molsan-text-secondary)]
               transition
-              hover:bg-slate-50
+              hover:bg-[var(--molsan-surface-soft)]
               disabled:cursor-not-allowed
               disabled:opacity-40
             "
@@ -3103,7 +3103,7 @@ function ModalImportarExcel({
           overflow-hidden
           rounded-[26px]
           border
-          border-slate-200
+          border-[var(--molsan-border)]
           bg-white
           shadow-[0_30px_80px_rgba(15,23,42,0.22)]
         "
@@ -3114,8 +3114,8 @@ function ModalImportarExcel({
         <div
           className="
             border-b
-            border-slate-100
-            bg-slate-50/80
+            border-[var(--molsan-border-light)]
+            bg-[var(--molsan-surface-soft)]
             px-6
             py-5
           "
@@ -3161,7 +3161,7 @@ function ModalImportarExcel({
                   className="
                     text-lg
                     font-bold
-                    text-slate-800
+                    text-[var(--molsan-primary)]
                   "
                 >
                   Importar Registros de la Propiedad
@@ -3172,7 +3172,7 @@ function ModalImportarExcel({
                   className="
                     mt-1
                     text-xs
-                    text-slate-500
+                    text-[var(--molsan-text-secondary)]
                   "
                 >
                   Carga masiva del catálogo registral.
@@ -3198,10 +3198,10 @@ function ModalImportarExcel({
                 items-center
                 justify-center
                 rounded-lg
-                text-slate-400
+                text-[var(--molsan-text-muted)]
                 transition
-                hover:bg-slate-100
-                hover:text-slate-700
+                hover:bg-[var(--molsan-table-head)]
+                hover:text-[var(--molsan-text)]
                 disabled:cursor-not-allowed
                 disabled:opacity-40
               "
@@ -3224,8 +3224,8 @@ function ModalImportarExcel({
             className="
               rounded-2xl
               border
-              border-blue-100
-              bg-blue-50/70
+              border-[var(--molsan-border)]
+              bg-[var(--molsan-primary-soft)]
               px-4
               py-4
             "
@@ -3247,7 +3247,7 @@ function ModalImportarExcel({
                   className="
                     text-sm
                     font-semibold
-                    text-blue-800
+                    text-[var(--molsan-primary)]
                   "
                 >
                   Formato esperado
@@ -3259,7 +3259,7 @@ function ModalImportarExcel({
                     mt-1
                     text-xs
                     leading-5
-                    text-blue-700
+                    text-[var(--molsan-primary)]
                   "
                 >
                   El Excel debe contener las columnas
@@ -3297,7 +3297,7 @@ function ModalImportarExcel({
                 block
                 text-sm
                 font-semibold
-                text-slate-700
+                text-[var(--molsan-text)]
               "
             >
               Archivo Excel
@@ -3338,8 +3338,8 @@ function ModalImportarExcel({
                 rounded-2xl
                 border-2
                 border-dashed
-                border-slate-200
-                bg-slate-50/70
+                border-[var(--molsan-border)]
+                bg-[var(--molsan-surface-soft)]
                 px-6
                 py-8
                 text-center
@@ -3374,7 +3374,7 @@ function ModalImportarExcel({
                   mt-3
                   text-sm
                   font-semibold
-                  text-slate-700
+                  text-[var(--molsan-text)]
                 "
               >
                 Haz clic para seleccionar el Excel
@@ -3385,7 +3385,7 @@ function ModalImportarExcel({
                 className="
                   mt-1
                   text-xs
-                  text-slate-400
+                  text-[var(--molsan-text-muted)]
                 "
               >
                 Formatos admitidos: .xlsx y .xls
@@ -3492,7 +3492,7 @@ function ModalImportarExcel({
                     py-1
                     text-xs
                     font-medium
-                    text-slate-500
+                    text-[var(--molsan-text-secondary)]
                     hover:bg-white
                     hover:text-red-600
                   "
@@ -3517,7 +3517,7 @@ function ModalImportarExcel({
             justify-end
             gap-3
             border-t
-            border-slate-100
+            border-[var(--molsan-border-light)]
             px-6
             py-5
           "
@@ -3534,15 +3534,15 @@ function ModalImportarExcel({
             className="
               rounded-xl
               border
-              border-slate-200
+              border-[var(--molsan-border)]
               bg-white
               px-5
               py-2.5
               text-sm
               font-medium
-              text-slate-600
+              text-[var(--molsan-text-secondary)]
               transition
-              hover:bg-slate-50
+              hover:bg-[var(--molsan-surface-soft)]
               disabled:cursor-not-allowed
               disabled:opacity-50
             "
@@ -3784,7 +3784,7 @@ function ModalRegistroPropiedad({
           overflow-x-hidden
           rounded-[24px]
           border
-          border-slate-200
+          border-[var(--molsan-border)]
           bg-white
           shadow-[0_30px_80px_rgba(15,23,42,0.22)]
         "
@@ -3798,8 +3798,8 @@ function ModalRegistroPropiedad({
             top-0
             z-10
             border-b
-            border-slate-100
-            bg-slate-50/95
+            border-[var(--molsan-border-light)]
+            bg-[var(--molsan-surface-soft)]/95
             px-6
             py-5
             backdrop-blur
@@ -3820,7 +3820,7 @@ function ModalRegistroPropiedad({
                 className="
                   text-lg
                   font-bold
-                  text-slate-800
+                  text-[var(--molsan-primary)]
                 "
               >
                 {modo ===
@@ -3834,7 +3834,7 @@ function ModalRegistroPropiedad({
                 className="
                   mt-1
                   text-xs
-                  text-slate-500
+                  text-[var(--molsan-text-secondary)]
                 "
               >
                 Datos registrales, contacto y oficina liquidadora.
@@ -3858,10 +3858,10 @@ function ModalRegistroPropiedad({
                 items-center
                 justify-center
                 rounded-lg
-                text-slate-400
+                text-[var(--molsan-text-muted)]
                 transition
-                hover:bg-slate-100
-                hover:text-slate-700
+                hover:bg-[var(--molsan-table-head)]
+                hover:text-[var(--molsan-text)]
                 disabled:opacity-50
               "
             >
@@ -3890,8 +3890,8 @@ function ModalRegistroPropiedad({
               className="
                 rounded-2xl
                 border
-                border-slate-200
-                bg-slate-50/50
+                border-[var(--molsan-border)]
+                bg-[var(--molsan-surface-soft)]/50
                 p-4
               "
             >
@@ -3903,7 +3903,7 @@ function ModalRegistroPropiedad({
                   font-bold
                   uppercase
                   tracking-wider
-                  text-slate-400
+                  text-[var(--molsan-text-muted)]
                 "
               >
                 Datos principales
@@ -3931,7 +3931,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     Registro de la Propiedad *
@@ -3956,17 +3956,17 @@ function ModalRegistroPropiedad({
                       w-full
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       px-4
                       py-2.5
                       text-sm
-                      text-slate-700
+                      text-[var(--molsan-text)]
                       outline-none
                       transition
-                      focus:border-blue-400
+                      focus:border-[var(--molsan-border-strong)]
                       focus:ring-4
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -3985,7 +3985,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     Nombre Registrador
@@ -4009,17 +4009,17 @@ function ModalRegistroPropiedad({
                       w-full
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       px-4
                       py-2.5
                       text-sm
-                      text-slate-700
+                      text-[var(--molsan-text)]
                       outline-none
                       transition
-                      focus:border-blue-400
+                      focus:border-[var(--molsan-border-strong)]
                       focus:ring-4
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -4038,7 +4038,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     Dirección
@@ -4063,18 +4063,18 @@ function ModalRegistroPropiedad({
                       resize-none
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       px-4
                       py-2.5
                       text-sm
                       leading-5
-                      text-slate-700
+                      text-[var(--molsan-text)]
                       outline-none
                       transition
-                      focus:border-blue-400
+                      focus:border-[var(--molsan-border-strong)]
                       focus:ring-4
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -4091,7 +4091,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     Código Postal
@@ -4115,18 +4115,18 @@ function ModalRegistroPropiedad({
                       w-full
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       px-4
                       py-2.5
                       font-mono
                       text-sm
-                      text-slate-700
+                      text-[var(--molsan-text)]
                       outline-none
                       transition
-                      focus:border-blue-400
+                      focus:border-[var(--molsan-border-strong)]
                       focus:ring-4
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -4143,7 +4143,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     Población
@@ -4167,17 +4167,17 @@ function ModalRegistroPropiedad({
                       w-full
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       px-4
                       py-2.5
                       text-sm
-                      text-slate-700
+                      text-[var(--molsan-text)]
                       outline-none
                       transition
-                      focus:border-blue-400
+                      focus:border-[var(--molsan-border-strong)]
                       focus:ring-4
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -4194,7 +4194,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     Provincia
@@ -4218,17 +4218,17 @@ function ModalRegistroPropiedad({
                       w-full
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       px-4
                       py-2.5
                       text-sm
-                      text-slate-700
+                      text-[var(--molsan-text)]
                       outline-none
                       transition
-                      focus:border-blue-400
+                      focus:border-[var(--molsan-border-strong)]
                       focus:ring-4
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -4245,8 +4245,8 @@ function ModalRegistroPropiedad({
               className="
                 rounded-2xl
                 border
-                border-slate-200
-                bg-slate-50/50
+                border-[var(--molsan-border)]
+                bg-[var(--molsan-surface-soft)]/50
                 p-4
               "
             >
@@ -4258,7 +4258,7 @@ function ModalRegistroPropiedad({
                   font-bold
                   uppercase
                   tracking-wider
-                  text-slate-400
+                  text-[var(--molsan-text-muted)]
                 "
               >
                 Contacto
@@ -4284,7 +4284,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     Teléfono
@@ -4308,17 +4308,17 @@ function ModalRegistroPropiedad({
                       w-full
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       px-4
                       py-2.5
                       text-sm
-                      text-slate-700
+                      text-[var(--molsan-text)]
                       outline-none
                       transition
-                      focus:border-blue-400
+                      focus:border-[var(--molsan-border-strong)]
                       focus:ring-4
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -4335,7 +4335,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     Teléfono 2
@@ -4359,17 +4359,17 @@ function ModalRegistroPropiedad({
                       w-full
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       px-4
                       py-2.5
                       text-sm
-                      text-slate-700
+                      text-[var(--molsan-text)]
                       outline-none
                       transition
-                      focus:border-blue-400
+                      focus:border-[var(--molsan-border-strong)]
                       focus:ring-4
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -4386,7 +4386,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     Fax
@@ -4410,17 +4410,17 @@ function ModalRegistroPropiedad({
                       w-full
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       px-4
                       py-2.5
                       text-sm
-                      text-slate-700
+                      text-[var(--molsan-text)]
                       outline-none
                       transition
-                      focus:border-blue-400
+                      focus:border-[var(--molsan-border-strong)]
                       focus:ring-4
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -4437,7 +4437,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     WhatsApp
@@ -4461,17 +4461,17 @@ function ModalRegistroPropiedad({
                       w-full
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       px-4
                       py-2.5
                       text-sm
-                      text-slate-700
+                      text-[var(--molsan-text)]
                       outline-none
                       transition
-                      focus:border-blue-400
+                      focus:border-[var(--molsan-border-strong)]
                       focus:ring-4
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -4488,7 +4488,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     Email 1
@@ -4512,17 +4512,17 @@ function ModalRegistroPropiedad({
                       w-full
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       px-4
                       py-2.5
                       text-sm
-                      text-slate-700
+                      text-[var(--molsan-text)]
                       outline-none
                       transition
-                      focus:border-blue-400
+                      focus:border-[var(--molsan-border-strong)]
                       focus:ring-4
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -4539,7 +4539,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     Email 2
@@ -4563,17 +4563,17 @@ function ModalRegistroPropiedad({
                       w-full
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       px-4
                       py-2.5
                       text-sm
-                      text-slate-700
+                      text-[var(--molsan-text)]
                       outline-none
                       transition
-                      focus:border-blue-400
+                      focus:border-[var(--molsan-border-strong)]
                       focus:ring-4
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -4590,8 +4590,8 @@ function ModalRegistroPropiedad({
               className="
                 rounded-2xl
                 border
-                border-slate-200
-                bg-slate-50/50
+                border-[var(--molsan-border)]
+                bg-[var(--molsan-surface-soft)]/50
                 p-4
               "
             >
@@ -4603,7 +4603,7 @@ function ModalRegistroPropiedad({
                   font-bold
                   uppercase
                   tracking-wider
-                  text-slate-400
+                  text-[var(--molsan-text-muted)]
                 "
               >
                 Datos adicionales
@@ -4629,7 +4629,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     IBAN
@@ -4653,18 +4653,18 @@ function ModalRegistroPropiedad({
                       w-full
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       px-4
                       py-2.5
                       font-mono
                       text-sm
-                      text-slate-700
+                      text-[var(--molsan-text)]
                       outline-none
                       transition
-                      focus:border-blue-400
+                      focus:border-[var(--molsan-border-strong)]
                       focus:ring-4
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -4681,7 +4681,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     Oficina Liquidadora
@@ -4714,7 +4714,7 @@ function ModalRegistroPropiedad({
                         ${
                           formulario.tiene_of_liq
                             ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                            : "border-slate-200 bg-white text-slate-500"
+                            : "border-[var(--molsan-border)] bg-white text-[var(--molsan-text-secondary)]"
                         }
                       `}
                     >
@@ -4740,8 +4740,8 @@ function ModalRegistroPropiedad({
                         transition
                         ${
                           !formulario.tiene_of_liq
-                            ? "border-slate-300 bg-slate-100 text-slate-700"
-                            : "border-slate-200 bg-white text-slate-500"
+                            ? "border-[var(--molsan-border-strong)] bg-[var(--molsan-table-head)] text-[var(--molsan-text)]"
+                            : "border-[var(--molsan-border)] bg-white text-[var(--molsan-text-secondary)]"
                         }
                       `}
                     >
@@ -4765,7 +4765,7 @@ function ModalRegistroPropiedad({
                       block
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     Comentarios
@@ -4789,18 +4789,18 @@ function ModalRegistroPropiedad({
                       resize-none
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       px-4
                       py-2.5
                       text-sm
                       leading-5
-                      text-slate-700
+                      text-[var(--molsan-text)]
                       outline-none
                       transition
-                      focus:border-blue-400
+                      focus:border-[var(--molsan-border-strong)]
                       focus:ring-4
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -4822,7 +4822,7 @@ function ModalRegistroPropiedad({
               justify-end
               gap-3
               border-t
-              border-slate-100
+              border-[var(--molsan-border-light)]
               pt-5
             "
           >
@@ -4838,15 +4838,15 @@ function ModalRegistroPropiedad({
               className="
                 rounded-xl
                 border
-                border-slate-200
+                border-[var(--molsan-border)]
                 bg-white
                 px-4
                 py-2.5
                 text-sm
                 font-medium
-                text-slate-600
+                text-[var(--molsan-text-secondary)]
                 transition
-                hover:bg-slate-50
+                hover:bg-[var(--molsan-surface-soft)]
                 disabled:opacity-50
               "
             >
@@ -4866,7 +4866,7 @@ function ModalRegistroPropiedad({
                 justify-center
                 gap-2
                 rounded-xl
-                bg-blue-600
+                bg-[var(--molsan-primary)]
                 px-5
                 py-2.5
                 text-sm
@@ -4874,7 +4874,7 @@ function ModalRegistroPropiedad({
                 text-white
                 shadow-sm
                 transition
-                hover:bg-blue-700
+                hover:bg-[var(--molsan-primary)]
                 disabled:cursor-not-allowed
                 disabled:opacity-60
               "
