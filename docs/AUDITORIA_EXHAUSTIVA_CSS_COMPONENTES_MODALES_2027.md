@@ -823,3 +823,11 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - No se modifican consultas, filtros, monitorización, métricas, exportación ni navegación.
 - Los tres submódulos dejan de depender de `/icons/icons.svg`; la cabecera común sigue residiendo en el contenedor Panel Técnico para evitar duplicados.
 - Pendiente build de Preview para este último bloque.
+
+## 47. Panel Técnico — eliminación de cabeceras anidadas sin perder rutas independientes (6 de noviembre de 2026)
+
+- `MonitorSistema`, `AuditoriaAvanzada` y `LogsAvanzados` se utilizan tanto como secciones del Panel Técnico como mediante rutas independientes.
+- Añadida la prop opcional `embedded` (por defecto `false`): cuando el Panel Técnico los incluye, ocultan su cabecera interna y utilizan la cabecera única del contenedor; al entrar por sus rutas propias conservan su `MolsanPageHeader`.
+- El contenedor pasa explícitamente `embedded` a los tres hijos. Se evita así la duplicación visual sin retirar accesos directos ni cambiar rutas.
+- En MonitorSistema se evita además añadir padding interior duplicado en el modo embebido; se conserva el padding en la vista independiente.
+- Pendiente build y comprobación visual de ambas formas de entrada.
