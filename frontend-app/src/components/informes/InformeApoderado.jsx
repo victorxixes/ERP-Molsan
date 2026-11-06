@@ -343,8 +343,7 @@ export default function InformeApoderado({
   return (
 
     <div
-      className="relative
- overflow-hidden
+      className="informe-apoderado-premium relative overflow-hidden
  
  
  
