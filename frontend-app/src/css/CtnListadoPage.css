@@ -29,36 +29,6 @@
   box-sizing: border-box;
 }
 
-.ctn-listado-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 22px;
-}
-
-.ctn-listado-header h1 {
-  margin: 0;
-  font-size: 25px;
-  line-height: 1.25;
-  font-weight: 750;
-  letter-spacing: -0.5px;
-}
-
-.ctn-listado-header p {
-  margin: 7px 0 0;
-  color: var(--ctn-muted);
-  font-size: 13px;
-}
-
-.ctn-listado-header-acciones {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 9px;
-}
-
 /* =========================================================
    BOTONES
    ========================================================= */
@@ -903,20 +873,6 @@
     padding: 14px;
   }
 
-  .ctn-listado-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .ctn-listado-header h1 {
-    font-size: 21px;
-  }
-
-  .ctn-listado-header-acciones {
-    justify-content: flex-start;
-    width: 100%;
-  }
-
   .ctn-filtros {
     padding: 13px;
   }
@@ -1431,11 +1387,6 @@
   background: var(--molsan-page-bg, #f3f6fb);
 }
 
-.ctn-listado-header h1 {
-  color: var(--molsan-text, #17243a);
-  letter-spacing: -0.6px;
-}
-
 .ctn-filtros,
 .ctn-tabla-contenedor {
   border-color: var(--molsan-border, #dce4ef);
@@ -1499,17 +1450,6 @@
 }
 
 @media (max-width: 760px) {
-  
-
-  .ctn-listado-header {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .ctn-listado-header-acciones {
-    justify-content: flex-start;
-  }
 
   .ctn-filtros-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
