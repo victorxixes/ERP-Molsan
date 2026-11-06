@@ -132,59 +132,42 @@ function Card({
   aviso = null,
   onClick,
 }) {
+  const tono = destacado ? "workspace-tone-cyan" : "workspace-tone-ocean";
+  const clases = `workspace-app-card ${tono} group`;
   const contenido = (
     <>
-      <div
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
-      />
-      <div className="flex items-start gap-4">
-        <div
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl transition-all duration-300 group-hover:scale-105 ${destacado ? "bg-blue-100 border-blue-200" : "bg-slate-50 border-slate-200"}`}
-        >
-          <MolsanIcon name={icon || "file"} size={30} tone="ocean" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-base font-semibold text-slate-800">{titulo}</h2>
-            {enConstruccion && (
-              <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">
-                En construcción
-              </span>
-            )}
-          </div>
-          <p className="mt-1.5 text-sm leading-5 text-slate-500">{descripcion}</p>
-          {etapa && <p className="mt-3 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-700">{etapa}</p>}
-          {aviso && <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-5 text-amber-900"><p className="flex items-center gap-1 font-bold"><MolsanIcon name="alert" size={14} tone="amber" bare /> Pendiente de revisión técnica</p><p className="mt-1">{aviso}</p></div>}
-          {enConstruccion && (
-            <p className="mt-3 text-xs font-medium text-amber-700">
-              Próximamente: registro de envíos, respuestas y cambios de estado vía API.
-            </p>
-          )}
-        </div>
-        {!enConstruccion && (
-          <span className="text-slate-300 transition-all group-hover:translate-x-1 group-hover:text-blue-500">→</span>
-        )}
-      </div>
+      <span className="workspace-card-accent" aria-hidden="true" />
+      <span className="workspace-card-topline">
+        <MolsanIcon className="workspace-app-icon" name={icon || "file"} size={58} tone="ocean" />
+        <span className="workspace-card-open" aria-hidden="true">
+          <MolsanIcon name="arrowRight" size={16} bare />
+        </span>
+      </span>
+      <span className="workspace-app-category">
+        {destacado ? "HERRAMIENTA DESTACADA" : "UTILIDADES DEL SISTEMA"}
+      </span>
+      <span className="workspace-app-title">{titulo}</span>
+      <span className="workspace-app-description">{descripcion}</span>
+      {etapa && <span className="mt-3 inline-flex w-fit rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-xs font-bold text-sky-800">{etapa}</span>}
+      {aviso && (
+        <span className="mt-3 block rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-5 text-amber-900">
+          <span className="flex items-center gap-1 font-bold"><MolsanIcon name="alert" size={14} tone="amber" bare /> Pendiente de revisión técnica</span>
+          <span className="mt-1 block">{aviso}</span>
+        </span>
+      )}
+      {enConstruccion && <span className="mt-3 text-xs font-semibold text-amber-700">En construcción · Próximamente</span>}
+      <span className="workspace-card-footer">
+        <span>{enConstruccion ? "Consultar herramienta" : "Abrir herramienta"}</span>
+        <MolsanIcon name="arrowRight" size={18} bare />
+      </span>
     </>
   );
-
-  const clases = `group relative overflow-hidden rounded-[22px] border bg-white/80 p-5 shadow-[0_12px_35px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 ${enConstruccion && !onClick && !link ? "cursor-default border-amber-200/80 bg-amber-50/30" : "cursor-pointer hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)] active:scale-[0.98]"} ${destacado ? "border-blue-200/80 bg-blue-50/50" : ""}`;
-
-  if (enConstruccion && !onClick && !link) {
-    return (
-      <div className={clases} aria-label={`${titulo}: en construcción`}>
-        {contenido}
-      </div>
-    );
-  }
 
   if (onClick) {
     return <button type="button" onClick={onClick} className={`${clases} w-full text-left`}>{contenido}</button>;
   }
-
-  return (
-    <Link to={link} className={clases}>
-      {contenido}
-    </Link>
-  );
+  if (!link) {
+    return <div className={clases} aria-label={`${titulo}: en construcción`}>{contenido}</div>;
+  }
+  return <Link to={link} className={clases}>{contenido}</Link>;
 }
