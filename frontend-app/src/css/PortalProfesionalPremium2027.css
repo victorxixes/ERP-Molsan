@@ -167,8 +167,7 @@
 }
 .apoderagest .ag-panel-cabecera,.apoderagest .ag-titulo-seccion,
 .encargagest .eg-panel-head,.notargest.ng-content .ng-panel-titulo,
-.notargest.ng-content .ng-bloque-heading,.ng-admin-notarias .ng-admin-card-header,
-.encargagest .eg-directorio-cabecera{
+.notargest.ng-content .ng-bloque-heading,.ng-admin-notarias .ng-admin-card-header{
   display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;
   margin:0!important;padding:16px 19px!important;color:var(--molsan-prof-blue)!important;
   border:0!important;border-bottom:1px solid var(--molsan-prof-border)!important;border-radius:0!important;
