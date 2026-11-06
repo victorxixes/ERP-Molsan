@@ -36,6 +36,8 @@ import "./css/PortalProfesionalPremium2027.css";
 import "./css/MolsanGlobalConsistency2027.css";
 // Última autoridad visual: componentes comunes Glass Luxe en todas las rutas.
 import "./css/MolsanGlassLuxeUnified2027.css";
+// Autoridad canónica final: patrón Espacios de trabajo + geometría Dashboard.
+import "./css/MolsanCanonicalVisual2027.css";
 
 // Última capa: neutraliza diferencias visuales propias de los módulos.
 
