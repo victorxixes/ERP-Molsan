@@ -458,11 +458,9 @@ Los componentes de diálogo compartidos de Agenda, CTN, Empleados y Expedientes 
 ### Build y Preview
 
 - Rama: `fix/molsan-css-selector-audit-round1`.
-- Head comprobado: `cdd387be`.
-- `MOLSAN frontend premium build`: success.
-- `Frontend dependency security audit`: success.
-- `Validar Fichaje Molsan`: success.
-- Render Preview `molsan-premium-2027-candidate-preview`: deploy live `dep-dbmvlsqjnfac73bj64k0`, commit `a82d38a` (documentación; código `4dcd32b`); auto-deploy permanece desactivado.
+- Último commit de código de esta pasada: `90cb639` (guardado de cita/teclado en Agenda); HEAD documental actual: `2c5d7a8`.
+- `MOLSAN frontend premium build` #699, `Frontend dependency security audit` #254 y `Validar Fichaje Molsan` #3289: success para el commit canónico `cdd387b`.
+- Render Preview `molsan-premium-2027-candidate-preview`: deploy live `dep-dbmvmq5bedkc73dknrf0`, commit `095efb9`, que incluye el código `90cb639`; auto-deploy permanece desactivado.
 
 Producción, API y base de datos principal no forman parte de estos cambios. El workflow separado `supabase-schema-audit` sigue apareciendo como fallo; se ha limitado su paso de commit de migración a la rama `release/molsan-premium-2027-candidate`, por lo que esta rama de auditoría no puede escribir una migración Supabase.
 
@@ -547,9 +545,10 @@ En los cinco primeros no se detectó un desacoplamiento entre el estado que abre
 - `MolsanRedesign2027.css` ya no duplica `position/z-index` de `.mol-sidebar-premium` ni `color/background` de `.erp-app-shell`.
 - Canonical conserva 110 `!important` (antes 115); no se eliminan más sin validar especificidad y comportamiento de las páginas legacy.
 - El listener Escape manual de grupos de ApoderaGest se eliminó; `useAccessibleDialog` controla Escape para el diálogo real. La corrección del estado de apertura/cierre del grupo está en `4dcd32b`.
-- Render Preview está `live` en `dep-dbmvlsqjnfac73bj64k0`; auto-deploy sigue desactivado. El último commit desplegado es `a82d38a` (documentación) e incluye el código `4dcd32b`.
+- En Agenda, Escape queda bloqueado durante el guardado de la cita; el hook accesible es el único propietario del cierre por teclado (`90cb639`).
+- Render Preview está `live` en `dep-dbmvmq5bedkc73dknrf0`, commit `095efb9`, que incluye el código `90cb639`; auto-deploy sigue desactivado.
 - PR #409 sigue en Draft y sin merge. Producción, API y base de datos principal no se han tocado.
-- Build del frontend, auditoría de dependencias y sintaxis backend: correctos en los commits de código anteriores a este estado.
+- GitHub Actions pasó en el commit canónico `cdd387b` y Render completó correctamente el build/despliegue del código posterior de Agenda en `095efb9`.
 - Pendiente: revisión visual autenticada en navegador, responsive real, prueba de foco/Tab/Shift+Tab/Escape/backdrop de cada modal, matriz de permisos 401/403/200 y regresión funcional por módulo. No se declara finalizada la auditoría global.
 
 
