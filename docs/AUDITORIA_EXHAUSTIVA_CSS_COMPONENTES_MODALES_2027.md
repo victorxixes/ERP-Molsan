@@ -727,3 +727,10 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - Retiradas las referencias residuales de `MolsanRedesign2027.css`, tanto el tratamiento de fondo como la regla de movimiento reducido. Se mantienen intactos `.ag-panel`, `.eg-panel`, `.eg-modal-section` y las reglas de distribución/responsive.
 - Verificación estática posterior: ambas hojas conservan sus llaves equilibradas (CanonicalVisual: 41/41; Redesign: 194/194) y no quedan referencias a `.ag-kpi` ni `.eg-kpi` en ellas.
 - No se han eliminado las clases KPI de NotarGest ni las clases de tarjetas compartidas; sus usos requieren tratamiento separado.
+
+## 35. Retirada de KPI heredados de NotarGest (6 de noviembre de 2026)
+
+- Verificados los JSX y CSS propios de NotarGest: los antiguos selectores `.ng-dashboard-kpi` y `.ng-kpi-card` ya no tienen consumidores tras la migración de los indicadores a `MolsanStatCard`.
+- Eliminados ambos selectores de los grupos visuales, estados hover/focus y movimiento reducido de `MolsanCanonicalVisual2027.css`; también se retiró el pseudoelemento que duplicaba la franja superior de las tarjetas.
+- Se conserva `.ng-admin-notaria-card`, que sí corresponde a las tarjetas de selección de notaría y sigue en uso.
+- Verificación estática de la hoja tras la limpieza: 40/40 llaves equilibradas y cero referencias a los dos selectores retirados.
