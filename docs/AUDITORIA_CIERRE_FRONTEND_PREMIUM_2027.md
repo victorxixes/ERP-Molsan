@@ -2,7 +2,8 @@
 
 **Fecha:** 6 de noviembre de 2026  
 **Rama auditada:** `fix/molsan-css-selector-audit-round1`  
-**Último commit de limpieza App/main y CSS global:** `3f407f05ec99d7661d08171fe9e0cb671e16ff5a`  
+**Último commit con build Vite confirmado:** `8c6bbbaf4d97556ce9574a5bbe311d7435c17e00`  
+**Cambios de almacenamiento añadidos después de ese build:** `0bc43898b6392707cc0d92850599dabbcac13f15`  
 **Último commit con build Vite confirmado:** `6facf31bc108632018683345111cc684c9f77b3f`  
 **PR:** [#409](https://github.com/victorxixes/ERP-Molsan/pull/409)  
 **Alcance de seguridad:** solo frontend y documentación en la rama de Preview. No se han modificado producción, API, base de datos ni datos de expedientes.
@@ -15,10 +16,10 @@ Esta auditoría distingue expresamente entre inspección estática, compilación
 - Se inspeccionaron los JSX principales de ApoderaGest, EncargaGest y NotarGest y sus tres hojas CSS.
 - Se inspeccionaron los puntos de entrada de estilos en `main.jsx`, además de las capas globales CanonicalVisual, GlobalConsistency, GlassLuxeUnified, Premium2027 y Redesign2027.
 - Se inspeccionaron los componentes principales de Expedientes, Agenda, CTN, Fusiones, Provisiones, Mensajería, Informes, Catálogos, Seguridad y Panel Técnico.
-- El workflow de compilación Vite asociado al commit de referencia terminó correctamente. Esto verifica compilación, no comportamiento funcional ni apariencia en Render.
+- El workflow de compilación Vite del commit `8c6bbbaf` terminó correctamente. Esto verifica compilación de App/main y de la primera ronda de CSS, no comportamiento funcional ni apariencia en Render. Después se añadieron dos cambios menores de almacenamiento frontend y requieren su propio build.
 - Se consultó Render con autorización del usuario: el servicio `molsan-premium-2027-candidate-preview` está activo y su último deploy figura `live`, pero sirve el commit `fb0c71eb4fb908af3868a247802752972af7a8df` desde `integration/erp-molsan-supabase-ready`. El auto-deploy está desactivado; no se ha desplegado la rama PR #409.
 - La apertura de la URL del Preview desde el lector web no ha sido posible; no se declara una inspección visual real de escritorio, tablet o móvil.
-- Tras las modificaciones posteriores en `App.jsx` y `main.jsx`, todavía no hay un nuevo build asociado al commit final. Por tanto, no se declara completado el punto de validación visual ni la ausencia total de regresiones.
+- Tras las modificaciones posteriores en `ModelosDocumentos.jsx` y `ModulosSelector.jsx`, el build del commit final está pendiente de confirmar. Por tanto, no se declara completado el punto de validación visual ni la ausencia total de regresiones.
 
 ## 1. Portales profesionales
 
@@ -118,3 +119,11 @@ El trabajo solo puede declararse cerrado cuando:
 - El análisis de coincidencias se limitó a selectores y declaraciones textuales de las diez hojas globales; no sustituye una prueba de computed styles ni detecta todos los solapamientos por especificidad, `:where()`, `:is()`, media queries o selectores ancestro.
 - La limpieza no modifica estructura JSX de páginas, handlers de negocio, rutas, guards, API ni almacenamiento.
 - La compilación del commit final sigue pendiente. El último build confirmado pertenece al commit anterior `6facf31`.
+
+## 10. Almacenamiento local y sesión
+
+- La búsqueda de código no encontró referencias a `indexedDB`, `Dexie` ni al paquete `idb` en el frontend consultado.
+- Se eliminó la persistencia en `localStorage` del logotipo de cliente usado únicamente en la previsualización de la hoja de liquidación. La imagen queda en memoria mientras permanece abierta esa pantalla; el PDF oficial no dependía de esa clave.
+- Se eliminó `notargest_soporte_notaria` de `sessionStorage`: el portal no leía esa copia de metadatos. Se conserva el token temporal de soporte porque es credencial de sesión.
+- Persisten claves de autenticación/sesión: JWT general y snapshot del empleado en `authStore`, más tokens/selector de modo de los portales. No son expedientes ni conjuntos de datos de negocio. No se han eliminado porque el flujo actual depende de ellas para restaurar sesión y el backend actual expone `/auth/login`, pero no un endpoint general `/auth/me` para rehidratar el empleado desde servidor. Su sustitución debe hacerse junto con el flujo de identidad de Supabase/Auth o un endpoint de perfil equivalente, no borrando la caché a ciegas.
+- Los documentos y adjuntos operativos deben continuar su migración a buckets privados de Supabase Storage (por ejemplo, `expedientes-documentos`, `mensajes-adjuntos`, `intranet-documentos` y `empleados-fotos`), con autorización JWT y sin URLs públicas. Esta limpieza de frontend no cambia API ni almacenamiento documental.
