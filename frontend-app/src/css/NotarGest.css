@@ -147,27 +147,6 @@
 .ng-admin-global-total { flex: 0 0 auto; padding: 7px 11px; color: var(--ng-primary); border: 1px solid var(--ng-border); border-radius: 999px; background: #fff; font-size: 11px; font-weight: 800; }
 .ng-admin-kpis { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; padding: 16px; }
 .ng-admin-kpis-global { grid-template-columns: repeat(5,minmax(0,1fr)); }
-.ng-admin-kpi-button {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 11px;
-  min-width: 0;
-  min-height: 190px;
-  padding: 17px;
-  text-align: left;
-  color: var(--ng-text);
-  border: 1px solid #D8E4EC;
-  border-radius: 16px;
-  background: linear-gradient(155deg,#FFFFFF 0%,#F7FAFC 100%);
-  box-shadow: 0 7px 20px rgba(6,50,82,.065),inset 0 1px 0 #FFFFFF;
-  cursor: pointer;
-  transition: transform .18s ease,border-color .18s ease,box-shadow .18s ease;
-}
-.ng-admin-kpi-button > span { min-height: 32px; color: var(--ng-muted); font-size: 11px; font-weight: 750; line-height: 1.4; }
-.ng-admin-kpi-button > strong { margin-top: auto; color: var(--ng-primary); font-size: clamp(24px,2vw,32px); font-weight: 850; line-height: 1; font-variant-numeric: tabular-nums; }
-.ng-admin-kpi-button > small { display: flex; align-items: center; gap: 6px; color: var(--ng-primary); font-size: 10px; font-weight: 800; }
-
 .ng-admin-notarias-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
 .ng-admin-notaria-card {
   display: flex;
@@ -473,28 +452,12 @@
   .ng-media-row { grid-template-columns: 1fr; gap: 6px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ng-admin-kpi-button,.ng-admin-notaria-card { transition: none; }
+  
 }
 
 
-/* Iconografía de cabecera centralizada en MolsanIcon y estilos comunes. */
-.ng-admin-kpi-button > .molsan-icon-3d {
-  display:grid;
-  width:52px!important;
-  height:52px!important;
-  flex:0 0 52px;
-  place-items:center;
-  border:1px solid #D8E4EC;
-  border-radius:15px;
-  background:linear-gradient(145deg,#FFFFFF 0%,#EAF2F8 100%);
-  box-shadow:0 6px 15px rgba(6,50,82,.10),inset 0 1px 0 #FFFFFF;
-}
-.ng-admin-kpi-button > .molsan-icon-3d svg { filter:drop-shadow(0 2px 3px rgba(6,50,82,.16)); }
 .ng-modal :is(input,select,textarea),.ng-resumen-expedientes-modal :is(input,select,textarea) {
   max-width:100%;min-width:0;box-sizing:border-box;
-}
-@media(max-width:640px) {
-  .ng-admin-kpi-button { min-height:150px; }
 }
 
 /* Detalle por notaría: título y fichas comparten una única superficie. */
@@ -661,51 +624,11 @@ box-sizing:border-box}
 
 /* Cabecera administrativa: misma autoridad visual compartida. */
 
-.ng-admin-notarias .ng-admin-kpi-button {
-  position: relative;
-  display: flex;
-  width: 100%;
-  min-width: 0;
-  min-height: 136px;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 9px;
-  margin: 0;
-  padding: 17px 18px;
-  appearance: none;
-  -webkit-appearance: none;
-  color: var(--molsan-prof-text);
-  border: 1px solid var(--molsan-prof-border);
-  border-radius: 15px;
-  background: linear-gradient(145deg,#fff 0%,#fff 66%,#F7FAFC 100%);
-  box-shadow: var(--molsan-prof-shadow);
-  transition: border-color .18s ease,box-shadow .18s ease,transform .18s ease;
-  text-align: left;
-}
-
-.ng-admin-notarias .ng-admin-kpi-button>span:first-child {
-
-  color:var(--molsan-prof-muted);font-size:11px;font-weight:800;letter-spacing:.08em;line-height:1.4;text-transform:uppercase;
-}
-
-.ng-admin-notarias .ng-admin-kpi-button>strong {
-
-  color:var(--molsan-prof-blue);font-size:clamp(26px,2vw,32px);font-weight:850;line-height:1.1;letter-spacing:-.035em;font-variant-numeric:tabular-nums;
-}
-
 .ng-admin-notarias .ng-admin-kpis,
 .ng-admin-notarias .ng-admin-kpis-global {
 
   display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;
 }
-
-.ng-admin-notarias .ng-admin-kpi-button>strong {
-  margin: auto 0 0;
-}
-
-.ng-admin-notarias .ng-admin-kpi-button>small {
-color:var(--molsan-prof-blue);font-size:10px;font-weight:800}
 
 .ng-admin-notarias .ng-admin-global-resumen,
 .ng-admin-notarias .ng-admin-notaria-card {
