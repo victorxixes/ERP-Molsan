@@ -27,8 +27,7 @@ export default function MensajesHeader({
 
   return (
     <div
-      className="
-        mb-4
+      className="mensajes-header-premium mb-4
         flex
         items-center
         justify-between
