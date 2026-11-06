@@ -2,7 +2,6 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Sidebar from "../components/Sidebar";
-import MolsanIcon from "../components/ui/MolsanIcon";
 import { useAuthStore } from "../store/authStore";
 import EmpleadoPerfilModal from "../components/SidebarPerfilModal";
 import { useNotificacionesWS } from "../hooks/useNotificacionesWS";
