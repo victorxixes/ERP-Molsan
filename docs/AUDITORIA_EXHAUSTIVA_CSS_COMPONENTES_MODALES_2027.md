@@ -1122,3 +1122,8 @@ Al retirar la piel local de las tarjetas de notaría, se ha trasladado explícit
 Commits: a49b218, c4ca98f, a2fa2d7, f102d44, 290b243, 657cf18, b4f4c7d, 7f4a250.
 
 **Validación pendiente de esta tanda:** ejecutar/confirmar build tras las migraciones JSX y los tokens; revisar Seguridad y las páginas afectadas en Preview, además de los tres portales.
+
+
+### 19.6. Retirada de subtarjetas anidadas en NotarGest
+
+Se han simplificado los bloques de métricas, circuitos y resumen de pagos que se dibujaban como pequeñas tarjetas con borde y fondo dentro de otras tarjetas. Conservan su estructura, espaciado y contenido; dejan de introducir cajas y líneas adicionales en el interior. Commit: 59f05e3.
