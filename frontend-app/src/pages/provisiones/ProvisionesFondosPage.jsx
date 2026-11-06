@@ -1,7 +1,8 @@
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "../../api/axios";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 const hoy = () => new Date().toISOString().slice(0, 10);
 const dinero = (v) => new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v || 0));
 const totalConceptos = (g) => Math.round((["notaria", "ajd", "registro", "gestion"].reduce((s, k) => s + Number(g?.[k] || 0), 0) + Number.EPSILON) * 100) / 100;
@@ -469,6 +470,8 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
   const [emailDraft, setEmailDraft] = useState(null);
   const [emailProvisionId, setEmailProvisionId] = useState(null);
   const [enviandoEmail, setEnviandoEmail] = useState(false);
+  const emailDialogRef = useRef(null);
+  useAccessibleDialog({ open: Boolean(emailDraft), onClose: () => { setEmailDraft(null); setEmailProvisionId(null); }, dialogRef: emailDialogRef });
 
   useEffect(() => {
     let activo = true;
@@ -883,7 +886,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
       {cargando ? <p role="status" aria-live="polite" className="py-8 text-center text-sm text-slate-500">Cargando histórico…</p> : filtrados.length === 0 ? <p className="py-8 text-center text-sm text-slate-500">Todavía no hay provisiones guardadas que coincidan con la búsqueda.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[760px] border-collapse text-left text-sm"><thead><tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500"><th className="px-3 py-3">Número / fecha</th><th className="px-3 py-3">Cliente</th><th className="px-3 py-3">Población</th><th className="px-3 py-3 text-right">Importe</th><th className="px-3 py-3">Acciones</th></tr></thead><tbody>{filtrados.map((it) => <tr key={it.id} className="border-b border-slate-100 hover:bg-slate-50"><td className="px-3 py-3"><p className="font-bold text-slate-900">{it.numero}</p><p className="text-xs text-slate-500">{it.fecha || "—"}</p></td><td className="px-3 py-3"><p className="font-semibold">{it.cliente?.nombre || "—"}</p><p className="text-xs text-slate-500">{it.cliente?.nif || ""}</p></td><td className="px-3 py-3">{it.cliente?.poblacion || "—"}</td><td className="px-3 py-3 text-right font-bold tabular-nums">{dinero(it.importe_total)}</td><td className="px-3 py-3"><div className="flex flex-col items-start gap-1"><button type="button" onClick={() => recuperar(it)} className="font-semibold text-blue-700 hover:underline">Abrir / editar</button><button type="button" onClick={() => abrirEmail(it)} className="font-semibold text-emerald-700 hover:underline">Enviar por email</button></div></td></tr>)}</tbody></table></div>}
 
     </Seccion>
-    {emailDraft && <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="Enviar provisión por email">
+    {emailDraft && <div ref={emailDialogRef} tabIndex={-1} className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="Enviar provisión por email">
       <form onSubmit={enviarEmail} className="max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-slate-200 bg-white shadow-[0_24px_80px_-20px_rgba(15,23,42,0.55)]">
         <header className="flex items-start justify-between gap-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 via-white to-blue-50/70 px-5 py-5 sm:px-7">
           <div className="flex min-w-0 items-start gap-4">
