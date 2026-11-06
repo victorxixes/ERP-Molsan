@@ -40,6 +40,7 @@ from backend.app.seguridad.auditoria.service import (
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.storage import FOTOS_EMPLEADOS_DIR
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, storage_backend_is_supabase
 
 
 def _permiso_empleados(accion: str):
@@ -459,8 +460,17 @@ def subir_foto(
                 detail="El contenido del archivo no coincide con el formato de imagen declarado.",
             )
 
-        with open(filepath, "wb") as buffer:
-            buffer.write(contenido)
+        if storage_backend_is_supabase():
+            mime = {
+                ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+                ".gif": "image/gif", ".webp": "image/webp",
+            }[extension]
+            SupabasePrivateStorage().upload(
+                f"fotos/empleados/{filename}", contenido, mime, upsert=True
+            )
+        else:
+            with open(filepath, "wb") as buffer:
+                buffer.write(contenido)
 
     except HTTPException:
         raise
@@ -543,11 +553,18 @@ def subir_foto(
     except Exception as exc:
 
         db.rollback()
+        try:
+            if storage_backend_is_supabase():
+                SupabasePrivateStorage().delete(f"fotos/empleados/{filename}")
+            elif os.path.isfile(filepath):
+                os.remove(filepath)
+        except Exception:
+            pass
 
         raise HTTPException(
             status_code=500,
             detail=(
-                "La fotografía se guardó en disco, "
+                "La fotografía se guardó, "
                 "pero no se pudo actualizar el empleado: "
                 f"{exc}"
             ),

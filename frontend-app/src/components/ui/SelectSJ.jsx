@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import MolsanIcon from "./MolsanIcon";
 
-import "../../css/ComponentesOperativosPremium.css";
 
 export default function SelectSJ({
   value,
@@ -11,7 +11,11 @@ export default function SelectSJ({
   disabled = false,
 }) {
   const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const selectRef = useRef(null);
+  const triggerRef = useRef(null);
+  const optionRefs = useRef([]);
+  const listboxId = useId();
 
   const opcionSeleccionada = options.find(
     (o) => String(o.value) === String(value)
@@ -44,8 +48,10 @@ export default function SelectSJ({
 
   useEffect(() => {
     const handleEscape = (event) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && open) {
+        event.preventDefault();
         setOpen(false);
+        triggerRef.current?.focus();
       }
     };
 
@@ -54,7 +60,18 @@ export default function SelectSJ({
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
-  }, []);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const selectedIndex = options.findIndex((option) => String(option.value) === String(value));
+    const nextIndex = selectedIndex >= 0 ? selectedIndex : 0;
+    setActiveIndex(nextIndex);
+    optionRefs.current[nextIndex]?.focus();
+  // El foco inicial solo se calcula al abrir; no debe saltar al botón
+  // seleccionado en cada render si el catálogo llega como array nuevo.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   // =========================================================
   // CERRAR SI PASA A DISABLED
@@ -75,18 +92,20 @@ export default function SelectSJ({
 
     onChange(option.value);
     setOpen(false);
+    triggerRef.current?.focus();
   };
 
   return (
     <div
       ref={selectRef}
-      className={`relative ${className}`}
+      className={`relative select-sj ${className}`}
     >
       {/* =====================================================
           BOTÓN PRINCIPAL
          ===================================================== */}
 
       <button
+        ref={triggerRef}
         type="button"
         disabled={disabled}
         onClick={() => {
@@ -94,49 +113,52 @@ export default function SelectSJ({
           setOpen((actual) => !actual);
         }}
         aria-haspopup="listbox"
+        aria-controls={listboxId}
         aria-expanded={open}
-        className={`
-          w-full
-          min-h-[42px]
-          bg-white
-          border border-slate-300
-          rounded-xl
-          px-3 py-2
-          text-slate-700
-          text-left
-          font-medium
-          flex
-          justify-between
-          items-center
-          gap-3
-          shadow-sm
-          transition-all
-          duration-200
-
-          ${
-            disabled
-              ? "opacity-60 cursor-not-allowed bg-slate-100"
-              : "hover:border-blue-400 hover:bg-slate-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+        onKeyDown={(event) => {
+          if (disabled) return;
+          if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault();
+            if (!open) setOpen(true);
+            else {
+              const selectedIndex = options.findIndex((option) => String(option.value) === String(value));
+              const start = selectedIndex >= 0 ? selectedIndex : activeIndex;
+              const next = event.key === "ArrowDown"
+                ? Math.min(options.length - 1, start + 1)
+                : Math.max(0, start - 1);
+              setActiveIndex(next);
+              optionRefs.current[next]?.focus();
+            }
           }
-        `}
+        }}
+        className={`w-full
+ min-h-[42px]
+ 
+ 
+ 
+ px-3 py-2
+ 
+ 
+ 
+ flex
+ justify-between
+ items-center
+ gap-3
+ 
+ 
+ 
+
+ ${
+ disabled
+ ? ""
+ : ""
+ }`}
       >
-        <span className="select-sj-premium truncate">
+        <span className="min-w-0 truncate">
           {opcionSeleccionada?.label ?? placeholder}
         </span>
 
-        <svg
-          className={`
-            w-4 h-4
-            shrink-0
-            text-slate-500
-            transition-transform
-            duration-200
-            ${open ? "rotate-180" : ""}
-          `}
-          aria-hidden="true"
-        >
-          <use href="/icons/icons.svg#chevron-down" />
-        </svg>
+        <MolsanIcon name="chevronDown" size={16} bare className={`shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
 
       {/* =====================================================
@@ -145,73 +167,84 @@ export default function SelectSJ({
 
       {open && !disabled && (
         <div
+          id={listboxId}
           role="listbox"
-          className="
-            absolute
-            left-0
-            right-0
-            mt-2
-            z-[100]
-            overflow-hidden
-            bg-white
-            border border-slate-200
-            rounded-xl
-            shadow-xl
-            shadow-slate-900/10
-            py-1
-            max-h-64
-            overflow-y-auto
-            animate-fade-in
-          "
+          aria-label={placeholder}
+          className="absolute
+ left-0
+ right-0
+ mt-2
+ z-[100]
+ overflow-hidden
+ 
+ 
+ 
+ 
+ 
+ py-1
+ max-h-64
+ overflow-y-auto"
         >
           {options.length === 0 ? (
-            <div className="px-3 py-3 text-sm text-slate-400">
+            <div className="px-3 py-3">
               No hay opciones disponibles
             </div>
           ) : (
-            options.map((o) => {
+            options.map((o, optionIndex) => {
               const seleccionada =
                 String(o.value) === String(value);
 
               return (
                 <button
                   key={o.value}
+                  ref={(element) => { optionRefs.current[optionIndex] = element; }}
                   type="button"
                   role="option"
+                  tabIndex={activeIndex === optionIndex ? 0 : -1}
                   aria-selected={seleccionada}
+                  onKeyDown={(event) => {
+                    const currentIndex = optionIndex;
+                    let nextIndex = currentIndex;
+                    if (event.key === "ArrowDown") nextIndex = Math.min(options.length - 1, currentIndex + 1);
+                    else if (event.key === "ArrowUp") nextIndex = Math.max(0, currentIndex - 1);
+                    else if (event.key === "Home") nextIndex = 0;
+                    else if (event.key === "End") nextIndex = options.length - 1;
+                    else if (event.key === "Escape") {
+                      event.preventDefault();
+                      setOpen(false);
+                      triggerRef.current?.focus();
+                      return;
+                    } else return;
+                    event.preventDefault();
+                    setActiveIndex(nextIndex);
+                    optionRefs.current[nextIndex]?.focus();
+                  }}
                   onClick={() => seleccionar(o)}
-                  className={`
-                    w-full
-                    text-left
-                    px-3
-                    py-2.5
-                    text-sm
-                    transition-colors
-                    duration-150
-                    flex
-                    items-center
-                    justify-between
-                    gap-3
-                    cursor-pointer
+                  className={`w-full
+ 
+ px-3
+ py-2.5
+ 
+ 
+ 
+ flex
+ items-center
+ justify-between
+ gap-3
+ 
 
-                    ${
-                      seleccionada
-                        ? "bg-blue-50 text-blue-700 font-semibold"
-                        : "text-slate-700 hover:bg-slate-50"
-                    }
-                  `}
+ ${
+ seleccionada
+ ? ""
+ : ""
+ }`}
                 >
                   <span className="truncate">
                     {o.label}
                   </span>
 
                   {seleccionada && (
-                    <svg
-                      className="w-4 h-4 shrink-0 text-blue-600"
-                      aria-hidden="true"
-                    >
-                      <use href="/icons/icons.svg#check" />
-                    </svg>
+                    <MolsanIcon name="check" size={16} bare className="shrink-0" />
                   )}
                 </button>
               );

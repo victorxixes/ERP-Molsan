@@ -126,12 +126,25 @@ def _es_administrador_apoderagest(usuario) -> bool:
         _valor_usuario(rol, "nombre_rol"),
         _valor_usuario(rol, "codigo"),
     ]
+    roles_administradores = {
+        "admin", "administrador", "administradora", "superadmin",
+        "super admin", "superadministrador", "super administradora",
+        "administrador del sistema", "administrador general",
+        "superuser", "super usuario", "superusuario",
+    }
     if any(
-        "admin" in str(nombre or "").strip().casefold()
-        or "administrador" in str(nombre or "").strip().casefold()
+        str(nombre or "").strip().casefold().replace("_", " ").replace("-", " ")
+        in roles_administradores
         for nombre in nombres_rol
     ):
         return True
+    if str(_valor_usuario(usuario, "usuario", "") or "").strip().casefold() == "admin":
+        return True
+    try:
+        if int(_valor_usuario(usuario, "rol_id", _valor_usuario(rol, "id", -1))) == 0:
+            return True
+    except (TypeError, ValueError):
+        pass
 
     fuentes = [
         _valor_usuario(usuario, "permisos_modulo_dict", {}),
@@ -164,6 +177,7 @@ def _es_administrador_apoderagest(usuario) -> bool:
             elif str(acciones).strip().casefold() in {"*", "ver_todos", "administrar", "admin", "ver_todo", "true"}:
                 return True
     return False
+
 
 
 @router.get("/contexto", summary="Indicar si la sesión puede consultar todos los encargos")
@@ -199,13 +213,44 @@ class ComentarioGestorApoderagest(BaseModel):
     empleado_destinatario_id: int
 
 
-@router.get("/gestores", summary="Listar gestores disponibles para comunicaciones de ApoderaGest")
+def _es_gestor_asignado_apoderagest(expediente, empleado_id):
+    try:
+        gestor_id = int(getattr(expediente, "gestor_asignado_id", None) or 0)
+        destinatario_id = int(empleado_id or 0)
+    except (TypeError, ValueError):
+        return False
+    return bool(gestor_id and destinatario_id and gestor_id == destinatario_id)
+
+
+@router.get("/gestores", summary="Listar gestores asignados a los expedientes del apoderado")
 def listar_gestores_apoderagest(
     db: Session = Depends(get_db),
     usuario=Depends(obtener_usuario_actual),
 ):
-    empleados = db.query(Empleado).filter(Empleado.activo.is_(True)).order_by(Empleado.apellidos.asc(), Empleado.nombre.asc()).all()
-    return [{"id": empleado.id, "nombre": " ".join(filter(None, [empleado.nombre, empleado.apellidos]))} for empleado in empleados]
+    administrador = _es_administrador_apoderagest(usuario)
+    encargos = listar_encargos(db, usuario, solo_pendientes=False, todos=administrador)
+    ids_expedientes = {
+        str(item.get("id_expediente"))
+        for item in encargos
+        if item.get("id_expediente")
+    }
+    if not ids_expedientes:
+        return []
+    empleados = (
+        db.query(Empleado)
+        .join(Expediente, Expediente.gestor_asignado_id == Empleado.id)
+        .filter(
+            Expediente.id_expediente.in_(ids_expedientes),
+            Empleado.activo.is_(True),
+        )
+        .distinct()
+        .order_by(Empleado.apellidos.asc(), Empleado.nombre.asc())
+        .all()
+    )
+    return [
+        {"id": empleado.id, "nombre": " ".join(filter(None, [empleado.nombre, empleado.apellidos]))}
+        for empleado in empleados
+    ]
 
 
 @router.post("/{id_expediente}/comentarios", summary="Enviar una observación al gestor desde ApoderaGest")
@@ -222,9 +267,14 @@ def crear_comentario_gestor_apoderagest(
     expediente = db.query(Expediente).filter(Expediente.id_expediente == str(id_expediente)).first()
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
-    destinatario = db.query(Empleado).filter(Empleado.id == datos.empleado_destinatario_id, Empleado.activo.is_(True)).first()
+    if not _es_gestor_asignado_apoderagest(expediente, datos.empleado_destinatario_id):
+        raise HTTPException(status_code=403, detail="Solo puedes dirigir comentarios al gestor asignado a este expediente.")
+    destinatario = db.query(Empleado).filter(
+        Empleado.id == datos.empleado_destinatario_id,
+        Empleado.activo.is_(True),
+    ).first()
     if not destinatario:
-        raise HTTPException(status_code=404, detail="El gestor seleccionado no existe o está inactivo.")
+        raise HTTPException(status_code=404, detail="El gestor asignado no existe o está inactivo.")
     comentario = datos.comentario.strip()
     if not comentario:
         raise HTTPException(status_code=422, detail="Escribe la observación antes de enviarla.")
@@ -275,14 +325,35 @@ def firmar_encargo(
             status_code=403,
             detail="Este expediente no está asignado al apoderado autenticado.",
         )
+    if encargo.get("bloqueado"):
+        raise HTTPException(
+            status_code=423,
+            detail="El expediente está bloqueado y no se puede registrar ni corregir la firma.",
+        )
 
     expediente = (
         db.query(Expediente)
         .filter(Expediente.id_expediente == str(id_expediente))
+        .with_for_update()
         .first()
     )
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+    # Segunda comprobación sobre la fila bloqueada para evitar operar con
+    # un estado de bloqueo que haya cambiado entre la consulta y la escritura.
+    estado_expediente = str(getattr(expediente, "estado_expediente", "") or "").strip().upper()
+    bloqueado_actual = bool(
+        getattr(expediente, "bloqueo_manual", False)
+        or estado_expediente.startswith(("LST", "RST"))
+        or getattr(expediente, "liquidado_sin_tramitar", False)
+        or getattr(expediente, "cambio_gestoria", False)
+    )
+    if bloqueado_actual:
+        raise HTTPException(
+            status_code=423,
+            detail="El expediente está bloqueado y no se puede registrar ni corregir la firma.",
+        )
 
     protocolo = datos.protocolo.strip()
     # La firma puede corregirse desde ApoderaGest por el apoderado asignado.
@@ -557,3 +628,4 @@ def aceptar_encargo(
         "hora_fin": cita.hora_fin.isoformat() if cita.hora_fin else None,
         "mensaje": "Encargo aceptado. Los datos quedan guardados en Ficha Expediente y la cita de firma está sincronizada con Agenda.",
     }
+

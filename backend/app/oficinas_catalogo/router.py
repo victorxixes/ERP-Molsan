@@ -11,9 +11,12 @@ from sqlalchemy import bindparam, text
 from sqlalchemy.orm import Session
 
 from backend.app.database import engine, get_db
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
+from backend.app.auth.dependencies import get_current_user
 from backend.app.uploads import MAX_EXCEL_UPLOAD_BYTES, read_upload_limited
 
-router = APIRouter(prefix="/oficinas-catalogo", tags=["Catálogo de oficinas"])
+router = APIRouter(
+    dependencies=[Depends(get_current_user)],prefix="/oficinas-catalogo", tags=["Catálogo de oficinas"])
 
 COLUMNAS = [
     "Oficina", "Nombre", "Dirección", "Población", "Cod. Postal",
@@ -54,6 +57,10 @@ def _crear_tabla() -> None:
 
 @router.on_event("startup")
 def inicializar_catalogo_oficinas() -> None:
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: inicializar_catalogo_oficinas; ejecutar migración versionada.", flush=True)
+        return
+
     _crear_tabla()
 
 
@@ -139,8 +146,15 @@ def listar_oficinas(
     q: str = Query(default="", max_length=200),
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
+    sort_by: str = Query(default="oficina", max_length=40),
+    sort_dir: str = Query(default="asc", regex="^(asc|desc)$"),
     db: Session = Depends(get_db),
 ):
+    # El identificador SQL se valida contra una lista cerrada; nunca se interpola
+    # directamente un nombre de columna recibido del cliente.
+    columna_orden = sort_by if sort_by in {"id", *CAMPOS} else "oficina"
+    direccion_orden = "DESC" if sort_dir.lower() == "desc" else "ASC"
+    expresion_orden = "id" if columna_orden == "id" else f"LOWER(COALESCE({columna_orden}, ''))"
     termino = f"%{q.strip()}%"
     filtro = ""
     parametros: dict[str, Any] = {"termino": termino}
@@ -155,12 +169,12 @@ def listar_oficinas(
             SELECT id, {", ".join(CAMPOS)}
             FROM public.catalogo_oficinas
             {filtro}
-            ORDER BY oficina
+            ORDER BY {expresion_orden} {direccion_orden}, id ASC
             LIMIT :limite OFFSET :desplazamiento
         """),
         {**parametros, "limite": limit, "desplazamiento": offset},
     ).mappings().all()
-    return {"items": [_serializar(fila) for fila in filas], "total": int(total), "limit": limit, "offset": offset}
+    return {"items": [_serializar(fila) for fila in filas], "total": int(total), "limit": limit, "offset": offset, "sort_by": columna_orden, "sort_dir": sort_dir.lower()}
 
 
 @router.post("/previsualizar")

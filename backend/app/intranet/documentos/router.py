@@ -1,12 +1,13 @@
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, UploadFile, File, Form
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from backend.app.intranet.auditoria import registrar_auditoria
 from backend.app.intranet.documentos.service import (
+    leer_fichero_documento,
     listar_documentos, obtener_documento, crear_documento,
     actualizar_documento, eliminar_documento, UPLOAD_DIR,
 )
@@ -83,13 +84,13 @@ async def eliminar(documento_id: int, db: Session = Depends(get_db), usuario=Dep
 def descargar(documento_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     require_intranet_perm(usuario, "ver")
     doc = obtener_documento(db, documento_id)
-    ruta = Path(doc.fichero).resolve() if doc.fichero else None
-    if not ruta or ruta.parent != UPLOAD_DIR.resolve() or not ruta.is_file():
+    if not doc.fichero:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="El archivo del documento no está disponible")
-    extension = ruta.suffix.lower()
-    return FileResponse(
-        str(ruta),
-        media_type="application/octet-stream",
-        filename=f"documento-{doc.id}{extension}",
-    )
+    contenido = leer_fichero_documento(doc.fichero)
+    extension = Path(doc.fichero.split("?", 1)[0]).suffix.lower()
+    respuesta = StreamingResponse(iter([contenido]), media_type="application/octet-stream")
+    respuesta.headers["Content-Disposition"] = f'attachment; filename="documento-{doc.id}{extension}"'
+    respuesta.headers["X-Content-Type-Options"] = "nosniff"
+    respuesta.headers["Cache-Control"] = "private, no-store"
+    return respuesta

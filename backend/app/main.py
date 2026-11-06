@@ -1,6 +1,6 @@
 
 from fastapi import FastAPI, Depends, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -11,6 +11,7 @@ import os
 import inspect
 
 from backend.app.storage import FOTOS_DIR as STORAGE_FOTOS_DIR
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 
 from backend.app.auth.log_redaction import instalar_filtro_credenciales_websocket
 
@@ -31,6 +32,9 @@ app = FastAPI(title="Agenda Intranet Backend")
 origins = [
     "https://agenda-intranet-f.onrender.com",
     "https://agenda-intranet-b.onrender.com",
+    "https://molsan-glass-luxe-preview.onrender.com",
+    "https://molsan-premium-2027-preview.onrender.com",
+    "https://molsan-premium-2027-candidate-preview.onrender.com",
     "http://localhost:5173",
     "http://localhost:3000",
 ]
@@ -131,6 +135,7 @@ LEGACY_FOTOS_DIR = os.path.join(STATIC_DIR, "fotos")
 os.makedirs(LEGACY_FOTOS_DIR, exist_ok=True)
 
 from backend.app.auth.dependencies import get_current_user
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, storage_backend_is_supabase
 from backend.app.auth.permissions import require_perm_modulo
 
 FOTOS_ROOT = Path(FOTOS_DIR).resolve()
@@ -152,24 +157,42 @@ def servir_fotografia_empleado(
 ):
     require_perm_modulo(usuario, "empleados", "ver")
 
-    if Path(ruta).suffix.lower() not in EXTENSIONES_FOTO_PERMITIDAS:
-        raise HTTPException(
-            status_code=404,
-            detail="Fotografía no encontrada",
+    # La referencia del empleado es solo el nombre opaco del objeto.
+    # Nunca aceptar subrutas del cliente para evitar traversal o lectura cruzada.
+    nombre_foto = Path(ruta).name
+    if nombre_foto != ruta or nombre_foto in {"", ".", ".."}:
+        raise HTTPException(status_code=404, detail="Fotografía no encontrada")
+
+    extension = Path(nombre_foto).suffix.lower()
+    if extension not in EXTENSIONES_FOTO_PERMITIDAS:
+        raise HTTPException(status_code=404, detail="Fotografía no encontrada")
+
+    if storage_backend_is_supabase():
+        try:
+            contenido = SupabasePrivateStorage().download(f"fotos/empleados/{nombre_foto}")
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="Fotografía no encontrada") from exc
+        except (RuntimeError, SupabaseStorageError) as exc:
+            raise HTTPException(status_code=503, detail="El almacenamiento de fotografías no está disponible") from exc
+        mime = {
+            ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+            ".gif": "image/gif", ".webp": "image/webp",
+        }.get(extension, "application/octet-stream")
+        return Response(
+            content=contenido,
+            media_type=mime,
+            headers={"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"},
         )
 
     fichero = None
     for raiz in FOTOS_ROOTS:
-        candidata = (raiz / ruta).resolve()
+        candidata = (raiz / nombre_foto).resolve()
         if raiz in candidata.parents and candidata.is_file():
             fichero = candidata
             break
 
     if fichero is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Fotografía no encontrada",
-        )
+        raise HTTPException(status_code=404, detail="Fotografía no encontrada")
 
     return FileResponse(
         path=str(fichero),
@@ -205,6 +228,8 @@ from backend.app.seguridad.asignar_password_router import (
 )
 from backend.app.seguridad.permisos.permisos_router import (
     router as permisos_router,
+    MODULOS_BASE,
+    PERMISOS_BASE,
 )
 from backend.app.expedientes.gastos.router import router as gastos_router
 from backend.app.honorarios_gestoria.router import router as honorarios_gestoria_router
@@ -699,6 +724,14 @@ def migrar_esquema_expedientes_inicio():
         Una transacción de lectura abandonada puede impedir ALTER TABLE durante el despliegue.
         Se limita a sesiones inactivas más de 5 minutos; nunca termina sesiones activas.
         """
+        if _es_url_supabase_preview():
+            # En Supabase no se finalizan sesiones ajenas: pueden pertenecer
+            # a Studio, al pooler o a otros servicios del mismo proyecto.
+            print(
+                "[MIGRACION STARTUP] Supabase Preview: no se terminan sesiones externas.",
+                flush=True,
+            )
+            return
         try:
             with conexion.begin():
                 pids = [
@@ -1144,6 +1177,10 @@ def _transaccion_inicio_segura(etiqueta):
 @app.on_event("startup")
 @_serializar_inicializacion_startup
 def inicializar_tablas_auxiliares():
+    if not runtime_schema_migrations_enabled():
+        print("[STARTUP SQL] Migraciones automáticas desactivadas; no se modifica el esquema.", flush=True)
+        return
+
     print(
         "[INICIALIZACION] Comprobando tablas auxiliares...",
         flush=True,
@@ -2320,7 +2357,8 @@ def inicializar_tablas_auxiliares():
 # REPARTO AUTOMÁTICO INICIAL DE GESTORES
 # ============================================================
 
-@app.on_event("startup")
+# Ejecución manual y controlada: no se engancha al arranque del backend.
+# Los expedientes históricos sin gestor deben revisarse antes de aplicar reglas.
 def asignar_gestores_pendientes_al_iniciar():
     """
     Aplica automáticamente las reglas activas de la ficha de empleado
@@ -2342,10 +2380,10 @@ def asignar_gestores_pendientes_al_iniciar():
             CREATE TABLE IF NOT EXISTS public.expediente_gestor_historial (
                 id BIGSERIAL PRIMARY KEY,
                 expediente_id VARCHAR(100) NOT NULL,
-                actividad VARCHAR(100) NULL,
-                gestor_id INTEGER NULL,
-                gestor_anterior_id INTEGER NULL,
-                motivo VARCHAR(100) NOT NULL DEFAULT 'reparto_automatico',
+                actividad VARCHAR(120) NOT NULL,
+                gestor_id INTEGER NULL REFERENCES public.empleados(id) ON DELETE SET NULL,
+                gestor_anterior_id INTEGER NULL REFERENCES public.empleados(id) ON DELETE SET NULL,
+                motivo VARCHAR(80) NOT NULL DEFAULT 'reparto_automatico',
                 fecha TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
         """))
@@ -2733,14 +2771,265 @@ def reparar_vinculos_apoderado_expedientes():
 # ORDEN DE ARRANQUE
 # ============================================================
 
-# La migración se ejecuta antes de crear o comprobar las tablas auxiliares.
-app.router.on_startup.insert(
-    0,
-    migrar_esquema_expedientes_inicio,
-)
-app.router.on_startup.insert(1, migrar_catalogo_honorarios_impuestos)
-app.router.on_startup.insert(2, migrar_catalogo_absis)
-app.router.on_startup.insert(3, migrar_visibilidad_empleado)
-app.router.on_startup.insert(4, reparar_vinculos_apoderado_expedientes)
+# Destino exclusivo del Preview ERP_Molsan en Supabase.
+# El nombre de la base en Supabase suele ser "postgres"; por eso la
+# identificación segura se hace también con el project ref de la URL.
+PREVIEW_DATABASE_NAME = "postgres"
+PREVIEW_DATABASE_PROJECT_REF = "powiprqarmluanplxpyb"
+PREVIEW_API_HOSTNAME = "molsan-glass-luxe-preview-api.onrender.com"
+
+
+def _es_url_supabase_preview() -> bool:
+    url = engine.url
+    host = (url.host or "").lower()
+    username = (url.username or "").lower()
+    conexion_directa = (
+        host.endswith(".supabase.co")
+        and PREVIEW_DATABASE_PROJECT_REF in host
+    )
+    pooler_sesion = (
+        host.endswith(".pooler.supabase.com")
+        and username.endswith(f".{PREVIEW_DATABASE_PROJECT_REF}")
+    )
+    return conexion_directa or pooler_sesion
+
+
+def _exigir_base_datos_preview():
+    hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip().lower()
+    if hostname and hostname != PREVIEW_API_HOSTNAME:
+        raise RuntimeError(
+            "[PREVIEW DB] Bootstrap bloqueado: el servicio Render no es la API Preview autorizada."
+        )
+    if not _es_url_supabase_preview():
+        raise RuntimeError(
+            "[PREVIEW DB] Bootstrap bloqueado: DATABASE_URL no identifica "
+            f"el proyecto Supabase Preview {PREVIEW_DATABASE_PROJECT_REF!r}."
+        )
+
+    with engine.connect() as conexion_preview:
+        nombre_bd = conexion_preview.execute(
+            text("SELECT current_database()")
+        ).scalar()
+    if nombre_bd != PREVIEW_DATABASE_NAME:
+        raise RuntimeError(
+            "[PREVIEW DB] Bootstrap bloqueado: se esperaba la base "
+            f"{PREVIEW_DATABASE_NAME!r} (base detectada: {nombre_bd!r})."
+        )
+    print(
+        f"[PREVIEW DB] Proyecto Supabase {PREVIEW_DATABASE_PROJECT_REF} confirmado.",
+        flush=True,
+    )
+    return nombre_bd
+
+
+# La base de datos de pruebas parte vacía. En esa instancia aislada se
+# materializan primero las tablas definidas por los modelos SQLAlchemy y,
+# a continuación, se ejecutan las migraciones incrementales habituales.
+# La opción está desactivada por defecto y solo debe activarse en el servicio
+# molsan-glass-luxe-preview-api; producción conserva su esquema preexistente.
+def inicializar_esquema_base_preview():
+    habilitado = os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_SCHEMA", "").strip().lower()
+    if habilitado not in {"1", "true", "yes", "si", "sí"}:
+        print("[PREVIEW SCHEMA] Bootstrap desactivado; se conserva el flujo normal.", flush=True)
+        return
+
+    _exigir_base_datos_preview()
+    print("[PREVIEW SCHEMA] Creando únicamente tablas ausentes desde los modelos registrados...", flush=True)
+    Base.metadata.create_all(bind=engine, checkfirst=True)
+    with engine.connect() as conexion_preview:
+        comprobacion = conexion_preview.execute(text("""
+            SELECT
+                to_regclass('public.roles') IS NOT NULL AS roles,
+                to_regclass('public.empleados') IS NOT NULL AS empleados
+        """)).mappings().one()
+    if not comprobacion["roles"] or not comprobacion["empleados"]:
+        raise RuntimeError(
+            "[PREVIEW SCHEMA] No se han podido crear las tablas base roles/empleados."
+        )
+    print("[PREVIEW SCHEMA] Tablas base roles/empleados disponibles.", flush=True)
+
+
+
+def crear_administrador_preview():
+    """Crea o repara el administrador únicamente en la API aislada de preview.
+
+    No inicializa el esquema ni cambia la contraseña de una cuenta existente.
+    La comprobación del hostname impide ejecutar este bootstrap en producción,
+    aunque la variable de activación se configurase allí por error.
+    """
+    habilitado = os.getenv("MOLSAN_PREVIEW_BOOTSTRAP_ADMIN", "").strip().lower()
+    if habilitado not in {"1", "true", "yes", "si", "sí"}:
+        return
+
+    hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip().lower()
+    hostname_esperado = "molsan-glass-luxe-preview-api.onrender.com"
+    if hostname != hostname_esperado:
+        raise RuntimeError(
+            "[PREVIEW ADMIN] Bootstrap bloqueado: el servicio no es la API de preview autorizada."
+        )
+
+    _exigir_base_datos_preview()
+
+    usuario = os.getenv("MOLSAN_PREVIEW_ADMIN_USERNAME", "").strip()
+    password = os.getenv("MOLSAN_PREVIEW_ADMIN_PASSWORD", "")
+    if not usuario:
+        raise RuntimeError("[PREVIEW ADMIN] Falta MOLSAN_PREVIEW_ADMIN_USERNAME.")
+
+    modulos_admin = list(MODULOS_BASE)
+    permisos_admin = {
+        modulo: list(PERMISOS_BASE)
+        for modulo in modulos_admin
+    }
+
+    from backend.app.empleados.service import hash_password
+
+    db = SessionLocal()
+    try:
+        rol_admin = db.query(Rol).filter(
+            or_(
+                Rol.nombre.ilike("admin"),
+                Rol.nombre.ilike("administrador"),
+                Rol.nombre.ilike("administradora"),
+                Rol.nombre.ilike("superadmin"),
+            )
+        ).first()
+        if rol_admin is None:
+            rol_admin = Rol(
+                nombre="Admin",
+                descripcion="Administrador del entorno aislado de pruebas",
+            )
+            db.add(rol_admin)
+            db.flush()
+
+        existente = (
+            db.query(Empleado)
+            .filter(Empleado.usuario == usuario)
+            .first()
+        )
+
+        if existente:
+            # La cuenta se identifica explícitamente mediante la variable de
+            # entorno del administrador de preview. Se repara el rol y los
+            # permisos explícitos; nunca se sobrescribe su contraseña.
+            existente.rol_id = rol_admin.id
+            existente.activo = True
+            existente.modulos_visibles_list = modulos_admin
+            existente.permisos_modulo_dict = permisos_admin
+            db.commit()
+            print(
+                "[PREVIEW ADMIN] Cuenta existente reparada: rol, módulos y permisos explícitos actualizados; contraseña conservada.",
+                flush=True,
+            )
+            return
+
+        if len(password) < 20:
+            raise RuntimeError(
+                "[PREVIEW ADMIN] Para crear una cuenta nueva, MOLSAN_PREVIEW_ADMIN_PASSWORD debe tener al menos 20 caracteres."
+            )
+
+        administrador = Empleado(
+            nombre="Administrador",
+            apellidos="Preview",
+            dni="PREVIEW-ADMIN",
+            usuario=usuario,
+            password=hash_password(password),
+            activo=True,
+            foto="default-avatar.png",
+            rol_id=rol_admin.id,
+            modulos_visibles_list=modulos_admin,
+            permisos_modulo_dict=permisos_admin,
+        )
+        db.add(administrador)
+        db.commit()
+        print(
+            "[PREVIEW ADMIN] Cuenta administradora de pruebas creada con permisos explícitos para todos los módulos base.",
+            flush=True,
+        )
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
+# Las migraciones incrementales solo se registran cuando el módulo de control
+# las habilita explícitamente. La configuración segura por defecto devuelve False.
+if runtime_schema_migrations_enabled():
+    app.router.on_startup.insert(0, migrar_esquema_expedientes_inicio)
+    app.router.on_startup.insert(1, migrar_catalogo_honorarios_impuestos)
+    app.router.on_startup.insert(2, migrar_catalogo_absis)
+    app.router.on_startup.insert(3, migrar_visibilidad_empleado)
+    app.router.on_startup.insert(4, reparar_vinculos_apoderado_expedientes)
+
+# Solo el servicio aislado de preview activa la creación inicial del esquema.
+# El bootstrap del administrador es independiente: puede reparar permisos en
+# una base ya inicializada sin volver a ejecutar create_all ni exigir el flag schema.
+# Los bootstraps de esquema y administrador quedan fuera del arranque normal.
+# Cualquier inicialización de Preview requiere una operación explícita y revisada.
+
+
+def verificar_base_datos_preview_inicio():
+    """Verifica siempre el destino DB en el servicio Preview, antes de migraciones."""
+    hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip().lower()
+    if hostname == "molsan-glass-luxe-preview-api.onrender.com" and _es_url_supabase_preview():
+        _exigir_base_datos_preview()
+
+
+# Se inserta después de registrar las demás tareas para ejecutarse la primera.
+app.router.on_startup.insert(0, verificar_base_datos_preview_inicio)
 
 instrumentar_inicio_aplicacion()
+
+def proteger_esquema_publico_supabase_preview():
+    """Cierra el acceso directo de anon/authenticated a las tablas del ERP.
+
+    El backend sigue usando su autenticación JWT propia y conecta como rol
+    PostgreSQL de servidor. Ninguna tabla ERP se expone directamente al cliente
+    mediante la Data API de Supabase.
+    """
+    if not _es_url_supabase_preview():
+        return
+
+    with engine.begin() as conexion:
+        conexion.execute(text("""
+            DO $$
+            DECLARE tabla RECORD;
+            BEGIN
+                FOR tabla IN
+                    SELECT tablename
+                    FROM pg_tables
+                    WHERE schemaname = 'public'
+                LOOP
+                    EXECUTE format(
+                        'ALTER TABLE %I.%I ENABLE ROW LEVEL SECURITY',
+                        'public',
+                        tabla.tablename
+                    );
+                END LOOP;
+            END
+            $$;
+        """))
+        conexion.execute(text(
+            "REVOKE ALL ON ALL TABLES IN SCHEMA public FROM anon, authenticated"
+        ))
+        conexion.execute(text(
+            "REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM anon, authenticated"
+        ))
+        conexion.execute(text(
+            "ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public "
+            "REVOKE ALL ON TABLES FROM anon, authenticated"
+        ))
+        conexion.execute(text(
+            "ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public "
+            "REVOKE ALL ON SEQUENCES FROM anon, authenticated"
+        ))
+
+    print(
+        "[SUPABASE SECURITY] RLS activado en tablas públicas y privilegios "
+        "de anon/authenticated revocados; acceso ERP solo por backend.",
+        flush=True,
+    )
+
+
+# Debe ejecutarse después de las migraciones y los inicializadores de routers.
+app.router.on_startup.append(proteger_esquema_publico_supabase_preview)

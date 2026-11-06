@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db, engine
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.registros_propiedad.models import RegistroPropiedad
@@ -21,6 +22,10 @@ router = APIRouter(
 @router.on_event("startup")
 def asegurar_columna_registro_propiedad_id():
     """Migración aditiva e idempotente; conserva el texto de registros históricos."""
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: asegurar_columna_registro_propiedad_id; ejecutar migración versionada.", flush=True)
+        return
+
     with engine.begin() as conexion:
         conexion.execute(text("""
             ALTER TABLE public.expediente_fincas

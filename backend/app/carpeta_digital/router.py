@@ -12,10 +12,13 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from backend.app.auth.dependencies import get_current_user
+from backend.app.expedientes.reparto import validar_visibilidad_expediente_request
 from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
+from backend.app.expedientes.gastos.calculos import importe_obligacion_gasto, total_pagado_efectivo
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 from backend.app.storage import CARPETA_DIGITAL_DIR
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, is_supabase_object, parse_object_reference, storage_backend_is_supabase
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +27,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(
     prefix="/expedientes",
     tags=["Carpeta digital"],
-    dependencies=[Depends(get_current_user)],
+    dependencies=[Depends(get_current_user), Depends(validar_visibilidad_expediente_request)],
 )
 
 CATEGORIAS = {
@@ -137,6 +140,63 @@ def _normalizar_texto(valor: str | None) -> str:
     return "".join(c for c in texto if unicodedata.category(c) != "Mn")
 
 
+def _usa_supabase_storage() -> bool:
+    return storage_backend_is_supabase()
+
+
+def _cliente_storage() -> SupabasePrivateStorage:
+    try:
+        return SupabasePrivateStorage()
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail="El almacenamiento documental no está configurado.") from exc
+
+
+def _guardar_contenido(nombre_guardado: str, contenido: bytes, tipo_mime: str) -> str:
+    if _usa_supabase_storage():
+        storage = _cliente_storage()
+        key = f"cd/{uuid.uuid4().hex}{Path(nombre_guardado).suffix.lower()}"
+        try:
+            return storage.upload(key, contenido, tipo_mime)
+        except SupabaseStorageError as exc:
+            logger.exception("No se pudo subir documento a Supabase Storage")
+            raise HTTPException(status_code=503, detail="No se pudo guardar el documento en el almacenamiento.") from exc
+    ruta = _ruta_segura(nombre_guardado)
+    temporal = _ruta_segura(f".{nombre_guardado}.part")
+    temporal.write_bytes(contenido)
+    temporal.replace(ruta)
+    return nombre_guardado
+
+
+def _leer_contenido(nombre_guardado: str) -> bytes:
+    if is_supabase_object(nombre_guardado):
+        bucket, key = parse_object_reference(nombre_guardado)
+        storage = _cliente_storage()
+        if bucket != storage.config.bucket:
+            raise HTTPException(status_code=404, detail="Documento no encontrado")
+        try:
+            return storage.download(key)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="El archivo del documento no está disponible") from exc
+        except SupabaseStorageError as exc:
+            logger.exception("No se pudo descargar documento desde Supabase Storage")
+            raise HTTPException(status_code=503, detail="El almacenamiento documental no está disponible.") from exc
+    ruta = _ruta_segura(nombre_guardado)
+    if not ruta.is_file():
+        raise HTTPException(status_code=404, detail="El archivo del documento no está disponible")
+    return ruta.read_bytes()
+
+
+def _eliminar_contenido(nombre_guardado: str) -> None:
+    if is_supabase_object(nombre_guardado):
+        bucket, key = parse_object_reference(nombre_guardado)
+        storage = _cliente_storage()
+        if bucket != storage.config.bucket:
+            raise HTTPException(status_code=404, detail="Documento no encontrado")
+        storage.delete(key)
+        return
+    _ruta_segura(nombre_guardado).unlink(missing_ok=True)
+
+
 def _ruta_segura(nombre_guardado: str) -> Path:
     # El nombre almacenado lo genera el backend, nunca se acepta una ruta enviada
     # por el cliente. Esta validación también protege frente a registros antiguos.
@@ -189,17 +249,14 @@ async def subir_documento(
 
         # Nombre aleatorio y extensión saneada; no se usa el nombre aportado como ruta.
         nombre_guardado = f"{uuid.uuid4().hex}{extension}"
-        ruta = _ruta_segura(nombre_guardado)
-        temporal = _ruta_segura(f".{nombre_guardado}.part")
+        referencia_guardada = _guardar_contenido(nombre_guardado, contenido, tipo_mime_seguro)
 
         try:
-            temporal.write_bytes(contenido)
-            temporal.replace(ruta)
             registro = DocumentoCarpetaDigital(
                 expediente_id=str(expediente_id),
                 categoria=categoria,
                 nombre_original=nombre_original,
-                nombre_guardado=nombre_guardado,
+                nombre_guardado=referencia_guardada,
                 tipo_mime=tipo_mime_seguro,
                 tamano_bytes=len(contenido),
                 fecha_subida=datetime.utcnow(),
@@ -222,8 +279,10 @@ async def subir_documento(
             return registro
         except Exception:
             db.rollback()
-            ruta.unlink(missing_ok=True)
-            temporal.unlink(missing_ok=True)
+            try:
+                _eliminar_contenido(referencia_guardada)
+            except Exception:
+                logger.exception("No se pudo limpiar el documento tras fallar la transacción")
             raise
     finally:
         await archivo.close()
@@ -247,23 +306,13 @@ def descargar_documento(
     if not doc:
         raise HTTPException(status_code=404, detail="Documento no encontrado")
 
-    ruta = _ruta_segura(doc.nombre_guardado)
-    if not ruta.is_file():
-        raise HTTPException(
-            status_code=404,
-            detail=(
-                "El archivo no está en el almacenamiento. Comprueba que "
-                "CARPETA_DIGITAL_DIR apunte al disco persistente de Render."
-            ),
-        )
+    contenido = _leer_contenido(doc.nombre_guardado)
     media_type_seguro, disposicion = _politica_descarga_documento(doc.nombre_original)
-    return FileResponse(
-        path=ruta,
-        media_type=media_type_seguro,
-        filename=doc.nombre_original,
-        content_disposition_type=disposicion,
-        headers={"X-Content-Type-Options": "nosniff"},
-    )
+    respuesta = StreamingResponse(iter([contenido]), media_type=media_type_seguro)
+    respuesta.headers["Content-Disposition"] = f'{disposicion}; filename="{doc.nombre_original}"'
+    respuesta.headers["X-Content-Type-Options"] = "nosniff"
+    respuesta.headers["Cache-Control"] = "private, no-store"
+    return respuesta
 
 
 @router.delete("/{expediente_id}/carpeta-digital/{documento_id}")
@@ -284,10 +333,13 @@ def eliminar_documento(
     if not doc:
         raise HTTPException(status_code=404, detail="Documento no encontrado")
 
-    ruta = _ruta_segura(doc.nombre_guardado)
+    referencia = doc.nombre_guardado
     db.delete(doc)
     db.commit()
-    ruta.unlink(missing_ok=True)
+    try:
+        _eliminar_contenido(referencia)
+    except Exception:
+        logger.exception("No se pudo eliminar el objeto físico de carpeta digital")
     return {"ok": True, "id": documento_id}
 
 
@@ -379,10 +431,27 @@ def previsualizar_cierre_documental(expediente_id: str, db: Session = Depends(ge
         .order_by(ExpedienteGasto.fecha.asc(), ExpedienteGasto.id.asc())
         .all()
     )
-    total_gastos = sum(float(g.importe_resultante if g.importe_resultante is not None else (g.importe_total_bruto if g.importe_total_bruto is not None else (g.importe or 0))) for g in gastos)
-    estados_pagados = {"pagado", "pagada", "abonado", "abonada", "efectuado", "efectuada", "paid"}
-    gastos_pagados = [g for g in gastos if str(g.estado_pago or "").strip().lower() in estados_pagados]
-    total_pagado = sum(float(g.importe_resultante if g.importe_resultante is not None else (g.importe_total_bruto if g.importe_total_bruto is not None else (g.importe or 0))) for g in gastos_pagados)
+    total_gastos = sum(float(importe_obligacion_gasto(g)) for g in gastos)
+    pagos_por_gasto = {}
+    tabla_pagos = db.execute(text("SELECT to_regclass('public.expediente_gasto_pagos')")).scalar()
+    if tabla_pagos:
+        filas_pagos = db.execute(text("""
+            SELECT p.gasto_id, COALESCE(SUM(p.importe) FILTER (WHERE p.anulado_en IS NULL), 0) AS total_pagado,
+                   COUNT(*) AS numero_movimientos
+            FROM public.expediente_gasto_pagos p
+            JOIN public.expediente_gastos g ON g.id = p.gasto_id
+            WHERE g.expediente_id = :expediente_id
+            GROUP BY p.gasto_id
+        """), {"expediente_id": expediente.id}).mappings().all()
+        pagos_por_gasto = {int(f["gasto_id"]): (float(f["total_pagado"] or 0), int(f["numero_movimientos"])) for f in filas_pagos}
+    total_pagado = 0.0
+    for gasto in gastos:
+        importe_obligacion = importe_obligacion_gasto(gasto)
+        total_movimientos, numero_movimientos = pagos_por_gasto.get(gasto.id, (0.0, 0))
+        importe_pagado = total_pagado_efectivo(
+            gasto.estado_pago, importe_obligacion, total_movimientos, numero_movimientos
+        )
+        total_pagado += float(importe_pagado)
     importe_provision = getattr(expediente, "importe", None)
     fecha_liquidacion = getattr(expediente, "fecha_fin_actividad", None)
 
@@ -525,11 +594,8 @@ def previsualizar_cierre_documental(expediente_id: str, db: Session = Depends(ge
         ]
         archivos_validos = []
         for item in coincidencias:
-            ruta = _ruta_segura(item.nombre_guardado)
-            if not ruta.is_file():
-                continue
             try:
-                contenido = ruta.read_bytes()
+                contenido = _leer_contenido(item.nombre_guardado)
                 if contenido.startswith(b"%PDF-"):
                     # Validar que el PDF sea legible antes de incorporarlo.
                     PdfReader(io.BytesIO(contenido), strict=False)
@@ -598,22 +664,19 @@ async def guardar_cierre_documental(
         raise HTTPException(status_code=422, detail=f"El PDF no se puede leer: {exc}")
 
     nombre_guardado = f"{uuid.uuid4().hex}.pdf"
-    ruta_final = _ruta_segura(nombre_guardado)
-    temporal = _ruta_segura(f".{nombre_guardado}.part")
     anteriores = (
         db.query(DocumentoCarpetaDigital)
         .filter(DocumentoCarpetaDigital.expediente_id == str(expediente_id))
         .all()
     )
     anteriores = [d for d in anteriores if _normalizar_texto(d.categoria) == _normalizar_texto("Expediente digital completo")]
+    referencia_guardada = _guardar_contenido(nombre_guardado, contenido, "application/pdf")
     try:
-        temporal.write_bytes(contenido)
-        temporal.replace(ruta_final)
         registro = DocumentoCarpetaDigital(
             expediente_id=str(expediente_id),
             categoria="Expediente digital completo",
             nombre_original=nombre_original,
-            nombre_guardado=nombre_guardado,
+            nombre_guardado=referencia_guardada,
             tipo_mime="application/pdf",
             tamano_bytes=len(contenido),
             fecha_subida=datetime.utcnow(),
@@ -625,14 +688,16 @@ async def guardar_cierre_documental(
         db.refresh(registro)
         for anterior in anteriores:
             try:
-                _ruta_segura(anterior.nombre_guardado).unlink(missing_ok=True)
+                _eliminar_contenido(anterior.nombre_guardado)
             except Exception:
-                pass
+                logger.exception("No se pudo eliminar el cierre documental anterior")
         return registro
     except Exception:
         db.rollback()
-        temporal.unlink(missing_ok=True)
-        ruta_final.unlink(missing_ok=True)
+        try:
+            _eliminar_contenido(referencia_guardada)
+        except Exception:
+            logger.exception("No se pudo limpiar el PDF de cierre tras fallar la transacción")
         raise
     finally:
         await archivo.close()

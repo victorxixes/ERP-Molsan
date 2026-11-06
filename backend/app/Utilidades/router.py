@@ -46,14 +46,12 @@ async def importar_ctn(
         "Excel CTN",
     )
 
-    total = importar_ctn_desde_excel(
-        db,
-        contenido
-    )
+    try:
+        resultado = importar_ctn_desde_excel(db, contenido)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    return {
-        "importados": total
-    }
+    return resultado
 
 
 # ============================================================

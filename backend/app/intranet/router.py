@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from backend.app.database import engine, get_db
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 from backend.app.auth.dependencies import get_current_user
 from backend.app.intranet.permissions import require_intranet_perm
 from backend.app.intranet.auditoria import IntranetAuditoria
@@ -13,6 +14,10 @@ router = APIRouter(prefix="/intranet", tags=["Intranet"])
 
 @router.on_event("startup")
 def inicializar_tabla_auditoria_intranet():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: inicializar_tabla_auditoria_intranet; ejecutar migración versionada.", flush=True)
+        return
+
     IntranetAuditoria.__table__.create(bind=engine, checkfirst=True)
 
 

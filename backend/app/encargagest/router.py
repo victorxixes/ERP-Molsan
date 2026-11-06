@@ -6,6 +6,7 @@ import hashlib
 import hmac
 import secrets
 import os
+import mimetypes
 import base64
 import threading
 import asyncio
@@ -14,7 +15,7 @@ import jwt
 from cryptography.fernet import Fernet
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field, condecimal, constr
 from sqlalchemy import or_, func, inspect as sa_inspect, text
 from sqlalchemy.orm import Session
@@ -25,18 +26,79 @@ from backend.app.config import settings
 from backend.app.empleados.models import Empleado
 from backend.app.ctn.models import Notaria
 from backend.app.database import Base, engine, get_db
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 from backend.app.encargagest.models import (
     EncargoExterno, EncargoExternoActividad, EncargoExternoDocumento,
     EncargoExternoUsuario,
 )
 from backend.app.storage import CARPETA_DIGITAL_DIR
+from backend.app.supabase_storage import SupabasePrivateStorage, SupabaseStorageError, is_supabase_object, parse_object_reference, storage_backend_is_supabase
 
 router = APIRouter(prefix="/encargagest", tags=["EncargaGest"])
 ROOT = (CARPETA_DIGITAL_DIR / "encargagest").resolve()
 ROOT.mkdir(parents=True, exist_ok=True)
 
+def _usa_storage_remoto() -> bool:
+    return storage_backend_is_supabase()
+
+
+def _guardar_documento_storage(nombre_guardado: str, contenido: bytes, mime: str) -> str:
+    if _usa_storage_remoto():
+        try:
+            return SupabasePrivateStorage().upload(
+                f"eg/{uuid4().hex}{Path(nombre_guardado).suffix.lower()}",
+                contenido, mime or "application/octet-stream",
+            )
+        except (RuntimeError, SupabaseStorageError) as exc:
+            raise HTTPException(status_code=503, detail="El almacenamiento documental no está disponible.") from exc
+    ruta = (ROOT / nombre_guardado).resolve()
+    if ruta.parent != ROOT:
+        raise HTTPException(status_code=400, detail="Nombre de archivo no válido.")
+    ruta.write_bytes(contenido)
+    return nombre_guardado
+
+
+def _leer_documento_storage(referencia: str) -> bytes:
+    if is_supabase_object(referencia):
+        bucket, key = parse_object_reference(referencia)
+        storage = SupabasePrivateStorage()
+        if bucket != storage.config.bucket:
+            raise HTTPException(status_code=404, detail="Documento no encontrado.")
+        try:
+            return storage.download(key)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento.") from exc
+        except SupabaseStorageError as exc:
+            raise HTTPException(status_code=503, detail="El almacenamiento documental no está disponible.") from exc
+    ruta = (ROOT / referencia).resolve()
+    if ruta.parent != ROOT or not ruta.is_file():
+        raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento.")
+    return ruta.read_bytes()
+
+
+def _eliminar_documento_storage(referencia: str) -> None:
+    if is_supabase_object(referencia):
+        bucket, key = parse_object_reference(referencia)
+        storage = SupabasePrivateStorage()
+        if bucket == storage.config.bucket:
+            storage.delete(key)
+    else:
+        ruta = (ROOT / referencia).resolve()
+        if ruta.parent == ROOT:
+            ruta.unlink(missing_ok=True)
+
+
 MAX_BYTES = int(os.getenv("ENCARGAGEST_MAX_DOCUMENT_BYTES", str(25 * 1024 * 1024)))
 EXTENSIONES_PERMITIDAS = {".pdf", ".doc", ".docx", ".xls", ".xlsx", ".jpg", ".jpeg", ".png", ".eml", ".msg", ".txt"}
+
+
+def _tipo_mime_seguro_encargagest(nombre):
+    extension = Path(str(nombre or "")).suffix.lower()
+    if extension not in EXTENSIONES_PERMITIDAS:
+        return "application/octet-stream"
+    return mimetypes.guess_type("documento" + extension)[0] or "application/octet-stream"
+
+
 CATEGORIAS_DOCUMENTO = {
     "Hoja de solicitud",
     "Certificado de saldo cero / deuda",
@@ -205,6 +267,10 @@ def _migrar_tablas_encargagest_en_hilo():
 
 @router.on_event("startup")
 async def crear_tablas_encargagest():
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: crear_tablas_encargagest; ejecutar migración versionada.", flush=True)
+        return
+
     # No crear ni iniciar hilos mientras Starlette está ejecutando la secuencia
     # de arranque. Solo se agenda el lanzamiento para después de liberar el
     # ciclo de startup; así un problema de recursos no puede atascar el puerto.
@@ -243,8 +309,39 @@ def _es_externo(actor):
 
 def _es_administrador_encargagest(usuario):
     nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().casefold()
-    rol = str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").strip().casefold()
-    return nombre_usuario == "admin" or rol in {"admin", "administrador", "administradora", "superadmin"}
+    rol_obj = getattr(usuario, "rol", None)
+    rol = str(getattr(rol_obj, "nombre", "") or "").strip().casefold()
+    try:
+        rol_id = int(getattr(usuario, "rol_id", getattr(rol_obj, "id", -1)))
+    except (TypeError, ValueError):
+        rol_id = -1
+    return nombre_usuario == "admin" or rol_id == 0 or rol in {"admin", "administrador", "administradora", "superadmin", "superadministrador", "administrador del sistema"}
+
+
+def _exigir_admin_encargagest(usuario):
+    if _es_externo(usuario) or not _es_administrador_encargagest(usuario):
+        raise HTTPException(
+            status_code=403,
+            detail="La administración de accesos externos de EncargaGest está reservada a administradores.",
+        )
+    return usuario
+
+
+def _validar_admin_soporte_encargagest(payload, db):
+    try:
+        admin_id = int(payload.get("empleado_admin_id") or 0)
+    except (TypeError, ValueError):
+        admin_id = 0
+    admin = db.query(Empleado).filter(Empleado.id == admin_id).first() if admin_id else None
+    if not admin or getattr(admin, "activo", True) is False:
+        raise HTTPException(status_code=401, detail="La sesión de soporte EncargaGest ya no está autorizada.")
+    if not _es_administrador_encargagest(admin):
+        raise HTTPException(status_code=403, detail="El administrador que abrió esta sesión ya no tiene permisos de soporte.")
+    modulos = getattr(admin, "modulos_visibles_list", None) or []
+    if not any(str(modulo).strip().casefold() == "encargagest" for modulo in modulos):
+        raise HTTPException(status_code=403, detail="EncargaGest ya no está habilitado para el administrador.")
+    _autorizar(admin, "ver")
+    return admin
 
 
 def _ids_notarias_asignadas(usuario):
@@ -338,7 +435,10 @@ def get_encargagest_actor(request: Request, token=Depends(obtener_token_bearer),
             ).first()
             if not acceso:
                 raise HTTPException(status_code=401, detail="El acceso EncargaGest está deshabilitado.")
-            if acceso.password_provisional and not _ruta_permitida_durante_cambio_password_encargagest(request.url.path):
+            es_sesion_soporte = bool(payload.get("seleccion_admin"))
+            if es_sesion_soporte:
+                _validar_admin_soporte_encargagest(payload, db)
+            if acceso.password_provisional and not es_sesion_soporte and not _ruta_permitida_durante_cambio_password_encargagest(request.url.path):
                 raise HTTPException(
                     status_code=403,
                     detail="Debes cambiar la contraseña provisional antes de acceder a EncargaGest.",
@@ -350,7 +450,8 @@ def get_encargagest_actor(request: Request, token=Depends(obtener_token_bearer),
             return {
                 "tipo": "externo", "id": acceso.id, "usuario_id": acceso.id,
                 "notaria_id": notaria.id, "nombre": nombre, "usuario": acceso.usuario,
-                "requiere_cambio_password": bool(acceso.password_provisional),
+                "sesion_soporte": es_sesion_soporte,
+                "requiere_cambio_password": bool(acceso.password_provisional and not es_sesion_soporte),
             }
 
         empleado_id = payload.get("id")
@@ -369,6 +470,10 @@ def get_encargagest_actor(request: Request, token=Depends(obtener_token_bearer),
     except Exception as exc:
         print(f"ERROR AUTENTICACIÓN ENCARGAGEST: {exc}", flush=True)
         raise HTTPException(status_code=401, detail="No se pudo validar la sesión EncargaGest.")
+
+
+def _observacion_ctn_visible_encargagest(notaria, usuario):
+    return getattr(notaria, "observacion", None) if _es_externo(usuario) and usuario.get("sesion_soporte") else None
 
 
 def _nombre_usuario(usuario):
@@ -704,7 +809,7 @@ def mi_sesion_encargagest(usuario=Depends(get_encargagest_actor), db: Session = 
             "departamento_cancelaciones": getattr(notaria, "departamento_cancelaciones", None),
             "departamento_copias": getattr(notaria, "departamento_copias", None),
             "otros_departamentos": getattr(notaria, "otros_departamentos", None),
-            "observacion": getattr(notaria, "observacion", None),
+            "observacion": _observacion_ctn_visible_encargagest(notaria, usuario),
             "requiere_cambio_password": bool(usuario.get("requiere_cambio_password", False)),
         }
     _autorizar(usuario, "ver")
@@ -752,6 +857,7 @@ def cambiar_password_encargagest(datos: CambioPasswordEncargaGest, usuario=Depen
 @router.get("/accesos")
 def listar_accesos_encargagest(db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _exigir_interno(usuario, "ver")
+    _exigir_admin_encargagest(usuario)
     notarías = db.query(Notaria).order_by(Notaria.apellidos.asc(), Notaria.nombre.asc()).all()
     accesos = {item.notaria_id: item for item in db.query(EncargoExternoUsuario).all()}
     return [{
@@ -767,6 +873,7 @@ def listar_accesos_encargagest(db: Session = Depends(get_db), usuario=Depends(ge
 @router.post("/accesos")
 def guardar_acceso_encargagest(datos: AccesoEncargaGest, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _exigir_interno(usuario, "editar")
+    _exigir_admin_encargagest(usuario)
     notaria = db.query(Notaria).filter(Notaria.id == datos.notaria_id).first()
     if not notaria:
         raise HTTPException(status_code=404, detail="Notaría CTN no encontrada.")
@@ -1068,6 +1175,10 @@ def directorio_notarias_encargagest(
     alcance: str = Query("habilitadas", regex="^(habilitadas|todas)$"),
     pagina: int = Query(1, ge=1),
     por_pagina: int = Query(12, ge=1, le=48),
+    sort_by: str | None = Query(None, regex="^(nombre|nif|municipio|provincia|habilitada)$"),
+    sort_dir: str | None = Query(None, regex="^(asc|desc)$"),
+    ordenar_por: str | None = Query(None, regex="^(nombre|nif|municipio|provincia|estado|habilitada)$"),
+    direccion: str | None = Query(None, regex="^(asc|desc)$"),
     db: Session = Depends(get_db),
     usuario=Depends(get_encargagest_actor),
 ):
@@ -1091,8 +1202,30 @@ def directorio_notarias_encargagest(
             Notaria.municipio.ilike(termino),
             Notaria.provincia.ilike(termino),
         ))
+    columnas_orden = {
+        "nombre": func.concat(Notaria.apellidos, " ", Notaria.nombre),
+        "nif": Notaria.nif,
+        "municipio": Notaria.municipio,
+        "provincia": Notaria.provincia,
+        "estado": EncargoExternoUsuario.habilitado,
+    }
+    columna_orden = columnas_orden[ordenar_por]
+    expresion_orden = columna_orden.asc() if direccion == "asc" else columna_orden.desc()
     total = consulta.count()
-    registros = consulta.order_by(Notaria.provincia.asc(), Notaria.municipio.asc(), Notaria.apellidos.asc(), Notaria.nombre.asc()).offset((pagina - 1) * por_pagina).limit(por_pagina).all()
+    columnas_orden = {
+        "nombre": func.concat(Notaria.nombre, " ", Notaria.apellidos),
+        "nif": Notaria.nif,
+        "municipio": Notaria.municipio,
+        "provincia": Notaria.provincia,
+        "habilitada": EncargoExternoUsuario.habilitado,
+    }
+    campo_orden = sort_by or ordenar_por or "provincia"
+    if campo_orden == "estado":
+        campo_orden = "habilitada"
+    sentido_orden = (sort_dir or direccion or "asc").lower()
+    columna_orden = columnas_orden.get(campo_orden, Notaria.provincia)
+    expresion_orden = columna_orden.desc().nullslast() if sentido_orden == "desc" else columna_orden.asc().nullslast()
+    registros = consulta.order_by(expresion_orden, Notaria.id.asc()).offset((pagina - 1) * por_pagina).limit(por_pagina).all()
     items = []
     for notaria, acceso in registros:
         items.append({
@@ -1593,18 +1726,17 @@ async def subir_documento(
     if len(contenido) > MAX_BYTES:
         raise HTTPException(status_code=413, detail=f"El archivo supera el límite de {MAX_BYTES // (1024 * 1024)} MB.")
     nombre_guardado = f"{uuid4().hex}{extension}"
-    ruta = (ROOT / nombre_guardado).resolve()
-    if ruta.parent != ROOT:
-        raise HTTPException(status_code=400, detail="Nombre de archivo no válido.")
+    referencia_guardada = _guardar_documento_storage(
+        nombre_guardado, contenido, _tipo_mime_seguro_encargagest(nombre_original)
+    )
     try:
-        ruta.write_bytes(contenido)
         documento = EncargoExternoDocumento(
             encargo_id=item.id,
             nombre_original=nombre_original,
-            nombre_guardado=nombre_guardado,
+            nombre_guardado=referencia_guardada,
             categoria=categoria,
             contrato_index=contrato_index,
-            tipo_mime=archivo.content_type,
+            tipo_mime=_tipo_mime_seguro_encargagest(nombre_original),
             tamano_bytes=len(contenido),
             subido_por_id=(usuario.get("usuario_id") if _es_externo(usuario) else usuario.id),
             subido_por_nombre=_nombre_usuario(usuario),
@@ -1617,7 +1749,10 @@ async def subir_documento(
         return _serializar_documento(documento) | {"ok": True}
     except Exception:
         db.rollback()
-        ruta.unlink(missing_ok=True)
+        try:
+            _eliminar_documento_storage(referencia_guardada)
+        except Exception:
+            pass
         raise HTTPException(status_code=500, detail="No se pudo guardar el documento.")
     finally:
         await archivo.close()
@@ -1633,10 +1768,13 @@ def descargar_documento(encargo_id: int, documento_id: int, db: Session = Depend
     ).first()
     if not documento:
         raise HTTPException(status_code=404, detail="Documento no encontrado.")
-    ruta = (ROOT / documento.nombre_guardado).resolve()
-    if ruta.parent != ROOT or not ruta.is_file():
-        raise HTTPException(status_code=404, detail="El archivo no está disponible en el almacenamiento.")
-    return FileResponse(path=str(ruta), filename=documento.nombre_original, media_type=documento.tipo_mime or "application/octet-stream")
+    contenido = _leer_documento_storage(documento.nombre_guardado)
+    respuesta = StreamingResponse(iter([contenido]), media_type=_tipo_mime_seguro_encargagest(documento.nombre_original))
+    from urllib.parse import quote
+    respuesta.headers["Content-Disposition"] = f'attachment; filename*=UTF-8\'\'{quote(documento.nombre_original)}'
+    respuesta.headers["X-Content-Type-Options"] = "nosniff"
+    respuesta.headers["Cache-Control"] = "private, no-store"
+    return respuesta
 
 
 @router.delete("/encargos/{encargo_id}/documentos/{documento_id}")
@@ -1650,10 +1788,8 @@ def eliminar_documento(encargo_id: int, documento_id: int, db: Session = Depends
     ).first()
     if not documento:
         raise HTTPException(status_code=404, detail="Documento no encontrado.")
-    ruta = (ROOT / documento.nombre_guardado).resolve()
+    referencia_documento = documento.nombre_guardado
     try:
-        if ruta.parent == ROOT:
-            ruta.unlink(missing_ok=True)
         nombre_documento = documento.nombre_original
         categoria_documento = documento.categoria
         db.delete(documento)
@@ -1664,6 +1800,10 @@ def eliminar_documento(encargo_id: int, documento_id: int, db: Session = Depends
         )
         encargo.actualizado_en = datetime.utcnow()
         db.commit()
+        try:
+            _eliminar_documento_storage(referencia_documento)
+        except Exception:
+            pass
     except Exception:
         db.rollback()
         raise HTTPException(status_code=500, detail="No se pudo eliminar el documento.")

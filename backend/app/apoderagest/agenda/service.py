@@ -5,7 +5,7 @@ Utiliza la tabla compartida agenda_citas y devuelve datos relacionados
 del expediente y de la notaría cuando están disponibles.
 """
 
-from sqlalchemy import func, or_
+from sqlalchemy import and_, func, or_
 
 from backend.app.agenda.models import Cita
 from backend.app.apoderagest.permissions import (
@@ -87,45 +87,54 @@ def _cita_a_dict(cita):
     }
 
 
-def listar_citas_apoderado(db, usuario, todas=False):
-    """Lista las citas del apoderado autenticado.
-
-    Se prioriza el identificador de empleado. Solo se utiliza el nombre
-    cuando no hay identificador utilizable o el modelo no tiene ese campo.
-    """
-    empleado_id = obtener_id_empleado(usuario)
-    nombre = obtener_nombre_apoderado(usuario)
-
-    campo_id = getattr(Cita, "apoderado_id", None)
-    campo_nombre = getattr(Cita, "apoderado", None)
-
-    consulta = db.query(Cita)
-
-    if not todas and empleado_id is None and not nombre:
-        return []
-
-    filtros = []
-    if empleado_id is not None and campo_id is not None:
-        filtros.append(campo_id == empleado_id)
-
-    if nombre and campo_nombre is not None:
-        # Compara nombres sin tildes para compatibilizar registros históricos.
-        filtros.append(
+def _filtro_asignacion_apoderado(campo_id, campo_nombre, empleado_id, nombre):
+    """El ID es autoritativo; el nombre solo recupera citas históricas sin FK."""
+    nombre_limpio = str(nombre or "").strip()
+    filtro_nombre = None
+    if nombre_limpio and campo_nombre is not None:
+        filtro_nombre = (
             func.translate(
                 func.lower(func.trim(campo_nombre)),
                 "áéíóúüñ",
                 "aeiouun",
             )
-            == func.translate(nombre.strip().lower(), "áéíóúüñ", "aeiouun")
+            == func.translate(
+                nombre_limpio.lower(),
+                "áéíóúüñ",
+                "aeiouun",
+            )
         )
 
-    if not todas and not filtros:
-        return []
+    if empleado_id is not None and campo_id is not None:
+        filtro_id = campo_id == int(empleado_id)
+        if filtro_nombre is not None:
+            return or_(filtro_id, and_(campo_id.is_(None), filtro_nombre))
+        return filtro_id
 
-    # No depender únicamente del ID: citas antiguas pueden tener apoderado_id
-    # vacío y conservar correctamente el nombre del apoderado.
+    return filtro_nombre
+
+
+def listar_citas_apoderado(db, usuario, todas=False):
+    """Lista las citas del apoderado autenticado.
+
+    La clave foránea del empleado es la asignación autoritativa. El nombre
+    solo sirve como compatibilidad para citas históricas sin apoderado_id.
+    """
+    empleado_id = obtener_id_empleado(usuario)
+    nombre = obtener_nombre_apoderado(usuario)
+
+    consulta = db.query(Cita)
+
     if not todas:
-        consulta = consulta.filter(or_(*filtros))
+        filtro = _filtro_asignacion_apoderado(
+            getattr(Cita, "apoderado_id", None),
+            getattr(Cita, "apoderado", None),
+            empleado_id,
+            nombre,
+        )
+        if filtro is None:
+            return []
+        consulta = consulta.filter(filtro)
 
     citas = (
         consulta

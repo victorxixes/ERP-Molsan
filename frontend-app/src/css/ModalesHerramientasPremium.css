@@ -2,7 +2,7 @@
 .herramientas-subpagina-premium,.panel-modal-premium { min-width:0; color:var(--molsan-text,#172033); }
 .herramientas-subpagina-premium header,.herramientas-subpagina-premium section,.panel-modal-premium section { min-width:0; }
 .herramientas-subpagina-premium input,.herramientas-subpagina-premium select,.herramientas-subpagina-premium textarea,.panel-modal-premium input,.panel-modal-premium select,.panel-modal-premium textarea { max-width:100%; transition:border-color .18s ease,box-shadow .18s ease; }
-.herramientas-subpagina-premium input:focus-visible,.herramientas-subpagina-premium select:focus-visible,.herramientas-subpagina-premium textarea:focus-visible,.herramientas-subpagina-premium button:focus-visible,.panel-modal-premium input:focus-visible,.panel-modal-premium select:focus-visible,.panel-modal-premium textarea:focus-visible,.panel-modal-premium button:focus-visible { outline:2px solid var(--molsan-primary,#4169e1); outline-offset:2px; }
+.herramientas-subpagina-premium input:focus-visible,.herramientas-subpagina-premium select:focus-visible,.herramientas-subpagina-premium textarea:focus-visible,.herramientas-subpagina-premium button:focus-visible,.panel-modal-premium input:focus-visible,.panel-modal-premium select:focus-visible,.panel-modal-premium textarea:focus-visible,.panel-modal-premium button:focus-visible { outline:2px solid var(--molsan-primary,#064675); outline-offset:2px; }
 .herramientas-subpagina-premium table { width:100%; border-collapse:separate; border-spacing:0; }
 .herramientas-subpagina-premium th { background:var(--molsan-surface-soft,#f5f7fb); }
 .herramientas-subpagina-premium td,.herramientas-subpagina-premium th { overflow-wrap:anywhere; }
@@ -10,7 +10,7 @@
 .panel-modal-premium [role=dialog] { max-height:calc(100dvh - 2rem); overflow-y:auto; overscroll-behavior:contain; }
 .panel-modal-premium button { touch-action:manipulation; }
 @media(max-width:640px){.herramientas-subpagina-premium{padding-left:.75rem;padding-right:.75rem}.herramientas-subpagina-premium table{min-width:620px}.panel-modal-premium{align-items:flex-start}.panel-modal-premium [role=dialog]{width:100%;max-height:calc(100dvh - 1rem)}}
-@media(prefers-reduced-motion:reduce){.herramientas-subpagina-premium *,.panel-modal-premium *{transition:none!important;animation:none!important}}
+@media(prefers-reduced-motion:reduce){@media (prefers-reduced-motion: reduce){.herramientas-subpagina-premium *,.panel-modal-premium *{transition:none!important;animation:none!important}}}
 
 /* Cubrir también los diálogos que llevan role="dialog" en el contenedor raíz. */
 .panel-modal-premium[role="dialog"] {
@@ -24,3 +24,13 @@
     max-height: calc(100dvh - 1rem);
   }
 }
+
+
+/* Informes: un único azul corporativo en tarjetas, acciones y controles. */
+.informes-premium-page :is([class~="bg-blue-50"], [class~="bg-blue-100"], [class~="hover:bg-blue-50"], [class~="hover:bg-blue-100"]:hover) { background-color: var(--molsan-primary-soft); }
+.informes-premium-page :is([class~="bg-blue-600"], [class~="bg-blue-500"]) { background-color: var(--molsan-primary); }
+.informes-premium-page [class~="hover:bg-blue-700"]:hover { background-color: var(--molsan-primary-hover); }
+.informes-premium-page :is([class~="text-blue-500"], [class~="text-blue-600"], [class~="text-blue-700"], [class~="text-blue-800"], [class~="text-blue-900"], [class~="hover:text-blue-900"]:hover) { color: var(--molsan-primary); }
+.informes-premium-page :is([class~="border-blue-100"], [class~="border-blue-200"], [class~="border-blue-300"]) { border-color: var(--molsan-border); }
+.informes-premium-page :is([class~="border-blue-400"], [class~="border-blue-500"]) { border-color: var(--molsan-primary); }
+.informes-premium-page [class~="focus:border-blue-400"]:focus { border-color: var(--molsan-primary); }

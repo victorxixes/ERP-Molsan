@@ -10,7 +10,6 @@ on:
     paths:
       - "backend/**"
       - ".github/workflows/backend-audit.yml"
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -20,33 +19,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  syntax-and-unit-tests:
+  audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: sqlite:////tmp/erp-molsan-audit.db
+      JWT_SECRET: ci-audit-secret-not-for-production
+      JWT_ALGORITHM: HS256
+      PYTHONPATH: ..:.
+      ENVIRONMENT: test
+      APP_ENV: test
+      ADMIN_EMAIL: admin@audit.invalid
+      ADMIN_PASSWORD: audit-only-password
+      SUPER_ADMIN_EMAIL: admin@audit.invalid
+      SUPER_ADMIN_PASSWORD: audit-only-password
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
           cache-dependency-path: backend/requirements.txt
-
-      - name: Install backend dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r backend/requirements.txt pytest
-
-      - name: Compile backend modules
-        env:
-          PYTHONPATH: ${{ github.workspace }}
-        run: python -m compileall -q backend
-
-      - name: Run backend tests (isolated SQLite, no production database)
-        env:
-          PYTHONPATH: ${{ github.workspace }}
-          DATABASE_URL: sqlite:///./backend-audit-test.db
-          JWT_SECRET: test-only-secret-for-ci-never-use-in-production-32chars
-        run: python -m pytest -q backend/tests
+      - run: python -m pip install --upgrade pip
+      - run: pip install -r requirements.txt pytest
+      - run: python -m compileall -q app
+      - run: python -m pytest -q tests

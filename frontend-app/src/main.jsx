@@ -21,8 +21,18 @@ import "./css/molsan-tables.css";
 import "./css/molsan-controls.css";
 // Componentes y módulos funcionales.
 import App from "./App";
+// Estilos transversales ligeros de compatibilidad Fase 3, sin hoja monolítica de overrides.
+import "./css/MolsanFase3.css";
+import "./css/MolsanFase3Portales.css";
+// Estilos de módulos y páginas antes de las capas globales compartidas.
+import "./css/molsan-module-styles.css";
 // Capa de armonización general.
 import "./css/MolsanRedesign2027.css";
+import "./css/MolsanPremium2027.css";
+import "./css/MolsanCardsPremium2027.css";
+// Autoridad final de cascada para ApoderaGest, EncargaGest y NotarGest.
+import "./css/PortalProfesionalPremium2027.css";
+
 // Última capa: neutraliza diferencias visuales propias de los módulos.
 
 // ============================================================

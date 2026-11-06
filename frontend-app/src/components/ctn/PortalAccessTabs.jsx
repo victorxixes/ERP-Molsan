@@ -1,14 +1,19 @@
+import MolsanIcon from "../ui/MolsanIcon";
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 
-import "../../css/LayoutPortalesPremium.css";
 export default function PortalAccessTabs({ notariaId }) {
   const empleadoSesion = useAuthStore((state) => state.empleado);
   const nombreRol = String(
     empleadoSesion?.rol_nombre || empleadoSesion?.rol?.nombre || empleadoSesion?.role?.name || ""
-  ).normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
-  const esAdministrador = /(^|\s)(admin|administrador)(\s|$)/.test(nombreRol);
+  ).normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase().replace(/[_-]/g, " ");
+  const nombreUsuario = String(empleadoSesion?.usuario || "").trim().toLowerCase();
+  const rolId = Number(empleadoSesion?.rol_id ?? empleadoSesion?.rol?.id ?? -1);
+  const esAdministrador = nombreUsuario === "admin" || rolId === 0 || new Set([
+    "admin", "administrador", "administradora", "superadmin",
+    "superadministrador", "administrador del sistema",
+  ]).has(nombreRol);
   const permisosEmpleado = empleadoSesion?.permisos_modulo_dict || empleadoSesion?.permisos_modulo || {};
   const modulosVisibles = Array.isArray(empleadoSesion?.modulos_visibles_list)
     ? empleadoSesion.modulos_visibles_list
@@ -100,7 +105,7 @@ export default function PortalAccessTabs({ notariaId }) {
 
   if (!puedeVerNotarGest && !puedeVerEncargaGest) {
     return (
-      <section className="portal-access-tabs-premium ctn-modal-seccion ctn-portal-access-panel">
+      <section>
         <div className="ctn-modal-seccion-titulo"><h3>Accesos a portales externos</h3></div>
         <p role="alert" className="ctn-portal-alert ctn-portal-alert--warning">
           Tu usuario no tiene permiso para consultar NotarGestWeb ni EncargaGestWeb. Solicita al administrador que lo habilite en la ficha del empleado.
@@ -138,7 +143,7 @@ export default function PortalAccessTabs({ notariaId }) {
               <strong className={`ctn-portal-state ${acceso.habilitado ? "is-enabled" : "is-disabled"}`}>{acceso.habilitado ? "HABILITADO" : "DESHABILITADO"}</strong>
               <div className="ctn-portal-muted ctn-portal-muted--spaced">{acceso.configurado ? "Credenciales configuradas" : "Todavía no se han generado credenciales"}</div>
             </div>
-            {puedeGestionar && <button type="button" className="ctn-portal-button" disabled={procesando || (portal === "encargagest" && !acceso.configurado)}
+            {puedeGestionar && <button type="button" className="ctn-portal-button" disabled={procesando || !acceso.configurado}
               onClick={() => ejecutar("toggle")}>
               {acceso.habilitado ? "Deshabilitar acceso" : "Habilitar acceso"}
             </button>}
@@ -165,7 +170,7 @@ export default function PortalAccessTabs({ notariaId }) {
                   title={mostrarPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   aria-label={mostrarPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   onClick={() => ejecutar("revelar")}
-                >{mostrarPassword ? "🙈" : "👁"}</button>}
+                ><MolsanIcon name={mostrarPassword ? "eyeOff" : "eye"} size={18} bare /></button>}
               </div>
               {mostrarPassword && (passwordNueva || passwordRevelada) && <button type="button" className="ctn-portal-button ctn-portal-button--copy" onClick={() => navigator.clipboard?.writeText(passwordNueva || passwordRevelada)}>Copiar contraseña</button>}
               {!esAdministrador && <div className="ctn-portal-muted ctn-portal-muted--spaced">Solo un administrador puede mostrar la contraseña.</div>}

@@ -5,9 +5,12 @@
  * Nunca envía el token a dominios distintos del backend configurado.
  */
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://agenda-intranet-b.onrender.com";
+import { API_BASE } from "./config";
+
+// La API procede siempre de la configuración explícita del entorno.
+// En producción config.js bloquea el build si VITE_API_URL no está definida;
+// nunca se permite reenviar JWT a una API histórica como fallback.
+const API_BASE_URL = API_BASE;
 
 if (
   typeof window !== "undefined" &&

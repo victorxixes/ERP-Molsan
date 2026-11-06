@@ -4,17 +4,20 @@ import base64
 import unicodedata
 import hashlib
 import secrets
+import math
 from datetime import datetime
 
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from cryptography.fernet import Fernet, InvalidToken
-from sqlalchemy import Column, ForeignKey, Integer, Table, and_, func, or_, text
-from sqlalchemy.orm import Session
+from sqlalchemy import Column, ForeignKey, Integer, Table, and_, case, cast, Float, func, or_, text
+from sqlalchemy.orm import Session, aliased
+from sqlalchemy.dialects.postgresql import aggregate_order_by
 from openpyxl import Workbook
 
 from backend.app.database import Base, get_db, engine
+from backend.app.schema_migrations import runtime_schema_migrations_enabled
 from backend.app.config import settings
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
@@ -39,7 +42,23 @@ router = APIRouter(
 def _es_administrador_portales(usuario):
     rol = getattr(usuario, "rol", None)
     nombre = str(getattr(rol, "nombre", "") or "").strip().casefold()
-    return nombre in {"administrador", "admin", "administrador del sistema"}
+    nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().casefold()
+    try:
+        rol_id = int(getattr(usuario, "rol_id", getattr(rol, "id", -1)))
+    except (TypeError, ValueError):
+        rol_id = -1
+    return (
+        nombre_usuario == "admin"
+        or rol_id == 0
+        or nombre in {
+            "administrador",
+            "administradora",
+            "admin",
+            "superadmin",
+            "superadministrador",
+            "administrador del sistema",
+        }
+    )
 
 
 def _tiene_permiso_portal(usuario, portal, accion="ver"):
@@ -58,6 +77,31 @@ def _exigir_permiso_portal(usuario, portal, accion="ver"):
         raise HTTPException(
             status_code=403,
             detail=f"No tienes permiso para '{accion}' en el portal '{portal}'. Configúralo en la ficha del empleado.",
+        )
+
+
+def _tiene_permiso_modulo(usuario, modulo, accion="ver"):
+    try:
+        require_perm_modulo(usuario, modulo, accion)
+        return True
+    except HTTPException:
+        return False
+
+
+def _exigir_permiso_ctn(usuario, accion="ver"):
+    """Aplica permisos CTN también en API; la protección visual no es suficiente."""
+    require_perm_modulo(usuario, "ctn", accion)
+
+
+def _exigir_permiso_ctn_o_agenda(usuario):
+    """Permite el selector de notarios de Agenda sin abrir el módulo CTN completo."""
+    if not (
+        _tiene_permiso_modulo(usuario, "ctn", "ver")
+        or _tiene_permiso_modulo(usuario, "agenda", "ver")
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permiso para consultar el catálogo de notarios desde CTN o Agenda.",
         )
 
 
@@ -86,6 +130,10 @@ else:
 @router.on_event("startup")
 def crear_tabla_asociaciones_ctn():
     """Crea las asociaciones CTN y migra IBAN solo si faltan, serializando el DDL."""
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: crear_tabla_asociaciones_ctn; ejecutar migración versionada.", flush=True)
+        return
+
     import time
 
     notarios_asociados_table.create(bind=engine, checkfirst=True)
@@ -192,26 +240,30 @@ def _notaria_basica(notaria):
 
 
 def _asociaciones_de(db: Session, notaria_id: int):
-    filas = (
-        db.query(notarios_asociados_table.c.asociado_id)
+    # La relación es un conjunto; no se debe depender del orden físico
+    # de las filas de la tabla intermedia para presentar ni ordenar CTN.
+    notarias = (
+        db.query(Notaria)
+        .join(
+            notarios_asociados_table,
+            Notaria.id == notarios_asociados_table.c.asociado_id,
+        )
         .filter(notarios_asociados_table.c.notario_id == notaria_id)
+        .order_by(
+            func.lower(func.concat_ws(" ", Notaria.nombre, Notaria.apellidos)).asc(),
+            Notaria.id.asc(),
+        )
         .all()
     )
-    ids = [fila[0] for fila in filas]
-    if not ids:
-        return []
-    notarias = db.query(Notaria).filter(Notaria.id.in_(ids)).all()
-    por_id = {notaria.id: notaria for notaria in notarias}
     return [
         {
-            "id": por_id[ident].id,
-            "nombre": por_id[ident].nombre,
-            "apellidos": por_id[ident].apellidos,
-            "nombre_completo": _nombre_completo(por_id[ident]),
-            "nif": por_id[ident].nif,
+            "id": notaria.id,
+            "nombre": notaria.nombre,
+            "apellidos": notaria.apellidos,
+            "nombre_completo": _nombre_completo(notaria),
+            "nif": notaria.nif,
         }
-        for ident in ids
-        if ident in por_id
+        for notaria in notarias
     ]
 
 
@@ -390,21 +442,75 @@ def _distancia_de_notaria(notaria):
         lng = getattr(notaria, "lng", None)
         if lat is None or lng is None:
             return None
-        return distancia_km(MOLSAN_LAT, MOLSAN_LNG, float(lat), float(lng))
+        lat = float(lat)
+        lng = float(lng)
+        # Mantener el mismo criterio que la expresión SQL de ordenación:
+        # coordenadas finitas y dentro de los límites geográficos válidos.
+        if not math.isfinite(lat) or not math.isfinite(lng):
+            return None
+        if not -90 <= lat <= 90 or not -180 <= lng <= 180:
+            return None
+        return distancia_km(MOLSAN_LAT, MOLSAN_LNG, lat, lng)
     except (TypeError, ValueError):
         return None
+
+
+def _agregado_nombres_asociados(notaria_asociada):
+    nombre = func.concat_ws(
+        " ", notaria_asociada.nombre, notaria_asociada.apellidos
+    )
+    # PostgreSQL necesita el ORDER BY dentro de STRING_AGG para que el
+    # criterio compuesto sea determinista aunque cambie el plan de consulta.
+    return func.string_agg(
+        aggregate_order_by(
+            nombre,
+            func.lower(nombre),
+            notaria_asociada.id,
+        ),
+        ", ",
+    )
+
+
+def _ordenar_query_ctn(query, columna_orden, sort_order, page, page_size):
+    """Aplica un orden total y estable antes del OFFSET/LIMIT del servidor."""
+    if columna_orden is None:
+        criterios = (
+            Notaria.apellidos.asc().nullslast(),
+            Notaria.nombre.asc().nullslast(),
+            Notaria.id.asc(),
+        )
+    else:
+        criterio = (
+            columna_orden.asc()
+            if str(sort_order or "asc").lower() == "asc"
+            else columna_orden.desc()
+        )
+        criterios = (criterio.nullslast(), Notaria.id.asc())
+    return (
+        query.order_by(*criterios)
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+    )
 
 
 # ============================================================
 # GEOCODIFICACIÓN Y MIGRACIÓN
 # ============================================================
 @router.post("/geocode/notarias")
-def geocode_notarias(db: Session = Depends(get_db)):
+def geocode_notarias(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _exigir_permiso_ctn(usuario, "editar")
     return geocode_todas_notarias(db)
 
 
 @router.post("/migracion/agregar-coordenadas")
-def migrar_coordenadas(db: Session = Depends(get_db)):
+def migrar_coordenadas(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _exigir_permiso_ctn(usuario, "editar")
     return agregar_coordenadas(db)
 
 
@@ -421,22 +527,99 @@ def listar_notarias(
     asociado: str | None = Query(None, description="Filtra por nombre, apellidos o NIF del notario asociado"),
     page: int = Query(1, ge=1),
     page_size: int = Query(15, ge=1, le=200),
+    sort_by: str = Query("apellidos", max_length=40),
+    sort_dir: str | None = Query(None, regex="^(asc|desc)$"),
+    sort_order: str | None = Query(None, regex="^(?i:asc|desc)$"),
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    _exigir_permiso_ctn_o_agenda(usuario)
+    puede_ver_ctn = _tiene_permiso_modulo(usuario, "ctn", "ver")
     query = _aplicar_filtros_notarias(db, provincia, municipio, vc, apoderado, q, asociado)
     total = query.count()
-    filas = (
-        query.order_by(Notaria.apellidos.asc().nullslast(), Notaria.nombre.asc().nullslast())
-        .offset((page - 1) * page_size)
-        .limit(page_size)
-        .all()
+
+    # Las columnas calculadas se ordenan en SQL antes de paginar. Así el orden
+    # es global y no cambia al avanzar entre páginas.
+    notaria_asociada = aliased(Notaria)
+    asociaciones_orden = (
+        db.query(_agregado_nombres_asociados(notaria_asociada))
+        .select_from(
+            notarios_asociados_table.join(
+                notaria_asociada,
+                notaria_asociada.id == notarios_asociados_table.c.asociado_id,
+            )
+        )
+        .filter(notarios_asociados_table.c.notario_id == Notaria.id)
+        .correlate(Notaria)
+        .scalar_subquery()
     )
+    tiene_acceso_encargagest = db.query(EncargoExternoUsuario.id).filter(
+        EncargoExternoUsuario.notaria_id == Notaria.id,
+        EncargoExternoUsuario.habilitado.is_(True),
+    ).exists()
+
+    # Las coordenadas históricas son texto; solo se convierten si tienen
+    # formato numérico válido, evitando errores por valores vacíos o corruptos.
+    lat_valida = Notaria.lat.op("~")(r"^-?[0-9]+(\.[0-9]+)?$")
+    lng_valida = Notaria.lng.op("~")(r"^-?[0-9]+(\.[0-9]+)?$")
+    latitud_parseada = case([(lat_valida, cast(Notaria.lat, Float))], else_=None)
+    longitud_parseada = case([(lng_valida, cast(Notaria.lng, Float))], else_=None)
+    latitud = case([
+        (and_(latitud_parseada >= -90, latitud_parseada <= 90), latitud_parseada)
+    ], else_=None)
+    longitud = case([
+        (and_(longitud_parseada >= -180, longitud_parseada <= 180), longitud_parseada)
+    ], else_=None)
+    lat_rad = func.radians(latitud)
+    lng_rad = func.radians(longitud)
+    lat_origen = func.radians(MOLSAN_LAT)
+    dlat = lat_rad - lat_origen
+    dlng = lng_rad - func.radians(MOLSAN_LNG)
+    haversine = (
+        func.power(func.sin(dlat / 2.0), 2)
+        + func.cos(lat_origen) * func.cos(lat_rad)
+        * func.power(func.sin(dlng / 2.0), 2)
+    )
+    distancia_orden = 2.0 * 6371.0 * func.asin(
+        func.sqrt(func.least(1.0, func.greatest(0.0, haversine)))
+    )
+
+    columnas_ordenables = {
+        "id": Notaria.id,
+        "nombre": Notaria.nombre,
+        "apellidos": Notaria.apellidos,
+        "nombre_completo": func.concat_ws(" ", Notaria.nombre, Notaria.apellidos),
+        "nif": Notaria.nif,
+        "municipio": Notaria.municipio,
+        "provincia": Notaria.provincia,
+        "vc": Notaria.vc,
+        "apoderado": Notaria.apoderado,
+        "notario_asociado": asociaciones_orden,
+        "notargest_habilitado": Notaria.notargest_habilitado,
+        "encargagest_habilitado": case([(tiene_acceso_encargagest, 1)], else_=0),
+        "distancia_km": distancia_orden,
+    }
+    columna_orden = columnas_ordenables.get(sort_by)
+    filas = _ordenar_query_ctn(
+        query, columna_orden, (sort_dir or sort_order or "asc"), page, page_size
+    ).all()
+    accesos_encarga = {
+        int(notaria_id): bool(habilitado)
+        for notaria_id, habilitado in db.query(
+            EncargoExternoUsuario.notaria_id, EncargoExternoUsuario.habilitado
+        ).filter(EncargoExternoUsuario.notaria_id.in_([fila.id for fila in filas])).all()
+    } if filas else {}
     items = []
     for notaria in filas:
         data = _notaria_con_asociaciones(db, notaria)
         data["distancia_km"] = _distancia_de_notaria(notaria)
+        data["encargagest_habilitado"] = accesos_encarga.get(int(notaria.id), False)
+        if not puede_ver_ctn:
+            # Agenda necesita datos de contacto para crear citas, no datos bancarios.
+            data["iban_1"] = None
+            data["iban_2"] = None
         items.append(data)
-    return {"items": items, "total": total, "page": page, "page_size": page_size}
+    return {"items": items, "total": total, "page": page, "page_size": page_size, "sort_by": sort_by, "sort_dir": (sort_dir or sort_order or "asc").lower()}
 
 
 @router.get("/exportar-excel")
@@ -448,7 +631,9 @@ def exportar_notarias_excel(
     q: str | None = None,
     asociado: str | None = None,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    _exigir_permiso_ctn(usuario, "ver")
     query = _aplicar_filtros_notarias(db, provincia, municipio, vc, apoderado, q, asociado)
     filas = query.order_by(Notaria.apellidos.asc().nullslast(), Notaria.nombre.asc().nullslast()).all()
     libro = Workbook()
@@ -494,11 +679,22 @@ def exportar_notarias_excel(
 # FICHA Y ASOCIACIONES RECÍPROCAS
 # ============================================================
 @router.get("/notarias/{notaria_id}")
-def detalle_notaria(notaria_id: int, db: Session = Depends(get_db)):
+def detalle_notaria(
+    notaria_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _exigir_permiso_ctn_o_agenda(usuario)
     notaria = obtener_notaria(db, notaria_id)
     if notaria is None:
         raise HTTPException(status_code=404, detail="Notario no encontrado")
-    return _notaria_con_asociaciones(db, notaria)
+    data = _notaria_con_asociaciones(db, notaria)
+    if not _tiene_permiso_modulo(usuario, "ctn", "ver"):
+        # Agenda necesita datos de contacto para mostrar la ficha de la cita,
+        # pero no debe recibir los IBAN almacenados en el catálogo CTN.
+        data["iban_1"] = None
+        data["iban_2"] = None
+    return data
 
 
 @router.put("/notarias/{notaria_id}/datos-bancarios")
@@ -506,8 +702,10 @@ def actualizar_datos_bancarios_notaria(
     notaria_id: int,
     payload: NotariaDatosBancariosUpdate,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
     """Guarda hasta dos IBAN para reutilizarlos al registrar pagos del notario."""
+    _exigir_permiso_ctn(usuario, "editar")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if notaria is None:
         raise HTTPException(status_code=404, detail="Notario no encontrado")
@@ -524,7 +722,12 @@ def actualizar_datos_bancarios_notaria(
 
 
 @router.get("/notarias/{notaria_id}/asociadas")
-def listar_notarias_asociadas(notaria_id: int, db: Session = Depends(get_db)):
+def listar_notarias_asociadas(
+    notaria_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _exigir_permiso_ctn(usuario, "ver")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if notaria is None:
         raise HTTPException(status_code=404, detail="Notario no encontrado")
@@ -532,7 +735,13 @@ def listar_notarias_asociadas(notaria_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/notarias/{notaria_id}/asociadas/{asociada_id}")
-def asociar_notarios(notaria_id: int, asociada_id: int, db: Session = Depends(get_db)):
+def asociar_notarios(
+    notaria_id: int,
+    asociada_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _exigir_permiso_ctn(usuario, "editar")
     if notaria_id == asociada_id:
         raise HTTPException(status_code=400, detail="Un notario no puede asociarse consigo mismo")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
@@ -564,7 +773,13 @@ def asociar_notarios(notaria_id: int, asociada_id: int, db: Session = Depends(ge
 
 
 @router.delete("/notarias/{notaria_id}/asociadas/{asociada_id}")
-def desasociar_notarios(notaria_id: int, asociada_id: int, db: Session = Depends(get_db)):
+def desasociar_notarios(
+    notaria_id: int,
+    asociada_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _exigir_permiso_ctn(usuario, "editar")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     asociada = db.query(Notaria).filter(Notaria.id == asociada_id).first()
     if notaria is None or asociada is None:
@@ -585,7 +800,12 @@ def desasociar_notarios(notaria_id: int, asociada_id: int, db: Session = Depends
 # RESUMEN LEGADO DE CITAS DE AGENDA (NO SON FIRMAS REALIZADAS)
 # ============================================================
 @router.get("/notarias/{notaria_id}/firmas")
-def obtener_resumen_citas_notario(notaria_id: int, db: Session = Depends(get_db)):
+def obtener_resumen_citas_notario(
+    notaria_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _exigir_permiso_ctn(usuario, "ver")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if notaria is None:
         raise HTTPException(status_code=404, detail="Notario no encontrado")
@@ -610,7 +830,9 @@ def historico_firmas_notario(
     modalidad: str | None = Query(None, description="VC o PRESENCIAL"),
     q: str | None = None,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    _exigir_permiso_ctn(usuario, "ver")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if notaria is None:
         raise HTTPException(status_code=404, detail="Notario no encontrado")
@@ -694,6 +916,10 @@ def historico_firmas_notario(
 @router.on_event("startup")
 def migrar_columna_acceso_notargest():
     """Añade el indicador de acceso sin dejar que un bloqueo auxiliar tumbe la API."""
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: migrar_columna_acceso_notargest; ejecutar migración versionada.", flush=True)
+        return
+
     import time as _time
 
     try:
@@ -773,6 +999,10 @@ def cambiar_acceso_notargest(
 @router.on_event("startup")
 def crear_tabla_historial_accesos_portales():
     """Prepara el historial sin bloquear el arranque si PostgreSQL tiene un lock."""
+    if not runtime_schema_migrations_enabled():
+        print("[SCHEMA] Migración automática omitida: crear_tabla_historial_accesos_portales; ejecutar migración versionada.", flush=True)
+        return
+
     def ejecutar_migracion(etiqueta, sql, parametros=None):
         try:
             with engine.begin() as conexion:

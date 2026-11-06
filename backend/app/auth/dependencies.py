@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
@@ -21,13 +23,21 @@ from backend.app.empleados.models import Empleado
 # "Bearer " delante (Swagger construye esa parte).
 # ============================================================
 
-bearer_scheme = HTTPBearer(auto_error=True)
+# auto_error=False permite normalizar el contrato HTTP: una petición sin
+# credenciales debe recibir 401 (no el 403 que HTTPBearer genera por defecto).
+bearer_scheme = HTTPBearer(auto_error=False)
 
 
 def obtener_token_bearer(
-    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
 ) -> str:
-    """Extrae el JWT de la cabecera Authorization: Bearer <token>."""
+    """Extrae el JWT y devuelve 401 uniforme si falta o no es Bearer."""
+    if credentials is None or not credentials.credentials:
+        raise HTTPException(
+            status_code=401,
+            detail="Autenticación requerida",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return credentials.credentials
 
 
