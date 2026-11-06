@@ -5,6 +5,7 @@
 
 import { useDashboard } from "../../hooks/useDashboard";
 import { useNavigate } from "react-router-dom";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import "../../css/DashboardCancelagest.css";
 
 // ============================================================
@@ -267,39 +268,19 @@ export default function Dashboard() {
 
   return (
     <div className="erp-page w-full dashboard-cancelagest molsan-page" aria-busy={loading}>
-      {/* CABECERA UNIFICADA CON APODERAGEST Y NOTARGEST */}
-      <header className="ag-hero molsan-page-header dashboard-header" style={{ "--ag-muted": "#748198", "--ag-ink": "#17243a" }}>
-        <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca cg-marca-cancelagest" aria-label="CancelaGest">CG</div>
-          <div>
-            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1>Dashboard</h1>
-            <p>Resumen operativo de expedientes, actividad del circuito y firmas realizadas.</p>
-          </div>
-        </div>
-        <div className="ag-hero-acciones molsan-page-header__actions">
-          <div className="ag-fecha-actual">
-            <span className="ag-punto-vivo" aria-hidden="true" />
-            <span>{fechaActual}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/modulos")}
-            className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"
-          >
-            <span aria-hidden="true">▦</span> Ir a módulos
-          </button>
-          <button
-            type="button"
-            className="ag-boton-actualizar"
-            onClick={cargarDashboard}
-            disabled={loading}
-          >
-            <span aria-hidden="true" className={loading ? "ag-icono-girando" : ""}>↻</span>
-            {loading ? "Actualizando…" : "Actualizar datos"}
-          </button>
-        </div>
-      </header>
+      <MolsanPageHeader
+        mark="CG"
+        title="Dashboard"
+        description="Resumen operativo de expedientes, actividad del circuito y firmas realizadas."
+        className="dashboard-header"
+        actions={
+          <>
+            <div className="molsan-premium-header__date"><span aria-hidden="true" />{fechaActual}</div>
+            <button type="button" onClick={() => navigate("/modulos")} className="molsan-premium-header__secondary-action">Ir a módulos</button>
+            <button type="button" onClick={cargarDashboard} disabled={loading} className="molsan-premium-header__primary-action">{loading ? "Actualizando…" : "Actualizar datos"}</button>
+          </>
+        }
+      />
 
       {/* ERRORES DE CARGA */}
       {error && (
