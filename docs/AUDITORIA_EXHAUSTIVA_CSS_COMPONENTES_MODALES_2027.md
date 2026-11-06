@@ -662,3 +662,11 @@ Comprobación estática posterior:
 - Commit: `2136abf3290513eb327ca7fcd44f9bd9ea8592a7`.
 
 La comprobación estática no sustituye el build ni la inspección visual autenticada en Preview. Sigue pendiente revisar estos KPI en escritorio, tablet y móvil, junto con los modales de los módulos afectados.
+
+## 27. ApoderaGest — consolidación de KPI y cascada responsive (6 de noviembre de 2026)
+
+- Retiradas dos declaraciones anteriores de `.ag-kpi` que quedaban completamente sobrescritas por la regla específica final del portal.
+- La superficie visual (borde, franja superior, fondo, relieve y hover) continúa siendo propiedad de `MolsanCanonicalVisual2027.css`; `ApoderaGest.css` conserva únicamente la estructura y las dimensiones propias de sus KPI.
+- Corregida la cascada: la regla base final anulaba las alturas responsive declaradas antes. Se restablecen 138 px hasta 760 px y 126 px hasta 480 px, con la regla estrecha aplicada después de la general.
+- Verificación estática posterior: 281 llaves de apertura y 281 de cierre; las declaraciones estructurales de KPI permanecen y no se alteran selectores de impresión, formularios ni modales.
+- Pendiente: build/CI y comprobación visual autenticada en Preview, especialmente en 760 px y 480 px.
