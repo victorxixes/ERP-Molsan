@@ -1114,7 +1114,7 @@ export default function OficinasLiquidadoras() {
         className="herramientas-subpage-header"
         actions={<>
           <button type="button" onClick={abrirImportacion} className="molsan-btn molsan-btn--secondary inline-flex items-center gap-2"><Icono name="database" className="w-4 h-4" />Importar Excel</button>
-          <button type="button" onClick={abrirNueva} className="molsan-btn molsan-btn--primary inline-flex items-center gap-2"><span className="text-lg leading-none">+</span>Nueva oficina</button>
+          <button type="button" onClick={abrirNueva} className="molsan-btn molsan-btn--primary inline-flex items-center gap-2"><MolsanIcon name="plus" size={15} tone="inherit" bare />Nueva oficina</button>
         </>}
       />
 
