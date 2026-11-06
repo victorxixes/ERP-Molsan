@@ -2412,8 +2412,6 @@ export default function ExpedientesListado() {
         text-[var(--erp-text)]
 
         space-y-6
-
-        animate-fade-in
       "
       aria-busy={loading}
     >
