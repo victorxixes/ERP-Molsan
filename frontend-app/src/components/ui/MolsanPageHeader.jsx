@@ -6,7 +6,7 @@ export default function MolsanPageHeader({ mark = "M", eyebrow = "MOLSAN ERP · 
     <header className={`molsan-premium-header ${className}`.trim()}>
       <div className="molsan-premium-header__identity">
         <span className="molsan-premium-header__mark" aria-hidden="true">
-          <MolsanIcon name={{ AG: "user", EG: "clipboard", NG: "building", CG: "chart", CTN: "building", EXP: "file", SEC: "shield", ACC: "clipboard", BANK: "building" }[mark] || "file"} size={27} />
+          <MolsanIcon name={{ AG: "user", EG: "clipboard", NG: "building", CG: "chart", CTN: "building", EXP: "file", SEC: "shield", ACC: "clipboard", BANK: "building", PANEL: "shield", MON: "monitor", MAE: "database", NOTIF: "bell", LOG: "file" }[mark] || "file"} size={27} />
         </span>
         <div className="molsan-premium-header__copy">
           <p className="molsan-premium-header__eyebrow">{eyebrow}</p>
