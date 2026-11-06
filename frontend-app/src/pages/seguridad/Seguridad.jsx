@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
 import MolsanStatCard from "../../components/ui/MolsanStatCard";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useEffect, useMemo } from "react";
@@ -116,25 +117,28 @@ export default function Seguridad() {
  </div>
  </section>
 
- <section aria-labelledby="seguridad-actividad-title" className="overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] shadow-sm">
- <div className="flex flex-col gap-1 border-b border-[var(--erp-border)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
- <div>
- <h2 id="seguridad-actividad-title" className="font-semibold text-[var(--erp-text)]">Actividad reciente</h2>
- <p className="mt-0.5 text-xs text-[var(--erp-text-soft)]">Últimos eventos disponibles en los datos de auditoría cargados.</p>
- </div>
+ <MolsanPremiumCard
+ as="section"
+ icon="activity"
+ title="Actividad reciente"
+ description="Últimos eventos disponibles en los datos de auditoría cargados."
+ className="seguridad-actividad-card"
+ aria-label="Actividad reciente"
+ >
+ <div className="flex justify-end">
  <Link to="/auditoria" className="text-sm font-medium text-[var(--erp-primary)] hover:underline">Ver auditoría →</Link>
  </div>
  {actividadReciente.length === 0 ? (
- <p className="px-5 py-8 text-center text-sm text-[var(--erp-text-soft)]">No hay eventos de auditoría disponibles para mostrar.</p>
+ <p className="px-2 py-6 text-center text-sm text-[var(--erp-text-soft)]">No hay eventos de auditoría disponibles para mostrar.</p>
  ) : (
- <ul className="divide-y divide-[var(--erp-border)]">
+ <ul className="space-y-3">
  {actividadReciente.map((item, index) => {
  const usuario = texto(item?.usuario || item?.empleado || item?.nombre_usuario, "Sistema");
  const accion = texto(item?.accion || item?.evento, "Actividad");
  const detalle = texto(item?.descripcion || item?.detalle || item?.modulo, "Sin descripción");
  const fecha = texto(item?.fecha || item?.created_at, "Fecha no disponible");
  return (
- <li key={item?.id ?? `auditoria-${index}`} className="flex items-start gap-3 px-5 py-3.5">
+ <li key={item?.id ?? `auditoria-${index}`} className="flex items-start gap-3 px-2 py-2">
  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]">
  <MolsanIcon name="clipboard" size={17} />
  </span>
@@ -148,18 +152,19 @@ export default function Seguridad() {
  })}
  </ul>
  )}
- </section>
+ </MolsanPremiumCard>
 
- <section className="flex flex-col gap-3 rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-bg)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
- <div className="flex items-start gap-3">
- <MolsanIcon name="shield" size={21} tone="ocean" />
- <div>
- <p className="text-sm font-medium text-[var(--erp-text)]">Supervisión técnica</p>
- <p className="mt-0.5 text-xs text-[var(--erp-text-soft)]">{logsList.length} registros técnicos cargados. Consulta los logs para revisar errores y advertencias.</p>
- </div>
- </div>
+ <MolsanPremiumCard
+ as="section"
+ icon="shield"
+ title="Supervisión técnica"
+ description={`${logsList.length} registros técnicos cargados. Consulta los logs para revisar errores y advertencias.`}
+ className="seguridad-supervision-card"
+ >
+ <div className="flex justify-end">
  <Link to="/seguridad/logs" className="shrink-0 text-sm font-medium text-[var(--erp-primary)] hover:underline">Ver logs técnicos →</Link>
- </section>
+ </div>
+ </MolsanPremiumCard>
  </div>
  );
 }
