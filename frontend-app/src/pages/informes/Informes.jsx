@@ -5,6 +5,7 @@ import { API_BASE } from "../../api/config";
 import Chart from "chart.js/auto";
 import SelectSJ from "../../components/ui/SelectSJ";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 const MESES = [
   { value: 1, label: "Enero" },
@@ -3713,19 +3714,20 @@ export default function Informes() {
       {!claveApartado ? (
         <nav aria-label="Apartados de informes" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {APARTADOS_INFORMES.map((apartado) => (
-            <button
+            <MolsanPremiumCard
               key={apartado.key}
+              as="button"
               type="button"
+              icon={apartado.icono}
+              title={apartado.titulo}
+              description={apartado.descripcion}
+              className="informes-entry-card group"
               onClick={() => navigate(`/informes/${apartado.key}`)}
-              className="group flex min-h-[150px] items-start gap-4 rounded-2xl border border-white/80 bg-white/75 p-5 text-left shadow-[0_8px_25px_rgba(55,85,120,0.07)] backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-blue-300 hover:shadow-[0_14px_35px_rgba(55,85,120,0.13)] focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 transition group-hover:bg-blue-100"><MolsanIcon name={apartado.icono} size={28} tone="ocean" /></span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-base font-bold text-slate-800">{apartado.titulo}</span>
-                <span className="mt-2 block text-sm leading-relaxed text-slate-500">{apartado.descripcion}</span>
-                <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-blue-700">Abrir informe <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span></span>
+              <span className="inline-flex items-center gap-2 text-sm font-bold text-blue-700">
+                Abrir informe <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
               </span>
-            </button>
+            </MolsanPremiumCard>
           ))}
         </nav>
       ) : apartadoSeleccionado ? (
