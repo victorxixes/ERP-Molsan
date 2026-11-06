@@ -2438,7 +2438,7 @@ export default function ExpedientesListado() {
           title="Expedientes"
           description="Consulta, seguimiento y control de la tramitación de expedientes."
           className="expedientes-page__header"
-          actions={<span className="expedientes-page__header-note">Gestión y seguimiento</span>}
+          actions={<><span className="expedientes-page__header-note">Gestión y seguimiento</span><Link to="/expedientes-demo-glass-luxe" className="molsan-btn molsan-btn--secondary">Ver ficha de demostración</Link></>}
         />
 
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-12">
