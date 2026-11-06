@@ -564,3 +564,34 @@ Se revisaron las condiciones de apertura, refs y cierres en:
 - `TiposExpediente.jsx`: diálogo conectado a `mostrarModal` y `tipoDialogRef`.
 
 En la inspección estática no se detectó desacoplamiento entre el estado que controla cada diálogo y su render. No se han modificado estos archivos; quedan pendientes las pruebas de interacción y responsive en Preview.
+
+
+## 22. Segunda pasada focalizada: Catálogos, EncargaGest y NotarGest — 6 de noviembre de 2026
+
+### Catálogos y fichas maestras
+
+Se inspeccionó `CatalogosMaestrosPremium.css` junto con `MolsanCardsPremium2027.css`. No se encontraron bloques vacíos ni reglas base duplicadas que pudieran retirarse con seguridad. Las dos repeticiones de selectores de tabla/diálogo en `CatalogosMaestrosPremium.css` son aditivas y responsive: la base establece estructura y el media query añade scroll horizontal/ancho máximo. Las repeticiones de identidad y acciones en `MolsanCardsPremium2027.css` son overrides intencionados a ≤760 px para apilar cabecera y botones. Se conservan.
+
+### EncargaGest
+
+Se retiraron un selector vacío `.encargagest .eg-panel-head {}` y una redefinición de `min-width:0` en `.encargagest .eg-main` que ya estaba en la regla base. Se revisó la capa final de estilos exclusivos trasladados: las coincidencias restantes afectan al modal de perfil, breakpoints de 600/760 px, superficie de paneles, cabecera y overlays; no se borran en bloque porque parte de ellas son overrides con distinta especificidad o corresponden a la ficha de perfil y al formulario principal, que son diálogos distintos.
+
+Commit: `abcd2b2`.
+
+### NotarGest
+
+Se consolidaron las reglas duplicadas de las tarjetas KPI y las fichas del directorio por notaría:
+- `.ng-admin-notarias .ng-admin-kpi-button`: ancho, apariencia y altura se integran en la definición principal; se elimina la redefinición repetida.
+- `.ng-admin-notarias .ng-admin-kpi-button > strong`: el margen inferior se integra en una sola regla.
+- `.ng-admin-notaria-card`: superficie, borde, radio y sombra se integran con su layout original.
+- `.ng-admin-notaria-icono`: se integra la dimensión final de 54 px y su acabado en una sola definición.
+
+Se mantienen los overrides de responsive (incluido el KPI a 150 px en móvil), porque cambian deliberadamente el tamaño y la distribución. No se modificó JSX, selección de notaría, filtros ni navegación.
+
+Commits: `9a5a9a0` y `256fa92`.
+
+### Resultado de esta pasada
+
+- No quedan selectores vacíos en estas cuatro hojas inspeccionadas (`CatalogosMaestrosPremium.css`, `MolsanCardsPremium2027.css`, `EncargaGest.css` y `NotarGest.css`).
+- Las coincidencias de selectores que permanecen se han clasificado como responsive, variantes de modal/perfil o reglas con distinta especificidad; no se consideran duplicados eliminables sin pruebas de navegador.
+- **Validación pendiente:** ejecutar build sobre los commits de esta pasada y revisar visualmente Catálogos (incluidas fichas), EncargaGest y NotarGest en Preview, con escritorio/tablet/móvil y modales abiertos.
