@@ -467,15 +467,15 @@ export default function SeguridadModulos() {
                       ${
                         activo
                           ? `
-                            border-blue-200
-                            bg-blue-50
-                            hover:bg-blue-100/70
+                            border-[var(--molsan-border-strong)]
+                            bg-[var(--molsan-primary-soft)]
+                            hover:bg-[var(--molsan-primary-soft)]/70
                           `
                           : `
                             border-[var(--erp-border)]
                             bg-[var(--erp-bg)]
-                            hover:border-blue-200
-                            hover:bg-blue-50/40
+                            hover:border-[var(--molsan-border-strong)]
+                            hover:bg-[var(--molsan-primary-soft)]
                           `
                       }
                     `}
@@ -511,7 +511,7 @@ export default function SeguridadModulos() {
                           font-semibold
                           ${
                             activo
-                              ? "text-blue-800"
+                              ? "text-[var(--molsan-primary)]"
                               : "text-[var(--erp-text)]"
                           }
                         `}
