@@ -999,7 +999,7 @@ export default function ImportadorAbsis() {
                             "
                         >
 
-                            ⚠️ La importación terminó con{" "}
+                            <MolsanIcon name="alert" size={17} tone="amber" /> La importación terminó con{" "}
 
                             <strong>
                                 {resultado.errores}
