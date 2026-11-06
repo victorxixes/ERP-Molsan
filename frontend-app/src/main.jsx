@@ -17,13 +17,10 @@ import "./css/index.css";
 import "./css/molsan-tokens.css";
 // Capa opt-in consolidada: estructura, tablas, controles y componentes.
 import "./css/molsan-design-system.css";
-import "./css/molsan-tables.css";
-import "./css/molsan-controls.css";
 // Componentes y módulos funcionales.
 import App from "./App";
 // Estilos transversales ligeros de compatibilidad Fase 3, sin hoja monolítica de overrides.
 import "./css/MolsanFase3.css";
-import "./css/MolsanFase3Portales.css";
 // Estilos de módulos y páginas antes de las capas globales compartidas.
 import "./css/molsan-module-styles.css";
 // Capa de armonización general.
