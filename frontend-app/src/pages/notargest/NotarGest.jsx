@@ -727,7 +727,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
               mark="NG"
               title="NotarGest"
               description="Visión global del trabajo notarial y detalle operativo de cada notaría habilitada."
-              className="ng-hero ng-hero-notargest ng-admin-notarias-hero"
+              className="ng-hero-notargest ng-admin-notarias-hero"
             />
             {cargandoSelectorNotaria && <p className="ng-mensaje">Calculando pendientes de las notarías…</p>}
             {!cargandoSelectorNotaria && notariasSeleccionables.length === 0 && <div className="ng-admin-vacio"><strong>No hay notarías habilitadas</strong><p>Activa el acceso NotarGest desde la ficha CTN de cada notaría.</p></div>}
@@ -832,7 +832,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       mark="NG"
       title="NotarGest"
       description="Centro de gestión notarial, firmas y seguimiento registral."
-      className="ng-hero ng-hero-notargest"
+      className="ng-hero-notargest"
       actions={
         <>
           {vista !== "inicio" && <button type="button" onClick={volverVistaAnterior} className="ng-boton-secundario"><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> {vista === "detalle" ? "Volver a la vista anterior" : "Volver al inicio"}</button>}
