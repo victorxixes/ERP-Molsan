@@ -1097,3 +1097,12 @@ Commits: 29f4a02 y b8c2b0f.
 ### 19.5. Precedencia del fondo blanco
 
 Se ha elevado el selector del lienzo de páginas a `:is(...)` para que su especificidad iguale la de las antiguas reglas `.erp-page`/portales con `!important`. Así el fondo blanco canónico no queda anulado por el tema anterior. Commit: 3f8dbb1.
+
+
+## 20. Retirada de animaciones de entrada heredadas — 6 de noviembre de 2026
+
+Se han retirado las clases de animación genérica `animate-fade-in` de los contenedores de página y vistas de contenido identificados en App, CTN, Agenda (raíz y vistas día/semana/mes), Empleados, Panel Técnico, Logs avanzados, Seguridad, Importador ABSIS y otras pantallas revisadas. También se retiró de tarjetas/elementos internos del Importador ABSIS y Notificaciones donde aparecía como animación de entrada decorativa.
+
+Se conservan las transiciones propias de interacción (hover/focus), la animación de carga funcional de NotarGest y las entradas breves de componentes de interacción como desplegables y modales, pendientes de validación individual. No se modifica la preferencia `prefers-reduced-motion`.
+
+Commits de esta tanda: c4ca98f, a2fa2d7, f102d44, 290b243, 657cf18, b4f4c7d.
