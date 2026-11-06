@@ -177,7 +177,7 @@
 .ng-admin-notaria-card:hover { transform: translateY(-2px); border-color: #B9D7E6; box-shadow: 0 12px 24px rgba(6,50,82,.08); }
 .ng-admin-notaria-activa { border-color: var(--ng-primary,#064675); background: #F2F7FB; }
 .ng-admin-notaria-identidad { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.ng-admin-notaria-icono { display: grid; flex: 0 0 42px; place-items: center; width: 42px; height: 42px; color: var(--ng-primary); border: 1px solid var(--ng-border); border-radius: 11px; background: var(--ng-soft); }
+
 .ng-admin-notaria-titulo { min-width: 0; color: var(--ng-primary); font-size: 13px; font-weight: 800; overflow-wrap: anywhere; }
 .ng-admin-metricas { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
 .ng-admin-metricas > div { padding: 9px; border: 1px solid var(--ng-border); border-radius: 10px; background: #F8FBFD; }
