@@ -148,14 +148,10 @@ export default function ImportarCTN() {
                 px-6 py-3
                 text-sm font-semibold
                 text-white
-                bg-gradient-to-r
-                from-blue-600
-                to-blue-500
-                shadow-[0_10px_25px_rgba(37,99,235,0.20)]
-                transition-all
-                hover:from-blue-500
-                hover:to-blue-400
-                active:scale-[0.98]
+                bg-[#064675]
+                shadow-sm
+                transition-colors duration-150
+                hover:bg-[#04375B]
                 disabled:opacity-40
                 disabled:cursor-not-allowed
               "
