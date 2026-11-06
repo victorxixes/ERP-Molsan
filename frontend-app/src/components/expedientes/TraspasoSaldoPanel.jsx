@@ -181,7 +181,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
           <section role="dialog" aria-modal="true" aria-labelledby="modal-traspaso-saldo-titulo" className="my-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-5">
             <header className="molsan-modal-header mb-4 flex flex-wrap items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
-                <MolsanIcon name="arrow-left-right" size={24} tone="ocean" />
+                <MolsanIcon name="arrowUpDown" size={24} tone="ocean" />
                 <div>
                   <h3 id="modal-traspaso-saldo-titulo" className="text-sm font-extrabold">Control de traspasos de saldo</h3>
                   <p className="mt-1 max-w-3xl text-xs leading-5">Solo para expedientes relacionados con «Cancelación con provisión». Permite agrupar varios orígenes en un único receptor, verificar el importe manualmente y registrar el email al cliente.</p>
