@@ -5,11 +5,7 @@
   --pf-line: #dbe3ef;
   color: var(--pf-ink);
 }
-.provisiones-fondos-page > header {
-  border-color: #dbe3ef;
-  border-radius: 18px;
-  box-shadow: 0 6px 22px rgb(23 43 77 / 5%);
-}
+
 .provisiones-fondos-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
   min-width: 0;
   max-width: 100%;
