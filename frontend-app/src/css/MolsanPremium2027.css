@@ -1366,31 +1366,6 @@ a[aria-current="page"] .molsan-nav-icon-3d {
   box-shadow: 0 6px 18px rgba(6,50,82,.045) !important;
 }
 
-/* Utilidades, Catálogos y fichas: bloquear animación de entrada en la raíz,
-   cabecera, pseudoelementos y descendientes de cabecera. */
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium).animate-fadeIn,
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) header,
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) [data-page-header="true"],
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) .molsan-page-header {
-  animation: none !important;
-  transition: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  will-change: auto !important;
-}
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) header::before,
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) header::after,
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) .molsan-page-header::before,
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) .molsan-page-header::after {
-  animation: none !important;
-  transition: none !important;
-  opacity: 1 !important;
-}
-
-/* Las subpáginas de Catálogos y Utilidades heredan ahora la geometría
-   de cabecera común; la estabilización anti-parpadeo se conserva arriba. */
-
 /* Navegación contextual común: destino explícito, bajo el título de página. */
 .molsan-page-back-link {
   display: inline-flex;
@@ -1417,25 +1392,6 @@ a[aria-current="page"] .molsan-nav-icon-3d {
 .molsan-page-back-link:focus-visible {
   outline: 2px solid #064675;
   outline-offset: 2px;
-}
-
-/* Los pictogramas Molsan dentro de la marca de cabecera heredan el blanco
-   corporativo y no añaden una segunda placa sobre el recuadro del header. */
-.molsan-page-header__mark .molsan-icon-3d {
-  display: inline-grid;
-  width: 22px !important;
-  height: 22px !important;
-  color: #FFFFFF !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-.molsan-page-header__mark .molsan-icon-3d svg {
-  width: 100% !important;
-  height: 100% !important;
-  color: #FFFFFF !important;
-  filter: none !important;
 }
 
 /* Las acciones de cabecera conservan el color semántico de MolsanButton.
