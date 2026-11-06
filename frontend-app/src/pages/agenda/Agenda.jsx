@@ -13,8 +13,6 @@ import AgendaToast from "../../components/agenda/AgendaToast.jsx";
 import SelectSJ from "../../components/ui/SelectSJ";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
-import "./Agenda.css";
-
 const MESES = [
   "Enero",
   "Febrero",
