@@ -63,9 +63,6 @@ export default function Cancelagest() {
 
   useEffect(() => { cargar(); }, [cargar]);
 
-  const fechaActual = useMemo(() => new Intl.DateTimeFormat("es-ES", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric",
-  }).format(new Date()), []);
 
   const firmasMensuales = (datos?.firmas_mensuales || []).slice(-12).map((x) => ({ ...x, mesLabel: fmtMes(x.mes) }));
   const categorias = datos?.categorias_firma || [];
@@ -82,14 +79,14 @@ export default function Cancelagest() {
     .filter((modulo) => modulo && puedeVerModulo(modulo.key));
 
   return <main className="molsan-page-stack cg-page">
-      <header className="cg-hero molsan-page-header">
-        <div className="cg-hero-identidad">
-          <div className="cg-logo molsan-page-header__mark"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
-          <div><div className="cg-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div><h1>CancelaGest</h1><p className="molsan-page-header__description">Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral.</p></div>
-        </div>
-        <div className="cg-hero-acciones">
-          <div className="cg-fecha">{fechaActual}</div>
-          
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="file-check" size={22} tone="ocean" /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">CancelaGest</h1>
+            <p className="molsan-page-header__description">Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral.</p>
+          </div>
         </div>
       </header>
 
