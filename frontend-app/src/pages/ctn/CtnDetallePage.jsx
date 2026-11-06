@@ -250,7 +250,7 @@ export default function CtnDetallePage() {
 
       {modalAbierto && (
         <div className="ctn-detalle-overlay" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
-          <div className="ctn-detalle-modal" role="dialog" aria-modal="true" aria-label={`Firmas realizadas: ${modalidadTexto}`}>
+          <div className="modal-sj ctn-detalle-modal" role="dialog" aria-modal="true" aria-label={`Firmas realizadas: ${modalidadTexto}`}>
             <div className="ctn-detalle-modal-header">
               <div><h2 className="ctn-detalle-modal-title">Firmas realizadas · {modalidadTexto}</h2><p className="ctn-detalle-muted ctn-detalle-modal-subtitle">{nombreNotario(notaria)}</p></div>
               <button type="button" onClick={() => setModalAbierto(false)}>Cerrar</button>
