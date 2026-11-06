@@ -80,7 +80,7 @@ function Chip({
       "border-[var(--erp-border)] bg-[var(--erp-bg)] text-[var(--erp-text-soft)]",
 
     primary:
-      "border-blue-200 bg-blue-50 text-blue-700",
+      "border-[var(--molsan-border)] bg-[var(--molsan-primary-soft)] text-[var(--molsan-primary)]",
 
     success:
       "border-emerald-200 bg-emerald-50 text-emerald-700",
