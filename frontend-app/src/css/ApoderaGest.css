@@ -1891,9 +1891,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   .apoderagest.ag-grupo-modal-overlay{padding:8px}
   .apoderagest .ag-grupo-modal-cabecera{gap:10px}
 }
-@media(prefers-reduced-motion:reduce){
-  .apoderagest .ag-kpi-interactiva:hover{transform:none}
-}
 
 
 /* Iconografía visible y tridimensional · MOLSAN PREMIUM 2027 */
