@@ -5,18 +5,6 @@
    - botones: acciones con icono en lenguaje de accesos; secundarios discretos y coherentes
    - márgenes idénticos en páginas y subpáginas
 */
-:root {
-  --molsan-canon-header-start: #CFE3EF;
-  --molsan-canon-header-mid: #BED9E8;
-  --molsan-canon-header-end: #D8E9F2;
-  --molsan-canon-header-text: #064675;
-  --molsan-canon-header-muted: #496B82;
-  --molsan-canon-gutter: 28px;
-  --molsan-canon-header-height: 82px;
-  --molsan-canon-card-radius: 20px;
-  --molsan-canon-control-radius: 11px;
-}
-
 /* Geometría y posición iguales al Dashboard; tono Glass intermedio y legible. */
 :where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
 :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero) {
