@@ -1139,3 +1139,13 @@ Se amplió la lista de raíces blancas para incluir fichas maestras, subpáginas
 Se han fusionado las dos definiciones base duplicadas de `.molsan-btn` en una sola regla y se han integrado sus variantes semánticas (principal, secundaria, éxito, aviso, peligro, Excel y ghost). Se conserva el spinner de carga; se elimina el movimiento independiente del icono del botón y se deja un hover discreto de 1 px, con soporte de `prefers-reduced-motion`. Los botones ya no dependen de dos bloques de estilos superpuestos.
 
 Commit: 37a0042. Pendiente build del nuevo HEAD y revisión visual de botones primarios/secundarios y estados deshabilitados en módulos y portales.
+
+
+## 23. Seguridad — ficha individual de empleado
+
+- Los cuatro indicadores de la ficha pasan a MolsanStatCard.
+- Las acciones de visibilidad/bloqueo se trasladan a la zona derecha de MolsanPageHeader junto a los chips de estado/rol; el mensaje de resultado queda como estado de página, no como tarjeta independiente.
+- El bloque de datos de empleado pasa a MolsanPremiumCard y se eliminan las subtarjetas anidadas con borde y fondo.
+- Se preservan las llamadas, condiciones de permisos, acciones de bloqueo/desbloqueo y el mensaje de guardado.
+
+Commit: 35851f0. Pendiente build y revisión visual de la cabecera con acciones en anchuras móvil/tablet.
