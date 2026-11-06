@@ -2505,7 +2505,7 @@ function SelectFiltroInforme({ label, value, onChange, children }) {
 
 function InformeKpi({ titulo, valor, subtitulo, icono }) {
   return (
-    <div className="rounded-2xl border border-white/80 bg-white/75 p-4 shadow-[0_8px_25px_rgba(55,85,120,0.07)] backdrop-blur-xl">
+    <div className="erp-card flex min-w-0 items-stretch p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{titulo}</div>
@@ -2689,7 +2689,7 @@ function InformeFirmas() {
   return (
     <section className="informes-report-content space-y-5">
 <form onSubmit={aplicar} className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl md:p-6">
-        <div className="mb-4 flex items-center justify-between gap-3"><div><h3 className="font-bold text-slate-800">Filtros del informe</h3><p className="mt-1 text-xs text-slate-500">El periodo se aplica a la fecha real de firma.</p></div><button type="button" onClick={limpiar} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Restablecer</button></div>
+        <div className="mb-4 flex items-center justify-between gap-3"><div><h3 className="font-bold">Filtros del informe</h3><p className="mt-1 text-xs">El periodo se aplica a la fecha real de firma.</p></div><button type="button" onClick={limpiar} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Restablecer</button></div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <CampoFiltroInforme label="Fecha firma desde" type="date" value={filtros.fecha_desde} onChange={(v) => cambiar("fecha_desde", v)} />
           <CampoFiltroInforme label="Fecha firma hasta" type="date" value={filtros.fecha_hasta} onChange={(v) => cambiar("fecha_hasta", v)} />
@@ -2722,8 +2722,8 @@ function InformeFirmas() {
         <InformeKpi icono="⏱️" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
       </div>
 
-      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
-        <div className="erp-card-header flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Resumen por tipo de operación</h3><p className="mt-1 text-xs text-slate-500">Conteo de firmas reales y días medios cuando existen fecha de envío y de firma.</p></div><span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{periodo}</span></div>
+      <section className="erp-card min-w-0 p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><div><h3 className="font-bold text-slate-800">Resumen por tipo de operación</h3><p className="mt-1 text-xs text-slate-500">Conteo de firmas reales y días medios cuando existen fecha de envío y de firma.</p></div><span className="rounded-lg border border-[#D8E4EC] bg-[#F2F7FB] px-3 py-1.5 text-xs font-semibold text-[#064675]">{periodo}</span></div>
         {loading ? <PanelEstadoInforme loading /> : datos.por_tipo_operacion.length === 0 ? <PanelEstadoInforme vacio /> : <MolsanDataTable
           rows={datos.por_tipo_operacion}
           pagination
