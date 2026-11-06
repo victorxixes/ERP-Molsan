@@ -28,7 +28,7 @@ export default function PortalLogin({
   const idPassword = variant + "-password";
 
   return (
-    <div className="portal-login relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8">
+    <div className="portal-login-premium relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8">
       <div className="relative z-10 w-full max-w-[430px]">
         <div className="relative w-full p-7 sm:p-9">
 
