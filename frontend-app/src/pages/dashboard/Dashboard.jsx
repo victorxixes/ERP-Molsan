@@ -276,8 +276,8 @@ export default function Dashboard() {
         actions={
           <>
             <div className="molsan-premium-header__date"><span aria-hidden="true" />{fechaActual}</div>
-            <button type="button" onClick={() => navigate("/modulos")} className="molsan-premium-header__secondary-action">Ir a módulos</button>
-            <button type="button" onClick={cargarDashboard} disabled={loading} className="molsan-premium-header__primary-action">{loading ? "Actualizando…" : "Actualizar datos"}</button>
+            <button type="button" onClick={() => navigate("/modulos")} className="molsan-btn molsan-btn--secondary">Ir a módulos</button>
+            <button type="button" onClick={cargarDashboard} disabled={loading} className="molsan-btn molsan-btn--primary">{loading ? "Actualizando…" : "Actualizar datos"}</button>
           </>
         }
       />
