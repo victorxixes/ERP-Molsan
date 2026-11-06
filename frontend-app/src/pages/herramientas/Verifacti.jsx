@@ -122,7 +122,7 @@ export default function Verifacti() {
                   ["plus", "Registrar factura", "Preparar los campos de una nueva factura.", "crear"],
                   ["refresh", "Subsanaciones y anulaciones", "Preparar una operación sobre un registro existente.", "operaciones"],
                   ["download", "XML y exportaciones", "Consultar XML de una factura o preparar una exportación.", "xml"],
-                ].map(([icon, title, desc, id]) => <button key={id} onClick={() => cambiarSeccion(id)} className="flex items-start gap-3 rounded-2xl border border-[var(--molsan-border)] p-4 text-left transition hover:border-[var(--molsan-border-strong)] hover:bg-[var(--molsan-primary-soft)]/40">
+                ].map(([icon, title, desc, id]) => <button key={id} onClick={() => cambiarSeccion(id)} className="flex items-start gap-3 rounded-2xl border border-[var(--molsan-border)] p-4 text-left transition hover:border-[var(--molsan-border-strong)] hover:bg-[var(--molsan-primary-soft)]">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--molsan-primary-soft)]"><MolsanIcon name={icon} size={22} tone="ocean" /></span><span><strong className="block text-sm text-[var(--molsan-primary)]">{title}</strong><span className="mt-1 block text-sm leading-5 text-[var(--molsan-text-secondary)]">{desc}</span></span><span className="ml-auto text-slate-300"><MolsanIcon name="arrowRight" size={16} tone="slate" bare /></span>
                 </button>)}
               </div>
