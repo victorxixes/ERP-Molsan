@@ -320,3 +320,17 @@
   background: linear-gradient(90deg, #064675 0%, #2696A5 70%, #8BC8D8 100%) !important;
   pointer-events: none !important;
 }
+
+/* Accesibilidad: reducir movimiento solo cuando el sistema lo solicita. */
+@media (prefers-reduced-motion: reduce) {
+  .apoderagest *, .encargagest *, .notargest.ng-content *, .ng-admin-notarias *,
+  .apoderagest *::before, .apoderagest *::after,
+  .encargagest *::before, .encargagest *::after,
+  .notargest.ng-content *::before, .notargest.ng-content *::after,
+  .ng-admin-notarias *::before, .ng-admin-notarias *::after {
+    scroll-behavior: auto;
+    transition-duration: .01ms;
+    animation-duration: .01ms;
+    animation-iteration-count: 1;
+  }
+}
