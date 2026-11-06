@@ -302,7 +302,7 @@ body :where(
 :where(.molsan-btn--secondary,.molsan-btn--ghost,.eg-secondary,.molsan-page-back-button) {
   color: #064675 !important;
   border: 1px solid #D0E0EA !important;
-  background: linear-gradient(145deg,#FFFFFF,#F2F7FB) !important;
+  background: #FFFFFF !important;
   box-shadow: 0 2px 7px rgba(6,70,117,.055) !important;
 }
 :where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
@@ -317,7 +317,7 @@ body :where(
 :where(.molsan-btn--primary,.erp-btn-primary,.eg-button-primary,.cg-button-primary) {
   color: #FFFFFF !important;
   border: 1px solid #064675 !important;
-  background: linear-gradient(135deg,#075487,#064675) !important;
+  background: #064675 !important;
   box-shadow: 0 4px 12px rgba(6,70,117,.16) !important;
 }
 :where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
@@ -329,12 +329,12 @@ body :where(
 /* Variantes semánticas de acción en cabecera, centralizadas en la capa canónica. */
 .molsan-page-header .molsan-btn--success {
   color: #176B4B !important;
-  background: linear-gradient(145deg,#F3FBF6,#E6F4EB) !important;
+  background: #EAF5EF !important;
   border-color: #BFE2CC !important;
 }
 .molsan-page-header .molsan-btn--warning {
   color: #8A620D !important;
-  background: linear-gradient(145deg,#FFFCF2,#FFF4D8) !important;
+  background: #FFF8E6 !important;
   border-color: #EEDCA8 !important;
 }
 .molsan-page-header .molsan-btn--danger {
@@ -344,7 +344,7 @@ body :where(
 }
 .molsan-page-header .molsan-btn--excel {
   color: #FFFFFF !important;
-  background: linear-gradient(135deg,#16845B,#11734E) !important;
+  background: #16845B !important;
   border-color: #11734E !important;
 }
 .molsan-page-header .molsan-btn--success:hover:not(:disabled) {
@@ -363,7 +363,7 @@ body :where(
 }
 .molsan-page-header .molsan-btn--excel:hover:not(:disabled) {
   color: #FFFFFF !important;
-  background: linear-gradient(135deg,#11734E,#0D6242) !important;
+  background: #11734E !important;
   border-color: #0D6242 !important;
 }
 
@@ -415,7 +415,7 @@ body :where(
 :where(.molsan-page-header__icon,.erp-page-header__icon) {
   color: #064675 !important;
   opacity: 1 !important;
-  background: linear-gradient(145deg,#FFFFFF 0%,#E2F0F7 100%) !important;
+  background: #F2F7FB !important;
   border-color: #AFCFDF !important;
 }
 :where(.molsan-page-header__mark,.molsan-page-header__icon,.erp-page-header__icon) svg {
