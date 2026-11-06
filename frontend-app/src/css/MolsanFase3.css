@@ -155,9 +155,9 @@ body :where(
 ) {
   color: var(--molsan-text, #18364b);
   background-color: #fff;
-  border-color: var(--molsan-border, #d8e4ec);
-  border-radius: var(--molsan-radius-modal, 16px);
-  box-shadow: var(--molsan-shadow-modal, 0 18px 48px rgba(6, 40, 65, .18));
+  border-color: var(--molsan-card-border, #C5D8E5);
+  border-radius: var(--molsan-radius-dialog, 22px);
+  box-shadow: 0 22px 54px rgba(6,70,117,.18);
   box-sizing: border-box;
   min-width: 0;
   max-width: calc(100vw - 32px);
@@ -179,7 +179,7 @@ body :where(
     max-width: calc(100vw - 20px);
     max-height: calc(100dvh - 20px);
     overflow: auto;
-    border-radius: 14px;
+    border-radius: 18px;
   }
 }
 
