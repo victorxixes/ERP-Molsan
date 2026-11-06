@@ -413,3 +413,16 @@ La capa Canonical reduce sus `!important` de 115 a 110 en esta pasada. El result
 - Render Preview todavía necesita el despliegue de este commit; el último deploy previo no contiene esta consolidación.
 - La inspección visual interactiva y las pruebas de foco/hover en navegador siguen pendientes.
 
+
+
+## 21. Validación completa del commit desplegado en Preview — 6 de noviembre de 2026
+
+El commit de código `cdd387b` (consolidación de la capa canónica de tarjetas e iconos) tiene las tres comprobaciones automatizadas en **success**:
+
+- `MOLSAN frontend premium build` #699: success.
+- `Validar Fichaje Molsan` #3289: success.
+- `Frontend dependency security audit` #254: success.
+
+Render confirma el deploy `dep-dbmvkg6gekts73ej1ktg` en estado `live`, con el commit `cdd387b`. El HEAD del PR es `7a7c71a`, un commit posterior únicamente documental; por tanto, el código desplegado corresponde al último commit funcional de esta ronda. No se ha desplegado Producción ni la API.
+
+La URL de Preview responde como servicio desplegado según Render, pero la lectura web automatizada no puede acceder a la aplicación para una inspección visual autenticada. La validación visual de páginas, subpáginas, estados y modales sigue siendo manual y no se declara completada.
