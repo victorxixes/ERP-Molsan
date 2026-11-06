@@ -1,7 +1,6 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import "./Intranet.css";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 
