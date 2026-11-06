@@ -730,7 +730,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 .apoderagest .ag-titulo-seccion.ag-panel-resumen-heading p{ color:#617789; }
 .apoderagest .ag-panel,
 .apoderagest .ag-grid-kpi > *,
-.apoderagest .ag-grid-secundario > *,
+
 .apoderagest .ag-dashboard-inferior-grid > *{
   min-width: 0;
   border-color: var(--molsan-border, #D8E4EC);
