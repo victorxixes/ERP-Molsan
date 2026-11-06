@@ -2315,16 +2315,4 @@ color:#fff}
   box-shadow:0 5px 13px rgba(62,43,117,.10);
 }
 
-.apoderagest .ag-kpi::before {
 
-  content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  right: 18px;
-  left: 18px;
-  height: 3px;
-  border-radius: 0 0 6px 6px;
-  background: linear-gradient(90deg, #064675 0%, #2696A5 70%, #8BC8D8 100%);
-  pointer-events: none;
-}
