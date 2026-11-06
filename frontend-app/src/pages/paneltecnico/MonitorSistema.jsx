@@ -184,7 +184,7 @@ export default function MonitorSistema({ embedded = false } = {}) {
   // ============================================================
 
   return (
-    <div className={`monitor-sistema-premium panel-tecnico-submodulo-premium ${embedded ? "space-y-6" : "p-6 space-y-6"} animate-fade-in`}>
+    <div className={`monitor-sistema-premium panel-tecnico-submodulo-premium ${embedded ? "space-y-6" : "p-6 space-y-6"}`}>
 
       {!embedded && <MolsanPageHeader
         mark="MT"
