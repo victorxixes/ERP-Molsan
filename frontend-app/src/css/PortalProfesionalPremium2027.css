@@ -45,10 +45,10 @@
 /* Una misma cabecera compacta para los portales profesionales.
    El estilo de sus hijos queda acotado a estos portales: nunca debe alterar
    las cabeceras globales de Catálogos, Utilidades ni otras subpáginas. */
-.apoderagest>header.ag-hero.molsan-page-header,
-.encargagest>header.ag-hero.molsan-page-header,
-.notargest.ng-content>header.ng-hero.molsan-page-header,
-.ng-admin-notarias>header.ng-hero.molsan-page-header{
+.apoderagest > header.molsan-page-header,
+.encargagest > header.molsan-page-header,
+.notargest.ng-content > header.molsan-page-header,
+.ng-admin-notarias > header.molsan-page-header{
   position:relative;
   display:flex;
   align-items:center;
@@ -76,8 +76,8 @@
   filter:none;
   will-change:auto;
 }
-.apoderagest>header.ag-hero::after,.encargagest>header.ag-hero::after,
-.notargest.ng-content>header.ng-hero::after,.ng-admin-notarias>header.ng-hero::after{
+.apoderagest > header.molsan-page-header::after,.encargagest > header.molsan-page-header::after,
+.notargest.ng-content > header.molsan-page-header::after,.ng-admin-notarias > header.molsan-page-header::after{
   content:"";
   position:absolute;
   right:0;bottom:0;left:0;height:3px;
@@ -329,10 +329,10 @@
    ============================================================ */
 
 /* Misma altura, espaciado y jerarquía que la cabecera global Dashboard. */
-.apoderagest>header.ag-hero.molsan-page-header,
-.encargagest>header.ag-hero.molsan-page-header,
-.notargest.ng-content>header.ng-hero.molsan-page-header,
-.ng-admin-notarias>header.ng-hero.molsan-page-header {
+.apoderagest > header.molsan-page-header,
+.encargagest > header.molsan-page-header,
+.notargest.ng-content > header.molsan-page-header,
+.ng-admin-notarias > header.molsan-page-header {
   min-height: 60px !important;
   height: auto !important;
   max-height: none !important;
@@ -348,28 +348,28 @@
   will-change: auto !important;
 }
 
-.apoderagest>header.ag-hero .molsan-page-header__identity,
-.encargagest>header.ag-hero .molsan-page-header__identity,
-.notargest.ng-content>header.ng-hero .molsan-page-header__identity,
-.ng-admin-notarias>header.ng-hero .molsan-page-header__identity {
+.apoderagest > header.molsan-page-header .molsan-page-header__identity,
+.encargagest > header.molsan-page-header .molsan-page-header__identity,
+.notargest.ng-content > header.molsan-page-header .molsan-page-header__identity,
+.ng-admin-notarias > header.molsan-page-header .molsan-page-header__identity {
   flex: 1 1 auto !important;
   min-width: 0 !important;
   align-items: center !important;
 }
 
-.apoderagest>header.ag-hero .molsan-page-header__title,
-.encargagest>header.ag-hero .molsan-page-header__title,
-.notargest.ng-content>header.ng-hero .molsan-page-header__title,
-.ng-admin-notarias>header.ng-hero .molsan-page-header__title {
+.apoderagest > header.molsan-page-header .molsan-page-header__title,
+.encargagest > header.molsan-page-header .molsan-page-header__title,
+.notargest.ng-content > header.molsan-page-header .molsan-page-header__title,
+.ng-admin-notarias > header.molsan-page-header .molsan-page-header__title {
   font-size: clamp(19px, 1.8vw, 22px) !important;
   line-height: 1.2 !important;
   letter-spacing: -.035em !important;
 }
 
-.apoderagest>header.ag-hero .molsan-page-header__actions,
-.encargagest>header.ag-hero .molsan-page-header__actions,
-.notargest.ng-content>header.ng-hero .molsan-page-header__actions,
-.ng-admin-notarias>header.ng-hero .molsan-page-header__actions {
+.apoderagest > header.molsan-page-header .molsan-page-header__actions,
+.encargagest > header.molsan-page-header .molsan-page-header__actions,
+.notargest.ng-content > header.molsan-page-header .molsan-page-header__actions,
+.ng-admin-notarias > header.molsan-page-header .molsan-page-header__actions {
   flex: 0 0 auto !important;
   margin-left: auto !important;
   justify-content: flex-end !important;
@@ -468,10 +468,10 @@
 }
 
 @media(max-width:760px) {
-  .apoderagest>header.ag-hero.molsan-page-header,
-  .encargagest>header.ag-hero.molsan-page-header,
-  .notargest.ng-content>header.ng-hero.molsan-page-header,
-  .ng-admin-notarias>header.ng-hero.molsan-page-header {
+  .apoderagest > header.molsan-page-header,
+  .encargagest > header.molsan-page-header,
+  .notargest.ng-content > header.molsan-page-header,
+  .ng-admin-notarias > header.molsan-page-header {
     min-height: 60px !important;
     padding: 8px 12px !important;
   }
