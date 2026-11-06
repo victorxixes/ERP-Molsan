@@ -1,8 +1,6 @@
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useState, useCallback, useMemo } from "react";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
 import { useUtilidades } from "../../hooks/useUtilidades";
 
 /**
