@@ -3708,7 +3708,7 @@ export default function Informes() {
         title={apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}
         description={apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}
         className="informes-page-header"
-        actions={claveApartado ? <button type="button" onClick={() => navigate("/informes")} className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--erp-primary)] shadow-sm transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]">← Volver a Informes</button> : null}
+        actions={claveApartado ? <button type="button" onClick={() => navigate("/informes")} className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--erp-primary)] shadow-sm transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]"><MolsanIcon name="arrowLeft" size={15} tone="inherit" /> Volver a Informes</button> : null}
       />
 
       {!claveApartado ? (
@@ -3725,7 +3725,7 @@ export default function Informes() {
               onClick={() => navigate(`/informes/${apartado.key}`)}
             >
               <span className="inline-flex items-center gap-2 text-sm font-bold text-blue-700">
-                Abrir informe <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
+                Abrir informe <MolsanIcon name="arrowRight" size={16} tone="inherit" />
               </span>
             </MolsanPremiumCard>
           ))}
