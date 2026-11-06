@@ -981,3 +981,13 @@ La coincidencia de clases y orden de importación confirma que las reglas alcanz
 - Producción, API y base de datos no se han desplegado ni modificado.
 
 La validación visual autenticada de estas pantallas, sus estados responsive y las interacciones reales continúa pendiente; el estado LIVE acredita el despliegue/build, no sustituye esa inspección.
+
+## 58. Segunda comprobación de cabeceras en herramientas, catálogos y mensajería (6 de noviembre de 2026)
+
+Se ha vuelto a leer el JSX real de estas 20 pantallas/subpáginas: FirmasEmail, DatosMolsan, LecturaCopias, LecturaCancelaI, PPAD, CambiarGestorExpediente, Utilidades, TiposExpediente, ComplementosSaldo, AsignarExpedientesPromociones, ProcesoAbsis, CatalogoOficinas, ReasignarNotarioExpediente, CambiosActividadAbsis, CatalogoAbsis, Verifacti, MensajeriaMolsan, MensajeriaSolicitudes, CorrespondenciaTipificada y ReglasActividadesExpediente.
+
+- Las 20 instancian `MolsanPageHeader`; no se detecta en ellas la cabecera inline heredada basada en `rounded-[24px] bg-white/90 p-6` ni la franja Tailwind `from-blue-600 via-indigo-500 to-cyan-400`.
+- Catálogos utiliza ahora además las tarjetas `workspace-app-card` de Espacios de trabajo (ver sección 56); su cabecera sigue siendo `MolsanPageHeader`.
+- CatalogoOficinas y EntidadesBancarias conservan sus acciones funcionales en la cabecera; FirmasEmail conserva el retorno a Catálogos; Mensajería conserva su descripción y acciones/pestañas funcionales.
+- Esta comprobación es estática sobre JSX y no certifica renderizado, solapamientos reales, responsive ni navegación autenticada. No se eliminan hojas CSS locales solo por su nombre: las reglas de tablas, formularios, paginación, diálogos y estados de cada catálogo se preservan hasta demostrar que no tienen consumidor.
+- No se modifica lógica de negocio, endpoints, permisos ni almacenamiento.
