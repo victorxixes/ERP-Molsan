@@ -934,11 +934,9 @@
   .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
   .panel-tecnico-premium, .seguridad-premium-page,
   .herramientas-subpagina-premium, .catalogos-maestros-premium
-) :is(.erp-card, .erp-card-soft, .cg-kpi, .ag-kpi, .ng-contador, .eg-kpi,
+) :is(.erp-card-soft, .cg-kpi, .ag-kpi, .ng-contador, .eg-kpi,
      .stat-card, .kpi-card):is(a, button, [role="button"]):hover {
   transform: translateY(-5px);
-}
-  to { opacity: 1; transform: translateY(0); }
 }
 @media (prefers-reduced-motion: reduce) {
   :is(.erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
