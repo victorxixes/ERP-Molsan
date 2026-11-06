@@ -12,6 +12,7 @@ import ModalNuevaCita from "../../components/agenda/ModalNuevaCita.jsx";
 import AgendaToast from "../../components/agenda/AgendaToast.jsx";
 import SelectSJ from "../../components/ui/SelectSJ";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
 import "./Agenda.css";
 
 const MESES = [
@@ -553,10 +554,10 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
       {/* INDICADORES DEL PERÍODO */}
       <section className="agenda-resumen-grid" aria-label="Resumen de citas del mes">
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-blue">▦</span><div><span className="agenda-stat-label">Citas del mes</span><strong>{citasDelPeriodo.length}</strong><small>{MESES[month - 1]} de {year}</small></div></article>
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-amber">◷</span><div><span className="agenda-stat-label">Por realizar</span><strong>{citasPorRealizar}</strong><small>Hoy y fechas futuras</small></div></article>
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-green">⌖</span><div><span className="agenda-stat-label">Presenciales</span><strong>{citasPresenciales}</strong><small>Según tipo de firma</small></div></article>
-        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-purple">▣</span><div><span className="agenda-stat-label">Videoconferencias</span><strong>{citasVideoconferencia}</strong><small>Según tipo de firma</small></div></article>
+        <MolsanPremiumCard icon="calendar" title="Citas del mes" description={`${MESES[month - 1]} de ${year}`} className="agenda-stat-card"><strong>{citasDelPeriodo.length}</strong></MolsanPremiumCard>
+        <MolsanPremiumCard icon="clock" title="Por realizar" description="Hoy y fechas futuras" className="agenda-stat-card"><strong>{citasPorRealizar}</strong></MolsanPremiumCard>
+        <MolsanPremiumCard icon="pin" title="Presenciales" description="Según tipo de firma" className="agenda-stat-card"><strong>{citasPresenciales}</strong></MolsanPremiumCard>
+        <MolsanPremiumCard icon="video" title="Videoconferencias" description="Según tipo de firma" className="agenda-stat-card"><strong>{citasVideoconferencias}</strong></MolsanPremiumCard>
       </section>
 
       {/* FILTROS Y CALENDARIO */}
