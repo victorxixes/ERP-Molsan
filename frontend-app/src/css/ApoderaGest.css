@@ -1555,14 +1555,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   outline-color: color-mix(in srgb, var(--molsan-primary, #064675) 28%, transparent);
 }
 /* Cabecera gestionada por PortalProfesionalPremium2027.css. */
-.apoderagest .ag-panel,
-.apoderagest .ag-grid-kpi > .ag-kpi,
-.apoderagest .ag-grid-secundario > .ag-kpi{
-  min-width:0;border:1px solid #D8E4EC;border-radius:16px;
-  background:#FFFFFF;box-shadow:0 6px 18px rgba(6,50,82,.05);
-}
-.apoderagest .ag-grid-kpi > .ag-kpi,
-.apoderagest .ag-grid-kpi > .ag-kpi:hover,
+.apoderagest .ag-panel { min-width:0; }
 /* Elementos de ApoderaGest que completan su hoja autónoma. */
 .apoderagest .ag-print-tools .ag-print-action{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
