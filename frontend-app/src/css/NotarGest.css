@@ -748,9 +748,8 @@ color:var(--molsan-prof-blue);font-size:10px;font-weight:800}
 
 .ng-admin-notarias .ng-admin-global-resumen,
 .ng-admin-notarias .ng-admin-notaria-card {
-
-  min-width:0;border:1px solid var(--molsan-prof-border);border-radius:18px;
-  background:#fff;box-shadow:var(--molsan-prof-shadow);overflow:hidden;
+  min-width:0;
+  overflow:hidden;
 }
 
 .ng-admin-notarias .ng-admin-card-header {
