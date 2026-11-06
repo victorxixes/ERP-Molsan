@@ -196,4 +196,4 @@ Rama: `molsan-premium-2027-production-ready`.
 - Shell común de modal aplicado a los diálogos de NotarGest, CTN detalle, EncargaGest, resumen y detalle de ApoderaGest, Informes de facturación y Tipos de expediente.
 - Se retiraron reglas locales de cabecera, tabla, botón, modal y tarjeta solo donde el JSX ya usa el componente común. Las excepciones de anchura de diálogos grandes se conservan como variantes de tamaño, no como rediseños independientes.
 
-La última tanda está en comprobación CI; no marcar como cerrada hasta obtener resultado verde de todos los builds y revisar el estado de Preview. La migración del resto de rutas, subpáginas, formularios, tablas y diálogos sigue abierta.
+La última tanda tiene todos los checks de CI en verde en el commit de código `bd09a17d206a4929d3c3737723384786e990a691`. Esto confirma compilación y sintaxis; no sustituye la revisión visual autenticada de Preview. La migración del resto de rutas, subpáginas, formularios, tablas y diálogos sigue abierta.
