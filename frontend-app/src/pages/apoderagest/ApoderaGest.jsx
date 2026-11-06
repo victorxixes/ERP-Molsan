@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanStatCard from "../../components/ui/MolsanStatCard";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
@@ -126,31 +127,18 @@ function EstadoPill({ valor }) {
   return <span className={`ag-estado ${clase}`}>{estado}</span>;
 }
 
-function TarjetaIndicador({
-  titulo,
-  valor,
-  detalle,
-  icono,
-  tono = "ocean",
-  variante = "",
-  onClick,
-}) {
-  const contenido = (
-    <>
-      <div className="ag-kpi-superior">
-        <span className="ag-kpi-titulo">{titulo}</span>
-        <span className="ag-kpi-icono" aria-hidden="true"><MolsanIcon name={icono} size={40} tone={tono} /></span>
-      </div>
-      <div className="ag-kpi-valor">{valor}</div>
-      {detalle ? <div className="ag-kpi-detalle">{detalle}</div> : null}
-      {onClick ? <span className="ag-kpi-ver-expedientes">Ver expedientes <MolsanIcon name="arrowRight" size={13} bare /></span> : null}
-    </>
+function TarjetaIndicador({ titulo, valor, detalle, icono, tono = "ocean", onClick }) {
+  return (
+    <MolsanStatCard
+      title={titulo}
+      value={valor}
+      description={detalle}
+      icon={icono}
+      tone={tono}
+      onClick={onClick}
+      ariaLabel={onClick ? `Ver expedientes: ${titulo}` : undefined}
+    />
   );
-  return onClick ? (
-    <button type="button" className={`molsan-stat-card ${variante}`} onClick={onClick} aria-label={`Ver expedientes: ${titulo}`}>
-      {contenido}
-    </button>
-  ) : <article className={`molsan-stat-card ${variante}`}>{contenido}</article>;
 }
 
 function EstadoVacio({ icono = "file", titulo, detalle, tono = "ocean" }) {
