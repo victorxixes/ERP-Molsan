@@ -11,7 +11,6 @@ import LiquidarExpedienteModal from "../../components/expedientes/LiquidarExpedi
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
 import TraspasoSaldoPanel from "../../components/expedientes/TraspasoSaldoPanel";
 import { useAuthStore } from "../../store/authStore";
-import "./FichaExpedientePremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 
