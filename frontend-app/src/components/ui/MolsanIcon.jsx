@@ -63,6 +63,8 @@ const PATHS = {
   message: <><path d="M4 5h16v12H9l-5 4z"/><path d="M8 9h8M8 13h5"/></>,
   coffee: <><path d="M4 8h13v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4zM17 10h2a2 2 0 0 1 0 4h-2M8 3v2M12 3v2"/></>,
   clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
+  play: <><path d="m8 5 11 7-11 7z"/></>,
+  externalLink: <><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></>,
   arrowRight: <><path d="M4 12h15M13 6l6 6-6 6"/></>,
   arrowLeft: <><path d="M20 12H5M11 6l-6 6 6 6"/></>,
   arrowUp: <><path d="M12 20V4M6 10l6-6 6 6"/></>,
