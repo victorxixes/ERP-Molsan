@@ -266,7 +266,7 @@ export default function MantenimientoTecnico() {
       <div className="mantenimiento-tecnico-premium p-6">
         <div className="mx-auto max-w-3xl rounded-2xl border border-rose-200 bg-white p-6 shadow-sm">
           <div className="text-2xl"><MolsanIcon name="lock" size={22} tone="ocean" bare /> Acceso restringido</div>
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-[var(--molsan-text-secondary)]">
             Tu usuario no tiene habilitado el módulo Utilidades. Si necesitas
             acceder, solicita que se active desde la ficha del empleado.
           </p>
@@ -299,12 +299,12 @@ export default function MantenimientoTecnico() {
       />
 
       <section className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-xl"><MolsanIcon name="search" size={22} tone="ocean" /></div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--molsan-primary-soft)] text-xl"><MolsanIcon name="search" size={22} tone="ocean" /></div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Diagnóstico rápido</h2>
-              <p className="mt-1 text-sm text-slate-500">
+              <h2 className="text-lg font-bold text-[var(--molsan-primary)]">Diagnóstico rápido</h2>
+              <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">
                 Consultas de solo lectura para revisar el estado técnico sin abrir herramientas externas.
               </p>
             </div>
@@ -312,16 +312,16 @@ export default function MantenimientoTecnico() {
 
           <div className="space-y-3">
             {DIAGNOSTICOS.map((item) => (
-              <div key={item.id} className="flex flex-col gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div key={item.id} className="flex flex-col gap-3 rounded-xl border border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <div className="font-semibold text-slate-800">{item.titulo}</div>
-                  <p className="mt-1 text-sm text-slate-500">{item.descripcion}</p>
+                  <div className="font-semibold text-[var(--molsan-primary)]">{item.titulo}</div>
+                  <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">{item.descripcion}</p>
                 </div>
                 <button
                   type="button"
                   disabled={Boolean(cargando)}
                   onClick={() => ejecutarGet(item.id, item.titulo, item.url)}
-                  className="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-wait disabled:opacity-50"
+                  className="shrink-0 rounded-lg bg-[var(--molsan-primary)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--molsan-primary-hover)] disabled:cursor-wait disabled:opacity-50"
                 >
                   {cargando === item.id ? "Consultando…" : "Consultar"}
                 </button>
@@ -330,26 +330,26 @@ export default function MantenimientoTecnico() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-start gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-xl"><MolsanIcon name="archive" size={22} tone="ocean" /></div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Inspección de tablas</h2>
-              <p className="mt-1 text-sm text-slate-500">
+              <h2 className="text-lg font-bold text-[var(--molsan-primary)]">Inspección de tablas</h2>
+              <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">
                 Consulta la estructura de una tabla: columnas, índices y claves foráneas. Los endpoints están protegidos para administradores y no muestran filas ni datos personales.
               </p>
             </div>
           </div>
 
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-            <label className="block text-sm font-semibold text-slate-700" htmlFor="tabla-tecnica">
+            <label className="block text-sm font-semibold text-[var(--molsan-text)]" htmlFor="tabla-tecnica">
               Tabla de la base de datos
             </label>
             <button
               type="button"
               disabled={cargandoTablas || Boolean(cargando)}
               onClick={cargarListaTablas}
-              className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100 disabled:opacity-50"
+              className="rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-primary-soft)] px-3 py-1.5 text-xs font-bold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-primary-soft)] disabled:opacity-50"
             >
               {cargandoTablas ? "Cargando tablas…" : "Cargar lista real de tablas"}
             </button>
@@ -359,7 +359,7 @@ export default function MantenimientoTecnico() {
               id="tabla-tecnica"
               value={tabla}
               onChange={(e) => setTabla(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+              className="w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-3 py-2.5 text-sm outline-none transition focus:border-[var(--molsan-border-strong)] focus:ring-4 focus:ring-[var(--molsan-primary-soft)]"
             >
               <option value="">Selecciona una tabla…</option>
               {tablasDisponibles
@@ -379,11 +379,11 @@ export default function MantenimientoTecnico() {
                 if (e.key === "Enter") cargarDetalleTabla("columnas");
               }}
               placeholder="Carga la lista o escribe: expedientes"
-              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+              className="w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-3 py-2.5 text-sm outline-none transition focus:border-[var(--molsan-border-strong)] focus:ring-4 focus:ring-[var(--molsan-primary-soft)]"
             />
           )}
 
-          <label className="mb-2 mt-3 block text-sm font-semibold text-slate-700" htmlFor="filtro-tabla">
+          <label className="mb-2 mt-3 block text-sm font-semibold text-[var(--molsan-text)]" htmlFor="filtro-tabla">
             Acceso rápido (tablas habituales)
           </label>
           <input
@@ -391,7 +391,7 @@ export default function MantenimientoTecnico() {
             value={filtroTabla}
             onChange={(e) => setFiltroTabla(e.target.value)}
             placeholder="Filtrar sugerencias…"
-            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            className="w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-3 py-2.5 text-sm outline-none transition focus:border-[var(--molsan-border-strong)] focus:ring-4 focus:ring-[var(--molsan-primary-soft)]"
           />
           <div className="mt-2 flex flex-wrap gap-2">
             {["expedientes", "agenda_citas", "empleados", "expediente_defectos", "defecto_subtipos", "expediente_observaciones"]
@@ -401,7 +401,7 @@ export default function MantenimientoTecnico() {
                   key={nombre}
                   type="button"
                   onClick={() => setTabla(nombre)}
-                  className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                  className="rounded-full border border-[var(--molsan-border)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--molsan-text-secondary)] transition hover:border-blue-300 hover:bg-[var(--molsan-primary-soft)] hover:text-[var(--molsan-primary)]"
                 >
                   {nombre}
                 </button>
@@ -410,7 +410,7 @@ export default function MantenimientoTecnico() {
 
           <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <label htmlFor="limite-filas-tecnico" className="mb-1 block text-xs font-semibold text-slate-600">
+              <label htmlFor="limite-filas-tecnico" className="mb-1 block text-xs font-semibold text-[var(--molsan-text-secondary)]">
                 Filas de vista previa (máximo 100)
               </label>
               <input
@@ -420,7 +420,7 @@ export default function MantenimientoTecnico() {
                 max="100"
                 value={limiteFilas}
                 onChange={(e) => setLimiteFilas(Math.min(100, Math.max(1, Number(e.target.value) || 1)))}
-                className="w-36 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                className="w-36 rounded-lg border border-[var(--molsan-border-strong)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--molsan-border-strong)] focus:ring-2 focus:ring-[var(--molsan-primary-soft)]"
               />
             </div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -435,14 +435,14 @@ export default function MantenimientoTecnico() {
                 type="button"
                 disabled={Boolean(cargando)}
                 onClick={() => cargarDetalleTabla(tipo)}
-                className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-wait disabled:opacity-50"
+                className="rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm font-semibold text-[var(--molsan-text)] transition hover:bg-[var(--molsan-surface-soft)] disabled:cursor-wait disabled:opacity-50"
               >
                 {cargando === `tabla-${tipo}` ? "…" : etiqueta}
               </button>
             ))}
             </div>
           </div>
-          <p className="mt-3 text-xs leading-5 text-slate-500">
+          <p className="mt-3 text-xs leading-5 text-[var(--molsan-text-secondary)]">
             La vista previa solo devuelve un máximo de 100 filas y oculta columnas cuyo nombre parece contener contraseñas, tokens o claves secretas. No permite modificar ni borrar datos.
           </p>
         </div>
@@ -452,8 +452,8 @@ export default function MantenimientoTecnico() {
         <div className="flex items-start gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-xl"><MolsanIcon name="alert" size={22} tone="amber" /></div>
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Migraciones y mantenimiento</h2>
-            <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">
+            <h2 className="text-lg font-bold text-[var(--molsan-primary)]">Migraciones y mantenimiento</h2>
+            <p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--molsan-text-secondary)]">
               Estas acciones se ejecutan desde el ERP. Lee cada descripción y confirma expresamente antes de lanzar una migración o tarea de mantenimiento.
               No se ofrecen acciones para borrar tablas ni resetear la intranet.
             </p>
@@ -464,9 +464,9 @@ export default function MantenimientoTecnico() {
           {MIGRACIONES.map((item) => (
             <article key={item.id} className="flex flex-col justify-between gap-4 rounded-xl border border-white bg-white p-4 shadow-sm">
               <div>
-                <h3 className="font-semibold text-slate-900">{item.titulo}</h3>
-                <p className="mt-1 text-sm leading-5 text-slate-500">{item.descripcion}</p>
-                <code className="mt-2 inline-block break-all rounded bg-slate-100 px-2 py-1 text-xs text-slate-600">
+                <h3 className="font-semibold text-[var(--molsan-primary)]">{item.titulo}</h3>
+                <p className="mt-1 text-sm leading-5 text-[var(--molsan-text-secondary)]">{item.descripcion}</p>
+                <code className="mt-2 inline-block break-all rounded bg-[var(--molsan-table-head)] px-2 py-1 text-xs text-[var(--molsan-text-secondary)]">
                   Acción técnica protegida · requiere permiso administrativo
                 </code>
               </div>
@@ -484,13 +484,13 @@ export default function MantenimientoTecnico() {
       </section>
 
       {(resultado || errorVisible) && (
-        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <section className="overflow-hidden rounded-2xl border border-[var(--molsan-border)] bg-white shadow-sm">
           <div className={`flex flex-col gap-2 border-b px-5 py-4 sm:flex-row sm:items-center sm:justify-between ${errorVisible ? "border-rose-100 bg-rose-50" : "border-emerald-100 bg-emerald-50"}`}>
             <div>
               <h2 className={`font-bold ${errorVisible ? "text-rose-800" : "text-emerald-800"}`}>
                 {errorVisible ? "La operación ha devuelto un error" : "Resultado de la operación"}
               </h2>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">
                 {resultado ? `${resultado.titulo} · HTTP ${resultado.estado} · ${resultado.fecha}` : "Revisa el mensaje devuelto por el backend."}
               </p>
             </div>
@@ -500,18 +500,18 @@ export default function MantenimientoTecnico() {
                 setResultado(null);
                 setErrorVisible("");
               }}
-              className="self-start rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 sm:self-auto"
+              className="self-start rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-1.5 text-sm font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)] sm:self-auto"
             >
               Limpiar resultado
             </button>
           </div>
-          <pre className="max-h-[520px] overflow-auto whitespace-pre-wrap break-words p-5 text-xs leading-5 text-slate-800">
+          <pre className="max-h-[520px] overflow-auto whitespace-pre-wrap break-words p-5 text-xs leading-5 text-[var(--molsan-primary)]">
             {errorVisible || bloqueJson(resultado?.datos)}
           </pre>
         </section>
       )}
 
-      <footer className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-5 text-slate-500">
+      <footer className="rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-4 py-3 text-xs leading-5 text-[var(--molsan-text-secondary)]">
         Esta pantalla comprueba el permiso de módulo <strong>utilidades</strong>. Las consultas técnicas del backend exigen además autorización administrativa; las migraciones se ejecutan solo bajo confirmación. No se habilitan acciones para borrar tablas o restablecer datos.
       </footer>
     </main>
