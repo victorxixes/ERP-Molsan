@@ -1021,3 +1021,19 @@ Validación de build y despliegue: Render Preview `dep-dbn1qbc9v7es73a0h380`, as
 - Se mantienen los handlers, la ordenación múltiple y sus índices de prioridad, los filtros, la descarga de archivos y los destinos de navegación.
 - No se eliminan botones de actualización que forman parte del cuerpo operativo; la petición de retirar «Actualizar» se limita a los controles que estaban duplicados en cabeceras globales, no a acciones de recarga necesarias para consultar datos.
 - Render Preview `dep-dbn1r9d9fdbs73fhg85g` se ha reconstruido desde el HEAD `ff7b1fd` y finalizó `LIVE` el 6 de noviembre de 2026. Los logs confirman `✓ built in 6.00s` y `Your site is live`. La compilación incluye las modificaciones de código hasta `f9a8e2a`; el último commit es documentación de auditoría.
+
+
+## 19. Normalización visual transversal — 6 de noviembre de 2026
+
+Se ha aplicado una nueva pasada sobre la capa visual final y el componente compartido de tarjetas, sin modificar JSX funcional, API, backend ni datos:
+
+- Cabeceras canónicas: superficie blanca sólida, borde azul hielo ligeramente reforzado (1,5 px), sombra suave y retirada del desenfoque/gradiente de fondo.
+- Tarjetas legacy incluidas en Canonical Visual: fondo blanco, borde 1,5 px, sombra más definida y hover discreto de 2 px; se conserva la franja superior de acento del patrón Espacios de trabajo.
+- MolsanPremiumCard: superficie blanca, borde ligeramente reforzado, sombra, franja superior única y hover sutil. Se eliminan los pseudo-elementos decorativos internos; cabecera y contenido no añaden bordes separadores propios.
+- Jerarquía interna de tarjeta: icono ampliado, título más visible y espaciado acercado al patrón de Espacios de trabajo; responsive ajustado para conservar proporción en móvil.
+- Superficies raíz de páginas y portales declaradas en Canonical Visual con fondo blanco corporativo.
+- El ámbito de los estilos compartidos de botones/controles se amplía a .erp-app-shell, para cubrir módulos técnicos además de los portales.
+
+Commits de código: d60cdf9, 70a0a49, 45a0a40, 21da073.
+
+**Validación:** cambios escritos en la rama fix/molsan-css-selector-audit-round1. La ejecución CI para el nuevo HEAD aún no aparece en GitHub Actions en el momento de esta actualización. No se afirma validación visual: siguen pendientes la inspección autenticada de Preview, la comprobación de cada ruta/subpágina/modal y la regresión responsive. La capa canónica centraliza la apariencia, pero quedan reglas funcionales y estructurales propias de módulos que no deben eliminarse sin confirmar sus consumidores y comportamiento.
