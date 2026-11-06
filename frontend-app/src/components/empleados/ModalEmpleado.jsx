@@ -2222,36 +2222,8 @@ const permisosDisponibles =
         ==================================================== */}
 
         <div
-          className="
-            relative
-            shrink-0
-            overflow-hidden
-            border-b
-            border-slate-200
-            bg-gradient-to-br
-            from-slate-50
-            via-white
-            to-blue-50/60
-            px-5
-            py-5
-            sm:px-7
-          "
+          className="molsan-modal-header flex shrink-0 items-center justify-between gap-4"
         >
-
-          <div
-            className="
-              pointer-events-none
-              absolute
-              -right-20
-              -top-20
-              h-56
-              w-56
-              rounded-full
-              bg-blue-400/10
-              blur-3xl
-            "
-          />
-
 
           <div
             className="
@@ -2331,14 +2303,7 @@ const permisosDisponibles =
                 >
 
                   <h2
-                    className="
-                      truncate
-                      text-xl
-                      font-bold
-                      tracking-tight
-                      text-slate-900
-                      sm:text-2xl
-                    "
+                    className="truncate font-bold tracking-tight"
                   >
                     {nombreEmpleado}
                   </h2>
@@ -2364,11 +2329,7 @@ const permisosDisponibles =
 
 
                 <p
-                  className="
-                    mt-1
-                    text-sm
-                    text-slate-500
-                  "
+                  className="mt-1 text-sm"
                 >
                   Ficha de empleado
                   {empleadoId
@@ -2412,7 +2373,7 @@ const permisosDisponibles =
 
           </div>
 
-        </div>
+        </header>
 
 
         {/* ====================================================
