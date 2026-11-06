@@ -108,7 +108,6 @@ function TarjetaIndicador({
   valor,
   detalle,
   icono,
-  tono = "ocean",
   onClick,
 }) {
   const contenido = (
