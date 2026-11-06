@@ -154,7 +154,7 @@
   color:var(--molsan-prof-blue)!important;border:1px solid var(--molsan-prof-border)!important;border-radius:12px!important;background:var(--molsan-prof-soft)!important;
 }
 .apoderagest .ag-kpi-detalle,.encargagest .eg-kpi>p:last-child{color:var(--molsan-prof-muted)!important;font-size:11px!important;line-height:1.45!important}
-.apoderagest .ag-kpi-ver-expedientes{display:inline-flex!important;align-items:center!important;gap:5px!important;color:var(--molsan-prof-blue)!important;font-size:10px!important;font-weight:800!important}
+
 .ng-admin-notarias .ng-admin-kpis,.ng-admin-notarias .ng-admin-kpis-global{
   display:grid!important;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))!important;gap:12px!important;
 }
@@ -227,14 +227,14 @@
 .apoderagest .ag-resumen-modal-cuerpo,.encargagest .eg-modal-layout,.notargest .ng-modal-lista{
   background:#fff!important;
 }
-.apoderagest .ag-resumen-tabla-wrap{border-color:var(--molsan-prof-border)!important}
-.apoderagest .ag-resumen-tabla th{color:var(--molsan-prof-blue)!important;background:var(--molsan-prof-table)!important}
+
+
 .encargagest .eg-modal-section,.notargest .ng-modal-vacio,.notargest .ng-aviso-item{
   border-color:var(--molsan-prof-border)!important;border-radius:12px!important;
 }
 @media(max-width:760px){
   .apoderagest .ag-resumen-modal-cabecera,.encargagest .eg-modal-header,.notargest .ng-modal>header,.notargest .ng-resumen-expedientes-modal>header{padding:15px!important}
-  .apoderagest .ag-resumen-modal-cuerpo{padding:14px!important}
+  
 }
 
 /* Responsive: misma jerarquía sin cabeceras comprimidas ni tarjetas desiguales. */
