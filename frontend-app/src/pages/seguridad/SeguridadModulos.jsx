@@ -326,12 +326,7 @@ export default function SeguridadModulos() {
 
 
         <div
-          className="
-            flex
-            flex-wrap
-            items-center
-            gap-2
-          "
+          className="molsan-page-header__actions flex flex-wrap items-center gap-2"
         >
 
           <span
