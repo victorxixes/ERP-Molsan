@@ -114,7 +114,7 @@
 
 /* Las tarjetas KPI de los portales reciben la franja superior de esta hoja;
    se neutralizan sus pseudoelementos locales para evitar dos líneas superpuestas. */
-:where(.ag-kpi,.eg-kpi,.ng-dashboard-kpi,.ng-kpi-card,)::before {
+:where(.ag-kpi,.eg-kpi,.ng-dashboard-kpi,.ng-kpi-card)::before {
   content: none !important;
   display: none !important;
 }
