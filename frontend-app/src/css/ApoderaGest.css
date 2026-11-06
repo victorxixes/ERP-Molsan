@@ -585,8 +585,9 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   background-color: var(--molsan-primary-soft, #EAF2F8);
 }
 @media (max-width: 760px){
-.apoderagest{
-    padding: 14px;
+/* El wrapper de Layout ya aplica px-4/py-6: no sumar otro gutter al shell. */
+.erp-page.apoderagest{
+    padding: 0;
   }
 .apoderagest table{
     max-width: 100%;
