@@ -19,8 +19,6 @@ import {
   getMaestros,
 } from "../../api/maestros";
 
-import "../../css/ComponentesAccesoPremium.css";
-
 /* ============================================================
    EMPLEADO PERFIL
    ============================================================ */
