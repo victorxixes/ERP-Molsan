@@ -103,7 +103,6 @@
   box-shadow: 0 8px 24px rgba(6,50,82,.065);
   color: #18384D;
   text-decoration: none;
-  animation: molsan-premium-card-enter .42s both;
 }
 .utilidades-premium-page .utilidades-access-card::before {
   position: absolute;
@@ -137,7 +136,7 @@
   .utilidades-premium-page .utilidades-access-card { min-height: 0; border-radius: 17px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .utilidades-premium-page .utilidades-access-card { animation: none; transition: none; }
+  .utilidades-premium-page .utilidades-access-card { transition: none; }
   .utilidades-premium-page .utilidades-access-card:hover { transform: none; }
 }
 
