@@ -202,7 +202,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
           <thead><tr className="border-b bg-[var(--molsan-surface-soft)] text-xs uppercase tracking-wide text-[var(--molsan-text-secondary)]">
             <th className="p-3">Colaborador</th><th className="p-3">Cancelaciones sin provisión</th><th className="p-3">Cancelaciones con provisión</th><th className="p-3">Honorarios</th><th className="p-3">Base neta</th><th className="p-3">Total</th><th className="p-3">Ver factura</th><th className="p-3">Justificante</th><th className="p-3">Validar</th><th className="p-3">Ver firmas</th>
           </tr></thead>
-          <tbody>{items.map((x) => <tr key={x.id} className="border-b last:border-0 hover:bg-[var(--molsan-surface-soft)]/70">
+          <tbody>{items.map((x) => <tr key={x.id} className="border-b last:border-0 hover:bg-[var(--molsan-surface-soft)]">
             <td className="p-3"><p className="font-bold text-[var(--molsan-primary)]">{x.colaborador}</p><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">{x.protocolos_firmados ?? x.expedientes?.length ?? 0} protocolo(s) · {estado(x.estado_relacion)}</p><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Factura: {estado(x.estado_factura)}</p></td>
             <td className="p-3 font-semibold">{x.cancelaciones_sin_provision ?? 0}</td><td className="p-3 font-semibold">{x.cancelaciones_con_provision ?? 0}</td>
             <td className="p-3">{euros(x.honorarios_unitarios)}</td><td className="p-3">{euros(x.base_neta ?? x.honorarios)}</td><td className="p-3 font-bold">{euros(x.total ?? (Number(x.base_neta || 0) + Number(x.iva || 0)))}</td>
