@@ -662,24 +662,25 @@
   isolation: isolate;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid #D8E4EC;
+  border: 1.5px solid #C5D8E5;
   border-top: 4px solid #6CC5D9;
   border-radius: var(--molsan-canon-card-radius, 20px);
-  background: linear-gradient(145deg,#FFFFFF 0%,#FFFFFF 58%,#F2F7FB 100%);
-  box-shadow: 0 8px 23px rgba(6,70,117,.075);
-  transition: transform .23s cubic-bezier(.2,.75,.25,1), background .23s ease,
-    border-color .23s ease, box-shadow .23s ease;
+  background: #FFFFFF;
+  box-shadow: 0 7px 20px rgba(6,70,117,.09), 0 1px 3px rgba(6,50,82,.045);
+  transition: transform .2s cubic-bezier(.2,.75,.25,1), border-color .2s ease,
+    box-shadow .2s ease;
 }
-.molsan-premium-card::before {
+.molsan-premium-card::before,
+.molsan-premium-card::after {
   content: none;
   display: none;
 }
 .molsan-premium-card:hover {
-  transform: translateY(-4px);
-  border-color: #AFCFDF;
+  transform: translateY(-2px);
+  border-color: #9FBFD2;
   border-top-color: #064675;
-  background: linear-gradient(145deg,#EAF5FA 0%,#F6FAFC 56%,#EAF2F8 100%);
-  box-shadow: 0 16px 34px rgba(6,70,117,.15);
+  background: #FFFFFF;
+  box-shadow: 0 12px 26px rgba(6,70,117,.13), 0 2px 5px rgba(6,50,82,.055);
 }
 .molsan-premium-card:focus-within { border-color: #A9CCDF; }
 .molsan-premium-card:hover .molsan-premium-card__title { color: #043B60; }
@@ -691,6 +692,8 @@
   gap: 13px;
   min-width: 0;
   padding: 20px 20px 0;
+  border: 0;
+  background: transparent;
 }
 .molsan-premium-card__icon {
   display: grid;
@@ -739,6 +742,8 @@
   z-index: 1;
   min-width: 0;
   padding: 14px 20px 20px;
+  border: 0;
+  background: transparent;
 }
 @media (max-width: 760px) {
   .molsan-premium-card { border-radius: 16px; }
