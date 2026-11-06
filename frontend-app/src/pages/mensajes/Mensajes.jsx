@@ -641,7 +641,7 @@ export default function Mensajes({
 
         overflow-hidden
 
-        animate-fadeIn
+        
       "
     >
       <MolsanPageHeader
