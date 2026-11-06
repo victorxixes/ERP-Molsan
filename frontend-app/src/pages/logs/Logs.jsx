@@ -1,7 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect } from "react";
-import "./Logs.css";
-
 import { useLogs } from "../../hooks/useLogs";
 
 import TablaLogs from "../../components/logs/TablaLogs";
