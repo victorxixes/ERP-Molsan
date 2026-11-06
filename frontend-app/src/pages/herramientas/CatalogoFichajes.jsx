@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
-import "../../css/HerramientasPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 export default function CatalogoFichajes() {
