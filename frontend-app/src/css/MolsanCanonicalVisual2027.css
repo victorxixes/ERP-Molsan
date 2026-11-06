@@ -152,7 +152,7 @@
   .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
   .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
   .agenda-premium-page
-) :where(section.rounded-2xl.border, article.rounded-2xl.border, div.rounded-2xl.border) {
+) :where(section.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), article.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), div.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal)) {
   position: relative;
   min-width: 0;
   border: 1.5px solid #C5D8E5 !important;
@@ -171,7 +171,7 @@
   .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
   .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
   .agenda-premium-page
-) :where(section.rounded-2xl.border, article.rounded-2xl.border, div.rounded-2xl.border):hover {
+) :where(section.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), article.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), div.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal)):hover {
   transform: translateY(-2px);
   border-color: #9FBFD2 !important;
   border-top-color: #064675 !important;
@@ -186,7 +186,7 @@
   .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
   .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
   .agenda-premium-page
-) :where(section.rounded-2xl.border, article.rounded-2xl.border, div.rounded-2xl.border) > :where(.border-b,header.border-b) {
+) :where(section.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), article.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), div.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal)) > :where(.border-b,header.border-b) {
   border-bottom: 0 !important;
   background: transparent !important;
 }
