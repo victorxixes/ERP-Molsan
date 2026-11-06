@@ -20,10 +20,10 @@
     "docx-preview": "^0.3.6"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.3.3",
+    "@tailwindcss/postcss": "4.3.4",
     "vite": "^6.4.4",
     "@vitejs/plugin-react": "^4.7.0",
-    "tailwindcss": "^4.3.3",
+    "tailwindcss": "4.3.4",
     "postcss": "^8.4.31",
     "autoprefixer": "^10.4.16"
   }
