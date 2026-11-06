@@ -84,11 +84,16 @@ export default function ProcesoAbsis() {
 
   return <main className="molsan-page-stack herramienta-operativa-premium herramientas-subpagina-premium min-h-full">
     <header className="molsan-page-header">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-      <Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>
-      <div className="mt-2 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div><h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Proceso de ABSIS</h1><p className="mt-1 text-sm text-slate-500">Seguimiento de expedientes enviados, incidencias y acciones de envío.</p></div>
-        
+      <div className="molsan-page-header__identity">
+        <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="workflow" size={22} tone="ocean" /></div>
+        <div className="min-w-0">
+          <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+          <h1 className="molsan-page-header__title">Proceso de ABSIS</h1>
+          <p className="molsan-page-header__description">Seguimiento de expedientes enviados, incidencias y acciones de envío.</p>
+        </div>
+      </div>
+      <div className="molsan-page-header__actions">
+        <Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary">← Volver a Utilidades</Link>
       </div>
     </header>
 
