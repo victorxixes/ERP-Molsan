@@ -815,3 +815,11 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - Las 41 hojas conservan llaves equilibradas. Tras esta pasada, las hojas revisadas no presentan bloques vacíos detectados por el análisis estático.
 - Los selectores repetidos detectados no se borran en bloque: varios son ampliaciones responsive, estados o ajustes de cascada. Se mantienen hasta contrastar sus declaraciones, orden de importación y consumidores; una coincidencia de nombre no demuestra duplicidad funcional.
 - Este barrido es una verificación estática del inventario, no una inspección visual de las 41 hojas ni una prueba funcional de cada página.
+
+## 46. Panel Técnico — iconografía Molsan en Monitor, Auditoría y Logs (6 de noviembre de 2026)
+
+- Sustituidos once sprites SVG externos en `MonitorSistema.jsx` (3), `AuditoriaAvanzada.jsx` (6) y `LogsAvanzados.jsx` (2) por `MolsanIcon`.
+- Conservados nombres semánticos, tamaños y clases de color; el selector de tablas mantiene el contraste del icono cuando la pestaña está activa.
+- No se modifican consultas, filtros, monitorización, métricas, exportación ni navegación.
+- Los tres submódulos dejan de depender de `/icons/icons.svg`; la cabecera común sigue residiendo en el contenedor Panel Técnico para evitar duplicados.
+- Pendiente build de Preview para este último bloque.
