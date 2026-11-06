@@ -13,15 +13,6 @@ import { useAuthStore } from "../../store/authStore";
 import { createPortal } from "react-dom";
 import "../../css/PortalProfesionalShared.css";
 
-const PESTANAS = [
-  { nombre: "Dashboard", icono: "◫" },
-  { nombre: "Agenda", icono: "▦" },
-  { nombre: "Encargos", icono: "▤" },
-  { nombre: "Mensajes", icono: "✉" },
-  { nombre: "Intranet", icono: "⌂" },
-  { nombre: "CTN", icono: "◇" },
-];
-
 function fechaLegible(valor) {
   if (!valor) return "—";
   const fecha = new Date(valor);
@@ -937,7 +928,7 @@ export default function ApoderaGest() {
                           <div className="ag-cita-titulo-fila">
                             <strong>{texto(cita.tipo_cita, "Cita")}</strong>
                             {cita.tipo_firma ? <span className="ag-cita-modalidad">{texto(cita.tipo_firma)}</span> : null}
-                            {cita.tipo_cita === "Firma notarial" ? <span className={`ag-firma-indicador ${firmaRealizada ? "realizada" : ""}`}>{firmaRealizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</span> : null}
+                            {cita.tipo_cita === "Firma notarial" ? <span className={`ag-firma-indicador ${firmaRealizada ? "realizada" : ""}`}>{firmaRealizada ? <><MolsanIcon name="check" size={13} /> Firma realizada</> : <><MolsanIcon name="clock" size={13} /> Pendiente de firma</>}</span> : null}
                           </div>
                           <div className="ag-cita-datos">
                             <span className="ag-cita-horario"><b>Horario</b>{texto(cita.hora_inicio, "—").slice(0, 5)} – {texto(cita.hora_fin, "—").slice(0, 5)}</span>
