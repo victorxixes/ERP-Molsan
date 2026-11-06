@@ -677,3 +677,12 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - Los movimientos, avisos y controles de gasto vuelven a quedar dentro de la condición y de la sección de la actividad «Gestión económica».
 - Se conserva el cierre original de la sección y de la condición en su ubicación final; no se modifica el cálculo del saldo ni la confirmación de pagos.
 - La compilación anterior había emitido un aviso de esbuild en esta línea. Se comprobará su desaparición en el siguiente build de Preview.
+
+## 29. NotarGest — migración de KPI administrativos al componente compartido (6 de noviembre de 2026)
+
+- Las diez tarjetas de resumen global (encargos, firmas, copias, facturas, fiscalidad, registro, defectos e inscripciones) pasan del botón artesanal `.ng-admin-kpi-button` a `MolsanStatCard`.
+- Se conserva la interacción: cada tarjeta sigue abriendo el mismo resumen filtrado de expedientes. Se mantiene el tono de alerta ámbar cuando existen defectos o firmas urgentes.
+- Retiradas de `NotarGest.css` las reglas de superficie, icono, tipografía, hover y alturas específicas que pertenecían al botón antiguo y que ya no tienen consumidores.
+- Se conservan las reglas de cuadrícula y los breakpoints del panel administrativo; no se cambian los datos, los filtros ni la navegación.
+- Verificación estática: no quedan referencias a `.ng-admin-kpi-button` en la hoja local y sus llaves están equilibradas (287/287).
+- Pendiente: build/CI y revisión visual autenticada en Preview de la cuadrícula global y sus variantes responsive.
