@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import MonitorRealtime from "./MonitorRealtime";
 import {
@@ -478,8 +479,7 @@ export default function MonitorSistema() {
                         `}
                       >
 
-                        <svg
-                          className={`
+                        <MolsanIcon name="database" size={16} className={`
                             w-4
                             h-4
                             flex-shrink-0
@@ -489,11 +489,7 @@ export default function MonitorSistema() {
                                 ? "text-white"
                                 : "text-[var(--erp-primary)]"
                             }
-                          `}
-                          aria-hidden="true"
-                        >
-                          <use href="/icons/icons.svg#database" />
-                        </svg>
+                          `} tone="inherit" />
 
                         <span className="truncate">
                           {tabla}
@@ -551,12 +547,7 @@ export default function MonitorSistema() {
                     "
                   >
 
-                    <svg
-                      className="w-6 h-6"
-                      aria-hidden="true"
-                    >
-                      <use href="/icons/icons.svg#database" />
-                    </svg>
+                    <MolsanIcon name="database" size={24} className="w-6 h-6" tone="inherit" />
 
                   </div>
 
@@ -614,16 +605,11 @@ export default function MonitorSistema() {
                         "
                       >
 
-                        <svg
-                          className="
+                        <MolsanIcon name="database" size={20} className="
                             w-5
                             h-5
                             text-[var(--erp-primary)]
-                          "
-                          aria-hidden="true"
-                        >
-                          <use href="/icons/icons.svg#database" />
-                        </svg>
+                          " tone="inherit" />
 
                         <h3
                           className="
