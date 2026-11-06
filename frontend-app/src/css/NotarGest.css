@@ -139,8 +139,6 @@
 /* Resumen global y administración de notarías */
 .ng-admin-notarias { display: flex; flex-direction: column; gap: 18px; width: 100%; min-width: 0; padding: 22px 26px 30px; color: var(--ng-text, #173247); }
 .ng-admin-global-resumen { overflow: hidden; }
-.ng-admin-notarias-hero { width: 100%; }
-.ng-hero-notargest { isolation: isolate; }
 .ng-admin-global-titulo { padding: 18px 20px; }
 .ng-admin-global-total { flex: 0 0 auto; padding: 7px 11px; color: var(--ng-primary); border: 1px solid var(--ng-border); border-radius: 999px; background: #fff; font-size: 11px; font-weight: 800; }
 .ng-admin-kpis { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; padding: 16px; }
