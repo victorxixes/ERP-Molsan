@@ -742,3 +742,11 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - `AccionesExpediente.jsx`: dos diálogos (crear/editar acción e importar acciones), ambos con atributos ARIA, refs y hook independiente.
 - `CtnListadoPage.jsx` y `Agenda.jsx` no declaran diálogos propios en el JSX revisado; CTN delega la ficha a `ModalCtnDetalle`.
 - Resultado estático: 7 diálogos revisados en estos tres flujos, todos con marcado modal accesible y contención/restauración de foco centralizada. La verificación real con teclado, lector de pantalla y viewports físicos sigue pendiente; no se considera prueba manual.
+
+## 37. CancelaGest — migración de indicadores al componente compartido (6 de noviembre de 2026)
+
+- Los cuatro indicadores del dashboard (cancelaciones registradas, firmas realizadas, con provisión y sin provisión) se han migrado de `.cg-kpi` artesanal a `MolsanStatCard`.
+- Se mantienen los mismos datos, formatos y textos; no se añaden acciones ni cambios de navegación. Cada indicador utiliza un icono Molsan y un tono semántico.
+- `Cancelagest.css` conserva la cuadrícula `.cg-kpis` y sus breakpoints, pero elimina tipografía, padding y superficies locales de la tarjeta que ahora pertenecen al componente compartido.
+- Retirado `.cg-kpi` de las reglas canónicas de tarjeta, hover, iconografía y movimiento reducido; `.cg-module-card` y los paneles/gráficos propios permanecen intactos.
+- Verificación estática: cero referencias a `.cg-kpi` en JSX/CSS de CancelaGest y 40/40 llaves equilibradas en CanonicalVisual. Build de Preview pendiente para este commit.
