@@ -150,7 +150,7 @@ export default function ReglasActividadesExpediente() {
           </div>
         </div>
 
-        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)]/60 px-5 py-4 sm:px-6">
+        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold text-[var(--molsan-primary)]">3. Integración con ICAM I / ABSIS</p>
@@ -176,7 +176,7 @@ export default function ReglasActividadesExpediente() {
           <Condicion titulo="Al entrar en Sede notarial" texto="Enviar a ABSIS los campos y repositorios digitales definidos en el modal Datos de actividad." />
           <Condicion titulo="Control de integridad" texto="Si falta la fecha de firma o el protocolo, el expediente permanece en Sede notarial y se muestra qué dato falta." />
         </div>
-        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)]/60 px-5 py-4 sm:px-6">
+        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
           <p className="text-sm leading-5 text-[var(--molsan-text-secondary)]">Pendiente del técnico: conectar el evento de ApoderaGest, validar los datos recibidos y desarrollar el envío de datos a ABSIS con trazabilidad de errores.</p>
         </div>
       </section>
@@ -209,7 +209,7 @@ export default function ReglasActividadesExpediente() {
             <Condicion titulo="Si falta información" texto="Mantener Sede notarial con protocolo, mostrar los campos o documentos pendientes y no avanzar automáticamente." />
           </div>
         </div>
-        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)]/60 px-5 py-4 sm:px-6">
+        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
           <p className="text-sm leading-5 text-[var(--molsan-text-secondary)]">Pendiente del técnico: conexión con NotarGest / Visión Notarios, extracción PDF/OCR, validación de campos, detección de documentos y pruebas con expedientes reales.</p>
         </div>
       </section>
@@ -263,7 +263,7 @@ export default function ReglasActividadesExpediente() {
             <p className="mt-1">La regla debe impedir fechas incoherentes. En tu mensaje hay una contradicción: indicas que la fecha de presentación en Liquidación impuestos nunca debe ser igual o anterior a la fecha de liquidación tributaria, pero después indicas que la fecha de liquidación tributaria nunca puede ser anterior a la fecha de presentación. No se activará una validación automática de esta pareja de fechas hasta confirmar cuál de las dos condiciones es la correcta.</p>
           </div>
         </div>
-        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)]/60 px-5 py-4 sm:px-6">
+        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
           <p className="text-sm leading-5 text-[var(--molsan-text-secondary)]">Pendiente del técnico: conexión con repositorios, lectura PDF/OCR, revisión de valores extraídos, detección de campos vacíos y pruebas de la transición a Tramitación inscripción.</p>
         </div>
       </section>
@@ -296,7 +296,7 @@ export default function ReglasActividadesExpediente() {
             <Condicion titulo="Fecha de vencimiento" texto="Se calcula automáticamente a partir de la fecha de presentación heredada. El cálculo debe reutilizar la regla vigente de vencimiento de Tramitación inscripción y verificarse en las pruebas; no duplicar ni inventar una fórmula distinta." />
           </div>
         </div>
-        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)]/60 px-5 py-4 sm:px-6">
+        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
           <p className="text-sm leading-5 text-[var(--molsan-text-secondary)]">Anotación para el técnico: preparar la integración/API con el Colegio de Registradores para la comunicación/consulta registral. Queda pendiente de especificación técnica, credenciales y documentación oficial; no se ejecuta ninguna llamada externa desde esta pantalla.</p>
         </div>
       </section>
