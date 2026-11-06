@@ -10,7 +10,7 @@
 :is(
   .erp-app-shell, .erp-main-content, .erp-main-inner, .erp-route-content, .erp-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium,
-  .ficha-expediente-premium, .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium, .fusiones-page,
   .apoderagest, .notargest, .notargest-workspace-premium, .encargagest,
   .encargagest-workspace-premium, .catalogos-premium-page, .catalogos-maestros-premium,
   .catalogos-maestros-page, .utilidades-premium-page, .herramientas-subpagina-premium,
@@ -151,7 +151,7 @@
   .notificaciones-premium-page, .logs-premium-page, .herramientas-subpagina-premium,
   .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
   .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
-  .agenda-premium-page
+  .agenda-premium-page, .fusiones-page
 ) :where(section.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), article.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), div.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal)) {
   position: relative;
   min-width: 0;
@@ -170,7 +170,7 @@
   .notificaciones-premium-page, .logs-premium-page, .herramientas-subpagina-premium,
   .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
   .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
-  .agenda-premium-page
+  .agenda-premium-page, .fusiones-page
 ) :where(section.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), article.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), div.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal)):hover {
   transform: translateY(-2px);
   border-color: #9FBFD2 !important;
