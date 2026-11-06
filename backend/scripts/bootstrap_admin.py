@@ -61,9 +61,9 @@ def main() -> int:
                 file=sys.stderr,
             )
             return 3
-        if revision_actual != "20261104_0004":
+        if revision_actual != "20261105_0005":
             print(
-                "ERROR: el esquema no está en la revisión 20261104_0004; no se ha creado ningún usuario.",
+                "ERROR: el esquema no está en la revisión 20261105_0005; no se ha creado ningún usuario.",
                 file=sys.stderr,
             )
             return 3
