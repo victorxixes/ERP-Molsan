@@ -300,6 +300,8 @@
 .eg-contrato-layout > * { width: 100%; min-width: 0; }
 
 @media (max-width: 1100px) {
+  .eg-modal-overlay { padding: 10px; }
+  .eg-modal-form { max-height: calc(100dvh - 20px); }
   .eg-modal-layout { grid-template-columns: minmax(0,1fr); gap: 13px; }
   .eg-modal-carpeta { grid-row: auto; }
   .eg-modal-datos,.eg-modal-carpeta-lateral { grid-column: 1; grid-row: auto; }
