@@ -81,9 +81,9 @@ export default function ProcesoAbsis() {
   }
 
   return <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-    <MolsanPageHeader mark="UT" title="Proceso de ABSIS" description="Seguimiento de expedientes enviados, incidencias y acciones de envío." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>}/>
+    <MolsanPageHeader mark="UT" title="Proceso de ABSIS" description="Seguimiento de expedientes enviados, incidencias y acciones de envío." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-[var(--molsan-primary)] hover:underline">← Volver a Utilidades</Link>}/>
       <div className="flex justify-end">
-        <button onClick={() => Promise.all([cargarActividades(), cargarItems()])} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Actualizar datos</button>
+        <button onClick={() => Promise.all([cargarActividades(), cargarItems()])} className="rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-2.5 text-sm font-bold text-[var(--molsan-text)] hover:bg-[var(--molsan-surface-soft)]">Actualizar datos</button>
       </div>
 
     <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -95,15 +95,15 @@ export default function ProcesoAbsis() {
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">{error}</div>}
 
     <section className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(320px,0.78fr)_minmax(0,1.8fr)]">
-      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-200 bg-slate-50/80 p-5"><h2 className="text-lg font-extrabold text-slate-900">Expedientes enviados al ABSIS</h2><p className="mt-1 text-xs text-slate-500">Selecciona una actividad para consultar sus envíos.</p></div>
+      <div className="overflow-hidden rounded-3xl border border-[var(--molsan-border)] bg-white shadow-sm">
+        <div className="border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-5"><h2 className="text-lg font-extrabold text-[var(--molsan-primary)]">Expedientes enviados al ABSIS</h2><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Selecciona una actividad para consultar sus envíos.</p></div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[430px] text-left text-sm">
-            <thead className="bg-white text-[10px] uppercase tracking-wide text-slate-500"><tr><th className="border-b px-4 py-3 font-extrabold">Tipo de actividad</th><th className="border-b px-3 py-3 text-right font-extrabold">Expedientes enviados</th><th className="border-b px-4 py-3 text-right font-extrabold">Errores detectados</th></tr></thead>
+            <thead className="bg-white text-[10px] uppercase tracking-wide text-[var(--molsan-text-secondary)]"><tr><th className="border-b px-4 py-3 font-extrabold">Tipo de actividad</th><th className="border-b px-3 py-3 text-right font-extrabold">Expedientes enviados</th><th className="border-b px-4 py-3 text-right font-extrabold">Errores detectados</th></tr></thead>
             <tbody>
-              {actividades.length === 0 ? <tr><td colSpan={3} className="px-4 py-10 text-center text-xs text-slate-500">No hay actividades registradas.</td></tr> : actividades.map((act) => <tr key={act.tipo} onClick={() => setTipoSeleccionado(act.tipo)} className={`cursor-pointer border-b border-slate-100 last:border-0 transition ${tipoSeleccionado === act.tipo ? "bg-blue-50 ring-1 ring-inset ring-blue-200" : "hover:bg-slate-50"}`}>
-                <td className="px-4 py-4"><span className="font-bold text-slate-800">{act.tipo || "Sin tipo"}</span><span className="mt-1 block text-[10px] font-semibold text-blue-700">Ver listado →</span></td>
-                <td className="px-3 py-4 text-right font-extrabold tabular-nums text-slate-800">{act.enviados || 0}</td>
+              {actividades.length === 0 ? <tr><td colSpan={3} className="px-4 py-10 text-center text-xs text-[var(--molsan-text-secondary)]">No hay actividades registradas.</td></tr> : actividades.map((act) => <tr key={act.tipo} onClick={() => setTipoSeleccionado(act.tipo)} className={`cursor-pointer border-b border-[var(--molsan-border-light)] last:border-0 transition ${tipoSeleccionado === act.tipo ? "bg-[var(--molsan-primary-soft)] ring-1 ring-inset ring-blue-200" : "hover:bg-[var(--molsan-surface-soft)]"}`}>
+                <td className="px-4 py-4"><span className="font-bold text-[var(--molsan-primary)]">{act.tipo || "Sin tipo"}</span><span className="mt-1 block text-[10px] font-semibold text-[var(--molsan-primary)]">Ver listado →</span></td>
+                <td className="px-3 py-4 text-right font-extrabold tabular-nums text-[var(--molsan-primary)]">{act.enviados || 0}</td>
                 <td className="px-4 py-4 text-right"><span className={`inline-flex min-w-8 justify-center rounded-full px-2 py-1 text-xs font-bold ${Number(act.errores || 0) ? "bg-rose-100 text-rose-700" : "bg-emerald-50 text-emerald-700"}`}>{act.errores || 0}</span></td>
               </tr>)}
             </tbody>
@@ -111,31 +111,31 @@ export default function ProcesoAbsis() {
         </div>
       </div>
 
-      <div className="min-w-0 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-200 bg-slate-50/80 p-5">
+      <div className="min-w-0 overflow-hidden rounded-3xl border border-[var(--molsan-border)] bg-white shadow-sm">
+        <div className="border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-5">
           <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
-            <div><p className="text-[10px] font-extrabold uppercase tracking-widest text-blue-700">Listado de actividad</p><h2 className="mt-1 text-lg font-extrabold text-slate-900">{tipoSeleccionado || "Todos los envíos"}</h2><p className="mt-1 text-xs text-slate-500">Filtra, revisa incidencias y gestiona cada envío.</p></div>
+            <div><p className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--molsan-primary)]">Listado de actividad</p><h2 className="mt-1 text-lg font-extrabold text-[var(--molsan-primary)]">{tipoSeleccionado || "Todos los envíos"}</h2><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Filtra, revisa incidencias y gestiona cada envío.</p></div>
             <button onClick={exportarExcel} disabled={exportando} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Preparando…" : "↓ Descargar Excel"}</button>
           </div>
-          <label className="mt-4 block"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Buscar en el listado</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Expediente, ID, IDAbsis, tipo o incidencia…" className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" /></label>
+          <label className="mt-4 block"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Buscar en el listado</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Expediente, ID, IDAbsis, tipo o incidencia…" className="w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[var(--molsan-border-strong)] focus:ring-4 focus:ring-[var(--molsan-primary-soft)]" /></label>
         </div>
         <div className="overflow-x-auto"><table className="w-full min-w-[1250px] text-left text-xs">
-          <thead className="bg-white text-[10px] uppercase tracking-wide text-slate-500"><tr>{["Expediente","Fecha de envío","ID","IDAbsis","Tipo","Fecha de creación","Fecha de incidencia","Tipo de incidencia","Acciones del envío"].map((h) => <th key={h} className="border-b border-slate-200 px-3 py-3 font-extrabold">{h}</th>)}</tr></thead>
+          <thead className="bg-white text-[10px] uppercase tracking-wide text-[var(--molsan-text-secondary)]"><tr>{["Expediente","Fecha de envío","ID","IDAbsis","Tipo","Fecha de creación","Fecha de incidencia","Tipo de incidencia","Acciones del envío"].map((h) => <th key={h} className="border-b border-[var(--molsan-border)] px-3 py-3 font-extrabold">{h}</th>)}</tr></thead>
           <tbody>
-            {cargando ? <tr><td colSpan={9} className="px-5 py-12 text-center text-slate-500">Cargando envíos…</td></tr>
-            : items.length === 0 ? <tr><td colSpan={9} className="px-5 py-12 text-center"><div><MolsanIcon name="archive" size={32} tone="ocean" /></div><p className="mt-2 font-bold text-slate-700">No hay envíos para mostrar</p><p className="mt-1 text-xs text-slate-500">Los registros aparecerán aquí cuando se registren envíos o incidencias ABSIS.</p></td></tr>
-            : items.map((item) => <tr key={item.id} className="border-b border-slate-100 align-top last:border-0 hover:bg-slate-50/70">
-              <td className="px-3 py-3 font-bold text-blue-700">{item.expediente || "—"}</td><td className="whitespace-nowrap px-3 py-3 text-slate-600">{euroFecha(item.fecha_envio)}</td><td className="px-3 py-3 text-slate-600">{item.id}</td><td className="px-3 py-3 text-slate-600">{item.id_absis || "—"}</td><td className="px-3 py-3 text-slate-700">{item.tipo || "—"}</td><td className="whitespace-nowrap px-3 py-3 text-slate-600">{euroFecha(item.fecha_creacion)}</td><td className="whitespace-nowrap px-3 py-3 text-slate-600">{euroFecha(item.fecha_incidencia)}</td><td className="max-w-[220px] px-3 py-3"><span className={`inline-flex rounded-full px-2 py-1 font-semibold ${item.tipo_incidencia ? "bg-rose-50 text-rose-700" : "bg-slate-100 text-slate-500"}`}>{item.tipo_incidencia || "Sin incidencia"}</span></td>
-              <td className="px-3 py-3"><div className="flex min-w-[290px] flex-wrap gap-1.5"><button disabled={accionando !== null} onClick={() => accion(item.id,"eliminar")} className="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1.5 font-bold text-rose-700 disabled:opacity-50">{accionando === `${item.id}-eliminar` ? "…" : "Eliminar"}</button><button disabled={accionando !== null} onClick={() => accion(item.id,"reintentar")} className="rounded-lg border border-blue-200 bg-blue-50 px-2 py-1.5 font-bold text-blue-700 disabled:opacity-50">{accionando === `${item.id}-reintentar` ? "…" : "Reintentar"}</button><button disabled={accionando !== null || item.estado === "Pasado"} onClick={() => accion(item.id,"pasado")} className="rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1.5 font-bold text-emerald-700 disabled:opacity-50">{item.estado === "Pasado" ? "Dado por pasado" : "Dar por pasado"}</button></div></td>
+            {cargando ? <tr><td colSpan={9} className="px-5 py-12 text-center text-[var(--molsan-text-secondary)]">Cargando envíos…</td></tr>
+            : items.length === 0 ? <tr><td colSpan={9} className="px-5 py-12 text-center"><div><MolsanIcon name="archive" size={32} tone="ocean" /></div><p className="mt-2 font-bold text-[var(--molsan-text)]">No hay envíos para mostrar</p><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Los registros aparecerán aquí cuando se registren envíos o incidencias ABSIS.</p></td></tr>
+            : items.map((item) => <tr key={item.id} className="border-b border-[var(--molsan-border-light)] align-top last:border-0 hover:bg-[var(--molsan-surface-soft)]">
+              <td className="px-3 py-3 font-bold text-[var(--molsan-primary)]">{item.expediente || "—"}</td><td className="whitespace-nowrap px-3 py-3 text-[var(--molsan-text-secondary)]">{euroFecha(item.fecha_envio)}</td><td className="px-3 py-3 text-[var(--molsan-text-secondary)]">{item.id}</td><td className="px-3 py-3 text-[var(--molsan-text-secondary)]">{item.id_absis || "—"}</td><td className="px-3 py-3 text-[var(--molsan-text)]">{item.tipo || "—"}</td><td className="whitespace-nowrap px-3 py-3 text-[var(--molsan-text-secondary)]">{euroFecha(item.fecha_creacion)}</td><td className="whitespace-nowrap px-3 py-3 text-[var(--molsan-text-secondary)]">{euroFecha(item.fecha_incidencia)}</td><td className="max-w-[220px] px-3 py-3"><span className={`inline-flex rounded-full px-2 py-1 font-semibold ${item.tipo_incidencia ? "bg-rose-50 text-rose-700" : "bg-[var(--molsan-table-head)] text-[var(--molsan-text-secondary)]"}`}>{item.tipo_incidencia || "Sin incidencia"}</span></td>
+              <td className="px-3 py-3"><div className="flex min-w-[290px] flex-wrap gap-1.5"><button disabled={accionando !== null} onClick={() => accion(item.id,"eliminar")} className="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1.5 font-bold text-rose-700 disabled:opacity-50">{accionando === `${item.id}-eliminar` ? "…" : "Eliminar"}</button><button disabled={accionando !== null} onClick={() => accion(item.id,"reintentar")} className="rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-primary-soft)] px-2 py-1.5 font-bold text-[var(--molsan-primary)] disabled:opacity-50">{accionando === `${item.id}-reintentar` ? "…" : "Reintentar"}</button><button disabled={accionando !== null || item.estado === "Pasado"} onClick={() => accion(item.id,"pasado")} className="rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1.5 font-bold text-emerald-700 disabled:opacity-50">{item.estado === "Pasado" ? "Dado por pasado" : "Dar por pasado"}</button></div></td>
             </tr>)}
           </tbody>
         </table></div>
-        <footer className="border-t border-slate-200 bg-slate-50/70 px-4 py-3 text-xs text-slate-500">{items.length} envío(s) en el resultado actual</footer>
+        <footer className="border-t border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-4 py-3 text-xs text-[var(--molsan-text-secondary)]">{items.length} envío(s) en el resultado actual</footer>
       </div>
     </section>
   </main>;
 }
 
 function Kpi({ titulo, valor, icono, alerta = false }) {
-  return <div className={`rounded-2xl border p-4 shadow-sm ${alerta ? "border-rose-200 bg-rose-50/70" : "border-slate-200 bg-white"}`}><div className="flex items-start justify-between gap-2"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{titulo}</p><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/80 text-lg font-extrabold text-slate-600 shadow-sm">{icono}</span></div><p className="mt-3 text-2xl font-extrabold text-slate-900">{valor}</p></div>;
+  return <div className={`rounded-2xl border p-4 shadow-sm ${alerta ? "border-rose-200 bg-rose-50/70" : "border-[var(--molsan-border)] bg-white"}`}><div className="flex items-start justify-between gap-2"><p className="text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">{titulo}</p><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/80 text-lg font-extrabold text-[var(--molsan-text-secondary)] shadow-sm">{icono}</span></div><p className="mt-3 text-2xl font-extrabold text-[var(--molsan-primary)]">{valor}</p></div>;
 }
