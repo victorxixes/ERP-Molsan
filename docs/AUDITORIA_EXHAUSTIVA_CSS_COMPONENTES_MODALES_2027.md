@@ -2,7 +2,7 @@
 
 **Rama de trabajo:** `fix/molsan-css-selector-audit-round1`  
 **PR:** #409 (Draft)  
-**Último commit de código:** `f11f225dcfb8688a63952323f79f8a8c9c7d481e`  
+**Último commit de código:** `b282f094ef79474fd2fa4ffbf8932aa229f57820`  
 **Alcance de esta revisión:** frontend `frontend-app/src`; sin cambios en backend, API, Supabase, datos ni producción.
 
 ## 1. Inventario real del frontend
@@ -111,6 +111,10 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 - Segunda pasada de `EncargaGest.css`: retiradas otras 5 reglas sin consumidor o filtradas al módulo equivocado (utilidades Tailwind antiguas, `.ag-fecha-actual` y duplicación de `.ag-estado`, que pertenece al portal ApoderaGest). El CSS restante se ha contrastado con EncargaGest, ApoderaGest y los componentes compartidos; no quedan clases sin consumidor en ese conjunto.
 - `DashboardCancelagest.css`: eliminadas 26 reglas de 7 clases que ya no existen en Dashboard/Cancelagest (`ag-fecha-actual`, `ag-punto-vivo`, `ag-boton-actualizar` y paneles/KPI legacy). La hoja pasa de 269 a 134 líneas; todas las clases restantes se encuentran en los consumidores actuales.
 - `Cancelagest.jsx`/`Cancelagest.css`: sustituida la iconografía Unicode de los accesos por `MolsanIcon` (incluidos los pictogramas de módulos, el distintivo de cabecera y la flecha de navegación); eliminado un cálculo de fecha no utilizado y retirados los estilos de cabecera legacy ya reemplazados por `MolsanPageHeader`.
+- `Agenda.css`: retiradas 13 reglas de iconografía KPI antigua (`agenda-stat-icon*` y `agenda-stat-label`) que ya no se renderiza; las tarjetas usan `MolsanPremiumCard`. La hoja pasa de 198 a 161 líneas y sus clases restantes tienen consumidores identificados, incluidas las vistas de mes/semana/día y `SelectSJ`.
+- `Agenda.jsx` y `Layout.jsx`: reemplazadas las flechas Unicode de navegación de calendario y de Volver por `MolsanIcon` (`arrowLeft`/`arrowRight`). No se ha añadido ningún botón de actualización.
+- Portales: retiradas las clases legacy `ag-hero`, `eg-hero`, `ng-hero` y `dashboard-header` de las cabeceras que ya usan `MolsanPageHeader`; ApoderaGest pasa a la marca `AP` (icono de usuarios), mientras Agenda conserva `AG` (calendario), EncargaGest `EG` (maletín), NotarGest `NG` (notaría) y CancelaGest `CG` (dashboard). Se retiró `.ng-hero` de la capa canónica al dejar de tener consumidores.
+- Accesibilidad de modales: `ExpedientesListado.jsx` incorpora `useAccessibleDialog` en sus dos diálogos inline (filtros y control de plazos); `FichaExpediente.jsx` ya usa el hook en sus tres diálogos económicos/PPAD y en el modal base. La comprobación estática confirma refs, foco, Escape y `aria-modal` en estos componentes.
 - `NotarGest.css`: retiradas 12 referencias obsoletas en 20 líneas netas (`ng-dashboard-ciclo`, `ng-dashboard-kpis`, `ng-dashboard-kpi`, `ng-kpi-card` y `ng-volver`), ausentes del único consumidor `NotarGest.jsx`. Se han conservado los selectores activos del panel de administración (`ng-admin-kpis`), cabeceras, tablas y modales.
 - `ApoderaGest.css`: retiradas 80 clases legacy que no aparecen en el JSX del portal ni en sus cinco consumidores integrados (Agenda, Intranet, Mensajes, CTN y ControlApoderados), más dos `@keyframes` sin referencias. La hoja pasa de 2.250 a 1.203 líneas; tras la limpieza, todas las clases restantes tienen consumidor en esos archivos o son generadas por `MolsanIcon`.
 - `frontend-app/package.json`: fijadas `tailwindcss` y `@tailwindcss/postcss` a `4.3.4`. El registro npm publica 4.3.4 como versión estable actual, mientras la instalación de CI intentaba descargar `@tailwindcss/oxide@4.3.5`, que devolvía 404. El pin alinea los paquetes de Tailwind y evita la resolución de esa versión inexistente.
