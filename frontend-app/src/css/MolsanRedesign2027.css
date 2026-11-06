@@ -436,8 +436,6 @@
 
 /* Navegación principal: superficie clara, separación definida y estados activos legibles. */
 .mol-sidebar-premium {
-  position: relative;
-  z-index: 50;
   border-bottom: 1px solid var(--molsan-border, #D8E4EC);
   box-shadow: 0 3px 14px rgba(27, 43, 70, .045);
   font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
@@ -1456,8 +1454,6 @@ body {
 
 .erp-app-shell {
   min-height: 100vh;
-  color: var(--molsan-text);
-  background: var(--molsan-page-bg);
 }
 
 .erp-main-content {
