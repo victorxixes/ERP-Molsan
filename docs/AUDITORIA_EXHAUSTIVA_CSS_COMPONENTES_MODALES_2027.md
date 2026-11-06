@@ -2,7 +2,7 @@
 
 **Rama de trabajo:** `fix/molsan-css-selector-audit-round1`  
 **PR:** #409 (Draft)  
-**Último commit de código desplegado:** `6b98941dd2dc9df924c6e1d93b8d2c59f3ed11cd`  
+**Último commit de código desplegado:** `fb03640ed90271cea7888eeabc94f4637f2998f5`  
 **Alcance de esta revisión:** frontend `frontend-app/src`; sin cambios en backend, API, Supabase, datos ni producción.
 
 ## 1. Inventario real del frontend
@@ -875,3 +875,23 @@ Al volver a abrir los bloques completos de las hojas, se ha detectado que la heu
 - **`.molsan-icon-3d`:** el bloque base localizado está en `MolsanPremium2027.css`; no se ha localizado un bloque base homónimo en `molsan-design-system.css`. La atribución anterior de una base duplicada entre ambas hojas no queda confirmada.
 
 La conclusión correcta es que estas capas tienen responsabilidades complementarias y selectores ancestro amplios, pero los tres ejemplos anteriores **no justifican por sí solos borrar declaraciones**. Se mantiene la decisión de no reordenar ni retirar capas sin evidencia de declaraciones computadas y validación en Preview.
+
+
+## 51. Consolidación segura de movimiento reducido del shell — 6 de noviembre de 2026
+
+Se ha retirado una repetición real entre las capas globales:
+
+- `MolsanPremium2027.css` contenía una regla `@media (prefers-reduced-motion: reduce)` para `.erp-app-shell` y todos sus descendientes.
+- `MolsanRedesign2027.css` ya contenía la misma regla para los descendientes del shell. Se ha añadido el propio `.erp-app-shell` a ese selector y se ha retirado el bloque repetido de Premium.
+- Se conservan exactamente las declaraciones efectivas: `scroll-behavior: auto`, transición y animación de `.01ms`, y una sola iteración. La regla queda en la capa base de layout; Premium conserva el acabado visual y el selector de Espacios de trabajo.
+
+### Verificación del cambio
+
+Commit: `fb03640ed90271cea7888eeabc94f4637f2998f5`.
+
+- `MOLSAN frontend premium build` #937: success.
+- `Frontend dependency security audit` #371: success; el informe npm asociado registra 0 vulnerabilidades.
+- `Validar Fichaje Molsan` #3406: success.
+- Render Preview: deploy `dep-dbn0udou01pc73fr0q30`, commit `fb03640ed90271cea7888eeabc94f4637f2998f5`, estado `live`.
+
+No se ha tocado producción, API, base de datos ni la lógica funcional. La comprobación visual autenticada del Preview continúa pendiente.
