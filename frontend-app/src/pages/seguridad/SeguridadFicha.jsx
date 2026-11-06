@@ -11,9 +11,6 @@ import { useSeguridad } from "../../hooks/useSeguridad";
 
 import MODULOS_ERP from "../../config/modulos";
 import { editarEmpleado } from "../../api/empleados";
-import "./SeguridadSubpaginasPremium.css";
-
-
 /* ============================================================
    HELPERS
 ============================================================ */
