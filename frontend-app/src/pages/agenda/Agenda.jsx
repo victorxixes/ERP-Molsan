@@ -380,7 +380,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
   }, [citasDelPeriodo, busqueda, modalidadFiltro]);
   const citasPorRealizar = citasDelPeriodo.filter((cita) => String(cita.fecha || "").slice(0, 10) >= hoyISO && !(Boolean(cita.firma_realizada) && normalizarTexto(cita.tipo_cita).includes("firma"))).length;
   const citasPresenciales = citasDelPeriodo.filter((cita) => modalidadCita(cita) === "presencial").length;
-  const citasVideoconferencia = citasDelPeriodo.filter((cita) => modalidadCita(cita) === "videoconferencia").length;
+  const citasVideoconferencias = citasDelPeriodo.filter((cita) => modalidadCita(cita) === "videoconferencia").length;
 
   // ============================================================
   // FECHA ACTUAL
