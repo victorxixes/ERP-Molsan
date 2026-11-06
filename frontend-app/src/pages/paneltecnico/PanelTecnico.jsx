@@ -27,9 +27,9 @@ export default function PanelTecnico() {
         </div>
       </header>
 
-      <MonitorSistema />
+      <section className="erp-card panel-tecnico-seccion p-5"><MonitorSistema /></section>
 
-      <section className="panel-tecnico-seccion">
+      <section className="erp-card panel-tecnico-seccion p-5">
         <div className="mb-4">
           <h2 className="text-lg font-semibold text-[var(--erp-text)]">Auditoría</h2>
           <p className="mt-1 text-sm text-[var(--erp-text-soft)]">Registro y análisis de las operaciones realizadas en el ERP.</p>
