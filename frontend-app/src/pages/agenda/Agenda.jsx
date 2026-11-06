@@ -430,7 +430,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
       </header>
       {/* NAVEGACIÓN Y FILTROS */}
 
-      <div className="erp-card p-4 shadow-sm">
+      <div className="erp-card relative z-20 overflow-visible p-4">
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
