@@ -119,7 +119,7 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
                   const cargo = empleado.cargo_nombre || empleado.cargo || empleado.puesto || "—";
                   const activo = empleado.activo !== false;
                   return (
-                    <tr key={empleado.id} className={`border-b border-[var(--molsan-border)] last:border-b-0 transition-colors hover:bg-blue-50/60 ${indice % 2 === 0 ? "bg-white" : "bg-[var(--molsan-surface-soft)]/50"}`}>
+                    <tr key={empleado.id} className={`border-b border-[var(--molsan-border)] last:border-b-0 transition-colors hover:bg-[var(--molsan-primary-soft)] ${indice % 2 === 0 ? "bg-white" : "bg-[var(--molsan-surface-soft)]"}`}>
                       <td className="border-r border-[var(--molsan-border-light)] px-4 py-3 font-mono text-xs text-[var(--molsan-text-secondary)]">{empleado.id}</td>
                       <td className="border-r border-[var(--molsan-border-light)] px-4 py-3">
                         <div className="font-semibold text-[var(--molsan-primary)]">{nombre}</div>
