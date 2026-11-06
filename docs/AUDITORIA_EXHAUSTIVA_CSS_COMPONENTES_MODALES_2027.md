@@ -1198,3 +1198,8 @@ Se retiraron de NotarGest y EncargaGest las definiciones locales de borde, radio
 ### 24.2. Exclusión de overlays y paneles modales
 
 La regla de migración de tarjetas Tailwind ahora excluye cualquier elemento con `role=dialog` y cualquier clase cuyo nombre contenga `modal`, evitando que una tarjeta heredada dentro de una subpágina capture por error el estilo de un diálogo. Commit: 53ce7d7.
+
+
+## 27. Normalización de tarjetas KPI
+
+MolsanStatCard deja de usar fondos degradados, borde fino y microanimaciones de giro/zoom del icono. Ahora comparte fondo blanco, borde 1,5 px, franja superior de acento, sombra reforzada y elevación de 4 px con el patrón Espacios de trabajo. Los tonos semánticos de cada indicador se conservan en la franja y el icono; los datos/valores y su jerarquía siguen intactos. Commit: 3918a4a.
