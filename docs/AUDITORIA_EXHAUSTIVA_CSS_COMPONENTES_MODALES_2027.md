@@ -375,3 +375,12 @@ En `NotarGest.css` se encontraron dos reglas base para `.ng-admin-kpi-button` y 
 Commit: `e3ae11a`.
 
 **Validación pendiente:** build posterior al commit y comprobación visual del panel global y las fichas individuales por notaría, incluyendo hover, foco y móvil. Las reglas de los modales NotarGest que aparecen repetidas en distintos breakpoints se conservan hasta validar cada estado; no se han eliminado por coincidencia de selector.
+
+
+## 19. Consolidación de superficies base de modales NotarGest — 6 de noviembre de 2026
+
+Se unificaron las reglas base repetidas de `.ng-modal` / `.ng-resumen-expedientes-modal` y sus cabeceras. La segunda definición solo repetía el z-index del overlay y volvía a fijar borde, radio, sombra, fondo y borde inferior. Se trasladó el acabado final corporativo a las reglas base y se retiró el bloque duplicado. Se conserva la variante oscura específica de `.notargest .ng-modal > header` (portal profesional), que es una excepción funcional/visual distinta y no se ha neutralizado.
+
+Commit: `9aa2115`.
+
+No se ha modificado JSX ni el comportamiento de apertura/cierre. **Validación pendiente:** probar los modales de avisos, pagos, perfil y resumen de expedientes en el panel administrativo y el portal NotarGest, incluyendo foco, Escape, scroll y responsive.
