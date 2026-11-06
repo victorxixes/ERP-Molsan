@@ -1547,23 +1547,12 @@ export default function EntidadesBancarias() {
 
       <header className="molsan-page-header">
 
-        <div
-          className="
-            absolute
-            inset-x-0
-            top-0
-            h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/60
-            to-transparent
-          "
-        />
+
 
 
         <div className="flex w-full min-w-0 flex-wrap items-center justify-between gap-4">
 
-          <div className="molsan-page-header__identity molsan-page-header__identity">
+          <div className="molsan-page-header__identity">
 
             <div className="molsan-page-header__mark">
               <MolsanIcon name="bank" size={22} tone="ocean" />
