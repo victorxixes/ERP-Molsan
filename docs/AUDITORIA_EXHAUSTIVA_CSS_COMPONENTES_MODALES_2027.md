@@ -807,3 +807,11 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - Se conservan los tamaños efectivos de KPI (132 px escritorio, 112 px hasta 760 px y el ajuste de la zona de firmas en móvil), la jerarquía de títulos, los colores corporativos, las tablas y el soporte de movimiento reducido.
 - No se modifica el JSX ni la lógica de métricas; el Dashboard ya utiliza `MolsanPremiumCard` y `MolsanPageHeader`.
 - Verificación estática de la hoja: 34/34 llaves y cero media queries vacías. Build de Preview pendiente para este último bloque.
+
+## 45. Barrido estático de las 41 hojas CSS inventariadas (6 de noviembre de 2026)
+
+- Revisadas las 41 hojas incluidas en el inventario de auditoría: llaves, bloques vacíos y selectores repetidos.
+- Eliminados los bloques sin declaraciones de `NotarGest.css` (media query de movimiento reducido vacía), `CtnListadoPage.css` (selectores de filtros/tabla sin propiedades) y `ProvisionesFondosPage.css` (regla móvil de página vacía). El Dashboard se limpió en la sección 44.
+- Las 41 hojas conservan llaves equilibradas. Tras esta pasada, las hojas revisadas no presentan bloques vacíos detectados por el análisis estático.
+- Los selectores repetidos detectados no se borran en bloque: varios son ampliaciones responsive, estados o ajustes de cascada. Se mantienen hasta contrastar sus declaraciones, orden de importación y consumidores; una coincidencia de nombre no demuestra duplicidad funcional.
+- Este barrido es una verificación estática del inventario, no una inspección visual de las 41 hojas ni una prueba funcional de cada página.
