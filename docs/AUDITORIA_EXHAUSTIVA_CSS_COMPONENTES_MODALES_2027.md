@@ -686,3 +686,10 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - Se conservan las reglas de cuadrícula y los breakpoints del panel administrativo; no se cambian los datos, los filtros ni la navegación.
 - Verificación estática: no quedan referencias a `.ng-admin-kpi-button` en la hoja local y sus llaves están equilibradas (287/287).
 - Pendiente: build/CI y revisión visual autenticada en Preview de la cuadrícula global y sus variantes responsive.
+
+## 30. NotarGest — retirada de selectores KPI globales heredados (6 de noviembre de 2026)
+
+- Eliminadas las ocho referencias al selector retirado `.ng-admin-kpi-button` de `MolsanCanonicalVisual2027.css`.
+- La tarjeta `MolsanStatCard` conserva su propia franja superior y microinteracciones; se evita que el sistema canónico le suprima el pseudoelemento o le aplique estilos de un componente ya eliminado.
+- No se han modificado las reglas globales de las tarjetas de dashboard que siguen teniendo consumidores.
+- Verificación estática: 41/41 llaves equilibradas en la hoja canónica.
