@@ -87,9 +87,9 @@ export default function Notificaciones() {
 
  noticia: {
  borde: "border-blue-200",
- fondo: "bg-blue-50",
- icono: "bg-blue-50 border-blue-200 text-blue-600",
- barra: "bg-blue-500",
+ fondo: "bg-[var(--molsan-primary-soft)]",
+ icono: "bg-[var(--molsan-primary-soft)] border-[var(--molsan-border)] text-[var(--molsan-primary)]",
+ barra: "bg-[var(--molsan-primary)]",
  },
 
  sistema: {
