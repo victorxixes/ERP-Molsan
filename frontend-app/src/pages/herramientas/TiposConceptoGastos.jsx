@@ -2,9 +2,11 @@ import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import React, {
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import axios from "../../api/axios";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 // ============================================================
 // TIPOS DE CONCEPTO DE GASTOS
 // MOLSAN ERP — PREMIUM 2027
@@ -112,6 +114,8 @@ export default function TiposConceptoGastos() {
 
   const [mostrarModal, setMostrarModal] =
     useState(false);
+  const conceptoDialogRef = useRef(null);
+  useAccessibleDialog({ open: mostrarModal, onClose: cerrarModal, dialogRef: conceptoDialogRef });
 
   const [modoEdicion, setModoEdicion] =
     useState(false);
@@ -2182,6 +2186,11 @@ export default function TiposConceptoGastos() {
         >
 
           <div
+            ref={conceptoDialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Formulario de concepto de gasto"
             className="
               w-full
               max-w-lg
