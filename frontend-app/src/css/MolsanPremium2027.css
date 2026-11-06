@@ -973,8 +973,9 @@
   min-width: 0;
   padding: 14px 16px;
   color: #064675;
-  background: #F2F7FB;
-  border-bottom: 1px solid #D8E4EC;
+  background: #FFFFFF;
+  border: 0;
+  border-bottom: 0;
 }
 :is(
   .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
@@ -1053,8 +1054,9 @@
   gap: 12px;
   padding: 14px 16px;
   color: #064675;
-  background: #F2F7FB;
-  border-bottom: 1px solid #D8E4EC;
+  background: #FFFFFF;
+  border: 0;
+  border-bottom: 0;
 }
 .provisiones-fondos-page :is(section, article) > :is(header, .mb-4.flex.items-center.justify-between) :is(h2, h3) {
   margin: 0;
