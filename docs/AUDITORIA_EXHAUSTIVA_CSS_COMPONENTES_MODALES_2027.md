@@ -357,3 +357,12 @@ Tras corregir el orden responsive, se consolidaron en `MolsanCardsPremium2027.cs
 Commit: `eb2cefa`.
 
 La modificación es una consolidación de declaraciones equivalentes; requiere build y verificación visual junto con la corrección responsive anterior.
+
+
+## 17. Consolidación del layout del modal de EncargaGest — 6 de noviembre de 2026
+
+La inspección de `EncargaGest.css` confirmó dos definiciones base de `.eg-modal-layout`: la segunda reemplazaba el grid-template y alineación de la primera, mientras las reglas de tablet/móvil estaban repartidas en dos bloques con los mismos breakpoints. Se consolidó la base conservando el resultado efectivo de escritorio (`0.9fr / 1.1fr`, alineación superior, scroll vertical, padding y scrollbar) y se unificaron los breakpoints de 1100 px y 650 px. Se preservaron los ajustes de overlay, altura máxima del formulario, columnas de datos/carpeta, campos y pie de acciones.
+
+Commits: `19bff3d` (consolidación) y `e8e734b` (revisión de preservación del espaciado de tablet).
+
+No se ha tocado JSX, handlers, permisos, envío ni guardado del modal. **Validación pendiente:** build posterior a estos commits y prueba real de alta/edición, scroll, teclado, foco y móvil/tablet en EncargaGest.
