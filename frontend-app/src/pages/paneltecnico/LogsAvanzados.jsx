@@ -74,7 +74,7 @@ export default function LogsAvanzados({ embedded = false } = {}) {
   // ============================================================
 
   return (
-    <div className="logs-avanzados-premium panel-tecnico-submodulo-premium space-y-6 animate-fade-in">
+    <div className="logs-avanzados-premium panel-tecnico-submodulo-premium space-y-6 ">
 
       {!embedded && <MolsanPageHeader
         mark="LG"
