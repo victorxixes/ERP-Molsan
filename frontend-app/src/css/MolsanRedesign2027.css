@@ -1492,13 +1492,6 @@ body {
   width: 100%;
 }
 
-.erp-main-inner {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 1920px;
-  margin-inline: auto;
-  padding: 24px clamp(12px, 1.6vw, 28px);
-}
 /*
  * Una sola fuente para el margen exterior de las páginas del ERP.
  * .erp-main-inner aporta el espacio de página; las raíces de cada módulo
@@ -1692,11 +1685,7 @@ body {
 }
 
 @media (max-width: 760px) {
-  .erp-main-inner {
-    padding: 14px 10px;
-  }
-
-  :where(
+:where(
     .cg-page, .cg-unified-workspace, .expedientes-page,
     .expedientes-listado-premium, .ficha-expediente-premium,
     .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
