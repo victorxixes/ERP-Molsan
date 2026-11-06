@@ -552,23 +552,18 @@ flex-shrink:0}
   background:rgba(3,28,46,.58);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
 }
 
-.notargest .ng-modal {
-
-  color:var(--molsan-prof-text);border:1px solid var(--molsan-prof-border);
-  border-radius:18px;background:#fff;box-shadow:0 24px 64px rgba(3,28,46,.24);
-}
+.notargest .ng-modal { color:var(--molsan-prof-text); }
 
 .notargest .ng-modal>header,
 .notargest .ng-resumen-expedientes-modal>header {
-
   display:flex;align-items:center;justify-content:space-between;gap:14px;
-  padding:18px 22px;color:#fff;border:0;border-bottom:1px solid rgba(255,255,255,.14);
-  border-radius:0;background:linear-gradient(116deg,#032D4B 0%,#064675 58%,#0D638C 100%);
+  padding:18px 22px;color:#064675;border:0;border-bottom:0;
+  border-radius:0;background:#FFFFFF;box-shadow:none;
 }
-
-.notargest .ng-modal>header :is(h2,h3,p,span,.ng-kicker),
-.notargest .ng-resumen-expedientes-modal>header :is(h2,h3,p,span,.ng-kicker) {
-color:#fff}
+.notargest .ng-modal>header :is(h2,h3),
+.notargest .ng-resumen-expedientes-modal>header :is(h2,h3) { color:#064675; }
+.notargest .ng-modal>header :is(p,span,.ng-kicker),
+.notargest .ng-resumen-expedientes-modal>header :is(p,span,.ng-kicker) { color:#617789; }
 
 .notargest .ng-modal-lista {
 
