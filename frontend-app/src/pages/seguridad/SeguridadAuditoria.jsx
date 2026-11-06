@@ -1463,7 +1463,7 @@ export default function SeguridadAuditoria() {
 
   return (
     <div
-      className="seguridad-auditoria-premium space-y-6 animate-fade-in"
+      className="seguridad-auditoria-premium space-y-6"
     >
 
       <MolsanPageHeader
