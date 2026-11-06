@@ -284,52 +284,6 @@
 }
 
 
-/* Catálogos · cabecera única y a todo el ancho en el módulo y sus subapartados. */
-.catalogos-premium-page > .molsan-page-header {
-  display: flex;
-  width: 100%;
-  max-width: none;
-  min-width: 0;
-  align-self: stretch;
-  flex: 0 0 100%;
-  box-sizing: border-box;
-  margin: 0 0 20px;
-}
-.catalogos-premium-page > .molsan-page-header .molsan-page-header__identity {
-  flex: 1 1 auto;
-}
-.catalogos-premium-page > .molsan-page-header .molsan-page-header__description {
-  max-width: 760px;
-}
-
-
-/* ============================================================
-   MOLSAN ERP PREMIUM 2027 · CATÁLOGOS Y TODAS SUS FICHAS
-   Cabeceras de ancho completo, jerarquía tipográfica y superficies
-   coherentes, también en las pantallas heredadas del catálogo.
-   ============================================================ */
-.catalogos-premium-page { width:100%; min-width:0; }
-.catalogos-premium-page .molsan-page-header {
-  box-sizing:border-box;
-  width:100%;
-  max-width:none;
-  min-width:0;
-  min-height:112px;
-  align-self:stretch;
-  margin:0 0 20px;
-  padding:18px 24px;
-  border-radius:22px;
-}
-.catalogos-premium-page .molsan-page-header__identity { min-width:0; flex:1 1 auto; }
-.catalogos-premium-page .molsan-page-header__description { max-width:780px; }
-.catalogos-premium-page .molsan-page-header__actions { flex:0 0 auto; }
-.catalogos-premium-page :is(.erp-card, a.erp-card, button.erp-card) { border-radius:20px !important; }
-.catalogos-premium-page :is(a.erp-card, button.erp-card):hover { transform:translateY(-4px); }
-@media(max-width:760px){
-  .catalogos-premium-page .molsan-page-header { min-height:0; padding:16px; border-radius:18px; }
-  .catalogos-premium-page .molsan-page-header__actions { width:100%; }
-}
-
 /* Retirar los marcos heredados que envolvían una segunda cabecera dentro.
    La cabecera canónica pasa a ser la única superficie visual de título. */
 .catalogos-premium-page > div:has(.molsan-page-header),
@@ -362,35 +316,6 @@
   .panel-tecnico-submodulo-premium.monitor-realtime-premium > .molsan-page-header {border-radius:18px;padding:16px;}
 }
 
-
-/* Ajuste de cabeceras de las subpáginas de Catálogos: identidad a la izquierda y acciones dentro del mismo bloque, a la derecha. */
-.catalogos-premium-page .molsan-page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-  gap: 24px;
-  width: 100%;
-  min-width: 0;
-}
-.catalogos-premium-page .molsan-page-header__identity {
-  display: flex;
-  align-items: center;
-  flex: 1 1 auto;
-  min-width: 0;
-  text-align: left;
-}
-.catalogos-premium-page .molsan-page-header__identity > div:last-child { text-align: left; }
-.catalogos-premium-page .molsan-page-header__actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex: 0 0 auto;
-  gap: 10px;
-  margin-left: auto;
-  text-align: right;
-}
-.catalogos-premium-page .molsan-page-header__actions > * { flex: 0 0 auto; }
 
 /* Tarjetas de acceso de Utilidades: misma superficie Glass Luxe que el resto del ERP. */
 .utilidades-premium-page .utilidades-access-card {
@@ -442,51 +367,6 @@
 }
 
 
-/* Cabeceras de subpáginas de Catálogos: nunca recortar botones ni encoger la identidad. */
-.catalogos-premium-page .catalogos-subpage-header {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  overflow: visible;
-}
-.catalogos-premium-page .catalogos-subpage-header__layout {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 18px 28px;
-  width: 100%;
-  min-width: 0;
-}
-.catalogos-premium-page .catalogos-subpage-header__identity {
-  flex: 1 1 340px;
-  min-width: min(100%, 260px);
-  text-align: left;
-}
-.catalogos-premium-page .catalogos-subpage-header__actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex: 1 1 440px;
-  flex-wrap: wrap;
-  gap: 9px;
-  min-width: 0;
-  margin-left: auto;
-  overflow: visible;
-}
-.catalogos-premium-page .catalogos-subpage-header__actions > button,
-.catalogos-premium-page .catalogos-subpage-header__actions > a {
-  flex: 0 1 auto;
-  max-width: 100%;
-  white-space: normal;
-}
-@media (max-width: 900px) {
-  .catalogos-premium-page .catalogos-subpage-header__layout { align-items: flex-start; }
-  .catalogos-premium-page .catalogos-subpage-header__actions { flex-basis: 100%; justify-content: flex-start; margin-left: 0; }
-}
-
-
 /* Catálogos · cabecera unificada para todas las fichas maestras y económicas. */
 .catalogos-premium-page .catalogos-subpage-header {
   display: block;
@@ -495,9 +375,10 @@
   width: 100%;
   max-width: none;
   min-width: 0;
-  min-height: 112px;
-  margin: 0 0 20px;
-  padding: 18px 24px;
+  min-height: 60px;
+  margin: 0 0 16px;
+  padding: 5px 16px;
+  border-radius: 16px;
   overflow: visible;
 }
 .catalogos-premium-page .catalogos-subpage-header__layout {
@@ -548,7 +429,7 @@
   margin-left: auto;
 }
 @media (max-width: 900px) {
-  .catalogos-premium-page .catalogos-subpage-header { min-height: 0; padding: 16px; }
+  .catalogos-premium-page .catalogos-subpage-header { min-height: 0; padding: 8px 12px; border-radius: 16px; }
   .catalogos-premium-page .catalogos-subpage-header__layout { align-items: flex-start; }
   .catalogos-premium-page .catalogos-subpage-header__identity,
   .catalogos-premium-page .catalogos-subpage-header__identity-wrap { flex-basis: 100%; }
