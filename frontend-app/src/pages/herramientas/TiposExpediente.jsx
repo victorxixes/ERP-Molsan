@@ -105,7 +105,7 @@ export default function TiposExpediente() {
 
   return (
     <main className="molsan-page-stack catalogos-premium-page min-h-full ">
-      <header className="molsan-page-header dashboard-header">
+      <header className="molsan-page-header">
         <div className="molsan-page-header__identity">
           <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="folder" size={22} tone="ocean" /></div>
           <div className="min-w-0">
