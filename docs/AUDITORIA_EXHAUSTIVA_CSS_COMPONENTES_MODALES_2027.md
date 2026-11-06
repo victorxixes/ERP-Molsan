@@ -710,3 +710,12 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - El hook implementa cierre por Escape, contención del foco con Tab/Mayús+Tab, devolución del foco al elemento previo al cerrar y prioridad del diálogo superior cuando hay anidamiento.
 - Verificación CSS: NotarGest limita la altura de los modales al viewport y los adapta a ancho completo en móvil; EncargaGest reorganiza el formulario a una columna, reduce paddings y adapta el footer en pantallas estrechas.
 - Alcance: comprobación estática de código y estilos. La prueba manual de teclado, lector de pantalla y viewport real en Preview sigue pendiente.
+
+## 33. Consolidación de cascada global y cabeceras compartidas (6 de noviembre de 2026)
+
+- `main.jsx` importa las capas en orden explícito: tokens, design system, estilos de módulos, Redesign/Premium, compatibilidad de tarjetas, consistencia global, Glass Luxe y Canonical Visual al final. Se mantiene la capa canónica como última autoridad visual.
+- Confirmado que la cabecera `MolsanPageHeader` es utilizada en las páginas revisadas de Agenda, Catálogos/Utilidades, Informes, CTN, Expedientes, Empleados, Provisiones, Panel Técnico, Maestros, Seguridad, Notificaciones, Logs, Mensajería y Cancelagest.
+- Agenda conserva una variante de color propia en su cabecera, pero no redefine la geometría compartida; se mantienen sus controles de calendario como excepción funcional.
+- Eliminada una segunda regla idéntica de `backdrop-filter: none` aplicada a paneles de los portales en `MolsanRedesign2027.css`. La regla base equivalente permanece en su ubicación anterior, sin cambiar la cascada efectiva.
+- Verificación estática de las seis capas globales: no se detectan bloques con selector y declaraciones idénticos repetidos. Las redefiniciones con diferencias de estado, breakpoint o contexto se mantienen para no eliminar comportamiento intencionado.
+- Validación de la hoja modificada: 194/194 llaves equilibradas. Build frontend, validación de fichaje y auditoría de dependencias: success en el commit de esta pasada.
