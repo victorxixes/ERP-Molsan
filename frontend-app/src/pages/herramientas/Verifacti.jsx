@@ -3,8 +3,6 @@ import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import "../../css/ComponentesOperativosPremium.css";
-
 const SECCIONES = [
   { id: "resumen", label: "Resumen", icon: "dashboard" },
   { id: "facturas", label: "Consultar facturas", icon: "search" },
