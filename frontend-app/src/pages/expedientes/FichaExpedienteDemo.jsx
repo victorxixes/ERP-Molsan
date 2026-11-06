@@ -198,7 +198,7 @@ export default function FichaExpedienteDemo() {
 
     {/* BANDA DE IDENTIFICACIÓN Y ACCIONES: debajo de los tres bloques */}
     <section className="molsan-card overflow-hidden">
-      <div className="flex w-full min-w-0 flex-wrap items-center gap-2 bg-[var(--molsan-surface-soft)]/80 px-3 py-2.5">
+      <div className="flex w-full min-w-0 flex-wrap items-center gap-2 bg-[var(--molsan-surface-soft)] px-3 py-2.5">
         <div className="flex min-w-0 shrink-0 items-center gap-2 rounded-lg border border-[var(--molsan-border)] bg-white px-2.5 py-2">
           <MolsanIcon name="folder" size={19} tone="ocean" bare />
           <div><small className="block text-[9px] font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Expediente</small><b className="text-sm text-[#064675]">2026483148</b></div>
@@ -228,7 +228,7 @@ export default function FichaExpedienteDemo() {
         </React.Fragment>)}
       </div>
 
-      {controlCalidad ? <div className="mt-2 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-primary-soft)]/40 p-4">
+      {controlCalidad ? <div className="mt-2 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-primary-soft)] p-4">
         <div className="mb-3 flex items-center gap-2"><MolsanIcon name="shield" size={20} tone="violet" bare /><div><h3 className="text-sm font-extrabold text-[var(--molsan-primary)]">Control de calidad del expediente</h3><p className="text-[10px] text-[var(--molsan-primary)]">Revisión transversal e independiente de las actividades</p></div></div>
         <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">{["Hoja de solicitud / encargo firmada","Justificante de cancelación","Nota simple registral","Firma y protocolo notarial","Justificante AJD / ITP","Hoja de inscripción","Nota / factura Registradores","Defectos registrales subsanados","Factura y expediente digital completo"].map(x => <label key={x} className="flex items-start gap-2 rounded-lg border border-[var(--molsan-border)] bg-white p-3 text-xs text-[var(--molsan-text)]"><input type="checkbox" className="mt-0.5 accent-[#064675]" />{x}</label>)}</div>
       </div> : <div className="mt-2 min-w-0 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3 sm:p-4">
