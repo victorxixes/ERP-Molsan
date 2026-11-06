@@ -65,7 +65,7 @@ export default function NotificacionesToast() {
 
   return (
     <div
-      className="notificaciones-toast 
+      className="notificaciones-toast-premium notificaciones-toast 
  pointer-events-none
  fixed
  bottom-5
