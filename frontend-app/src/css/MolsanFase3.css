@@ -85,7 +85,6 @@
   }
 }
 
-
 /* Portales y modales: compatibilidad transversal consolidada */
 /* MOLSAN ERP PREMIUM 2027 · FASE 3 · PORTALES INDEPENDIENTES Y MODALES */
 :where(.apoderagest, .notargest, .encargagest) {
@@ -150,12 +149,12 @@
 body :where(
   [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal):not(.molsan-modal):not(.molsan-modal__panel):not(.erp-modal-panel):not(.expediente-operativo-modal-panel):not(.ng-modal):not(.eg-modal-form):not(.eg-modal-perfil):not(.ctn-detalle-modal)
 ) {
-color: var(--molsan-text, #18364b);
+  color: var(--molsan-text, #18364b);
   background-color: #fff;
   border-color: var(--molsan-border, #d8e4ec);
   border-radius: var(--molsan-radius-modal, 16px);
   box-shadow: var(--molsan-shadow-modal, 0 18px 48px rgba(6, 40, 65, .18));
-box-sizing: border-box;
+  box-sizing: border-box;
   min-width: 0;
   max-width: calc(100vw - 32px);
   max-height: min(88dvh, 900px);
@@ -179,8 +178,6 @@ box-sizing: border-box;
     border-radius: 14px;
   }
 }
-
-
 
 @supports selector(body:has([role="dialog"][aria-modal="true"])) {
   body:has([role="dialog"][aria-modal="true"]) {
