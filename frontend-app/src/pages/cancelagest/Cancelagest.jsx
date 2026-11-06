@@ -94,7 +94,7 @@ export default function Cancelagest() {
       <section className="cg-section">
         <div className="cg-section-heading"><div><span className="cg-kicker">ACCESOS DIRECTOS</span><h2>Módulos de trabajo</h2><p>Accede a las herramientas principales del ERP sin salir del entorno corporativo.</p></div></div>
         <div className="cg-module-grid">{modulosVisibles.map((modulo) => <button type="button" className="cg-module-card" key={modulo.titulo} onClick={() => navigate(modulo.ruta)}>
-          <span className="cg-module-icon"><MolsanIcon name={modulo.icono} size={30} tone="ocean" /></span><span className="cg-module-text"><strong>{modulo.titulo}</strong><small>{modulo.descripcion}</small></span><span className="cg-module-arrow">↗</span>
+          <span className="cg-module-icon"><MolsanIcon name={modulo.icono} size={30} tone="ocean" /></span><span className="cg-module-text"><strong>{modulo.titulo}</strong><small>{modulo.descripcion}</small></span><span className="cg-module-arrow"><MolsanIcon name="arrowRight" size={16} /></span>
         </button>)}</div>
       </section>
 
