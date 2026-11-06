@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import Sidebar from "../../components/Sidebar";
 import "../../css/PortalProfesionalShared.css";
 import "../../css/EncargaGest.css";
@@ -883,32 +884,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         />
       )}
       <div className="ag-fondo-decorativo" aria-hidden="true" />
-      <header className="ag-hero eg-hero molsan-page-header">
-        <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca eg-marca" aria-label="EncargaGest">EG</div>
-          <div>
-            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1 className="molsan-page-header__title">EncargaGest</h1>
-            <p className="molsan-page-header__description">{modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}</p>
-          </div>
-        </div>
-        <div className="ag-hero-acciones">
-          {modo === "interno" && (
-            <>
-              <div className="ag-fecha-actual">
-                <span className="ag-punto-vivo" aria-hidden="true" />
-                <span>{fechaActual}</span>
-              </div>
-              <button type="button" onClick={irAModulos} className="eg-secondary"><span aria-hidden="true">▦</span> Ir a módulos</button>
-              <button type="button" onClick={salirEncargaGest} className="eg-secondary">Cerrar sesión</button>
-              <button type="button" onClick={cargarTodo} disabled={cargando} className="ag-boton-actualizar">
-                <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
-                {cargando ? "Actualizando…" : "Actualizar datos"}
-              </button>
-            </>
-          )}
-        </div>
-      </header>
+      <MolsanPageHeader mark="EG" title="EncargaGest" description={modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."} actions={modo === "interno" ? <><div className="molsan-premium-header__date"><span aria-hidden="true" />{fechaActual}</div><button type="button" onClick={irAModulos} className="molsan-premium-header__secondary-action">Ir a módulos</button><button type="button" onClick={salirEncargaGest} className="molsan-premium-header__secondary-action">Cerrar sesión</button><button type="button" onClick={cargarTodo} disabled={cargando} className="molsan-premium-header__primary-action">{cargando ? "Actualizando…" : "Actualizar datos"}</button></> : null} className="eg-hero" />
 
       <main className="eg-main w-full max-w-none px-1 pb-4">
         <section role="status" aria-live="polite" className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 shadow-sm">
