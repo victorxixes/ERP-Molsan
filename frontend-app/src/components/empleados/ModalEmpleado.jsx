@@ -2193,6 +2193,7 @@ const permisosDisponibles =
 
       <div
         className="
+          modal-sj
           relative
           z-10
           flex
@@ -2202,11 +2203,8 @@ const permisosDisponibles =
           max-h-[94vh]
           flex-col
           overflow-hidden
-          rounded-[28px]
-          border
-          border-slate-200/80
           bg-white
-          shadow-[0_30px_100px_rgba(15,23,42,0.30)]
+          shadow-2xl
           animate-slideUp
         "
         onClick={(
