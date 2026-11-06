@@ -1520,3 +1520,18 @@ Se han inspeccionado y normalizado a tokens corporativos, sin cambiar sus operac
 **Preservación funcional:** no se han cambiado endpoints, payloads, permisos, datos, reglas de negocio ni llamadas de guardado/importación. Son sustituciones de clases de presentación y de pictogramas de interfaz.
 
 **Validación:** cada fichero editado se recuperó de GitHub antes de escribir y las escrituras devolvieron commit SHA. No se ha ejecutado build ni inspección visual autenticada. Algunos componentes complejos (Maestros, Oficinas Liquidadoras, municipios y modales anidados) necesitan prueba visual específica antes de declararlos cerrados.
+
+
+## 33. Corrección de clases raíz desconectadas de CSS compartido — 6 de noviembre de 2026
+
+La lectura cruzada de `molsan-design-system.css` y los componentes detectó clases de alcance responsive/foco definidas en CSS pero no aplicadas en sus raíces JSX. Se han conectado y verificado por lectura posterior:
+
+- `AgendaToast.jsx` → `agenda-toast-premium`
+- `NotificacionesToast.jsx` → `notificaciones-toast-premium`
+- `TablaLogs.jsx` → `tabla-logs-premium`
+- `MensajeBubble.jsx` → `mensaje-bubble-premium`
+- `MensajesHeader.jsx` → `mensajes-header-premium`
+- `AutocompleteNotario.jsx` → `autocomplete-notario-premium`
+- `SelectSJ.jsx` → `select-sj-premium`
+
+Estas clases activan reglas compartidas de ancho mínimo, foco visible, tablas, listas de opciones, overflow táctil y reducción de movimiento donde corresponde. No se cambian sus handlers, store, autenticación ni navegación. Se ha comprobado que los siete nombres de clase están presentes en los ficheros guardados. Sigue pendiente la comprobación visual de cada estado y viewport.
