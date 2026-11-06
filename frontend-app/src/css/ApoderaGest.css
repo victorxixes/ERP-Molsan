@@ -62,7 +62,7 @@
   gap: 15px;
   margin-bottom: 15px;
 }
-.apoderagest .ag-kpi{position: relative; min-width: 0; padding: 18px 19px 17px; overflow: hidden}
+
 .apoderagest .ag-kpi-superior{
   display: flex;
   align-items: center;
@@ -75,19 +75,7 @@
   font-weight: 750;
   line-height: 1.5;
 }
-.apoderagest .ag-kpi-icono{
-  display: grid;
-  flex: 0 0 34px;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  color: var(--ag-kpi-color, var(--molsan-primary, #064675));
-  background: var(--ag-kpi-icon-bg, var(--molsan-primary-soft, #EAF2F8));
-  border: 1px solid rgba(255,255,255,.85);
-  border-radius: 11px;
-  font-size: 17px;
-  font-weight: 800;
-}
+
 .apoderagest .ag-kpi-valor{
   position: relative;
   z-index: 1;
@@ -107,26 +95,10 @@
   font-size: 10px;
   font-weight: 550;
 }
-.apoderagest .ag-kpi-azul{
-  --ag-kpi-color: var(--molsan-primary, #064675);
-  --ag-kpi-icon-bg: var(--molsan-primary-soft, #EAF2F8);
-  --ag-kpi-halo: rgba(72, 111, 235, .075);
-}
-.apoderagest .ag-kpi-verde{
-  --ag-kpi-color: #15996c;
-  --ag-kpi-icon-bg: #e6f8f0;
-  --ag-kpi-halo: rgba(27, 185, 128, .08);
-}
-.apoderagest .ag-kpi-ambar{
-  --ag-kpi-color: #b87917;
-  --ag-kpi-icon-bg: #fff4dc;
-  --ag-kpi-halo: rgba(241, 181, 57, .10);
-}
-.apoderagest .ag-kpi-violeta{
-  --ag-kpi-color: #7854ce;
-  --ag-kpi-icon-bg: #f0eaff;
-  --ag-kpi-halo: rgba(143, 108, 230, .08);
-}
+
+
+
+
 .apoderagest .ag-grid-secundario{
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -139,7 +111,7 @@
 .apoderagest .ag-grid-secundario .ag-kpi-valor{
   font-size: clamp(20px, 2vw, 25px);
 }
-.apoderagest .ag-panel{min-width: 0; padding: 0; overflow: hidden; backdrop-filter: none; -webkit-backdrop-filter: none}
+
 .apoderagest .ag-panel-proximas{
   padding: 20px 21px 8px;
 }
@@ -429,12 +401,8 @@
 .apoderagest .ag-grid-kpi{
     gap: 10px;
   }
-.apoderagest .ag-kpi{padding: 14px}
-.apoderagest .ag-kpi-icono{
-    flex-basis: 29px;
-    width: 29px;
-    height: 29px;
-  }
+
+
 .apoderagest .ag-kpi-valor{
     font-size: 25px;
   }
@@ -1510,9 +1478,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 6px 18px rgba(6,50,82,.045));
 }
-.apoderagest .ag-panel{
-  background: var(--molsan-surface, #FFFFFF);
-}
+
 .apoderagest .ag-panel-cabecera,
 .apoderagest .ag-titulo-seccion{
   border-color: var(--molsan-border, #D8E4EC);
@@ -1620,31 +1586,14 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   gap:14px;
   margin:0;
 }
-.apoderagest .ag-kpi{
-  display:flex;
-  min-height:148px;
-  flex-direction:column;
-  justify-content:flex-start;
-  padding:18px 19px 16px;
-  border:1px solid var(--molsan-border,#D8E4EC);
-  border-radius:var(--molsan-radius-card,14px);
-  background:var(--molsan-surface,#FFFFFF);
-  box-shadow:var(--molsan-shadow-card,0 6px 18px rgba(6,50,82,.045));
-  text-align:left;
-}
+
 .apoderagest .ag-kpi-superior{min-height:36px}
 .apoderagest .ag-kpi-titulo{
   color:var(--molsan-text-secondary,#617789);
   font-size:11px;
   font-weight:750;
 }
-.apoderagest .ag-kpi-icono{
-  flex:0 0 38px;
-  width:38px;
-  height:38px;
-  border:1px solid var(--molsan-border-light,#E8EDF4);
-  border-radius:11px;
-}
+
 .apoderagest .ag-kpi-valor{
   margin-top:12px;
   color:var(--molsan-primary,#064675);
@@ -1979,7 +1928,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 }
 @media(max-width:760px){
   .apoderagest .ag-grid-kpi{gap:10px}
-  .apoderagest .ag-kpi{min-height:138px;padding:14px}
+  
   .apoderagest .ag-grid-secundario{grid-template-columns:1fr;gap:10px}
   .apoderagest .ag-grid-secundario .ag-kpi{min-height:116px}
   .apoderagest .ag-apoderados-grid{grid-template-columns:minmax(0,1fr)}
@@ -1999,7 +1948,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 }
 @media(max-width:480px){
   .apoderagest .ag-grid-kpi{grid-template-columns:1fr}
-  .apoderagest .ag-kpi{min-height:126px}
+  
   .apoderagest .ag-kpi-ver-expedientes{padding-top:9px}
   .apoderagest .ag-panel-resumen-heading{
     align-items:flex-start;
@@ -2016,23 +1965,15 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 
 
 /* Iconografía visible y tridimensional · MOLSAN PREMIUM 2027 */
-.apoderagest .ag-kpi-icono{
-  flex:0 0 54px;
-  width:54px;
-  height:54px;
-  border:1px solid rgba(255,255,255,.92);
-  border-radius:15px;
-  background:linear-gradient(145deg,#FFFFFF 0%,var(--ag-kpi-icon-bg,#EAF2F8) 100%);
-  box-shadow:0 5px 13px rgba(6,50,82,.10),inset 0 1px 0 #FFFFFF;
-}
+
 .apoderagest .ag-kpi-icono .molsan-icon-3d{
   display:inline-grid;
   filter:drop-shadow(0 3px 4px rgba(6,50,82,.16));
 }
-.apoderagest .ag-kpi-azul{--ag-kpi-icon-bg:#E4F0FA}
-.apoderagest .ag-kpi-verde{--ag-kpi-icon-bg:#E1F5EC}
-.apoderagest .ag-kpi-ambar{--ag-kpi-icon-bg:#FFF1D9}
-.apoderagest .ag-kpi-violeta{--ag-kpi-icon-bg:#F0EAFE}
+
+
+
+
 .apoderagest .ag-grid-secundario .ag-kpi-icono{
   flex-basis:48px;
   width:48px;
@@ -2079,5 +2020,5 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   filter:drop-shadow(0 2px 3px rgba(6,50,82,.15));
 }
 @media(max-width:760px){
-  .apoderagest .ag-kpi-icono{flex-basis:48px;width:48px;height:48px}
+  
 }
