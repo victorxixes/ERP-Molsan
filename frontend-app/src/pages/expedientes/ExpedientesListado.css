@@ -52,11 +52,7 @@
   letter-spacing: .035em;
 }
 
-@media (max-width: 700px) {
-}
 
-@media (prefers-reduced-motion: reduce) {
-  }
 
 
 /* ============================================================
@@ -174,8 +170,3 @@
   min-width: 100%;
 }
 
-
-/* Acciones del listado: azul corporativo Molsan. */
-.expedientes-listado-premium [class~="bg-indigo-600"] { background-color: var(--molsan-primary); }
-.expedientes-listado-premium [class~="hover:bg-indigo-700"]:hover { background-color: var(--molsan-primary-hover); }
-.expedientes-listado-premium [class~="text-indigo-600"] { color: var(--molsan-primary); }
