@@ -122,7 +122,7 @@ export default function ImportarCTN() {
                   Archivo seleccionado
                 </div>
 
-                <div className="truncate text-xs text-[var(--molsan-primary)]/70">
+                <div className="truncate text-xs text-[var(--molsan-primary)]">
                   {file.name}
                 </div>
 
