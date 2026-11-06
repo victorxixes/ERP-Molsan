@@ -79,7 +79,7 @@
 /* Títulos interiores: estructura común, sin fondo ni línea independiente. */
 .apoderagest .ag-panel-cabecera,.apoderagest .ag-titulo-seccion,
 .encargagest .eg-panel-head,.notargest.ng-content .ng-panel-titulo,
-.notargest.ng-content .ng-bloque-heading,.ng-admin-notarias .ng-admin-card-header,
+.notargest.ng-content .ng-bloque-heading,
 .encargagest .eg-directorio-cabecera {
   display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;
   margin:0 0 12px!important;padding:0 0 12px!important;color:var(--molsan-prof-blue)!important;
