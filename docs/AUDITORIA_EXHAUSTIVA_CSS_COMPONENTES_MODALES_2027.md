@@ -2,7 +2,7 @@
 
 **Rama de trabajo:** `fix/molsan-css-selector-audit-round1`  
 **PR:** #409 (Draft)  
-**Último commit de código:** `f29b02d11edf46495ad446120b140281c5002914`  
+**Último commit de código:** `d2d32f8da7e044e596d1d30f7672d62e788a6142`  
 **Alcance de esta revisión:** frontend `frontend-app/src`; sin cambios en backend, API, Supabase, datos ni producción.
 
 ## 1. Inventario real del frontend
@@ -108,6 +108,7 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 - `MolsanPageHeader.jsx`: añadido el mapeo `CG → dashboard` a `MolsanIcon`, porque el Dashboard ya utiliza `MolsanPageHeader` con `mark="CG"` y antes mostraba el texto de marca en vez del icono corporativo.
 - `FichaExpediente.jsx`: corregidos dos cierres JSX con una llave adicional en los botones de registro ABSIS y validación de actividad. Eran los dos avisos de análisis JSX que aparecían en el build anterior; el cambio no modifica las condiciones ni las acciones.
 - `EncargaGest.css`: retiradas 26 referencias de selectores KPI legacy en 18 reglas (68 líneas netas). La versión actual de `EncargaGest.jsx` y `EncargaGestWorkspace.jsx` ya no renderiza `.eg-kpi`, `.ag-kpi` ni sus iconos; las tarjetas actuales salen de `MolsanStatCard` con clases `molsan-stat-card*`. Se conserva intacto el estilo del directorio, formularios y modales.
+- Segunda pasada de `EncargaGest.css`: retiradas otras 5 reglas sin consumidor o filtradas al módulo equivocado (utilidades Tailwind antiguas, `.ag-fecha-actual` y duplicación de `.ag-estado`, que pertenece al portal ApoderaGest). El CSS restante se ha contrastado con EncargaGest, ApoderaGest y los componentes compartidos; no quedan clases sin consumidor en ese conjunto.
 - `NotarGest.css`: retiradas 12 referencias obsoletas en 20 líneas netas (`ng-dashboard-ciclo`, `ng-dashboard-kpis`, `ng-dashboard-kpi`, `ng-kpi-card` y `ng-volver`), ausentes del único consumidor `NotarGest.jsx`. Se han conservado los selectores activos del panel de administración (`ng-admin-kpis`), cabeceras, tablas y modales.
 - `ApoderaGest.css`: retiradas 80 clases legacy que no aparecen en el JSX del portal ni en sus cinco consumidores integrados (Agenda, Intranet, Mensajes, CTN y ControlApoderados), más dos `@keyframes` sin referencias. La hoja pasa de 2.250 a 1.203 líneas; tras la limpieza, todas las clases restantes tienen consumidor en esos archivos o son generadas por `MolsanIcon`.
 - `frontend-app/package.json`: fijadas `tailwindcss` y `@tailwindcss/postcss` a `4.3.4`. El registro npm publica 4.3.4 como versión estable actual, mientras la instalación de CI intentaba descargar `@tailwindcss/oxide@4.3.5`, que devolvía 404. El pin alinea los paquetes de Tailwind y evita la resolución de esa versión inexistente.
@@ -128,7 +129,7 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 | Migración completa a cabeceras/tarjetas canónicas | Pendiente |
 | Pruebas de permisos 401/403/200 | Pendiente; no se han ejecutado en esta ronda |
 | Pruebas funcionales de negocio y regresión | Pendiente; no se han ejecutado en navegador |
-| Build y despliegue Render Preview | Correctos; deploy `dep-dbmuu11srm7s73a0a3m0` en estado `live` para commit `666114d` |
+| Build y despliegue Render Preview | Build correcto en `d2d32f8`; falta desplegar esta última tanda de limpieza en Preview |
 | Validación visual interactiva de Preview | Pendiente; la URL no ha podido abrirse con el navegador de consulta disponible |
 
 ## 8. Límites de seguridad de esta fase
