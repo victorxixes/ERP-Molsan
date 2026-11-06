@@ -923,7 +923,6 @@ export default function ApoderaGest() {
         mark="AG"
         title="ApoderaGest"
         description="Centro de gestión de encargos, firmas y actividad del apoderado."
-        className="ag-hero dashboard-header"
       />
 
       {error ? (
