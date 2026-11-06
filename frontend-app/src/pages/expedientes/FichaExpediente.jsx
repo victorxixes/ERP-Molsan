@@ -5391,10 +5391,37 @@ const cuantiaFincasParaEnvio =
           >
 
             <Seccion
+              titulo="Carpeta digital"
+              subtitulo="Documentación completa y repositorios del expediente"
+              icono="folder"
+              className="h-full xl:col-span-3"
+              compacto
+            >
+              <div className="flex h-full min-h-[112px] flex-col justify-between gap-3">
+                <div className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-sky-100 bg-white text-sky-800 shadow-sm">
+                    <MolsanIcon name="folder" size={21} tone="ocean" bare />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-extrabold text-slate-800">Repositorio documental</p>
+                    <p className="mt-1 text-[11px] leading-relaxed text-slate-500">Accede a los documentos, justificantes y archivos vinculados a este expediente.</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMostrarCarpetaDigital(true)}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2.5 text-xs font-extrabold text-sky-800 transition hover:border-sky-300 hover:bg-sky-100"
+                >
+                  <MolsanIcon name="folderOpen" size={15} tone="ocean" bare /> Abrir carpeta digital
+                </button>
+              </div>
+            </Seccion>
+
+            <Seccion
               titulo="Titulares y solicitantes"
               subtitulo="Datos independientes de titulares y solicitantes del expediente"
               icono="titular"
-              className="h-full xl:col-span-4"
+              className="h-full xl:col-span-3"
               compacto
               colapsable
               colapsadaInicial
@@ -5463,7 +5490,7 @@ const cuantiaFincasParaEnvio =
 
             <Seccion
               titulo="Información crediticia"
-              subtitulo="Resumen económico y contractual"
+              subtitulo="Datos contractuales y de financiación"
               icono="economico"
               className="h-full xl:col-span-4"
               compacto
