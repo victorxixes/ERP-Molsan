@@ -541,7 +541,8 @@
 /* Reglas estructurales específicas que no pertenecen al sistema visual global. */
 
 @media (max-width: 560px) {
-  .encargagest .eg-main { padding-left: 12px; padding-right: 12px; }
+  /* Mantiene el mismo gutter exterior de 16px que los otros portales. */
+  .encargagest .eg-main { padding-left: 16px; padding-right: 16px; }
   
 }
 
