@@ -13,20 +13,12 @@
 .catalogos-premium-page { width:100%; min-width:0; }
 /* Cabecera de Catálogos: patrón común con identidad izquierda y acciones derecha. */
 .catalogos-premium-page .molsan-page-header {
-  box-sizing: border-box;
+  /* La geometría, el color y la altura pertenecen a MolsanCanonicalVisual2027. */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: nowrap;
-  gap: 24px;
-  width: 100%;
-  max-width: none;
   min-width: 0;
-  min-height: 74px;
   align-self: stretch;
-  margin: 0 0 16px;
-  padding: 10px 18px;
-  border-radius: 16px;
 }
 .catalogos-premium-page .molsan-page-header__identity {
   display: flex;
@@ -52,11 +44,7 @@
 
 @media (max-width: 760px) {
   .catalogos-premium-page .molsan-page-header {
-    min-height: 74px;
-    padding: 10px 14px;
-    border-radius: 16px;
     align-items: flex-start;
-    flex-wrap: wrap;
   }
   .catalogos-premium-page .molsan-page-header__identity {
     flex: 1 1 100%;
