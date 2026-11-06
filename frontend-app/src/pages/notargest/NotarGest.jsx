@@ -741,7 +741,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                   ["Escrituras cerradas inscritas", "escrituras_cerradas_inscritas", n => n.escrituras_cerradas],
                   ["Firmas urgentes", "firmas_urgentes", n => n.firmas_urgentes],
                 ].map(([label, filtro, cuenta]) => (
-                  <button type="button" className="ng-admin-kpi-button" key={filtro} onClick={() => abrirModalResumen(filtro, label)} title={`Ver expedientes: ${label}`}>
+                  <button type="button" className="erp-card ng-admin-kpi-button" key={filtro} onClick={() => abrirModalResumen(filtro, label)} title={`Ver expedientes: ${label}`}>
                     <MolsanIcon name={({ pendiente_recepcion: "clipboardList", pendiente_firma: "pen", pendiente_copia_simple: "files", pendiente_factura_notarial: "receipt", pendiente_ajd_itp: "calculator", pendiente_presentacion_registro: "folderOpen", con_defectos: "alert", pendiente_inscripcion: "book", escrituras_cerradas_inscritas: "check", firmas_urgentes: "zap" })[filtro] || "file"} size={34} tone={["con_defectos", "firmas_urgentes"].includes(filtro) ? "amber" : "ocean"} /><span>{label}</span><strong className={["con_defectos", "firmas_urgentes"].includes(filtro) && notariasSeleccionables.some(n => Number(cuenta(n)) > 0) ? "ng-cifra-urgente" : ""}>{notariasSeleccionables.reduce((s, n) => s + Number(cuenta(n) || 0), 0)}</strong>
                     <small>Ver expedientes <MolsanIcon name="arrowRight" size={18} tone="ocean" /></small>
                   </button>
@@ -754,10 +754,10 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                 const urgentes = Number(item.firmas_urgentes || 0);
                 const pendiente = Number(item.total_pendiente || 0);
                 const defectos = Number(item.con_defectos || 0);
-                return <article className={`ng-admin-notaria-card ${urgentes > 0 ? "tiene-urgentes" : ""}`} key={item.id}>
-                  <header className="ng-admin-card-header">
+                return <article className={`erp-card ng-admin-notaria-card ${urgentes > 0 ? "tiene-urgentes" : ""}`} key={item.id}>
+                  <header className="molsan-section-header">
                     <div className="ng-admin-notaria-identidad">
-                      <span className="ng-admin-notaria-icono" aria-hidden="true"><MolsanIcon name="courthouse" size={34} tone="ocean" /></span>
+                      <MolsanIcon name="courthouse" size={46} tone="ocean" />
                       <div className="ng-admin-notaria-titulo">
                         <h3>{item.nombre || "Notaría sin nombre"}</h3>
                         <p><MolsanIcon name="pin" size={20} tone="ocean" /> {[item.municipio, item.provincia].filter(Boolean).join(" · ") || "Ubicación no indicada"}</p>
