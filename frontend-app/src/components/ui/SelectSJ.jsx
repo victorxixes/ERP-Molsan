@@ -81,7 +81,7 @@ export default function SelectSJ({
   return (
     <div
       ref={selectRef}
-      className={`relative ${className}`}
+      className={`relative ${open ? "z-[120]" : "z-0"} ${className}`}
     >
       {/* =====================================================
           BOTÓN PRINCIPAL
