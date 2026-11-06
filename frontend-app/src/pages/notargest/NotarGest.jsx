@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import Sidebar from "../../components/Sidebar";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
@@ -739,18 +740,18 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     <MolsanPageHeader mark="NG" title="NotarGest" description="Centro de gestión notarial, firmas y seguimiento registral." actions={accesoERP ? <button type="button" onClick={() => navigate("/modulos")} className="molsan-premium-header__secondary-action">Ir a módulos</button> : null} />
     <nav className="ng-modulos-grid" aria-label="Secciones de NotarGest">
       {[
-        { key: "inicio", label: "Dashboard", icon: "⌂", count: null },
-        { key: "recepcion", label: "Nuevos encargos", icon: "▤", count: cuenta("recepcion") },
-        { key: "firma", label: "Pendientes de firma", icon: "◷", count: cuenta("firma") },
-        { key: "copia", label: "Pendientes copias simples", icon: "▧", count: cuenta("copia") },
-        { key: "factura", label: "Pendientes de factura notarial", icon: "€", count: cuenta("factura") },
-        { key: "ajd", label: "Pendientes de AJD / ITP", icon: "§", count: cuenta("ajd") },
-        { key: "registro", label: "Pendientes de presentación registral", icon: "⌕", count: cuenta("registro") },
-        { key: "defectos", label: "Expedientes con defectos", icon: "!", count: cuenta("defectos") },
-        { key: "inscripcion", label: "Inscripciones registrales", icon: "▣", count: cuenta("inscripcion") },
-        { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "✓", count: cuenta("cerrada") },
-        { key: "firmas_urgentes", label: "Firmas urgentes", icon: "⚡", count: expedientes.filter(x => x.firma_urgente).length, urgent: expedientes.some(x => x.firma_urgente) },
-      ].map(item => (
+        { key: "inicio", label: "Dashboard", icon: "home", description: "Resumen de actividad y situación general.", count: null },
+        { key: "recepcion", label: "Nuevos encargos", icon: "clipboard", description: "Expedientes pendientes de recepción y revisión.", count: cuenta("recepcion") },
+        { key: "firma", label: "Pendientes de firma", icon: "clock", description: "Escrituras que requieren firma notarial.", count: cuenta("firma") },
+        { key: "copia", label: "Pendientes copias simples", icon: "copy", description: "Copias simples pendientes de preparar o remitir.", count: cuenta("copia") },
+        { key: "factura", label: "Pendientes de factura notarial", icon: "euro", description: "Facturas notariales pendientes de gestión.", count: cuenta("factura") },
+        { key: "ajd", label: "Pendientes de AJD / ITP", icon: "calculator", description: "Liquidaciones fiscales pendientes de completar.", count: cuenta("ajd") },
+        { key: "registro", label: "Pendientes de presentación registral", icon: "building", description: "Documentación pendiente de presentar en Registro.", count: cuenta("registro") },
+        { key: "defectos", label: "Expedientes con defectos", icon: "alert", description: "Incidencias registrales que requieren subsanación.", count: cuenta("defectos") },
+        { key: "inscripcion", label: "Inscripciones registrales", icon: "file", description: "Seguimiento de inscripciones en curso.", count: cuenta("inscripcion") },
+        { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "check", description: "Expedientes finalizados e inscritos.", count: cuenta("cerrada") },
+        { key: "firmas_urgentes", label: "Firmas urgentes", icon: "zap", description: "Operaciones que requieren atención prioritaria.", count: expedientes.filter(x => x.firma_urgente).length, urgent: expedientes.some(x => x.firma_urgente) },
+            ].map(item => (
         <button
           key={item.key}
           type="button"
@@ -758,9 +759,11 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           onClick={() => { setBusqueda(""); setVista(item.key); }}
           aria-current={vista === item.key ? "page" : undefined}
         >
-          <span className="ng-modulo-icono" aria-hidden="true">{item.icon}</span>
+          <span className="ng-modulo-acento" aria-hidden="true" />
+          <span className="ng-modulo-top"><span className="ng-modulo-icono"><MolsanIcon name={item.icon} size={23} /></span>{item.count !== null && <span className="ng-modulo-count">{item.count}</span>}</span>
           <span className="ng-modulo-label">{item.label}</span>
-          {item.count !== null && <span className="ng-modulo-count">{item.count}</span>}
+          <span className="ng-modulo-description">{item.description}</span>
+          <span className="ng-modulo-open">Abrir sección <span aria-hidden="true">→</span></span>}
         </button>
       ))}
     </nav>
