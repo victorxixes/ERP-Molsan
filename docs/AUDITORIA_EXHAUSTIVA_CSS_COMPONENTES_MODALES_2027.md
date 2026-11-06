@@ -70,6 +70,8 @@ El árbol Git de este commit contiene **41 hojas CSS**, **143 archivos JSX/TSX**
 
 `molsan-module-styles.css` es un agregador con 26 imports de componentes/hojas de módulo y página. ApoderaGest, EncargaGest y NotarGest se importan aparte desde `main.jsx`. Este orden es deliberado en la rama, pero genera una cascada de varias capas globales posteriores a los estilos específicos. **No debe cambiarse a ciegas:** al hacerlo se pueden invertir reglas que hoy dependen del orden de carga.
 
+La revisión de `Layout.jsx` confirma que el contenedor principal añade la clase `cg-unified-workspace` a prácticamente todas las rutas del ERP interno (excepto Panel Técnico, Seguridad y Auditoría). Por tanto, `CancelagestUnified.css` actúa de hecho como una capa transversal compartida y no se debe borrar por su nombre. El mismo Layout añade `molsan-page-header`/`molsan-page-header--legacy` a cabeceras heredadas mediante `MutationObserver`; es un mecanismo de compatibilidad que deberá desaparecer gradualmente cuando todas las páginas migren al componente real `MolsanPageHeader`.
+
 ## 3. Componentes visuales canónicos existentes
 
 El repositorio ya tiene componentes reutilizables que deben ser la fuente de verdad, no nuevas capas de overrides:
