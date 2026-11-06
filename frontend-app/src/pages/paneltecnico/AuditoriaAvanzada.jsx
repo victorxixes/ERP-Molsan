@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import {
   getAuditoria,
@@ -163,9 +164,7 @@ export default function AuditoriaAvanzada() {
                 justify-center
               "
             >
-              <svg className="w-4 h-4">
-                <use href="/icons/icons.svg#clipboard" />
-              </svg>
+              <MolsanIcon name="clipboard" size={16} className="w-4 h-4" tone="inherit" />
             </div>
 
           </div>
@@ -229,9 +228,7 @@ export default function AuditoriaAvanzada() {
                   shadow-sm
                 "
               >
-                <svg className="w-5 h-5">
-                  <use href="/icons/icons.svg#clipboard" />
-                </svg>
+                <MolsanIcon name="clipboard" size={20} className="w-5 h-5" tone="inherit" />
               </div>
 
             </div>
@@ -472,15 +469,11 @@ export default function AuditoriaAvanzada() {
 
                 </div>
 
-                <svg
-                  className="
+                <MolsanIcon name="user" size={16} className="
                     w-4
                     h-4
                     text-[var(--erp-text-soft)]
-                  "
-                >
-                  <use href="/icons/icons.svg#user" />
-                </svg>
+                  " tone="inherit" />
 
               </div>
 
@@ -586,16 +579,12 @@ export default function AuditoriaAvanzada() {
           "
         >
 
-          <svg
-            className="
+          <MolsanIcon name="search" size={16} className="
               w-4
               h-4
               text-[var(--erp-text-soft)]
               flex-shrink-0
-            "
-          >
-            <use href="/icons/icons.svg#search" />
-          </svg>
+            " tone="inherit" />
 
           <input
             type="text"
@@ -859,9 +848,7 @@ export default function AuditoriaAvanzada() {
                           justify-center
                         "
                       >
-                        <svg className="w-3.5 h-3.5">
-                          <use href="/icons/icons.svg#user" />
-                        </svg>
+                        <MolsanIcon name="user" size={14} className="w-3.5 h-3.5" tone="inherit" />
                       </span>
 
                       {r.usuario || "—"}
@@ -1007,15 +994,11 @@ export default function AuditoriaAvanzada() {
               "
             >
 
-              <svg
-                className="
+              <MolsanIcon name="shield" size={20} className="
                   w-5
                   h-5
                   text-[var(--erp-text-soft)]
-                "
-              >
-                <use href="/icons/icons.svg#shield" />
-              </svg>
+                " tone="inherit" />
 
             </div>
 
