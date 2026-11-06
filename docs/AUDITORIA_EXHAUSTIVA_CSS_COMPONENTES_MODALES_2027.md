@@ -326,3 +326,14 @@ En esta pasada se cruzaron las hojas CSS con sus JSX consumidores y componentes 
 - Producción, API y base de datos principal permanecen fuera de esta intervención.
 - La revisión visual interactiva y la matriz de permisos 401/403/200 siguen pendientes; el build no las sustituye.
 
+
+
+## 14. Cabeceras de Catálogos en pantallas estrechas — 6 de noviembre de 2026
+
+La comparación de reglas en `MolsanCardsPremium2027.css` encontró que el bloque móvil de la cabecera de Catálogos estaba declarado antes de las reglas base posteriores. Estas últimas volvían a imponer `flex-wrap: nowrap` y `flex: 0 0 auto` en las acciones, mientras el bloque móvil solo fijaba `width: 100%`. La combinación podía mantener identidad y acciones en una sola fila y desbordar el ancho disponible.
+
+Se ha movido la regla responsive después de las reglas base y se ha definido el apilado explícito a ≤760 px: identidad al 100%, acciones debajo alineadas a la izquierda y sin margen automático. La geometría de escritorio se conserva.
+
+Commit: `0c18516`.
+
+**Validación pendiente:** comprobar en Preview Catálogos, Entidades bancarias, Registros de propiedad, Municipios, Tipos de carga hipotecaria y Honorarios, en anchuras de escritorio y móvil. No se declara corregido visualmente hasta esa comprobación.
