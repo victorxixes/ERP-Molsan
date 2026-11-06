@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useEffect, useMemo, useState } from "react";
 import { useSeguridad } from "../../hooks/useSeguridad";
 import ModalEmpleado from "../../components/empleados/ModalEmpleado";
@@ -67,47 +68,47 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
     <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <MolsanPageHeader mark="EM" title={titulo} description={descripcion} />
 
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-col gap-3 border-b border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+      <section className="overflow-hidden rounded-2xl border border-[var(--molsan-border)] bg-white shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
           <div>
-            <h2 className="text-base font-bold text-slate-800">Listado de empleados</h2>
-            <p className="mt-1 text-xs text-slate-500">
+            <h2 className="text-base font-bold text-[var(--molsan-primary)]">Listado de empleados</h2>
+            <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">
               {loading ? "Cargando empleados…" : `${empleadosFiltrados.length} de ${empleadosSeguros.length} empleados`}
             </p>
           </div>
           <label className="relative block w-full sm:max-w-sm">
             <span className="sr-only">Buscar empleado</span>
-            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">⌕</span>
+            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--molsan-text-muted)]"><MolsanIcon name="search" size={16} bare /></span>
             <input
               type="search"
               value={busqueda}
               onChange={(event) => setBusqueda(event.target.value)}
               placeholder="Buscar por nombre, usuario, DNI…"
-              className="h-10 w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className="h-10 w-full rounded-lg border border-[var(--molsan-border-strong)] bg-white pl-9 pr-3 text-sm text-[var(--molsan-primary)] outline-none transition focus:border-[var(--molsan-border-strong)] focus:ring-2 focus:ring-[var(--molsan-primary-soft)]"
             />
           </label>
         </div>
 
         {loading && empleadosSeguros.length === 0 ? (
-          <div className="p-10 text-center text-sm text-slate-500">Cargando listado de empleados…</div>
+          <div className="p-10 text-center text-sm text-[var(--molsan-text-secondary)]">Cargando listado de empleados…</div>
         ) : empleadosSeguros.length === 0 ? (
           <div className="p-10 text-center">
-            <p className="text-sm font-semibold text-slate-700">No hay empleados para mostrar.</p>
-            <p className="mt-1 text-sm text-slate-500">Comprueba los permisos de administración y vuelve a cargar la página.</p>
+            <p className="text-sm font-semibold text-[var(--molsan-text)]">No hay empleados para mostrar.</p>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Comprueba los permisos de administración y vuelve a cargar la página.</p>
           </div>
         ) : empleadosFiltrados.length === 0 ? (
-          <div className="p-10 text-center text-sm text-slate-500">No hay empleados que coincidan con la búsqueda.</div>
+          <div className="p-10 text-center text-sm text-[var(--molsan-text-secondary)]">No hay empleados que coincidan con la búsqueda.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[900px] border-collapse text-left text-sm">
               <thead>
-                <tr className="border-b border-slate-300 bg-slate-100 text-[11px] uppercase tracking-wide text-slate-600">
-                  <th className="border-r border-slate-200 px-4 py-3 font-bold">ID</th>
-                  <th className="border-r border-slate-200 px-4 py-3 font-bold">Empleado</th>
-                  <th className="border-r border-slate-200 px-4 py-3 font-bold">Usuario</th>
-                  <th className="border-r border-slate-200 px-4 py-3 font-bold">Departamento</th>
-                  <th className="border-r border-slate-200 px-4 py-3 font-bold">Cargo</th>
-                  <th className="border-r border-slate-200 px-4 py-3 font-bold">Estado</th>
+                <tr className="border-b border-[var(--molsan-border-strong)] bg-[var(--molsan-table-head)] text-[11px] uppercase tracking-wide text-[var(--molsan-text-secondary)]">
+                  <th className="border-r border-[var(--molsan-border)] px-4 py-3 font-bold">ID</th>
+                  <th className="border-r border-[var(--molsan-border)] px-4 py-3 font-bold">Empleado</th>
+                  <th className="border-r border-[var(--molsan-border)] px-4 py-3 font-bold">Usuario</th>
+                  <th className="border-r border-[var(--molsan-border)] px-4 py-3 font-bold">Departamento</th>
+                  <th className="border-r border-[var(--molsan-border)] px-4 py-3 font-bold">Cargo</th>
+                  <th className="border-r border-[var(--molsan-border)] px-4 py-3 font-bold">Estado</th>
                   <th className="px-4 py-3 text-right font-bold">Acciones</th>
                 </tr>
               </thead>
@@ -118,23 +119,23 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
                   const cargo = empleado.cargo_nombre || empleado.cargo || empleado.puesto || "—";
                   const activo = empleado.activo !== false;
                   return (
-                    <tr key={empleado.id} className={`border-b border-slate-200 last:border-b-0 transition-colors hover:bg-blue-50/60 ${indice % 2 === 0 ? "bg-white" : "bg-slate-50/50"}`}>
-                      <td className="border-r border-slate-100 px-4 py-3 font-mono text-xs text-slate-500">{empleado.id}</td>
-                      <td className="border-r border-slate-100 px-4 py-3">
-                        <div className="font-semibold text-slate-800">{nombre}</div>
-                        {empleado.email_empresa && <div className="mt-0.5 text-xs text-slate-500">{empleado.email_empresa}</div>}
+                    <tr key={empleado.id} className={`border-b border-[var(--molsan-border)] last:border-b-0 transition-colors hover:bg-blue-50/60 ${indice % 2 === 0 ? "bg-white" : "bg-[var(--molsan-surface-soft)]/50"}`}>
+                      <td className="border-r border-[var(--molsan-border-light)] px-4 py-3 font-mono text-xs text-[var(--molsan-text-secondary)]">{empleado.id}</td>
+                      <td className="border-r border-[var(--molsan-border-light)] px-4 py-3">
+                        <div className="font-semibold text-[var(--molsan-primary)]">{nombre}</div>
+                        {empleado.email_empresa && <div className="mt-0.5 text-xs text-[var(--molsan-text-secondary)]">{empleado.email_empresa}</div>}
                       </td>
-                      <td className="border-r border-slate-100 px-4 py-3 text-slate-600">{empleado.usuario || "—"}</td>
-                      <td className="border-r border-slate-100 px-4 py-3 text-slate-600">{departamento}</td>
-                      <td className="border-r border-slate-100 px-4 py-3 text-slate-600">{cargo}</td>
-                      <td className="border-r border-slate-100 px-4 py-3">
-                        <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${activo ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-100 text-slate-500"}`}>
+                      <td className="border-r border-[var(--molsan-border-light)] px-4 py-3 text-[var(--molsan-text-secondary)]">{empleado.usuario || "—"}</td>
+                      <td className="border-r border-[var(--molsan-border-light)] px-4 py-3 text-[var(--molsan-text-secondary)]">{departamento}</td>
+                      <td className="border-r border-[var(--molsan-border-light)] px-4 py-3 text-[var(--molsan-text-secondary)]">{cargo}</td>
+                      <td className="border-r border-[var(--molsan-border-light)] px-4 py-3">
+                        <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${activo ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-[var(--molsan-border)] bg-[var(--molsan-table-head)] text-[var(--molsan-text-secondary)]"}`}>
                           {activo ? "Activo" : "Inactivo"}
                         </span>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2">
-                          <button type="button" onClick={() => abrirModal(empleado, "ficha")} className="whitespace-nowrap rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700">
+                          <button type="button" onClick={() => abrirModal(empleado, "ficha")} className="whitespace-nowrap rounded-lg border border-[var(--molsan-border-strong)] bg-white px-3 py-2 text-xs font-bold text-[var(--molsan-text)] transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700">
                             Abrir ficha
                           </button>
                           <button type="button" onClick={() => abrirModal(empleado, "configuracion")} className="whitespace-nowrap rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white transition hover:bg-blue-700">
@@ -149,7 +150,7 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
             </table>
           </div>
         )}
-        <div className="border-t border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-500">
+        <div className="border-t border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-4 py-3 text-xs text-[var(--molsan-text-secondary)]">
           Puedes abrir la ficha o ir directamente a la configuración de {esAsignaciones ? "asignaciones" : "visibilidad de tablas"} desde cada fila.
         </div>
       </section>
