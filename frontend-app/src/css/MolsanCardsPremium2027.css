@@ -284,11 +284,8 @@
   background: rgba(255,255,255,.09) !important;
 }
 
-/* Accesibilidad: el relieve se conserva estático cuando se solicita reducir movimiento. */
+/* Accesibilidad para superficies heredadas de módulos que aún no usan clases semánticas. */
 @media (prefers-reduced-motion: reduce) {
-  :where(.erp-card, .card-sj, .dashboard-kpi):hover {
-    transform: none !important;
-  }
   :where(
     .ficha-expediente-premium,
     .empleados-premium-page,
