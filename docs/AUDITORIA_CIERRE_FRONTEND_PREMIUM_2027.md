@@ -2,15 +2,15 @@
 
 **Fecha:** 6 de noviembre de 2026  
 **Rama auditada:** `fix/molsan-css-selector-audit-round1`  
-**Último commit funcional desplegado:** `fb03640ed90271cea7888eeabc94f4637f2998f5`  
-**Último commit de documentación de auditoría:** `0b288e25c1bd5ba4e00a143b8fa81917c57b8bac`  
-**Último commit funcional desplegado y compilado por Render:** `fb03640ed90271cea7888eeabc94f4637f2998f5` (deploy `dep-dbn0udou01pc73fr0q30`)  
+**Último commit funcional desplegado:** `5ca6804988c9fa787d4a58237c82f37840ab1f40`  
+**Último commit de documentación de auditoría:** `7b098ff9ad2f0280a0fe38f70ea519c6dd651da6`  
+**Último commit funcional desplegado y compilado por Render:** `5ca6804988c9fa787d4a58237c82f37840ab1f40` (deploy `dep-dbn0vcp5efls738q2pqg`)  
 **PR:** [#409](https://github.com/victorxixes/ERP-Molsan/pull/409)  
 **Alcance de seguridad:** solo frontend y documentación en la rama de Preview. No se han modificado producción, API, base de datos ni datos de expedientes.
 
 ## Resultado ejecutivo
 
-> **Estado actualizado a 6 de noviembre de 2026:** Render Preview sirve en estado `live` el commit `fb03640` (deploy `dep-dbn0udou01pc73fr0q30`). La PR #409 sigue en Draft. Producción, API y base de datos principal permanecen intactas. La inspección visual autenticada y las pruebas manuales siguen pendientes.
+> **Estado actualizado a 6 de noviembre de 2026:** Render Preview sirve en estado `live` el commit `5ca6804` (deploy `dep-dbn0vcp5efls738q2pqg`). La PR #409 sigue en Draft. Producción, API y base de datos principal permanecen intactas. La inspección visual autenticada y las pruebas manuales siguen pendientes.
 
 
 Esta auditoría distingue expresamente entre inspección estática, compilación y validación real en navegador. No se marca como validada una pantalla solo porque exista su componente o compile.
@@ -167,3 +167,14 @@ Se ha eliminado el bloque duplicado de `prefers-reduced-motion` del shell: la re
 CI del commit `fb03640`: build #937, auditoría de dependencias #371 y validación de Fichaje #3406, todos `success`. El informe npm de la auditoría registra cero vulnerabilidades.
 
 Render Preview `molsan-premium-2027-candidate-preview`: deploy `dep-dbn0udou01pc73fr0q30`, commit `fb03640`, estado `live`. Producción, API y BBDD principal siguen fuera del alcance. La validación visual autenticada y las pruebas manuales siguen pendientes.
+
+
+## 13. Última limpieza de declaraciones CSS y despliegue — 6 de noviembre de 2026
+
+Se han retirado dos declaraciones `color: #fff` repetidas en los overrides Premium de `.molsan-btn--primary` y `.molsan-btn--danger`; los bloques base siguen definiendo el color y se conservan los fondos, bordes y estados de cada variante. El barrido literal de ocho hojas globales (593 bloques de reglas) no detecta ya coincidencias de selector exacto con propiedades idénticas repetidas. Esta comprobación es estática y no sustituye una revisión de estilos computados.
+
+CI del commit `5ca6804`: build #943, auditoría de dependencias #374 y validación de Fichaje #3409, todos `success`. El informe npm de `frontend-app` registra cero vulnerabilidades.
+
+Render Preview: deploy `dep-dbn0vcp5efls738q2pqg`, commit `5ca6804`, estado `live`. El auto-deploy continúa desactivado. PR #409 sigue abierta y en Draft.
+
+Nota separada: el paso automático de instalación en la raíz del repositorio en Render muestra cuatro avisos de vulnerabilidad (tres moderados y uno alto), mientras que la auditoría del subproyecto `frontend-app` informa cero. No se han cambiado dependencias de raíz/backend por quedar fuera de esta tarea visual.
