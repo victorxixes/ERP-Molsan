@@ -1010,4 +1010,4 @@ Se conserva el texto accesible/visible y la acción de cada control. Los cambios
 
 Commits de código de esta pasada: `60a52c1`, `cca6475`, `45da09b`, `d87565e`, `eee7b59`, `c49ea8b`, `3b9f118`, `e8b2fc2` y commits previos de iconos informativos registrados en la rama.
 
-Validación pendiente: el deploy de Render Preview `dep-dbn1qbc9v7es73a0h380`, asociado al commit `e8b2fc2`, fue solicitado y seguía en `build_in_progress` en la última consulta. No se declara LIVE ni se da por validada la compilación hasta confirmar el resultado final.
+Validación de build y despliegue: Render Preview `dep-dbn1qbc9v7es73a0h380`, asociado al commit `e8b2fc2`, finalizó en estado `LIVE` el 6 de noviembre de 2026. Los logs muestran `✓ built in 5.61s` y `Your site is live`. Esto confirma compilación y publicación del frontend Preview, pero no sustituye las pruebas visuales autenticadas y funcionales en navegador.
