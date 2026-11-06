@@ -1193,3 +1193,8 @@ La última capa canónica unifica también los encabezados y pies de los diálog
 ### 26.2. Retirada de skins locales de modales
 
 Se retiraron de NotarGest y EncargaGest las definiciones locales de borde, radio, fondo y sombra de sus paneles modales; también se retiraron los gradientes de cabecera, separadores inferiores, color blanco forzado de títulos y el fondo/blur del pie. La marca del modal EncargaGest ahora usa icono azul sobre superficie azul hielo. Las dimensiones, scroll, sticky header/footer, overlays, layout y estados warning/disabled siguen conservándose estructuralmente; el canon aporta la piel visual. Balance de llaves CSS verificado en ambas hojas y en Canonical/Fase3. Commits: fcc42a3, 1c0ffa7 y 07f4ba3.
+
+
+### 24.2. Exclusión de overlays y paneles modales
+
+La regla de migración de tarjetas Tailwind ahora excluye cualquier elemento con `role=dialog` y cualquier clase cuyo nombre contenga `modal`, evitando que una tarjeta heredada dentro de una subpágina capture por error el estilo de un diálogo. Commit: 53ce7d7.
