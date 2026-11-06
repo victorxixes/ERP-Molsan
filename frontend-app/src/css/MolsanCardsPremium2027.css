@@ -39,8 +39,8 @@
   text-align: right;
 }
 .catalogos-premium-page .molsan-page-header__actions > * { flex: 0 0 auto; }
-.catalogos-premium-page :is(.erp-card, a.erp-card, button.erp-card) { border-radius: 20px !important; }
-.catalogos-premium-page :is(a.erp-card, button.erp-card):hover { transform: translateY(-4px); }
+/* Las tarjetas de Catálogos heredan radio y hover del sistema canónico.
+   No se duplican aquí reglas ya definidas para .erp-card. */
 
 @media (max-width: 760px) {
   .catalogos-premium-page .molsan-page-header {
