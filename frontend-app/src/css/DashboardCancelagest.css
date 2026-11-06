@@ -14,7 +14,8 @@
 .dashboard-cancelagest {
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
   color: var(--molsan-text, #17243a);
-}.dashboard-cancelagest .dashboard-kpi__value {
+}
+.dashboard-cancelagest .dashboard-kpi__value {
   font-variant-numeric: tabular-nums;
   letter-spacing: -.045em;
 }
@@ -66,9 +67,10 @@
   --dashboard-cg-primary-dark:#04375B;
   display:block;
 }
-.dashboard-cancelagest .dashboard-kpis { gap:16px; }.dashboard-cancelagest .dashboard-kpi {
+.dashboard-cancelagest .dashboard-kpis { gap:16px; }
+.dashboard-cancelagest .dashboard-kpi {
   min-height:132px;
-  
+
 }
 .dashboard-cancelagest .dashboard-kpi__value {
   color:#123F5E !important;
@@ -98,9 +100,10 @@
   color:#617789 !important;
   font-size:12px;line-height:1.65;
 }
-.dashboard-cancelagest .dashboard-main-grid { gap:22px; }.dashboard-cancelagest .dashboard-main-grid .erp-card {
+.dashboard-cancelagest .dashboard-main-grid { gap:22px; }
+.dashboard-cancelagest .dashboard-main-grid .erp-card {
   overflow:hidden;
-  
+
 }
 .dashboard-cancelagest .dashboard-activity-inline { min-width:92px; }
 .dashboard-cancelagest .dashboard-signatures-wrap .dashboard-firmas-grid { gap:14px; }
