@@ -991,3 +991,23 @@ Se ha vuelto a leer el JSX real de estas 20 pantallas/subpáginas: FirmasEmail, 
 - CatalogoOficinas y EntidadesBancarias conservan sus acciones funcionales en la cabecera; FirmasEmail conserva el retorno a Catálogos; Mensajería conserva su descripción y acciones/pestañas funcionales.
 - Esta comprobación es estática sobre JSX y no certifica renderizado, solapamientos reales, responsive ni navegación autenticada. No se eliminan hojas CSS locales solo por su nombre: las reglas de tablas, formularios, paginación, diálogos y estados de cada catálogo se preservan hasta demostrar que no tienen consumidor.
 - No se modifica lógica de negocio, endpoints, permisos ni almacenamiento.
+
+## 60. Normalización adicional de iconografía funcional (6 de noviembre de 2026)
+
+Se han sustituido indicadores Unicode por pictogramas SVG del catálogo MolsanIcon en los siguientes puntos:
+
+- Informes: icono de información, indicadores de ordenación y descarga Excel.
+- Municipios, Entidades Bancarias y Registros de la Propiedad: avisos informativos.
+- Importador ABSIS: aviso de importación con incidencias.
+- Entidades Bancarias: ordenación ascendente, descendente y sin ordenar en sus seis columnas.
+- Expedientes: indicador de ordenación simple y múltiple, conservando el número de prioridad de cada criterio.
+- Lectura de Copias: acción Procesar.
+- Verifacti: enlaces externos a documentación y web oficial.
+- Carpeta Digital: acción Descargar.
+- Se amplía el catálogo MolsanIcon con pictogramas SVG `play` y `externalLink`; no se incorporan dependencias de iconos externas.
+
+Se conserva el texto accesible/visible y la acción de cada control. Los cambios no alteran endpoints, datos, permisos ni reglas de negocio.
+
+Commits de código de esta pasada: `60a52c1`, `cca6475`, `45da09b`, `d87565e`, `eee7b59`, `c49ea8b`, `3b9f118`, `e8b2fc2` y commits previos de iconos informativos registrados en la rama.
+
+Validación pendiente: el deploy de Render Preview `dep-dbn1qbc9v7es73a0h380`, asociado al commit `e8b2fc2`, fue solicitado y seguía en `build_in_progress` en la última consulta. No se declara LIVE ni se da por validada la compilación hasta confirmar el resultado final.
