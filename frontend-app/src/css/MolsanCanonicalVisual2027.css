@@ -209,6 +209,15 @@ body :where(
   backdrop-filter: none !important;
 }
 
+@media (max-width: 720px) {
+  :is(
+    .encargagest .eg-modal-form, .encargagest .eg-modal-perfil,
+    .notargest .ng-modal, .notargest .ng-resumen-expedientes-modal,
+    .molsan-modal__panel, .erp-modal-panel, .expediente-operativo-modal-panel,
+    .ctn-detalle-modal
+  ) { border-radius: 18px !important; }
+}
+
 /* Tarjetas Tailwind heredadas en subpáginas: migración controlada al patrón Espacios de trabajo. */
 :where(
   .seguridad-premium-page, .seguridad-subpagina-premium,
