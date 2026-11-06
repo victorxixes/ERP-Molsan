@@ -1,41 +1,27 @@
+import MolsanIcon from "../ui/MolsanIcon";
 import { useMemo } from "react";
 import { useNotificacionesStore } from "../../store/notificacionesStore";
-/**
- * NotificacionesBadge — SJ‑2026 Premium
- * Indicador de notificaciones internas.
- * - Glass‑UI
- * - Badge animado
- * - Sin re‑renders innecesarios
- */
 
+/** Indicador compacto de notificaciones con iconografía corporativa MOLSAN. */
 export default function NotificacionesBadge() {
   const notificaciones = useNotificacionesStore((s) => s.notificaciones);
-
-  // Evita recalcular en cada render
   const count = useMemo(() => notificaciones.length, [notificaciones]);
 
   return (
-    <div className="relative inline-flex items-center notificaciones-badge-premium" aria-label={count > 0 ? `${count} notificaciones` : "Sin notificaciones"}>
-      {/* Icono */}
-      <span aria-hidden="true" className="material-icons text-white/80 drop-shadow">
-        notifications
-      </span>
-
-      {/* Badge */}
-      {count > 0 && (
+    <span
+      className="relative inline-flex items-center notificaciones-badge-premium"
+      aria-label={count > 0 ? `${count} notificaciones` : "Sin notificaciones"}
+    >
+      <MolsanIcon name="bell" size={18} bare />
+      {count > 0 ? (
         <span
-          className="
-            absolute -top-1 -right-1 bg-red-600 text-white text-xs
-            px-1.5 py-0.5 rounded-full shadow-lg backdrop-blur-md
-            border border-white/20 animate-[fadeIn_0.3s_ease]
-          "
+          className="absolute -right-2 -top-2 inline-flex min-w-[18px] h-[18px] items-center justify-center rounded-full border border-white bg-[#B42318] px-1 text-[10px] font-bold leading-none text-white"
           role="status"
-          aria-label={`${count} notificaciones`}
-          style={{ animationFillMode: "both" }}
+          aria-label={`${count} notificaciones sin leer`}
         >
-          {count}
+          {count > 99 ? "99+" : count}
         </span>
-      )}
-    </div>
+      ) : null}
+    </span>
   );
 }
