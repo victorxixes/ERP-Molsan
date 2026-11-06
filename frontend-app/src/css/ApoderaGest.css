@@ -57,7 +57,6 @@
   gap: 15px;
   margin-bottom: 15px;
 }
-.apoderagest .ag-kpi{position: relative; min-width: 0; padding: 18px 19px 17px; overflow: hidden}
 .apoderagest .ag-kpi-azul{
   --ag-kpi-color: var(--molsan-primary, #064675);
   --ag-kpi-icon-bg: var(--molsan-primary-soft, #EAF2F8);
@@ -759,14 +758,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   align-items:stretch;
   gap:14px;
   margin:0;
-}
-.apoderagest .ag-kpi{
-  display:flex;
-  min-height:148px;
-  flex-direction:column;
-  justify-content:flex-start;
-  padding:18px 19px 16px;
-  text-align:left;
 }
 .apoderagest .ag-dashboard-inferior-grid{
   gap:16px;
