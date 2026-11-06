@@ -180,9 +180,6 @@
   .notargest.ng-content .ng-dashboard-graficos{grid-template-columns:1fr!important}
 }
 @media(max-width:520px){
-  :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__identity{flex-basis:100%!important}
-  :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__actions>button,
-  :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__actions>a{min-height:34px!important}
   .ng-admin-notarias .ng-admin-kpis,.ng-admin-notarias .ng-admin-kpis-global{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 @media(prefers-reduced-motion:reduce){
@@ -247,52 +244,7 @@
    No altera estructura, datos, permisos ni comportamiento React.
    ============================================================ */
 
-/* Misma altura, espaciado y jerarquía que la cabecera global Dashboard. */
-.apoderagest > header.molsan-page-header,
-.encargagest > header.molsan-page-header,
-.notargest.ng-content > header.molsan-page-header,
-.ng-admin-notarias > header.molsan-page-header {
-  min-height: 60px !important;
-  height: auto !important;
-  max-height: none !important;
-  padding: 5px 16px !important;
-  margin: 0 0 16px !important;
-  border-radius: 16px !important;
-  box-shadow: 0 12px 28px rgba(4,55,91,.18) !important;
-  animation: none !important;
-  transition: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  will-change: auto !important;
-}
-
-.apoderagest > header.molsan-page-header .molsan-page-header__identity,
-.encargagest > header.molsan-page-header .molsan-page-header__identity,
-.notargest.ng-content > header.molsan-page-header .molsan-page-header__identity,
-.ng-admin-notarias > header.molsan-page-header .molsan-page-header__identity {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  align-items: center !important;
-}
-
-.apoderagest > header.molsan-page-header .molsan-page-header__title,
-.encargagest > header.molsan-page-header .molsan-page-header__title,
-.notargest.ng-content > header.molsan-page-header .molsan-page-header__title,
-.ng-admin-notarias > header.molsan-page-header .molsan-page-header__title {
-  font-size: clamp(19px, 1.8vw, 22px) !important;
-  line-height: 1.2 !important;
-  letter-spacing: -.035em !important;
-}
-
-.apoderagest > header.molsan-page-header .molsan-page-header__actions,
-.encargagest > header.molsan-page-header .molsan-page-header__actions,
-.notargest.ng-content > header.molsan-page-header .molsan-page-header__actions,
-.ng-admin-notarias > header.molsan-page-header .molsan-page-header__actions {
-  flex: 0 0 auto !important;
-  margin-left: auto !important;
-  justify-content: flex-end !important;
-}
+/* Las cabeceras usan el componente global .molsan-page-header. */
 
 /* Una sola tarjeta Premium: fondo blanco, borde corporativo, acento e interacción sutil. */
 .apoderagest .ag-kpi,
@@ -387,13 +339,6 @@
 }
 
 @media(max-width:760px) {
-  .apoderagest > header.molsan-page-header,
-  .encargagest > header.molsan-page-header,
-  .notargest.ng-content > header.molsan-page-header,
-  .ng-admin-notarias > header.molsan-page-header {
-    min-height: 60px !important;
-    padding: 8px 12px !important;
-  }
   .apoderagest .ag-kpi,
   .encargagest .eg-kpi,
   .notargest.ng-content .ng-kpi,
