@@ -117,6 +117,7 @@ function SectionHeading({ icon, title, subtitle, action }) {
 
 export default function FichaExpedienteDemo() {
   const [actividad, setActividad] = useState("documentacion-previa");
+  const [tabEconomia, setTabEconomia] = useState("resumen");
   const [controlCalidad, setControlCalidad] = useState(false);
   const [modal, setModal] = useState("");
   const [valores, setValores] = useState({});
