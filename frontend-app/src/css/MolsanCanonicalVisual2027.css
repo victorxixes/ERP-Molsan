@@ -44,29 +44,10 @@
   box-shadow: 0 4px 12px rgba(6,70,117,.10) !important;
 }
 
-/* Gutter de Dashboard compartido por todas las rutas, incluidas subpáginas. */
-.erp-route-content > :where(
-  .cg-page,.cg-unified-workspace,.expedientes-listado-premium,
-  .ficha-expediente-premium,.agenda-premium-page,.catalogos-premium-page,
-  .utilidades-premium-page,.honorarios-gestoria-premium,.empleados-premium-page,
-  .empleado-ficha-premium,.empleado-editar-premium,.maestros-premium-page,
-  .logs-premium-page,.seguridad-premium-page,.seguridad-subpagina-premium,
-  .notificaciones-premium-page,.panel-tecnico-premium,
-  .panel-tecnico-submodulo-premium,.informes-premium-page,
-  .mensajes-premium-page,.selector-modulos-premium,.ctn-workspace-premium,
-  .encargagest-workspace-premium,.molsan-intranet-page,
-  .provisiones-fondos-premium,.provisiones-fondos-page,
-  .herramientas-home-premium,.herramientas-subpagina-premium
-) {
-  width: 100% !important;
-  max-width: none !important;
-  margin-inline: 0 !important;
-}
-
 /* Tarjetas funcionales: mismo acento superior, acabado, iconografía y hover cromático.
    No se aplica a bloques de contenido, formularios ni paneles de calendario. */
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,
-  .molsan-stat-card,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card) {
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,
+  .eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card) {
   position: relative !important;
   overflow: hidden;
   border: 1px solid #D8E4EC !important;
@@ -77,23 +58,37 @@
   transition: transform .23s cubic-bezier(.2,.75,.25,1),background .23s ease,
     border-color .23s ease,box-shadow .23s ease !important;
 }
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,
-  .molsan-stat-card,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card):hover {
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,
+  .eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card):hover {
   transform: translateY(-4px) !important;
   border-color: #AFCFDF !important;
   border-top-color: #064675 !important;
   background: linear-gradient(145deg,#EAF5FA 0%,#F6FAFC 56%,#EAF2F8 100%) !important;
   box-shadow: 0 16px 34px rgba(6,70,117,.15) !important;
 }
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,
-  .molsan-stat-card,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card)
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,
+  .eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card)
 :where(.molsan-icon-3d,.molsan-icon-wrap,.agenda-stat-icon,.ag-kpi-icono,.eg-kpi-icono) {
   transition: transform .23s ease,background .23s ease,box-shadow .23s ease !important;
 }
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,
-  .molsan-stat-card,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card):hover
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,
+  .eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card):hover
 :where(.molsan-icon-3d,.molsan-icon-wrap,.agenda-stat-icon,.ag-kpi-icono,.eg-kpi-icono) {
   transform: translateY(-2px) scale(1.045) !important;
+}
+
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card):focus-within {
+  border-color: #A9CCDF !important;
+}
+:where(button.erp-card,a.erp-card,[role="button"].erp-card):active {
+  transform: translateY(-1px) !important;
+}
+.molsan-premium-card::before {
+  content: none !important;
+  display: none !important;
+}
+.molsan-premium-card:hover .molsan-premium-card__title {
+  color: #043B60 !important;
 }
 
 /* Botones de acción con icono (Excel, imprimir, importar, exportar, descargar):
@@ -166,13 +161,13 @@
   }
 }
 @media(prefers-reduced-motion:reduce) {
-  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,
-    .molsan-stat-card,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card),
+  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,
+    .eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card),
   :where(.erp-route-content,.apoderagest,.encargagest,.notargest) * {
     transition-duration: .01ms !important;
   }
-  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,
-    .molsan-stat-card,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card):hover {
+  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,
+    .eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card):hover {
     transform: none !important;
   }
 }
@@ -188,11 +183,6 @@
     box-shadow .24s ease,border-color .24s ease,background .24s ease,color .24s ease !important;
 }
 
-.molsan-premium-card:hover .molsan-premium-card__title,
-.molsan-premium-card:hover .molsan-premium-card__description {
-  transition: color .24s ease;
-}
-.molsan-premium-card:hover .molsan-premium-card__title { color:#043B60 !important; }
 
 
 /* No convertir paneles genéricos con utilidades Tailwind en tarjetas.
