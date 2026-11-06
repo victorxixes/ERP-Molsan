@@ -1,8 +1,6 @@
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import React, { useMemo, useCallback } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
-import "../../css/ComponentesCompartidosPremium.css";
-
 const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const HORAS = Array.from(
   { length: 12 },
