@@ -757,4 +757,11 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - Se mantiene una clase `is-active` con estilo local discreto para que el estado seleccionado siga siendo visible; la estructura, icono, franja superior, tipografía y hover pertenecen al componente compartido.
 - Se elimina el componente SVG local `Icon`; los pictogramas de búsqueda y estado vacío pasan a `MolsanIcon`.
 - Se añade el scope `fusiones-page` al contenedor raíz para activar los estilos locales de página y el estado seleccionado.
-- No se cambian llamadas a API, filtros, datos, navegación ni estados de solicitudes. Pendiente build y revisión visual responsive de los seis filtros.
+- No se cambian llamadas a API, filtros, datos, navegación ni estados de solicitudes. Render Preview construyó correctamente los 299 módulos y el despliegue del commit `5cccd4c` está `LIVE`; la revisión visual responsive de los seis filtros sigue pendiente.
+
+## 39. Provisiones — iconografía de acción y cabeceras de vistas (6 de noviembre de 2026)
+
+- Verificadas las dos vistas principales del archivo: catálogo de provisiones y gestión de provisiones; ambas utilizan `MolsanPageHeader` con títulos, descripciones y acciones dentro del mismo bloque cuando corresponde.
+- Sustituido el carácter Unicode «＋» de la acción «Nueva provisión» por `MolsanIcon name="plus"`, manteniendo el texto, el evento y el estilo del botón.
+- No se han alterado el editor de plantillas, los formularios, los importes, los cálculos ni la persistencia de provisiones.
+- Build de Preview pendiente para el cambio de iconografía.
