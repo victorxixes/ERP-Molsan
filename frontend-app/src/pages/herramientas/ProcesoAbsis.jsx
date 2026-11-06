@@ -89,7 +89,7 @@ export default function ProcesoAbsis() {
     <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <Kpi titulo="Expedientes enviados al ABSIS" valor={totalEnvios} icono="↗" />
       <Kpi titulo="Errores detectados" valor={totalErrores} icono="!" alerta />
-      <Kpi titulo="Tipos de actividad" valor={actividades.length} icono="▤" />
+      <Kpi titulo="Tipos de actividad" valor={actividades.length} icono="clipboardList" />
     </section>
 
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">{error}</div>}
@@ -102,7 +102,7 @@ export default function ProcesoAbsis() {
             <thead className="bg-white text-[10px] uppercase tracking-wide text-[var(--molsan-text-secondary)]"><tr><th className="border-b px-4 py-3 font-extrabold">Tipo de actividad</th><th className="border-b px-3 py-3 text-right font-extrabold">Expedientes enviados</th><th className="border-b px-4 py-3 text-right font-extrabold">Errores detectados</th></tr></thead>
             <tbody>
               {actividades.length === 0 ? <tr><td colSpan={3} className="px-4 py-10 text-center text-xs text-[var(--molsan-text-secondary)]">No hay actividades registradas.</td></tr> : actividades.map((act) => <tr key={act.tipo} onClick={() => setTipoSeleccionado(act.tipo)} className={`cursor-pointer border-b border-[var(--molsan-border-light)] last:border-0 transition ${tipoSeleccionado === act.tipo ? "bg-[var(--molsan-primary-soft)] ring-1 ring-inset ring-blue-200" : "hover:bg-[var(--molsan-surface-soft)]"}`}>
-                <td className="px-4 py-4"><span className="font-bold text-[var(--molsan-primary)]">{act.tipo || "Sin tipo"}</span><span className="mt-1 block text-[10px] font-semibold text-[var(--molsan-primary)]">Ver listado →</span></td>
+                <td className="px-4 py-4"><span className="font-bold text-[var(--molsan-primary)]">{act.tipo || "Sin tipo"}</span><span className="mt-1 block text-[10px] font-semibold text-[var(--molsan-primary)]">Ver listado <MolsanIcon name="arrowRight" size={12} bare /></span></td>
                 <td className="px-3 py-4 text-right font-extrabold tabular-nums text-[var(--molsan-primary)]">{act.enviados || 0}</td>
                 <td className="px-4 py-4 text-right"><span className={`inline-flex min-w-8 justify-center rounded-full px-2 py-1 text-xs font-bold ${Number(act.errores || 0) ? "bg-rose-100 text-rose-700" : "bg-emerald-50 text-emerald-700"}`}>{act.errores || 0}</span></td>
               </tr>)}
