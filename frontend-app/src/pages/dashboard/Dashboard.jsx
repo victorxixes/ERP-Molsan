@@ -4,7 +4,6 @@
 // ============================================================
 
 import { useDashboard } from "../../hooks/useDashboard";
-import { useNavigate } from "react-router-dom";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import "../../css/DashboardCancelagest.css";
 
@@ -189,7 +188,6 @@ function FirmaCard({ icono, titulo, total, porcentajeValor }) {
 // ============================================================
 
 export default function Dashboard() {
-  const navigate = useNavigate();
 
   const {
     totalExpedientes,
