@@ -91,7 +91,6 @@ const ICONO_MODULO = {
   encargagest: "clipboard",
   notargestweb: "building",
   encargagestweb: "clipboard",
-  fichajes: "clock",
 };
 
 function normalizar(valor) {
