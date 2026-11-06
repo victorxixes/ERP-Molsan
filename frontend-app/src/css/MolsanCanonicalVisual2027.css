@@ -59,7 +59,7 @@
 
 /* Tarjetas funcionales: mismo acento superior, acabado, iconografía y hover cromático.
    No se aplica a bloques de contenido, formularios ni paneles de calendario. */
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
 .eg-card,.eg-directorio-card,.accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.expediente-card,.dashboard-card,.stat-card,.kpi-card,
 .agenda-upcoming-card,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
@@ -74,7 +74,7 @@
   transition: transform .23s cubic-bezier(.2,.75,.25,1),background .23s ease,
     border-color .23s ease,box-shadow .23s ease !important;
 }
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
 .eg-card,.eg-directorio-card,.accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.expediente-card,.dashboard-card,.stat-card,.kpi-card,
 .agenda-upcoming-card,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
@@ -85,7 +85,7 @@
   background: linear-gradient(145deg,#EAF5FA 0%,#F6FAFC 56%,#EAF2F8 100%) !important;
   box-shadow: 0 16px 34px rgba(6,70,117,.15) !important;
 }
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
 .eg-card,.eg-directorio-card,.accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.expediente-card,.dashboard-card,.stat-card,.kpi-card,
 .agenda-upcoming-card,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
@@ -93,7 +93,7 @@
 :where(.molsan-icon-3d,.molsan-icon-wrap) {
   transition: transform .23s ease,background .23s ease,box-shadow .23s ease !important;
 }
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
 .eg-card,.eg-directorio-card,.accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.expediente-card,.dashboard-card,.stat-card,.kpi-card,
 .agenda-upcoming-card,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
@@ -102,7 +102,7 @@
   transform: translateY(-2px) scale(1.045) !important;
 }
 
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
 .eg-card,.eg-directorio-card,.accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.expediente-card,.dashboard-card,.stat-card,.kpi-card,
 .agenda-upcoming-card,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.ng-admin-kpi-button,.ng-admin-notaria-card):focus-within {
@@ -110,13 +110,6 @@
 }
 :where(button.erp-card,a.erp-card,[role="button"].erp-card):active {
   transform: translateY(-1px) !important;
-}
-.molsan-premium-card::before {
-  content: none !important;
-  display: none !important;
-}
-.molsan-premium-card:hover .molsan-premium-card__title {
-  color: #043B60 !important;
 }
 
 /* Las tarjetas KPI de los portales reciben la franja superior de esta hoja;
@@ -237,7 +230,7 @@
   }
 }
 @media(prefers-reduced-motion:reduce) {
-  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
+  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
 .eg-card,.eg-directorio-card,.accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.expediente-card,.dashboard-card,.stat-card,.kpi-card,
 .agenda-upcoming-card,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
@@ -245,7 +238,7 @@
   :where(.erp-route-content,.apoderagest,.encargagest,.notargest) * {
     transition-duration: .01ms !important;
   }
-  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
+  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
 .eg-card,.eg-directorio-card,.accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.expediente-card,.dashboard-card,.stat-card,.kpi-card,
 .agenda-upcoming-card,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
@@ -255,15 +248,6 @@
 }
 
 
-/* No convertir paneles genéricos con utilidades Tailwind en tarjetas.
-   Las tarjetas deben estar identificadas por su componente/clase semántica. */
-@media (prefers-reduced-motion: reduce) {
-  .molsan-premium-card,
-  .molsan-premium-card::before,
-  .molsan-premium-card__icon { transition:none !important; }
-  .molsan-premium-card:hover,
-  .molsan-premium-card:hover .molsan-premium-card__icon { transform:none !important; }
-}
 
 
 /* Compatibilidad de pictogramas en cabeceras heredadas. La marca MolsanPageHeader
