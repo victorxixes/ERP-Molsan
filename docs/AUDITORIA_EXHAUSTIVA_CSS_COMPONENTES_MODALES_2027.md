@@ -734,3 +734,11 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - Eliminados ambos selectores de los grupos visuales, estados hover/focus y movimiento reducido de `MolsanCanonicalVisual2027.css`; también se retiró el pseudoelemento que duplicaba la franja superior de las tarjetas.
 - Se conserva `.ng-admin-notaria-card`, que sí corresponde a las tarjetas de selección de notaría y sigue en uso.
 - Verificación estática de la hoja tras la limpieza: 40/40 llaves equilibradas y cero referencias a los dos selectores retirados.
+
+## 36. Auditoría de accesibilidad y responsive de modales: CTN, FichaExpediente y Acciones (6 de noviembre de 2026)
+
+- `ModalCtnDetalle.jsx`: un diálogo con `role=dialog`, `aria-modal=true`, referencia de foco y `useAccessibleDialog`. La hoja CTN adapta overlay, padding, secciones, tablas y pie a 760/440/420 px; mantiene scroll vertical y desplazamiento horizontal de tablas.
+- `FichaExpediente.jsx`: cuatro diálogos (modal base, orden de pago, PPAD y registro de gasto); los cuatro tienen `role=dialog` y `aria-modal=true`. El modal base usa su propio hook y los otros tres tienen refs y llamadas independientes a `useAccessibleDialog`, con cierres condicionados durante guardados.
+- `AccionesExpediente.jsx`: dos diálogos (crear/editar acción e importar acciones), ambos con atributos ARIA, refs y hook independiente.
+- `CtnListadoPage.jsx` y `Agenda.jsx` no declaran diálogos propios en el JSX revisado; CTN delega la ficha a `ModalCtnDetalle`.
+- Resultado estático: 7 diálogos revisados en estos tres flujos, todos con marcado modal accesible y contención/restauración de foco centralizada. La verificación real con teclado, lector de pantalla y viewports físicos sigue pendiente; no se considera prueba manual.
