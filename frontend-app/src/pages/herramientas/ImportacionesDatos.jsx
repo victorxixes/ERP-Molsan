@@ -1,8 +1,6 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { Link } from "react-router-dom";
 import MolsanIcon from "../../components/ui/MolsanIcon";
-import "../../css/ImportacionesDatos.css";
-
 const IMPORTADORES = [
   { titulo: "Importar CTN", detalle: "Carga de información de notarías desde Excel.", icono: "landmark", ruta: "/herramientas/importar-ctn", grupo: "Datos notariales" },
   { titulo: "ABSIS · Pre Firma", detalle: "Importación de expedientes desde el Excel matriz ABSIS.", icono: "folder", ruta: "/herramientas/importador-absis", grupo: "Expedientes" },
