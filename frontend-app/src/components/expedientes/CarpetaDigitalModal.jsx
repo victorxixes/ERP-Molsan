@@ -652,8 +652,8 @@ export default function CarpetaDigitalModal({
           if (event.target === event.currentTarget) onClose?.();
         }}
       >
-        <section role="dialog" aria-modal="true" aria-label="Carpeta digital del expediente" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-2xl">
-          <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 py-3 sm:px-5">
+        <section role="dialog" aria-modal="true" aria-label="Carpeta digital del expediente" className="modal-sj flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden bg-white shadow-xl">
+          <header className="molsan-modal-header flex items-center justify-between gap-4">
             <div className="min-w-0">
               <p className="text-[10px] font-extrabold uppercase tracking-[.18em]">MOLSAN ERP · Documentación</p>
               <h2 className="mt-1 text-lg font-bold">Carpeta digital</h2>
