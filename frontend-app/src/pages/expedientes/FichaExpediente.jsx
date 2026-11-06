@@ -6259,7 +6259,7 @@ const cuantiaFincasParaEnvio =
                   </div>
                   <div className="mt-4 flex flex-wrap justify-end gap-2">
                     <Boton onClick={() => guardarEstadoAbsis(false)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Guardando…" : <><MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar datos para integración</>}</Boton>
-                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : <><MolsanIcon name="mail" size={14} tone="inherit" bare /> Registrar solicitud pendiente</>}}</Boton>
+                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : <><MolsanIcon name="mail" size={14} tone="inherit" bare /> Registrar solicitud pendiente</>}</Boton>
                   </div>
                   {estadoDocumentacionAbsis.solicitud_registrada_localmente && <p className="mt-2 text-right text-xs font-semibold text-amber-700">Pendiente de API externa; todavía no transmitida a ABSIS.</p>}
                 </section>
@@ -6830,8 +6830,7 @@ const cuantiaFincasParaEnvio =
                     ? "Validando…"
                     : actividadActual === "facturacion-cierre"
                       ? <><MolsanIcon name="check" size={14} tone="inherit" bare /> Validar y cerrar expediente</>
-                      : <><MolsanIcon name="arrowRight" size={14} tone="inherit" bare /> Validar y avanzar actividad</>}}
-                </Boton>
+                      : <><MolsanIcon name="arrowRight" size={14} tone="inherit" bare /> Validar y avanzar actividad</>}</Boton>
               )}
             </div>
 
