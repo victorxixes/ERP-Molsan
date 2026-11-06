@@ -693,3 +693,4 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - La tarjeta `MolsanStatCard` conserva su propia franja superior y microinteracciones; se evita que el sistema canónico le suprima el pseudoelemento o le aplique estilos de un componente ya eliminado.
 - No se han modificado las reglas globales de las tarjetas de dashboard que siguen teniendo consumidores.
 - Verificación estática: 41/41 llaves equilibradas en la hoja canónica.
+- Ajuste de sintaxis posterior: al retirar el último selector se eliminó también la coma final de la lista `::before`; se volverá a validar la minificación CSS en el despliegue siguiente.
