@@ -864,14 +864,6 @@ export default function ApoderaGest() {
     );
   }, [encargos, busquedaEncargos]);
 
-
-  const fechaActual = new Intl.DateTimeFormat("es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
-
   return (
     <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
       <Sidebar
