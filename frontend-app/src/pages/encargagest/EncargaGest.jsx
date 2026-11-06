@@ -1151,7 +1151,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
             <datalist id="eg-catalogo-municipios-registro">
               {catalogoMunicipiosRegistro.map((item) => <option key={item.id} value={item.municipio}>{item.provincia}</option>)}
             </datalist>
-            <header className="eg-modal-header">
+            <header className="molsan-modal__header">
               <div className="eg-modal-brand">EG</div>
               <div className="eg-modal-heading">
                 <span className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</span>
