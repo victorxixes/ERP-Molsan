@@ -8,12 +8,12 @@ import "../../css/CancelagestUnified.css";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 
 const TARJETAS_DASHBOARD = [
-  { key: "expedientes", descripcion: "Consultar expedientes y su situación actual.", icono: "▤" },
-  { key: "agenda", descripcion: "Revisar citas y actividad programada.", icono: "▦" },
-  { key: "informes", descripcion: "Acceder a informes y seguimiento de gestión.", icono: "▥" },
-  { key: "apoderagest", descripcion: "Encargos, firmas y actividad del apoderado.", icono: "AG" },
-  { key: "notargest", descripcion: "Seguimiento del trabajo y estados notariales.", icono: "NG" },
-  { key: "ctn", descripcion: "Consultar el catálogo de notarías y sus relaciones.", icono: "◇" },
+  { key: "expedientes", descripcion: "Consultar expedientes y su situación actual.", icono: "files" },
+  { key: "agenda", descripcion: "Revisar citas y actividad programada.", icono: "calendar" },
+  { key: "informes", descripcion: "Acceder a informes y seguimiento de gestión.", icono: "chart" },
+  { key: "apoderagest", descripcion: "Encargos, firmas y actividad del apoderado.", icono: "users" },
+  { key: "notargest", descripcion: "Seguimiento del trabajo y estados notariales.", icono: "landmark" },
+  { key: "ctn", descripcion: "Consultar el catálogo de notarías y sus relaciones.", icono: "building" },
 ];
 
 const fmtNumero = (n) => Number(n || 0).toLocaleString("es-ES");
