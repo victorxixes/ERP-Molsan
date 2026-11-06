@@ -29,10 +29,6 @@
 .encargagest .eg-panel {
   min-width: 0;
   overflow: hidden;
-  border: 1px solid var(--molsan-prof-border);
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: var(--molsan-prof-shadow);
 }
 .encargagest .eg-secondary {
   display: inline-flex;
