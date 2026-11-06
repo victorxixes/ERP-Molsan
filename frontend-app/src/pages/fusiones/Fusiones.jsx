@@ -76,7 +76,7 @@ export default function Fusiones() {
   ];
 
   return <main className="molsan-page-stack erp-page min-h-full text-[var(--erp-text)]">
-    <header className="molsan-page-header molsan-page-header--standard">
+    <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
         <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="merge" size={42} bare /></div>
         <div className="min-w-0">
