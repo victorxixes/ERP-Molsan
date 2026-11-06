@@ -95,9 +95,6 @@
 }
 
 @media (max-width: 760px) {
-  .erp-main-inner {
-    padding-inline: 12px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
