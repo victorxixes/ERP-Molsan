@@ -3,7 +3,7 @@
 **Fecha:** 6 de noviembre de 2026  
 **Rama auditada:** `fix/molsan-css-selector-audit-round1`  
 **Último commit funcional desplegado:** `5ca6804988c9fa787d4a58237c82f37840ab1f40`  
-**Último commit de documentación de auditoría:** `8abf95d064d9821efdaff70e7341a84966b6373c`  
+**Último commit de documentación de auditoría:** `1ec00759f4f27240e82bdeecc6a4cbd005e1c8eb`  
 **Último commit funcional desplegado y compilado por Render:** `5ca6804988c9fa787d4a58237c82f37840ab1f40` (deploy `dep-dbn0vcp5efls738q2pqg`)  
 **PR:** [#409](https://github.com/victorxixes/ERP-Molsan/pull/409)  
 **Alcance de seguridad:** solo frontend y documentación en la rama de Preview. No se han modificado producción, API, base de datos ni datos de expedientes.
@@ -183,3 +183,8 @@ Nota separada: el paso automático de instalación en la raíz del repositorio e
 ## 14. Recuento estático de diálogos de los portales prioritarios — 6 de noviembre de 2026
 
 Se han comprobado los tres JSX de gestoría/notaría: ApoderaGest tiene 2 diálogos, EncargaGest 5 y NotarGest 4. Los 11 contienen `role="dialog"`, `aria-modal="true"` y una invocación al hook compartido `useAccessibleDialog`. Se mantienen pendientes las pruebas manuales de teclado, foco, Escape, lector de pantalla y scroll en navegador autenticado.
+
+
+## 15. Inspección estática del hook de foco de los modales
+
+Se ha revisado el hook compartido `useAccessibleDialog` utilizado por los 11 diálogos: foco inicial, contención de foco, ciclo Tab/Shift+Tab, Escape solo en el diálogo superior, exclusión de elementos ocultos/inertes y restauración del foco anterior. No se ha alterado su código. La validación real de teclado, lector de pantalla, overlays anidados y scroll permanece pendiente en Preview autenticado.
