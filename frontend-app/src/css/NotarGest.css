@@ -732,3 +732,139 @@ color:#fff}
   background: linear-gradient(90deg, #064675 0%, #2696A5 70%, #8BC8D8 100%);
   pointer-events: none;
 }
+
+/* NotarGest · estilos del selector administrativo y del portal, aislados del resto de portales. */
+.ng-admin-notarias {
+
+  box-sizing:border-box;width:100%;max-width:none;
+  min-width:0;margin:0;color:var(--molsan-prof-text);
+  background:transparent;
+}
+
+.ng-admin-notarias *,
+.ng-admin-notarias *::before,
+.ng-admin-notarias *::after {
+box-sizing:border-box}
+
+.ng-admin-notarias {
+
+  color:var(--molsan-prof-text);
+}
+
+.ng-admin-notarias>header.ng-hero.molsan-page-header {
+
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:nowrap;
+  gap:12px;
+  width:100%;
+  max-width:none;
+  min-width:0;
+  min-height:74px;
+  height:auto;
+  max-height:none;
+  margin:0 0 16px;
+  padding:10px 18px;
+  overflow:hidden;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:18px;
+  background:radial-gradient(circle at 86% 18%,rgba(116,199,219,.18),transparent 27%),linear-gradient(116deg,#032D4B 0%,#064675 54%,#0D638C 100%);
+  box-shadow:0 12px 28px rgba(4,55,91,.16);
+  animation:none;
+  transition:none;
+  opacity:1;
+  transform:none;
+  filter:none;
+  will-change:auto;
+}
+
+.ng-admin-notarias>header.ng-hero::after {
+
+  content:"";
+  position:absolute;
+  right:0;bottom:0;left:0;height:3px;
+  background:linear-gradient(90deg,#6CC5D9 0%,#8CB8D8 38%,rgba(255,255,255,.08) 100%);
+  pointer-events:none;
+}
+
+.ng-admin-notarias .ng-admin-kpi-button {
+
+  position:relative;display:flex;flex-direction:column;align-items:flex-start;
+  justify-content:space-between;gap:9px;min-width:0;min-height:136px;
+  margin:0;padding:17px 18px;color:var(--molsan-prof-text);
+  border:1px solid var(--molsan-prof-border);border-radius:15px;
+  background:linear-gradient(145deg,#fff 0%,#fff 66%,#F7FAFC 100%);
+  box-shadow:var(--molsan-prof-shadow);transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
+  text-align:left;
+}
+
+.ng-admin-notarias .ng-admin-kpi-button:hover {
+
+  transform:translateY(-2px);border-color:#B9D7E6;box-shadow:0 10px 24px rgba(6,50,82,.09);
+}
+
+.ng-admin-notarias .ng-admin-kpi-button>span:first-child {
+
+  color:var(--molsan-prof-muted);font-size:11px;font-weight:800;letter-spacing:.08em;line-height:1.4;text-transform:uppercase;
+}
+
+.ng-admin-notarias .ng-admin-kpi-button>strong {
+
+  color:var(--molsan-prof-blue);font-size:clamp(26px,2vw,32px);font-weight:850;line-height:1.1;letter-spacing:-.035em;font-variant-numeric:tabular-nums;
+}
+
+.ng-admin-notarias .ng-admin-kpis,
+.ng-admin-notarias .ng-admin-kpis-global {
+
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;
+}
+
+.ng-admin-notarias .ng-admin-kpi-button {
+width:100%;min-height:136px;appearance:none;-webkit-appearance:none}
+
+.ng-admin-notarias .ng-admin-kpi-button::before {
+display:none}
+
+.ng-admin-notarias .ng-admin-kpi-button>strong {
+margin:auto 0 0}
+
+.ng-admin-notarias .ng-admin-kpi-button>small {
+color:var(--molsan-prof-blue);font-size:10px;font-weight:800}
+
+.ng-admin-notarias .ng-admin-global-resumen,
+.ng-admin-notarias .ng-admin-notaria-card {
+
+  min-width:0;border:1px solid var(--molsan-prof-border);border-radius:18px;
+  background:#fff;box-shadow:var(--molsan-prof-shadow);overflow:hidden;
+}
+
+.ng-admin-notarias .ng-admin-card-header {
+
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:0;padding:16px 19px;color:var(--molsan-prof-blue);
+  border:0;border-bottom:1px solid var(--molsan-prof-border);border-radius:0;
+  background:var(--molsan-prof-soft);
+}
+
+.ng-admin-notarias button:focus-visible {
+outline:3px solid rgba(6,70,117,.22);outline-offset:2px}
+
+.ng-admin-notarias .molsan-icon-3d {
+flex-shrink:0}
+
+.ng-admin-notarias .ng-admin-kpi-button::before {
+
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 18px;
+  left: 18px;
+  height: 3px;
+  border-radius: 0 0 6px 6px;
+  background: linear-gradient(90deg, #064675 0%, #2696A5 70%, #8BC8D8 100%);
+  pointer-events: none;
+}
