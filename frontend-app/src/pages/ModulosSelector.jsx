@@ -3,6 +3,8 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { API_BASE } from "../api/config";
 import { configurarSesionEncargaGest } from "../api/encargagest";
+import MolsanPageHeader from "../components/ui/MolsanPageHeader";
+import MolsanIcon from "../components/ui/MolsanIcon";
 import "../css/ModalesHerramientasPremium.css";
 
 const MODULOS = {
@@ -54,6 +56,41 @@ const MODULOS = {
     categoria: "CONTROL HORARIO DE EMPLEADOS",
     estilo: "fi",
   },
+};
+
+const ICONO_MODULO = {
+  expedientes: "file",
+  "provisiones-fondos": "euro",
+  dashboard: "chart",
+  agenda: "calendar",
+  empleados: "user",
+  fichajes: "clock",
+  "control-fichajes": "clock",
+  ctn: "building",
+  intranet: "message",
+  noticias: "file",
+  mensajes: "message",
+  mensajeria: "clipboard",
+  "mensajeria-gestion": "clipboard",
+  informes: "chart",
+  fusiones: "chart",
+  auditoria: "shield",
+  catalogos: "database",
+  herramientas: "settings",
+  utilidades: "settings",
+  seguridad: "shield",
+  logs: "file",
+  maestros: "database",
+  "panel-tecnico": "monitor",
+  realtime: "monitor",
+  notarios: "building",
+  documentos: "file",
+  apoderagest: "user",
+  cancelagest: "file",
+  notargest: "building",
+  encargagest: "clipboard",
+  notargestweb: "building",
+  encargagestweb: "clipboard",
 };
 
 function normalizar(valor) {
@@ -231,42 +268,16 @@ export default function ModulosSelector() {
         className="pointer-events-none absolute -right-24 -top-28 -z-10 h-80 w-80 rounded-full border border-blue-100/70"
       />
 
-      <header className="mb-9 flex flex-wrap items-center justify-between gap-5">
-        <div className="flex items-center gap-4">
-          <div className="grid h-14 w-14 place-items-center rounded-2xl border border-white bg-gradient-to-br from-blue-600 to-indigo-800 text-sm font-black tracking-wide text-white shadow-lg shadow-blue-900/15">
-            M
-          </div>
-          <div>
-            <p className="text-[10px] font-extrabold tracking-[0.2em] text-blue-700">
-              MOLSAN ERP · PREMIUM 2027
-            </p>
-            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
-              Espacio de trabajo
-            </h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Hola, {empleado.nombre || empleado.usuario}. Selecciona el módulo al que quieres acceder.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white/80 px-3 py-2 text-[11px] font-bold text-slate-600 shadow-sm">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            Sesión activa
-          </span>
-          <button
-            type="button"
-            onClick={() => {
-              logout();
-              navigate("/login", { replace: true });
-            }}
-            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs font-extrabold text-rose-700 shadow-sm transition hover:-translate-y-0.5 hover:border-rose-300 hover:bg-rose-100 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-rose-100"
-          >
-            <span aria-hidden="true">↪</span>
-            Cerrar sesión
-          </button>
-        </div>
-      </header>
+      <MolsanPageHeader
+        title="Espacio de trabajo"
+        description={`Hola, ${empleado.nombre || empleado.usuario}. Selecciona el módulo al que quieres acceder.`}
+        actions={
+          <>
+            <span className="molsan-premium-header__status"><span aria-hidden="true" />Sesión activa</span>
+            <button type="button" onClick={() => { logout(); navigate("/login", { replace: true }); }} className="molsan-btn molsan-btn--secondary">Cerrar sesión</button>
+          </>
+        }
+      />
 
       <div className="mb-5">
         <p className="text-[10px] font-extrabold tracking-[0.17em] text-slate-400">
@@ -322,7 +333,7 @@ export default function ModulosSelector() {
                             : "border-violet-100 bg-gradient-to-br from-violet-50 to-fuchsia-100 text-violet-800"
                     }`}
                   >
-                    {modulo.siglas}
+                    <MolsanIcon name={ICONO_MODULO[modulo.clave] || "file"} size={28} />
                   </div>
                   <span className="mt-1 grid h-8 w-8 place-items-center rounded-full border border-slate-100 text-lg text-slate-400 transition group-hover:border-blue-100 group-hover:bg-blue-50 group-hover:text-blue-700">
                     ↗

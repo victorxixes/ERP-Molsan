@@ -132,56 +132,6 @@
 
 /* Botones, campos, tablas y estados se definen en molsan-controls.css y molsan-tables.css. */
 
-/*
- * Puente visual temporal para las cabeceras actuales.
- * Normaliza las cabeceras existentes sin tocar sus componentes, rutas o lógica.
- * Cuando cada pantalla migre a molsan-page-header, estas reglas podrán retirarse.
- */
-.cg-page .cg-hero,
-.ag-hero,
-.ng-cabecera,
-.encargagest .eg-hero {
-  align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  margin-bottom: 20px;
-  color: var(--molsan-text);
-  background: var(--molsan-surface);
-  border: 1px solid var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-  box-shadow: var(--molsan-shadow-card);
-}
-
-.cg-page .cg-hero h1,
-.ag-hero h1,
-.ng-cabecera h1,
-.encargagest .eg-hero h1 {
-  color: var(--molsan-text);
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  line-height: 1.25;
-}
-
-.cg-page .cg-hero p,
-.ag-hero p,
-.ng-cabecera p,
-.encargagest .eg-hero p {
-  color: var(--molsan-text-muted);
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.cg-page .cg-hero .cg-eyebrow,
-.ag-hero .ag-eyebrow,
-.ng-cabecera .ng-sobrelinea,
-.encargagest .eg-hero .ag-eyebrow {
-  color: var(--molsan-text-muted);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
 /* Respeto a pantallas pequeñas y preferencias de movimiento */
 @media (max-width: 640px) {
   .molsan-page-header {
@@ -326,18 +276,6 @@
   transform: none;
 }
 
-
-/* Las reglas responsivas quedan al final para prevalecer sobre el puente legado. */
-@media (max-width: 640px) {
-  .cg-page .cg-hero,
-  .ag-hero,
-  .ng-cabecera,
-  .encargagest .eg-hero {
-    align-items: flex-start;
-    flex-direction: column;
-    padding: 14px;
-  }
-}
 
 /*
  * Acabado común de controles para las pantallas operativas ya existentes.
@@ -685,3 +623,19 @@
   .molsan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 }
 
+
+/* MOLSAN ERP · shell común de diálogos */
+.molsan-modal-overlay{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;overflow-y:auto;overscroll-behavior:contain;padding:24px;background:rgba(16,35,52,.48);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.molsan-modal{display:flex;flex-direction:column;width:min(100%,900px);min-width:0;max-height:min(88vh,calc(100dvh - 32px));overflow:hidden;border:1px solid #d8e4ec;border-radius:18px;background:#fff;box-shadow:0 22px 60px rgba(6,38,63,.2)}
+.molsan-modal>header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px;border-bottom:1px solid #e6eef3;background:#f8fbfd}
+.molsan-modal>header h2{margin:0;color:#064675;font-size:18px;font-weight:800}
+.molsan-modal>header p{margin:5px 0 0;color:#617789;font-size:12px;line-height:1.5}
+@media(max-width:640px){.molsan-modal-overlay{align-items:flex-start;padding:max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom))}.molsan-modal{width:100%;max-height:calc(100dvh - 16px);border-radius:14px}.molsan-modal>header{padding:16px}}
+
+.molsan-modal__identity{min-width:0}
+.molsan-modal__eyebrow{display:block;margin:0 0 4px;color:#064675;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.molsan-modal__title{margin:0;color:#064675;font-size:20px;font-weight:800;line-height:1.25;overflow-wrap:anywhere}
+.molsan-modal__meta{margin:6px 0 0;color:#617789;font-size:12px;line-height:1.5}
+.molsan-modal__badge{display:inline-flex;align-items:center;align-self:flex-start;padding:7px 11px;border:1px solid #d8e4ec;border-radius:999px;background:#eaf2f8;color:#064675;font-size:11px;font-weight:750;white-space:nowrap}
+
+.molsan-modal--wide{width:min(100%,1800px)}

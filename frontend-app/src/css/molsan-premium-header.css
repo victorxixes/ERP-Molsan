@@ -1,0 +1,15 @@
+/* Cabecera única MOLSAN ERP Premium 2027 */
+.molsan-premium-header{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:0 0 30px;padding:22px 26px;border:1px solid #d8e4ec;border-radius:18px;background:linear-gradient(110deg,#fff 0%,#f2f7fb 100%);box-shadow:0 8px 24px rgba(6,70,117,.055)}
+.molsan-premium-header__identity{display:flex;align-items:center;gap:16px;min-width:0}
+.molsan-premium-header__mark{display:grid;place-items:center;flex:0 0 50px;width:50px;height:50px;border:1px solid #d8e4ec;border-radius:14px;background:#eaf2f8;color:#064675}
+.molsan-premium-header__mark svg{display:block}
+.molsan-premium-header__copy{min-width:0}
+.molsan-premium-header__eyebrow{margin:0;color:#064675;font-size:10px;font-weight:800;letter-spacing:.17em}
+.molsan-premium-header__title{margin:4px 0 0;color:#064675;font-size:24px;font-weight:800;line-height:1.2;letter-spacing:-.025em}
+.molsan-premium-header__description{margin:6px 0 0;color:#617789;font-size:13px;line-height:1.5}
+.molsan-premium-header__actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.molsan-premium-header__status{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid #d8e4ec;border-radius:999px;background:#fff;color:#617789;font-size:11px;font-weight:700;white-space:nowrap}
+.molsan-premium-header__status span{width:7px;height:7px;border-radius:50%;background:#26966c;box-shadow:0 0 0 3px rgba(38,150,108,.12)}
+.molsan-premium-header__date{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 12px;border:1px solid #d8e4ec;border-radius:11px;background:#fff;color:#617789;font-size:11px;font-weight:700;white-space:nowrap}
+.molsan-premium-header__date span{width:7px;height:7px;border-radius:50%;background:#26966c;box-shadow:0 0 0 3px rgba(38,150,108,.12)}
+@media(max-width:700px){.molsan-premium-header{align-items:flex-start;flex-direction:column;padding:18px;gap:16px}.molsan-premium-header__title{font-size:21px}.molsan-premium-header__actions{justify-content:flex-start;width:100%}}

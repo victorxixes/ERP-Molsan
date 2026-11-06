@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import Sidebar from "../../components/Sidebar";
 import "../../css/PortalProfesionalShared.css";
 import "../../css/EncargaGest.css";
@@ -883,36 +885,11 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         />
       )}
       <div className="ag-fondo-decorativo" aria-hidden="true" />
-      <header className="ag-hero eg-hero molsan-page-header">
-        <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca eg-marca" aria-label="EncargaGest">EG</div>
-          <div>
-            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1 className="molsan-page-header__title">EncargaGest</h1>
-            <p className="molsan-page-header__description">{modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}</p>
-          </div>
-        </div>
-        <div className="ag-hero-acciones">
-          {modo === "interno" && (
-            <>
-              <div className="ag-fecha-actual">
-                <span className="ag-punto-vivo" aria-hidden="true" />
-                <span>{fechaActual}</span>
-              </div>
-              <button type="button" onClick={irAModulos} className="eg-secondary"><span aria-hidden="true">▦</span> Ir a módulos</button>
-              <button type="button" onClick={salirEncargaGest} className="eg-secondary">Cerrar sesión</button>
-              <button type="button" onClick={cargarTodo} disabled={cargando} className="ag-boton-actualizar">
-                <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
-                {cargando ? "Actualizando…" : "Actualizar datos"}
-              </button>
-            </>
-          )}
-        </div>
-      </header>
+      <MolsanPageHeader mark="EG" title="EncargaGest" description={modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."} actions={modo === "interno" ? <button type="button" onClick={salirEncargaGest} className="molsan-btn molsan-btn--secondary">Cerrar sesión</button> : null} />
 
       <main className="eg-main w-full max-w-none px-1 pb-4">
         <section role="status" aria-live="polite" className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 shadow-sm">
-          <span aria-hidden="true" className="mt-0.5 text-xl">⚠️</span>
+          <span aria-hidden="true" className="mt-0.5"><MolsanIcon name="alert" size={21} /></span>
           <div>
             <p className="text-sm font-extrabold">Conexiones con bancos pendientes</p>
             <p className="mt-1 text-sm">La conexión mediante API con las entidades bancarias está pendiente de implantación. Puedes acceder y trabajar en EncargaGest Gestoría con normalidad; las funciones que requieran conexión bancaria quedarán disponibles cuando se complete la integración.</p>
@@ -925,11 +902,11 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
           </section>
         )}
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-          <div className="ag-kpi ag-kpi-azul eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-slate-900">{resumen.total || 0}</strong><span className="text-xl text-blue-600">▤</span></div><p className="mt-1 text-xs text-slate-500">Todas las solicitudes</p></div>
-          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_RECIBIDOS")} className="ag-kpi ag-kpi-verde eg-kpi text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Recibidos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-sky-700">{(resumen.por_estado?.EN_PROCESO || 0) + (resumen.por_estado?.RECIBIDO || 0) + (resumen.por_estado?.EN_REVISION || 0) + (resumen.por_estado?.DOCUMENTACION_PENDIENTE || 0) + (resumen.por_estado?.EN_GESTION || 0)}</strong><span className="text-xl text-sky-500">↓</span></div><p className="mt-1 text-xs text-slate-500">Pendientes de revisión y autorización</p></button>
-          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_AUTORIZADOS")} className="ag-kpi eg-kpi border border-indigo-100 bg-indigo-50/60 text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-indigo-700">Autorizados</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-indigo-800">{resumen.por_estado?.AUTORIZADO || 0}</strong><span className="text-xl text-indigo-600">✓</span></div><p className="mt-1 text-xs text-indigo-800">Validados para continuar</p></button>
-          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_INCIDENCIAS")} className="ag-kpi ag-kpi-ambar eg-kpi text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-rose-700">Incidencias</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-rose-800">{resumen.por_estado?.INCIDENCIA || 0}</strong><span className="text-xl text-rose-600">!</span></div><p className="mt-1 text-xs text-rose-800">Requieren actuación</p></button>
-          <div className="ag-kpi ag-kpi-verde eg-kpi border border-slate-200 bg-slate-50" aria-label="Firmados pendiente de integración con ApoderaGest"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-500">Firmados · próximamente</p><div className="mt-2 flex items-end justify-between"><strong className="text-lg font-black text-slate-600">EN ESPERA</strong><span className="text-xl text-slate-400">◷</span></div><p className="mt-1 text-xs leading-4 text-slate-500">Pendiente de integración con las firmas reales de ApoderaGest.</p></div>
+          <div className="ag-kpi ag-kpi-azul eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-slate-900">{resumen.total || 0}</strong><span className="ag-kpi-icono"><MolsanIcon name="clipboard" size={21} /></span></div><p className="mt-1 text-xs text-slate-500">Todas las solicitudes</p></div>
+          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_RECIBIDOS")} className="ag-kpi ag-kpi-verde eg-kpi text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Recibidos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-sky-700">{(resumen.por_estado?.EN_PROCESO || 0) + (resumen.por_estado?.RECIBIDO || 0) + (resumen.por_estado?.EN_REVISION || 0) + (resumen.por_estado?.DOCUMENTACION_PENDIENTE || 0) + (resumen.por_estado?.EN_GESTION || 0)}</strong><span className="ag-kpi-icono"><MolsanIcon name="clock" size={21} /></span></div><p className="mt-1 text-xs text-slate-500">Pendientes de revisión y autorización</p></button>
+          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_AUTORIZADOS")} className="ag-kpi eg-kpi border border-indigo-100 bg-indigo-50/60 text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-indigo-700">Autorizados</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-indigo-800">{resumen.por_estado?.AUTORIZADO || 0}</strong><span className="ag-kpi-icono"><MolsanIcon name="check" size={21} /></span></div><p className="mt-1 text-xs text-indigo-800">Validados para continuar</p></button>
+          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_INCIDENCIAS")} className="ag-kpi ag-kpi-ambar eg-kpi text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-rose-700">Incidencias</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-rose-800">{resumen.por_estado?.INCIDENCIA || 0}</strong><span className="ag-kpi-icono"><MolsanIcon name="alert" size={21} /></span></div><p className="mt-1 text-xs text-rose-800">Requieren actuación</p></button>
+          <div className="ag-kpi ag-kpi-verde eg-kpi border border-slate-200 bg-slate-50" aria-label="Firmados pendiente de integración con ApoderaGest"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-500">Firmados · próximamente</p><div className="mt-2 flex items-end justify-between"><strong className="text-lg font-black text-slate-600">EN ESPERA</strong><span className="ag-kpi-icono"><MolsanIcon name="clock" size={21} /></span></div><p className="mt-1 text-xs leading-4 text-slate-500">Pendiente de integración con las firmas reales de ApoderaGest.</p></div>
         </section>
 
         {modo === "interno" && esAdminEncargaGest && (
@@ -985,7 +962,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         <section className="mt-6 grid min-w-0 grid-cols-1 gap-5 2xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.45fr)]">
           <div className="eg-panel min-w-0">
             <div className="eg-panel-head">
-              <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><div className="flex items-center gap-2"><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span>{modo === "externo" && <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary whitespace-nowrap">＋ Nuevo encargo</button>}</div></div>
+              <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><div className="flex items-center gap-2"><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span>{modo === "externo" && <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="molsan-btn molsan-btn--primary whitespace-nowrap">＋ Nuevo encargo</button>}</div></div>
               <form className="mt-4 space-y-2" onSubmit={aplicarFiltros}>
                 <input className={inputClass} type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar referencia, notaría, titular o banco…" />
                 <div className="flex gap-2">
@@ -1166,15 +1143,15 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
 
       {modalNuevo && (
         <div
-          className="eg-modal-overlay"
+          className="molsan-modal-overlay eg-modal-overlay"
           role="presentation"
           onMouseDown={(e) => { if (e.target === e.currentTarget && !guardando) setModalNuevo(false); }}
         >
-          <form onSubmit={crearEncargo} className="eg-modal-form">
+          <form onSubmit={crearEncargo} className="molsan-modal eg-modal-form">
             <datalist id="eg-catalogo-municipios-registro">
               {catalogoMunicipiosRegistro.map((item) => <option key={item.id} value={item.municipio}>{item.provincia}</option>)}
             </datalist>
-            <header className="eg-modal-header">
+            <header className="molsan-modal__header">
               <div className="eg-modal-brand">EG</div>
               <div className="eg-modal-heading">
                 <span className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</span>
@@ -1293,8 +1270,8 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
             <footer className="eg-modal-footer">
               <span>{Object.values(archivosSolicitud).reduce((total, archivos) => total + archivos.length, 0)} archivo(s) seleccionado(s)</span>
               <div>
-                <button type="button" disabled={guardando} onClick={() => setModalNuevo(false)} className="eg-secondary">Cancelar</button>
-                <button type="submit" disabled={guardando || (modo === "interno" && !notarias.length)} className="eg-button-primary">
+                <button type="button" disabled={guardando} onClick={() => setModalNuevo(false)} className="molsan-btn molsan-btn--secondary">Cancelar</button>
+                <button type="submit" disabled={guardando || (modo === "interno" && !notarias.length)} className="molsan-btn molsan-btn--primary">
                   {guardando ? "Guardando encargo y documentos…" : "Guardar encargo"}
                 </button>
               </div>
