@@ -1461,3 +1461,34 @@ Se ha iniciado la revisión individual de los componentes compartidos señalados
 ### Límite de validación
 
 Los cambios están escritos en la rama de trabajo y comprobados mediante lectura posterior del contenido guardado. Esta comprobación no equivale a ejecutar el build, pruebas automatizadas ni navegación visual autenticada. La revisión de Sidebar, StatCard, SelectSJ y los componentes de notificaciones no se considera globalmente cerrada hasta completar sus consumidores y variantes.
+
+
+## 30. Segunda pasada: vistas secundarias y clasificación de JavaScript — 6 de noviembre de 2026
+
+### Vistas inspeccionadas y correcciones
+
+- Agenda: inspeccionadas `VistaDia.jsx`, `VistaMes.jsx` y `VistaSemana.jsx`. Las tres consumen tokens ERP/Molsan para superficies, bordes y azul principal; los colores de reunión, firma pendiente y firma realizada se mantienen como estados semánticos. No se ha cambiado la lógica de calendario ni de citas.
+- Seguridad: inspeccionadas `SeguridadResumen.jsx` y `SeguridadUsuarios.jsx`. Las páginas ya usan `MolsanPageHeader`, contenedores `erp-card`, badges y controles compartidos; no se reescriben sus permisos ni sus operaciones.
+- Fichajes: inspeccionadas `FichajesResumen.jsx` y `SolicitudesAusencia.jsx`. El resumen usa `MolsanStatCard` y `MolsanPremiumCard`; no se alteran solicitudes ni endpoints.
+- Herramientas: `CatalogoOficinas.jsx` y `HonorariosGestoria.jsx` tenían colores Tailwind slate/blue/indigo específicos en tarjetas, tablas y acciones. Se han migrado esos colores de presentación a los tokens corporativos MOLSAN (azul principal, azul hielo, texto secundario, borde y cabecera de tabla). Se conservan los colores semánticos de éxito/error y los flujos de importación, paginación, tarifas y plantilla Word.
+- ApoderaGest: el título y subtítulo base de la cabecera local en `ApoderaGest.css` dejan de usar los tonos antiguos `#1b2a43` / `#7a879b` y pasan a `--molsan-primary` / `--molsan-text-secondary`. No se han borrado reglas estructurales ni estados funcionales.
+
+### Reconciliación de los 57 ficheros JavaScript
+
+El árbol documentado contiene 57 ficheros `.js`. La búsqueda de código de esta rama ha localizado 53 y se han leído los 53. Ninguno contiene JSX ni devuelve componentes visuales; por su ubicación y exportaciones se clasifican como capa de datos, hooks, estado o configuración. Quedan 4 ficheros `.js` sin localizar individualmente mediante el índice de búsqueda, por lo que no se afirma cobertura de los 57.
+
+**API (21 localizados):** `api/ctn.js`, `api/auth.js`, `api/logs.js`, `api/axios.js`, `api/config.js`, `api/agenda.js`, `api/intranet.js`, `api/maestros.js`, `api/mensajes.js`, `api/notarios.js`, `api/empleados.js`, `api/dashboard.js`, `api/auditoria.js`, `api/seguridad.js`, `api/fetchAuth.js`, `api/encargagest.js`, `api/expedientes.js`, `api/herramientas.js`, `api/monitorRealtime.js`, `api/expedienteDefectos.js`, `api/expedienteAcciones.js`.
+
+**Hooks (17 localizados):** `hooks/useCtn.js`, `hooks/useLogs.js`, `hooks/useAgenda.js`, `hooks/useAgendaWS.js`, `hooks/useIntranet.js`, `hooks/useNotarios.js`, `hooks/useDashboard.js`, `hooks/useEmpleados.js`, `hooks/useSeguridad.js`, `hooks/useAgendaData.js`, `hooks/useIntranetWS.js`, `hooks/useMensajesWS.js`, `hooks/useUtilidades.js`, `hooks/useEmpleadosWS.js`, `hooks/useHerramientas.js`, `hooks/useRealtimeGlobal.js`, `hooks/useNotificacionesWS.js`.
+
+**Stores (12 localizados):** `store/ctnStore.js`, `store/logsStore.js`, `store/authStore.js`, `store/agendaStore.js`, `store/mensajesStore.js`, `store/intranetStore.js`, `store/notariasStore.js`, `store/dashboardStore.js`, `store/empleadosStore.js`, `store/seguridadStore.js`, `store/herramientasStore.js`, `store/notificacionesStore.js`.
+
+**Utilidades/configuración/realtime (3 localizados):** `utils/permisos.js`, `config/modulos.js`, `realtime/realtimeClient.js`.
+
+### Build y CI
+
+Se ha comprobado `frontend-app/package.json`: el comando de compilación disponible es `npm run build` (Vite). Se han localizado siete workflows, pero los workflows de build existentes están limitados a PR hacia `main` o a rutas concretas; la PR #411 apunta a `fix/molsan-css-selector-audit-round1` y sus cambios no satisfacen los filtros de rutas de los otros workflows. El workflow de seguridad solo se activa al cambiar `frontend-app/package.json` o su propio YAML.
+
+Para el commit `0cdde89adb6c1cc8a4901c5afa4f20c5a45515a3`, GitHub devuelve cero ejecuciones asociadas y cero status checks. No se ha podido ejecutar `npm run build` desde esta sesión ni se declara build correcto. La compilación sigue siendo una condición pendiente, no un resultado supuesto.
+
+**Cobertura restante:** 98 JSX continúan sin trazabilidad individual inequívoca en la sección 28; 4 JS no han podido localizarse mediante el índice; quedan pendientes consumidores de componentes compartidos, modales, estados responsive y navegación visual autenticada en Preview.
