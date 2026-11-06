@@ -1092,3 +1092,8 @@ Commits: 29f4a02 y b8c2b0f.
 - Los selectores compartidos del portal conservan tipografía, estructura, espaciado y estados; se retiran únicamente fondos, bordes y sombras de presentación duplicados.
 
 Commits: 29f4a02 y b8c2b0f.
+
+
+### 19.5. Precedencia del fondo blanco
+
+Se ha elevado el selector del lienzo de páginas a `:is(...)` para que su especificidad iguale la de las antiguas reglas `.erp-page`/portales con `!important`. Así el fondo blanco canónico no queda anulado por el tema anterior. Commit: 3f8dbb1.
