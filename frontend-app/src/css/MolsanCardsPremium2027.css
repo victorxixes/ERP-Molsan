@@ -168,13 +168,7 @@
   .catalogos-premium-page .catalogos-subpage-header__action { width: 100%; justify-content: center; }
 }
 
-/* El indicador de fecha del portal comparte el contraste de la cabecera común. */
-.apoderagest > .ag-hero.molsan-page-header .ag-fecha-actual,
-.encargagest > .ag-hero.molsan-page-header .ag-fecha-actual {
-  color: #D8EAF3 !important;
-  border-color: rgba(255,255,255,.24) !important;
-  background: rgba(255,255,255,.09) !important;
-}
+
 
 /* Accesibilidad para superficies heredadas de módulos que aún no usan clases semánticas. */
 @media (prefers-reduced-motion: reduce) {
