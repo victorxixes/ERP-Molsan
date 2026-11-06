@@ -3,112 +3,7 @@
    Se aplica a las tarjetas semánticas existentes sin alterar datos,
    acciones, permisos ni estructura funcional. */
 
-:where(.erp-card, .card-sj) {
-  position: relative;
-  min-width: 0;
-  border: 1px solid #D8E4EC !important;
-  border-radius: 18px !important;
-  background: linear-gradient(150deg, #FFFFFF 0%, #FFFFFF 62%, #F7FAFC 100%) !important;
-  box-shadow: 0 8px 24px rgba(6, 50, 82, .055) !important;
-  transition:
-    border-color .2s ease,
-    box-shadow .2s ease,
-    background .2s ease,
-    transform .2s ease;
-}
-
-/* La franja superior exterior la dibuja la capa canónica; no se crea una segunda línea interior. */
-
-/* Los paneles de contenido ganan profundidad sin desplazarse. */
-:where(.erp-card, .card-sj):not(button):not(a):hover {
-  transform: translateY(-2px);
-  border-color: #B9D7E6 !important;
-  background: linear-gradient(150deg, #FFFFFF 0%, #FFFFFF 55%, #EFF7FB 100%) !important;
-  box-shadow: 0 15px 32px rgba(6, 50, 82, .11) !important;
-}
-
-/* Tarjetas que también son accesos o controles interactivos. */
-:where(button.erp-card, a.erp-card, [role="button"].erp-card) {
-  cursor: pointer;
-  text-align: left;
-}
-
-:where(button.erp-card, a.erp-card, [role="button"].erp-card):hover {
-  z-index: 1;
-  transform: translateY(-3px);
-  border-color: #B9D7E6 !important;
-  background: linear-gradient(150deg, #FFFFFF 0%, #FFFFFF 55%, #EFF7FB 100%) !important;
-  box-shadow: 0 17px 34px rgba(6, 50, 82, .12) !important;
-}
-
-:where(button.erp-card, a.erp-card, [role="button"].erp-card):active {
-  transform: translateY(-1px);
-}
-
-:where(.erp-card, .card-sj):focus-within {
-  border-color: #A9CCDF !important;
-}
-
-/* KPI: iconos y métricas conservan su tono, con acabado premium común. */
-.dashboard-kpi {
-  overflow: hidden;
-  border-radius: 18px !important;
-  background: linear-gradient(145deg, #FFFFFF 0%, #FFFFFF 68%, #F1F7FA 100%) !important;
-  box-shadow: 0 9px 25px rgba(6, 50, 82, .065) !important;
-}
-
-.dashboard-kpi::before {
-  right: 0;
-  left: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #064675, #2696A5 70%, #8BC8D8);
-}
-
-.dashboard-kpi:hover {
-  transform: translateY(-3px);
-  border-color: #C4DCE9 !important;
-  box-shadow: 0 16px 32px rgba(6, 50, 82, .11) !important;
-}
-
-/* Compactación segura para tarjetas en ventanas modales y pantallas estrechas. */
-@media (max-width: 760px) {
-  :where(.erp-card, .card-sj) {
-    border-radius: 15px !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :where(.erp-card, .card-sj, .dashboard-kpi),
-  :where(.erp-card, .card-sj, .dashboard-kpi)::before {
-    transition: none !important;
-    animation: none !important;
-  }
-  :where(button.erp-card, a.erp-card, [role="button"].erp-card, .dashboard-kpi):hover {
-    transform: none !important;
-  }
-}
-
-
 /* Las tarjetas se aplican mediante clases/componentes semánticos; no se infieren desde utilidades Tailwind. */
-
-/* Catálogos · cabecera única y a todo el ancho en el módulo y sus subapartados. */
-.catalogos-premium-page > .molsan-page-header {
-  display: flex;
-  width: 100%;
-  max-width: none;
-  min-width: 0;
-  align-self: stretch;
-  flex: 0 0 100%;
-  box-sizing: border-box;
-  margin: 0 0 20px;
-}
-.catalogos-premium-page > .molsan-page-header .molsan-page-header__identity {
-  flex: 1 1 auto;
-}
-.catalogos-premium-page > .molsan-page-header .molsan-page-header__description {
-  max-width: 760px;
-}
-
 
 /* ============================================================
    MOLSAN ERP PREMIUM 2027 · CATÁLOGOS Y TODAS SUS FICHAS
@@ -153,7 +48,6 @@
 .catalogos-premium-page > div:has(.molsan-page-header) > .absolute,
 .catalogos-premium-page > section:has(.molsan-page-header) > .absolute { display:none!important; }
 
-
 /* Módulos técnicos: todas las cabeceras heredan la misma anchura y ritmo. */
 :where(.panel-tecnico-premium,.panel-tecnico-submodulo-premium,.seguridad-premium-page,.seguridad-subpagina-premium,.logs-premium-page,.maestros-premium-page,.informes-premium-page,.ctn-listado-page,.fichajes-premium-page,.agenda-premium-page,.molsan-intranet-page) .molsan-page-header {
   box-sizing:border-box;width:100%;max-width:none;min-width:0;align-self:stretch;
@@ -168,7 +62,6 @@
 @media(max-width:760px){
   .panel-tecnico-submodulo-premium.monitor-realtime-premium > .molsan-page-header {border-radius:18px;padding:16px;}
 }
-
 
 /* Ajuste de cabeceras de las subpáginas de Catálogos: identidad a la izquierda y acciones dentro del mismo bloque, a la derecha. */
 .catalogos-premium-page .molsan-page-header {
@@ -247,52 +140,6 @@
   .utilidades-premium-page .utilidades-access-card { animation: none; transition: none; }
   .utilidades-premium-page .utilidades-access-card:hover { transform: none; }
 }
-
-
-/* Cabeceras de subpáginas de Catálogos: nunca recortar botones ni encoger la identidad. */
-.catalogos-premium-page .catalogos-subpage-header {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  overflow: visible;
-}
-.catalogos-premium-page .catalogos-subpage-header__layout {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 18px 28px;
-  width: 100%;
-  min-width: 0;
-}
-.catalogos-premium-page .catalogos-subpage-header__identity {
-  flex: 1 1 340px;
-  min-width: min(100%, 260px);
-  text-align: left;
-}
-.catalogos-premium-page .catalogos-subpage-header__actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex: 1 1 440px;
-  flex-wrap: wrap;
-  gap: 9px;
-  min-width: 0;
-  margin-left: auto;
-  overflow: visible;
-}
-.catalogos-premium-page .catalogos-subpage-header__actions > button,
-.catalogos-premium-page .catalogos-subpage-header__actions > a {
-  flex: 0 1 auto;
-  max-width: 100%;
-  white-space: normal;
-}
-@media (max-width: 900px) {
-  .catalogos-premium-page .catalogos-subpage-header__layout { align-items: flex-start; }
-  .catalogos-premium-page .catalogos-subpage-header__actions { flex-basis: 100%; justify-content: flex-start; margin-left: 0; }
-}
-
 
 /* Catálogos · cabecera unificada para todas las fichas maestras y económicas. */
 .catalogos-premium-page .catalogos-subpage-header {
@@ -374,7 +221,6 @@
   .catalogos-premium-page .catalogos-subpage-header__action { width: 100%; justify-content: center; }
 }
 
-
 /* INFORMES · contenedor y cabeceras de las cinco subpáginas.
    El shell usa el mismo .erp-page / .molsan-page que Dashboard; cada informe
    aporta únicamente su contenido, sin márgenes exteriores duplicados. */
@@ -430,86 +276,6 @@
   }
 }
 
-
-/* MOLSAN TABLE STANDARD · armonización transversal de tablas heredadas.
-   La tabla MolsanDataTable conserva su ordenación y estilos propios. */
-.erp-main-content table:not(.molsan-table) {
-  border-collapse: separate;
-  border-spacing: 0;
-  color: #173247;
-  font-variant-numeric: tabular-nums;
-}
-.erp-main-content table:not(.molsan-table) thead th {
-  color: #064675;
-  background: #EAF2F8;
-  border-bottom: 1px solid #D8E4EC;
-  font-size: 12px;
-  font-weight: 750;
-  letter-spacing: normal;
-  text-transform: none;
-  vertical-align: middle;
-}
-.erp-main-content table:not(.molsan-table) tbody td {
-  border-bottom: 1px solid #E8EFF4;
-  vertical-align: middle;
-}
-.erp-main-content table:not(.molsan-table) tbody tr:last-child td {
-  border-bottom-color: transparent;
-}
-.erp-main-content table:not(.molsan-table) tbody tr:hover {
-  background-color: #F2F7FB;
-}
-.erp-main-content table:not(.molsan-table) :is(th, td) {
-  line-height: 1.45;
-}
-@media (max-width: 640px) {
-  .erp-main-content table:not(.molsan-table) :is(th, td) {
-    padding-inline: 9px;
-  }
-}
-
-
-/* MOLSAN FORM STANDARD · base segura para controles nativos sin clase propia.
-   Los controles con clases de módulo conservan su presentación específica. */
-.erp-main-content :where(
-  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="hidden"]):not([class]),
-  select:not([class]),
-  textarea:not([class])
-) {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  min-height: 38px;
-  padding: 8px 10px;
-  color: #173247;
-  background: #FFFFFF;
-  border: 1px solid #D8E4EC;
-  border-radius: 11px;
-  font: inherit;
-}
-.erp-main-content :where(textarea:not([class])) {
-  min-height: 96px;
-  resize: vertical;
-}
-.erp-main-content :where(
-  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="hidden"]):focus-visible,
-  select:focus-visible,
-  textarea:focus-visible
-) {
-  outline: 3px solid rgba(6, 70, 117, .18);
-  outline-offset: 1px;
-  border-color: #064675;
-}
-.erp-main-content :where(
-  input:disabled,
-  select:disabled,
-  textarea:disabled
-) {
-  color: #718696;
-  background: #F2F7FB;
-  cursor: not-allowed;
-}
-
 /* El indicador de fecha del portal comparte el contraste de la cabecera común. */
 .apoderagest > .ag-hero.molsan-page-header .ag-fecha-actual,
 .encargagest > .ag-hero.molsan-page-header .ag-fecha-actual {
@@ -517,35 +283,6 @@
   border-color: rgba(255,255,255,.24) !important;
   background: rgba(255,255,255,.09) !important;
 }
-
-/* Cabecera Dashboard aplicada al catálogo Tipos de expediente. */
-.catalogos-premium-page > .molsan-page-header.dashboard-header {
-  position:relative;
-  overflow:hidden;
-  color:#FFFFFF;
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:22px;
-  background:
-    radial-gradient(circle at 86% 18%,rgba(116,199,219,.18),transparent 27%),
-    linear-gradient(116deg,#032D4B 0%,#064675 54%,#0D638C 100%);
-  box-shadow:0 18px 38px rgba(4,55,91,.18);
-}
-.catalogos-premium-page > .molsan-page-header.dashboard-header .molsan-page-header__mark {
-  color:#FFFFFF;
-  border-color:rgba(255,255,255,.32);
-  background:rgba(255,255,255,.12);
-}
-.catalogos-premium-page > .molsan-page-header.dashboard-header .molsan-page-header__eyebrow,
-.catalogos-premium-page > .molsan-page-header.dashboard-header .molsan-page-header__description {
-  color:#C6DFEC;
-}
-.catalogos-premium-page > .molsan-page-header.dashboard-header .molsan-page-header__title {
-  color:#FFFFFF;
-}
-@media(max-width:760px) {
-  .catalogos-premium-page > .molsan-page-header.dashboard-header { border-radius:18px; }
-}
-
 
 /* Accesibilidad: el relieve se conserva estático cuando se solicita reducir movimiento. */
 @media (prefers-reduced-motion: reduce) {
