@@ -1,4 +1,5 @@
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useEffect,
   useState,
@@ -258,23 +259,11 @@ export default function SeguridadResumen({ empleadoId }) {
     return (
       <div className="erp-page seguridad-subpagina-premium seguridad-resumen-premium">
 
-        <div className="erp-page-header">
-
-          <div>
-            <div className="erp-eyebrow">
-              SEGURIDAD
-            </div>
-
-            <h1 className="erp-page-title">
-              Resumen de seguridad
-            </h1>
-
-            <p className="erp-page-description">
-              Información, permisos y actividad del usuario.
-            </p>
-          </div>
-
-        </div>
+        <MolsanPageHeader
+          mark="SEG"
+          title="Resumen de seguridad"
+          description="Información, permisos y actividad del usuario."
+        />
 
         <div className="erp-card">
 
@@ -320,57 +309,19 @@ export default function SeguridadResumen({ empleadoId }) {
           CABECERA
       ====================================================== */}
 
-      <div className="erp-page-header">
-
-        <div>
-
-          <div className="erp-eyebrow">
-            SEGURIDAD · USUARIO
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-
-            <h1 className="erp-page-title">
-              Resumen de seguridad
-            </h1>
-
-            <span
-              className={
-                empleado.activo
-                  ? "erp-badge erp-badge-success"
-                  : "erp-badge erp-badge-danger"
-              }
-            >
-              {empleado.activo
-                ? "Activo"
-                : "Bloqueado"}
+      <MolsanPageHeader
+        mark="SEG"
+        title="Resumen de seguridad"
+        description={`${empleado.nombre || "-"} ${empleado.apellidos || ""} · usuario ${empleado.usuario || "-"}`}
+        actions={
+          <>
+            <span className={empleado.activo ? "erp-badge erp-badge-success" : "erp-badge erp-badge-danger"}>
+              {empleado.activo ? "Activo" : "Bloqueado"}
             </span>
-
-          </div>
-
-          <p className="erp-page-description">
-            {empleado.nombre || "-"}{" "}
-            {empleado.apellidos || ""}
-            {" · "}
-            usuario{" "}
-            <strong>
-              {empleado.usuario || "-"}
-            </strong>
-          </p>
-
-        </div>
-
-        <div className="erp-page-header-status">
-
-          {empleado.rol_nombre && (
-            <span className="erp-badge erp-badge-primary">
-              {empleado.rol_nombre}
-            </span>
-          )}
-
-        </div>
-
-      </div>
+            {empleado.rol_nombre && <span className="erp-badge erp-badge-primary">{empleado.rol_nombre}</span>}
+          </>
+        }
+      />
 
       {/* ======================================================
           DATOS BÁSICOS
