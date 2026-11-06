@@ -849,13 +849,6 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
     );
   }
 
-  const fechaActual = new Intl.DateTimeFormat("es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
-
   return (
     <div className="encargagest erp-page molsan-page molsan-professional-shell">
       {modo === "interno" && (
@@ -879,14 +872,6 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         <Sidebar
           brandName="EncargaGest"
           navigationItems={[]}
-          headerActions={
-            <>
-              <div className="ag-fecha-actual" aria-label={`Fecha actual: ${fechaActual}`}>
-                <span className="ag-punto-vivo" aria-hidden="true" />
-                <span>{fechaActual}</span>
-              </div>
-            </>
-          }
           onProfileClick={() => {
             setPerfilAbierto(true);
             setMensajePasswordPerfil("");
@@ -908,10 +893,6 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         <div className="ag-hero-acciones molsan-page-header__actions">
           {modo === "interno" && (
             <>
-              <div className="ag-fecha-actual">
-                <span className="ag-punto-vivo" aria-hidden="true" />
-                <span>{fechaActual}</span>
-              </div>
               <button type="button" onClick={irAModulos} className="eg-secondary"><MolsanIcon name="dashboard" size={20} tone="ocean" /> Ir a módulos</button>
               <button type="button" onClick={salirEncargaGest} className="eg-secondary">Cerrar sesión</button>
             </>
