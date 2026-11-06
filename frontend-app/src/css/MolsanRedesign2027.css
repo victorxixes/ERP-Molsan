@@ -577,32 +577,6 @@
   text-wrap: pretty;
 }
 
-:where(
-  :is(.cg-page, .cg-unified-workspace),
-  .expedientes-listado-premium,
-  .agenda-premium-page,
-  .catalogos-premium-page,
-  .utilidades-premium-page,
-  .honorarios-gestoria-premium,
-  .empleados-premium-page,
-  .maestros-premium-page,
-  .logs-premium-page,
-  .seguridad-premium-page,
-  .seguridad-subpagina-premium,
-  .notificaciones-premium-page,
-  .panel-tecnico-premium,
-  .panel-tecnico-submodulo-premium,
-  .informes-premium-page,
-  .mensajes-premium-page,
-  .ctn-workspace-premium,
-  .encargagest-workspace-premium,
-  .molsan-intranet-page,
-  .provisiones-fondos-premium,
-  .provisiones-fondos-page,
-  .herramientas-subpagina-premium
-) :is(header, [data-page-header="true"]) {
-  min-width: 0;
-}
 
 /* Botones interactivos con estado hover y foco más evidente. */
 :where(
