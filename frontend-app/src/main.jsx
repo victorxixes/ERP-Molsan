@@ -2,7 +2,7 @@
 // MOLSAN ERP PREMIUM 2027 — Punto de entrada principal
 // ============================================================
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
@@ -28,7 +28,6 @@ import "./css/ApoderaGest.css";
 import "./css/EncargaGest.css";
 import "./css/NotarGest.css";
 // Compatibilidad heredada y presentación de Espacios de trabajo.
-
 import "./css/MolsanRedesign2027.css";
 import "./css/MolsanPremium2027.css";
 // Tarjetas semánticas y excepciones específicas de módulos (sin inferir tarjetas Tailwind).
