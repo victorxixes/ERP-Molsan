@@ -1492,3 +1492,14 @@ Se ha comprobado `frontend-app/package.json`: el comando de compilación disponi
 Para el commit `0cdde89adb6c1cc8a4901c5afa4f20c5a45515a3`, GitHub devuelve cero ejecuciones asociadas y cero status checks. No se ha podido ejecutar `npm run build` desde esta sesión ni se declara build correcto. La compilación sigue siendo una condición pendiente, no un resultado supuesto.
 
 **Cobertura restante:** 98 JSX continúan sin trazabilidad individual inequívoca en la sección 28; 4 JS no han podido localizarse mediante el índice; quedan pendientes consumidores de componentes compartidos, modales, estados responsive y navegación visual autenticada en Preview.
+
+
+## 31. Tercera pasada de componentes compartidos y expedientes — 6 de noviembre de 2026
+
+- `components/mensajes/MensajesHeader.jsx`: sustituida la paleta slate/blue del encabezado de conversación por tokens Molsan de borde, superficie, sombra, texto principal y azul hielo. Se mantiene el verde de estado online/offline como indicador semántico.
+- `components/ui/MolsanDetailField.jsx`: sus valores de color literales se han sustituido por referencias a los tokens centrales `--molsan-border`, `--molsan-surface-soft`, `--molsan-text-secondary` y `--molsan-primary`; el resultado visual sigue usando la paleta corporativa acordada.
+- `components/expedientes/ProvisionesLauncher.jsx`: el acceso flotante deja de usar fondo slate casi negro y el símbolo monetario como icono; pasa al botón azul corporativo y a `MolsanIcon wallet`. Se conservan ruta, condición de visibilidad y apertura del modal.
+- `components/expedientes/ProvisionesModal.jsx`: el control de cierre deja de utilizar el carácter Unicode `×` y usa `MolsanIcon x`; no se modifica el flujo del modal.
+- Inspeccionados `AgendaToast.jsx`, `AutocompleteNotario.jsx`, `PortalAccessTabs.jsx`, `VisibilidadTablas.jsx`, `InformeApoderado.jsx`, `DocumentosTable.jsx`, `NoticiasFeed.jsx`, `TablaLogs.jsx`, `MensajeBubble.jsx`, `RealtimeGlobal.jsx`, `MolsanStatCard.jsx`, `MolsanPremiumCard.jsx` y `SelectSJ.jsx`. No se reescriben componentes cuyo estilo está gobernado por clases compartidas o tokens existentes sin tener confirmados todos sus consumidores. Continúa pendiente la comprobación visual y responsive.
+
+**Verificación de contenido tras escritura:** se recuperaron los ficheros modificados y se comprobaron las nuevas clases/tokens. Esto no equivale a compilación.
