@@ -612,8 +612,7 @@
 .encargagest .eg-main > section { min-width:0; }
 .encargagest .eg-kpi {
   min-width:0; min-height:136px; padding:17px 18px; display:flex; flex-direction:column;
-  justify-content:space-between; gap:9px; border:1px solid var(--eg-border) !important;
-  border-radius:15px !important; background:#fff !important; box-shadow:0 5px 18px rgba(6,50,82,.055) !important;
+  justify-content:space-between; gap:9px;
 }
 .encargagest .eg-kpi > p { margin:0 !important; color:var(--eg-muted) !important; }
 .encargagest .eg-kpi strong { color:var(--eg-blue) !important; font-variant-numeric:tabular-nums; }
@@ -622,11 +621,8 @@
   place-items:center !important; color:var(--eg-blue) !important; background:#EAF2F8 !important;
   border:1px solid var(--eg-border) !important; border-radius:12px !important;
 }
-.encargagest .eg-panel,.encargagest .eg-directorio {
-  min-width:0; overflow:hidden; border:1px solid var(--eg-border) !important;
-  border-radius:16px !important; background:#fff !important; box-shadow:0 5px 18px rgba(6,50,82,.055) !important;
-}
-.encargagest .eg-directorio { padding:0; border-radius:18px !important; }
+.encargagest .eg-panel,.encargagest .eg-directorio { min-width:0; overflow:hidden; }
+.encargagest .eg-directorio { padding:0; }
 .encargagest .eg-panel-head,.encargagest .eg-directorio-cabecera {
   display:flex; align-items:center; justify-content:space-between; gap:12px;
   margin:0; padding:16px 19px !important; color:var(--eg-blue) !important; border:0 !important; border-bottom:1px solid var(--eg-border) !important;
@@ -652,7 +648,7 @@
 }
 .encargagest .eg-modal-header :is(h2,h3,p,span),.encargagest .eg-perfil-cabecera :is(h2,h3,p,span) { color:#fff !important; }
 
-.encargagest .eg-modal-section { border:1px solid var(--eg-border) !important; border-radius:14px !important; background:#fff !important; }
+.encargagest .eg-modal-section { min-width:0; }
 .encargagest .eg-modal-section-icono { color:var(--eg-blue) !important; background:var(--eg-soft) !important; border-color:var(--eg-border) !important; }
 .encargagest :is(input,select,textarea):focus-visible { outline:3px solid rgba(6,70,117,.16) !important; outline-offset:1px; }
 .encargagest button:focus-visible { outline:3px solid rgba(6,70,117,.24) !important; outline-offset:2px !important; }
@@ -680,9 +676,7 @@
 .encargagest .eg-kpi {
   display:flex;flex-direction:column;justify-content:space-between;gap:10px;
   min-height:144px;padding:17px 18px;
-  border:1px solid #D8E4EC !important;border-radius:16px !important;
-  background:linear-gradient(155deg,#FFFFFF 0%,#F7FAFC 100%) !important;
-  box-shadow:0 7px 20px rgba(6,50,82,.065),inset 0 1px 0 #FFFFFF !important;
+  /* La superficie y el acento superior los gobierna CanonicalVisual. */
 }
 .encargagest .eg-kpi > div { display:flex !important;align-items:center !important;justify-content:space-between !important;gap:14px !important; }
 .encargagest .eg-kpi-icono {
