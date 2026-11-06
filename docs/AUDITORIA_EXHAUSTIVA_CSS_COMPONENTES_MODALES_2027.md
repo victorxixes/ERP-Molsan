@@ -288,3 +288,12 @@ En una nueva pasada sobre las hojas CSS de la rama se verificaron bloques `@medi
 Commits: `43ecec9` (ApoderaGest) y `96ea71e` (MolsanRedesign2027).
 
 **Validación pendiente:** estos dos commits no tienen todavía un resultado de build asociado consultable. La eliminación es estructural y no cambia declaraciones CSS, pero no se da por validada hasta ejecutar el build de la rama actual. Tampoco sustituye la inspección visual real de Preview ni la matriz de páginas, subpáginas y modales.
+
+
+## 13. Corrección de selectores canónicos inválidos — 6 de noviembre de 2026
+
+La inspección de reglas repetidas en `MolsanCanonicalVisual2027.css` detectó dos selectores `:where()` con una coma final antes del paréntesis (`:where(.molsan-icon-3d,.molsan-icon-wrap,)`). Esa lista no es válida y el navegador descarta la regla completa. Se han corregido ambas apariciones eliminando únicamente la coma sobrante, para que vuelvan a aplicarse la transición y el movimiento de los iconos dentro de las tarjetas.
+
+Commit: `5a62310`.
+
+La corrección no cambia la estructura de las tarjetas ni el comportamiento de las acciones. Queda pendiente el build y la comprobación visual del hover en Preview; se debe comprobar también el estado con `prefers-reduced-motion`.
