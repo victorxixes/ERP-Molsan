@@ -34,7 +34,6 @@ const VistaMes = lazy(() => import("./pages/agenda/VistaMes.jsx"));
 /* EXPEDIENTES */
 const ExpedientesListado = lazy(() => import("./pages/expedientes/ExpedientesListado.jsx"));
 const FichaExpediente = lazy(() => import("./pages/expedientes/FichaExpediente.jsx"));
-const FichaExpedienteDemo = lazy(() => import("./pages/expedientes/FichaExpedienteDemo.jsx"));
 const ProvisionesFondosPage = lazy(() => import("./pages/provisiones/ProvisionesFondosPage.jsx"));
 
 /* CTN */
@@ -489,9 +488,10 @@ export default function App() {
             element={protegerModulo("expedientes", <FichaExpediente />)}
           />
 
+          {/* La ruta de demostración queda desactivada: se vuelve al listado de expedientes reales. */}
           <Route
             path="expedientes-demo-glass-luxe"
-            element={<FichaExpedienteDemo />}
+            element={<Navigate to="/expedientes" replace />}
           />
 
           <Route
