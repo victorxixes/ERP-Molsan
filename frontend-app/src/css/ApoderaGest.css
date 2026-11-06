@@ -6,9 +6,6 @@
 .apoderagest *::after{
   box-sizing: border-box;
 }
-@keyframes ag-girar{
-  to { transform: rotate(360deg); }
-}
 .apoderagest .ag-contenido{
   position: relative;
   min-width: 0;
@@ -556,10 +553,6 @@
 }
 @media(max-width:900px){
 
-}
-@keyframes ag-firma-urgente-parpadeo{
-  0%, 100% { background:#fff1f2; border-color:#fecaca; box-shadow:0 0 0 0 rgba(220,38,38,0); }
-  50% { background:#fee2e2; border-color:#dc2626; box-shadow:0 0 0 3px rgba(220,38,38,.16); }
 }
 @media(prefers-reduced-motion:reduce){
 
