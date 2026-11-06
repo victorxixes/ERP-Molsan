@@ -297,3 +297,24 @@ La inspección de reglas repetidas en `MolsanCanonicalVisual2027.css` detectó d
 Commit: `5a62310`.
 
 La corrección no cambia la estructura de las tarjetas ni el comportamiento de las acciones. Queda pendiente el build y la comprobación visual del hover en Preview; se debe comprobar también el estado con `prefers-reduced-motion`.
+
+## 14. Cuarta pasada — Expedientes, CTN y Panel Técnico
+
+En esta pasada se cruzaron las hojas CSS con sus JSX consumidores y componentes compartidos antes de retirar reglas.
+
+- `CtnListadoPage.css`: 23 reglas retiradas de cuatro clases sin consumidor actual (`ctn-modal-panel`, `ctn-modal-resultados` y dos clases de resumen notarial antiguo). La hoja pasa de 1.519 a 1.362 líneas; el conjunto de clases restante tiene consumidores en listado, detalle, modal CTN, pestañas de portal, importador y portales.
+- `CtnDetallePage.css`: retirada una regla de metadatos sin consumidor; las 35 clases restantes aparecen en la página, el modal, las pestañas o `MolsanPageHeader`.
+- `MolsanCanonicalVisual2027.css`: eliminadas siete referencias de `.accesos-notariales-resumen-card` y siete de `.ctn-detalle-info-card`, ya sin consumidores actuales.
+- `ExpedientesListado.css`: retirados dos bloques `@media` vacíos y tres reglas bajo `.expedientes-listado-premium`, un root que no existe en el JSX actual. Se mantiene el sistema activo bajo `.expedientes-page`.
+- `FichaExpedientePremium.css`: eliminado el bloque `ficha-dato*` (40 líneas) que no tiene consumidores en la ficha ni en sus modales; las dos clases restantes están presentes en el JSX.
+- `PanelTecnico.css`: retiradas 13 reglas legacy de cabecera y monitor; queda en 24 líneas y sus clases restantes tienen consumidores en las cinco páginas técnicas.
+- `SeguridadSubpaginasPremium.css`: retirado el layout `seguridad-usuarios-layout` (73 líneas) que no se usa en las páginas actuales.
+
+### Validación de esta pasada
+
+- La comparación estática de selectores confirma que las hojas CTN y FichaExpediente revisadas no conservan clases huérfanas en los consumidores incluidos.
+- Build de la rama tras estos últimos cambios: **pendiente** (head observado: `7790be7`; Build del frontend en curso).
+- Preview Render: el último deploy confirmado sigue siendo `dep-dbmve8bm8hqs73bhg0d0` / `cfd2b4c`; todavía no contiene esta última tanda de CSS.
+- Producción, API y base de datos principal permanecen fuera de esta intervención.
+- La revisión visual interactiva y la matriz de permisos 401/403/200 siguen pendientes; el build no las sustituye.
+
