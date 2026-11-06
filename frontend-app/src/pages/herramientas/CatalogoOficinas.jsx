@@ -1,8 +1,6 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
-import "../../css/HerramientasPremium.css";
-
 const COLUMNAS = [
   ["oficina", "Oficina"], ["nombre", "Nombre"], ["direccion", "Dirección"],
   ["poblacion", "Población"], ["cod_postal", "Cod. Postal"],
