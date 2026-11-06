@@ -221,7 +221,7 @@ body :where(
 
 /* Tarjetas Tailwind heredadas en subpáginas: migración controlada al patrón Espacios de trabajo. */
 :where(
-  .apoderagest, .encargagest, .notargest-workspace-premium,
+  .apoderagest, .encargagest, .notargest-workspace-premium, .crear-noticia-premium,
   .ficha-expediente-premium, .expedientes-page,
   .seguridad-premium-page, .seguridad-subpagina-premium,
   .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
@@ -232,7 +232,7 @@ body :where(
   .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
   .fichajes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .ctn-workspace-premium,
   .agenda-premium-page, .fusiones-page
-) :where(section.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), article.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), div.rounded-2xl.border:not([role="dialog"]):not([class*="modal"])) {
+) :where(section.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), article.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), article[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), div.rounded-2xl.border:not([role="dialog"]):not([class*="modal"])) {
   position: relative;
   min-width: 0;
   border: 1.5px solid #C5D8E5 !important;
@@ -243,7 +243,7 @@ body :where(
   transition: transform .2s ease,border-color .2s ease,box-shadow .2s ease !important;
 }
 :where(
-  .apoderagest, .encargagest, .notargest-workspace-premium,
+  .apoderagest, .encargagest, .notargest-workspace-premium, .crear-noticia-premium,
   .ficha-expediente-premium, .expedientes-page,
   .seguridad-premium-page, .seguridad-subpagina-premium,
   .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
@@ -254,14 +254,14 @@ body :where(
   .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
   .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
   .agenda-premium-page, .fusiones-page
-) :where(section.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), article.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), div.rounded-2xl.border:not([role="dialog"]):not([class*="modal"])):hover {
+) :where(section.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), article.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), article[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), div.rounded-2xl.border:not([role="dialog"]):not([class*="modal"])):hover {
   transform: translateY(-2px);
   border-color: #9FBFD2 !important;
   border-top-color: #064675 !important;
   box-shadow: 0 16px 34px rgba(6,70,117,.15) !important;
 }
 :where(
-  .apoderagest, .encargagest, .notargest-workspace-premium,
+  .apoderagest, .encargagest, .notargest-workspace-premium, .crear-noticia-premium,
   .ficha-expediente-premium, .expedientes-page,
   .seguridad-premium-page, .seguridad-subpagina-premium,
   .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
@@ -272,7 +272,7 @@ body :where(
   .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
   .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
   .agenda-premium-page
-) :where(section.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), article.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), div.rounded-2xl.border:not([role="dialog"]):not([class*="modal"])) > :where(.border-b,header.border-b) {
+) :where(section.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), article.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), article[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), div.rounded-2xl.border:not([role="dialog"]):not([class*="modal"])) > :where(.border-b,header.border-b) {
   border-bottom: 0 !important;
   background: transparent !important;
 }
