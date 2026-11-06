@@ -265,7 +265,6 @@ export default function Dashboard() {
         mark="CG"
         title="Dashboard"
         description="Resumen operativo de expedientes, actividad del circuito y firmas realizadas."
-        className="dashboard-header"
       />
 
       {/* ERRORES DE CARGA */}
