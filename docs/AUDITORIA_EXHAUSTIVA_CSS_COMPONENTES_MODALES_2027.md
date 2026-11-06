@@ -1011,3 +1011,13 @@ Se conserva el texto accesible/visible y la acción de cada control. Los cambios
 Commits de código de esta pasada: `60a52c1`, `cca6475`, `45da09b`, `d87565e`, `eee7b59`, `c49ea8b`, `3b9f118`, `e8b2fc2` y commits previos de iconos informativos registrados en la rama.
 
 Validación de build y despliegue: Render Preview `dep-dbn1qbc9v7es73a0h380`, asociado al commit `e8b2fc2`, finalizó en estado `LIVE` el 6 de noviembre de 2026. Los logs muestran `✓ built in 5.61s` y `Your site is live`. Esto confirma compilación y publicación del frontend Preview, pero no sustituye las pruebas visuales autenticadas y funcionales en navegador.
+
+## 61. Segunda pasada de indicadores de acción y ordenación (6 de noviembre de 2026)
+
+- Verifacti: los accesos de consulta, alta, subsanación/anulación y exportación utilizaban cadenas Unicode como nombre de icono de `MolsanIcon`, que no existían en el catálogo y caían al icono genérico. Se sustituyen por los nombres semánticos `search`, `plus`, `refresh` y `download`.
+- Informes: se normalizan los indicadores de ordenación y las acciones de actualización/descarga a iconos MolsanIcon.
+- Importador Post Firma: se normalizan los controles de actualización y navegación al histórico.
+- Las flechas de ordenación en Entidades Bancarias y Expedientes, la acción Procesar de Lectura de Copias y las acciones de descarga/enlace externo también pasan a SVG corporativo.
+- Se mantienen los handlers, la ordenación múltiple y sus índices de prioridad, los filtros, la descarga de archivos y los destinos de navegación.
+- No se eliminan botones de actualización que forman parte del cuerpo operativo; la petición de retirar «Actualizar» se limita a los controles que estaban duplicados en cabeceras globales, no a acciones de recarga necesarias para consultar datos.
+- Render Preview debe reconstruirse con el HEAD posterior a estos commits; el último LIVE confirmado anteriormente era `e8b2fc2`, previo a esta última tanda.
