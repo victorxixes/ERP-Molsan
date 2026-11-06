@@ -1651,10 +1651,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   flex-direction:column;
   justify-content:flex-start;
   padding:18px 19px 16px;
-  border:1px solid var(--molsan-border,#D8E4EC);
-  border-radius:var(--molsan-radius-card,14px);
-  background:var(--molsan-surface,#FFFFFF);
-  box-shadow:var(--molsan-shadow-card,0 6px 18px rgba(6,50,82,.045));
   text-align:left;
 }
 .apoderagest .ag-kpi-superior{min-height:36px}
@@ -1693,11 +1689,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   color:var(--molsan-primary,#064675);
   font-size:10px;
   font-weight:800;
-}
-.apoderagest .ag-kpi-interactiva:hover{
-  transform:translateY(-2px);
-  border-color:var(--molsan-border-strong,#B8CBD9);
-  box-shadow:0 12px 26px rgba(6,50,82,.09);
 }
 .apoderagest .ag-kpi-interactiva:active{transform:translateY(0)}
 .apoderagest .ag-grid-secundario{
@@ -2173,15 +2164,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   position:relative;display:flex;flex-direction:column;align-items:flex-start;
   justify-content:space-between;gap:9px;min-width:0;min-height:136px;
   margin:0;padding:17px 18px;color:var(--molsan-prof-text);
-  border:1px solid var(--molsan-prof-border);border-radius:15px;
-  background:linear-gradient(145deg,#fff 0%,#fff 66%,#F7FAFC 100%);
-  box-shadow:var(--molsan-prof-shadow);transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
   text-align:left;
-}
-
-.apoderagest .ag-kpi:hover {
-
-  transform:translateY(-2px);border-color:#B9D7E6;box-shadow:0 10px 24px rgba(6,50,82,.09);
 }
 
 .apoderagest .ag-kpi-titulo {
