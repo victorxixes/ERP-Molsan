@@ -1,7 +1,6 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import MonitorRealtime from "./MonitorRealtime";
-import "./PanelTecnicoSubmodulos.css";
 import {
   listarTablas,
   describirTabla,
