@@ -85,7 +85,7 @@ export default function ProcesoAbsis() {
   return <main className="molsan-page-stack herramienta-operativa-premium herramientas-subpagina-premium min-h-full">
     <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
-        <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="workflow" size={22} tone="ocean" /></div>
+        <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="activity" size={22} tone="ocean" /></div>
         <div className="min-w-0">
           <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
           <h1 className="molsan-page-header__title">Proceso de ABSIS</h1>
