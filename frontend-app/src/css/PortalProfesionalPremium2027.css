@@ -11,21 +11,14 @@
   --molsan-prof-muted:#617789;
   --molsan-prof-text:#173247;
   --molsan-prof-shadow:0 6px 18px rgba(6,50,82,.055);
-}
-.erp-page.molsan-professional-shell,
-.ng-admin-notarias{
+}.erp-page.molsan-professional-shell {
   box-sizing:border-box!important;width:100%!important;max-width:none!important;
   min-width:0!important;margin:0!important;color:var(--molsan-prof-text)!important;
   background:transparent!important;
-}
-.erp-page.molsan-professional-shell *,
+}.erp-page.molsan-professional-shell *,
 .erp-page.molsan-professional-shell *::before,
-.erp-page.molsan-professional-shell *::after,
-.ng-admin-notarias *,
-.ng-admin-notarias *::before,
-.ng-admin-notarias *::after{box-sizing:border-box}.apoderagest,
-.encargagest,
-.ng-admin-notarias {
+.erp-page.molsan-professional-shell *::after {box-sizing:border-box}.apoderagest,
+.encargagest {
   color:var(--molsan-prof-text)!important;
 }.apoderagest,
 .encargagest {
@@ -38,8 +31,7 @@
 .encargagest .eg-main>section.grid {
   gap:12px!important;
 }.apoderagest>header.ag-hero.molsan-page-header,
-.encargagest>header.ag-hero.molsan-page-header,
-.ng-admin-notarias>header.ng-hero.molsan-page-header {
+.encargagest>header.ag-hero.molsan-page-header {
   position:relative;
   display:flex;
   align-items:center;
@@ -67,8 +59,7 @@
   filter:none;
   will-change:auto;
 }.apoderagest>header.ag-hero::after,
-.encargagest>header.ag-hero::after,
-.ng-admin-notarias>header.ng-hero::after {
+.encargagest>header.ag-hero::after {
   content:"";
   position:absolute;
   right:0;bottom:0;left:0;height:3px;
@@ -117,8 +108,7 @@
   color:#fff;border-color:rgba(255,255,255,.58);background:rgba(255,255,255,.2);
 }.apoderagest .ag-kpi,
 .encargagest .eg-kpi,
-.encargagest .eg-main .ag-kpi,
-.ng-admin-notarias .ng-admin-kpi-button {
+.encargagest .eg-main .ag-kpi {
   position:relative!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;
   justify-content:space-between!important;gap:9px!important;min-width:0!important;min-height:136px!important;
   margin:0!important;padding:17px 18px!important;color:var(--molsan-prof-text)!important;
@@ -126,41 +116,28 @@
   background:linear-gradient(145deg,#fff 0%,#fff 66%,#F7FAFC 100%)!important;
   box-shadow:var(--molsan-prof-shadow)!important;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease!important;
   text-align:left;
-}
-.apoderagest .ag-kpi:hover,.encargagest .eg-kpi:hover,.encargagest .eg-main .ag-kpi:hover,
-.ng-admin-notarias .ng-admin-kpi-button:hover{
+}.apoderagest .ag-kpi:hover,
+.encargagest .eg-kpi:hover,
+.encargagest .eg-main .ag-kpi:hover {
   transform:translateY(-2px)!important;border-color:#B9D7E6!important;box-shadow:0 10px 24px rgba(6,50,82,.09)!important;
-}
-.apoderagest .ag-kpi-titulo,.encargagest .eg-kpi>p:first-child,
-.ng-admin-notarias .ng-admin-kpi-button>span:first-child{
+}.apoderagest .ag-kpi-titulo,
+.encargagest .eg-kpi>p:first-child {
   color:var(--molsan-prof-muted)!important;font-size:11px!important;font-weight:800!important;letter-spacing:.08em!important;line-height:1.4!important;text-transform:uppercase;
-}
-.apoderagest .ag-kpi-valor,.encargagest .eg-kpi strong,
-.ng-admin-notarias .ng-admin-kpi-button>strong{
+}.apoderagest .ag-kpi-valor,
+.encargagest .eg-kpi strong {
   color:var(--molsan-prof-blue)!important;font-size:clamp(26px,2vw,32px)!important;font-weight:850!important;line-height:1.1!important;letter-spacing:-.035em!important;font-variant-numeric:tabular-nums;
 }
 .apoderagest .ag-kpi-icono,.encargagest .eg-kpi-icono{
   display:grid!important;place-items:center!important;flex:0 0 40px!important;width:40px!important;height:40px!important;
   color:var(--molsan-prof-blue)!important;border:1px solid var(--molsan-prof-border)!important;border-radius:12px!important;background:var(--molsan-prof-soft)!important;
 }
-.apoderagest .ag-kpi-detalle,.encargagest .eg-kpi>p:last-child{color:var(--molsan-prof-muted)!important;font-size:11px!important;line-height:1.45!important}
-
-.ng-admin-notarias .ng-admin-kpis,.ng-admin-notarias .ng-admin-kpis-global{
-  display:grid!important;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))!important;gap:12px!important;
-}
-.ng-admin-notarias .ng-admin-kpi-button{width:100%!important;min-height:136px!important;appearance:none!important;-webkit-appearance:none!important}
-.ng-admin-notarias .ng-admin-kpi-button::before{display:none!important}
-.ng-admin-notarias .ng-admin-kpi-button>strong{margin:auto 0 0!important}
-.ng-admin-notarias .ng-admin-kpi-button>small{color:var(--molsan-prof-blue)!important;font-size:10px!important;font-weight:800!important}.apoderagest .ag-panel,
-.encargagest .eg-panel,
-.ng-admin-notarias .ng-admin-global-resumen,
-.ng-admin-notarias .ng-admin-notaria-card {
+.apoderagest .ag-kpi-detalle,.encargagest .eg-kpi>p:last-child{color:var(--molsan-prof-muted)!important;font-size:11px!important;line-height:1.45!important}.apoderagest .ag-panel,
+.encargagest .eg-panel {
   min-width:0!important;border:1px solid var(--molsan-prof-border)!important;border-radius:18px!important;
   background:#fff!important;box-shadow:var(--molsan-prof-shadow)!important;overflow:hidden!important;
 }.apoderagest .ag-panel-cabecera,
 .apoderagest .ag-titulo-seccion,
-.encargagest .eg-panel-head,
-.ng-admin-notarias .ng-admin-card-header {
+.encargagest .eg-panel-head {
   display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;
   margin:0!important;padding:16px 19px!important;color:var(--molsan-prof-blue)!important;
   border:0!important;border-bottom:1px solid var(--molsan-prof-border)!important;border-radius:0!important;
@@ -178,10 +155,8 @@
 .encargagest .eg-directorio-tabla td {border-color:var(--molsan-prof-border)!important}
 .apoderagest .ag-busqueda,.encargagest .eg-directorio-input-wrap{display:flex!important;align-items:center!important;gap:9px!important;min-width:0!important}
 .apoderagest .ag-busqueda>input,.encargagest .eg-directorio-input-wrap>input{min-width:0!important}.apoderagest button:focus-visible,
-.encargagest button:focus-visible,
-.ng-admin-notarias button:focus-visible {outline:3px solid rgba(6,70,117,.22)!important;outline-offset:2px!important}.apoderagest .molsan-icon-3d,
-.encargagest .molsan-icon-3d,
-.ng-admin-notarias .molsan-icon-3d {flex-shrink:0}.apoderagest .ag-resumen-modal-overlay,
+.encargagest button:focus-visible {outline:3px solid rgba(6,70,117,.22)!important;outline-offset:2px!important}.apoderagest .molsan-icon-3d,
+.encargagest .molsan-icon-3d {flex-shrink:0}.apoderagest .ag-resumen-modal-overlay,
 .encargagest .eg-modal-overlay {
   background:rgba(3,28,46,.58)!important;backdrop-filter:blur(4px)!important;-webkit-backdrop-filter:blur(4px)!important;
 }.apoderagest .ag-resumen-modal,
@@ -307,8 +282,7 @@
   
 }.apoderagest .ag-kpi::before,
 .encargagest .eg-kpi::before,
-.encargagest .eg-main .ag-kpi::before,
-.ng-admin-notarias .ng-admin-kpi-button::before {
+.encargagest .eg-main .ag-kpi::before {
   content: "" !important;
   display: block !important;
   position: absolute !important;
