@@ -1095,15 +1095,6 @@
   color: #8292a8;
 }
 
-/* Listado CTN: filtros, tabla y paginación */
-.ctn-filtros,
-.ctn-tabla-contenedor {
-  
-  
-  
-  
-}
-
 .ctn-tabla-cabecera {
   background: var(--molsan-surface, #fff);
   border-bottom: 1px solid #dce5f1;
