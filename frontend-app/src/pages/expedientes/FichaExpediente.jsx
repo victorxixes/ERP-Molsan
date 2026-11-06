@@ -8806,7 +8806,7 @@ const cuantiaFincasParaEnvio =
                 (visionesComentario.actividad && !destinatarioObservacion)
               }
             >
-              {guardandoObservacion ? "Guardando…" : "<MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar comentario"}
+              {guardandoObservacion ? "Guardando…" : <><MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar comentario</>}
             </Boton>
           </>
         }
