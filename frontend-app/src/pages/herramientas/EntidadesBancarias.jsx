@@ -6,6 +6,7 @@ import {
 } from "react";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 /**
  * ============================================================
@@ -2711,6 +2712,9 @@ function ModalImportarExcel({
   formatearTamano
 }) {
 
+  const importarEntidadesDialogRef = useRef(null);
+  useAccessibleDialog({ open: true, onClose: () => { if (!importando) onCerrar(); }, dialogRef: importarEntidadesDialogRef });
+
   return (
 
     <div
@@ -2741,6 +2745,11 @@ function ModalImportarExcel({
     >
 
       <div
+        ref={importarEntidadesDialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Importar entidades bancarias desde Excel"
         className="
           w-full
           max-w-2xl
@@ -3325,6 +3334,9 @@ function ModalEntidadBancaria({
   }
 
 
+  const entidadBancariaDialogRef = useRef(null);
+  useAccessibleDialog({ open: true, onClose: () => { if (!guardando) onCerrar(); }, dialogRef: entidadBancariaDialogRef });
+
   return (
 
     <div
@@ -3355,6 +3367,11 @@ function ModalEntidadBancaria({
     >
 
       <div
+        ref={entidadBancariaDialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Formulario de entidad bancaria"
         className="
           w-full
           max-w-2xl
