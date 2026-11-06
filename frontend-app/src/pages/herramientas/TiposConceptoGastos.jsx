@@ -1648,7 +1648,7 @@ export default function TiposConceptoGastos() {
                         className="
                           transition-all
                           duration-150
-                          hover:bg-[var(--molsan-primary-soft)]/40
+                          hover:bg-[var(--molsan-primary-soft)]
                         "
                       >
 
@@ -2169,7 +2169,7 @@ export default function TiposConceptoGastos() {
             flex
             items-center
             justify-center
-            bg-[var(--molsan-primary)]/40
+            bg-[var(--molsan-primary)]
             p-4
             backdrop-blur-sm
           "
