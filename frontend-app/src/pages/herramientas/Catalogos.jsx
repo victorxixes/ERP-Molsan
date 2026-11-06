@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import "../../css/HerramientasPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 
