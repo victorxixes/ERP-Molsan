@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 
 /**
@@ -574,6 +575,8 @@ function ModalDetalle({
   registro,
   onCerrar,
 }) {
+  const detalleDialogRef = useRef(null);
+  useAccessibleDialog({ open: Boolean(registro), onClose: onCerrar, dialogRef: detalleDialogRef });
 
   if (!registro) {
     return null;
@@ -608,6 +611,11 @@ function ModalDetalle({
     >
 
       <div
+        ref={detalleDialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Detalle de registro de auditoría"
         className="
           w-full
           max-w-2xl
