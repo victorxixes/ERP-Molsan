@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 /**
  * ============================================================
@@ -2500,6 +2501,9 @@ function ModalImportarExcel({
   formatearTamano
 }) {
 
+  const importarMunicipiosDialogRef = useRef(null);
+  useAccessibleDialog({ open: true, onClose: () => { if (!importando) onCerrar(); }, dialogRef: importarMunicipiosDialogRef });
+
   return (
 
     <div
@@ -2530,6 +2534,11 @@ function ModalImportarExcel({
     >
 
       <div
+        ref={importarMunicipiosDialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Importar municipios desde Excel"
         className="
           w-full
           max-w-2xl
@@ -3125,6 +3134,9 @@ function ModalMunicipio({
   }
 
 
+  const municipioDialogRef = useRef(null);
+  useAccessibleDialog({ open: true, onClose: () => { if (!guardando) onCerrar(); }, dialogRef: municipioDialogRef });
+
   return (
 
     <div
@@ -3155,6 +3167,11 @@ function ModalMunicipio({
     >
 
       <div
+        ref={municipioDialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Formulario de municipio"
         className="
           w-full
           max-w-xl
