@@ -112,14 +112,16 @@ export default function PPAD() {
   return (
     <div className="molsan-page-stack herramienta-operativa-premium herramientas-subpagina-premium min-h-full">
       <header className="molsan-page-header">
-        <div className="h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-600">Utilidades · Control económico</p>
-            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Control de PPAD</h1>
-            <p className="mt-2 text-sm text-slate-500">Seguimiento de importes pendientes de compensar y compensados.</p>
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="wallet" size={22} tone="ocean" /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">Utilidades · Control económico</p>
+            <h1 className="molsan-page-header__title">Control de PPAD</h1>
+            <p className="molsan-page-header__description">Seguimiento de importes pendientes de compensar y compensados.</p>
           </div>
-          <Link to="/herramientas/utilidades" className="self-start rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>
+        </div>
+        <div className="molsan-page-header__actions">
+          <Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary">← Volver a Utilidades</Link>
         </div>
       </header>
 
