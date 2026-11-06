@@ -65,9 +65,9 @@ export default function ComplementosSaldo() {
   }
 
   return <div className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-    <MolsanPageHeader mark="UT" title="Complementos de saldo" description="Control de solicitudes, importes y estado de cada complemento." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>}/>
+    <MolsanPageHeader mark="UT" title="Complementos de saldo" description="Control de solicitudes, importes y estado de cada complemento." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-[var(--molsan-primary)] hover:underline">← Volver a Utilidades</Link>}/>
       <div className="flex justify-end">
-        <button type="button" onClick={cargar} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Actualizar datos</button>
+        <button type="button" onClick={cargar} className="rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-2.5 text-sm font-bold text-[var(--molsan-text)] hover:bg-[var(--molsan-surface-soft)]">Actualizar datos</button>
       </div>
 
     <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -77,33 +77,33 @@ export default function ComplementosSaldo() {
       <Metrica titulo="Compensados" valor={metricas.cerrados} detalle="Solicitudes regularizadas" icono="✓" verde />
     </section>
 
-    <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-200 bg-slate-50/80 p-4 sm:p-5"><div className="flex flex-col gap-3 xl:flex-row xl:items-end">
-        <label className="min-w-0 flex-1"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Buscar expediente</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="N.º de expediente…" className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" /></label>
-        <label className="w-full xl:w-48"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Estado</span><select value={estadoFiltro} onChange={(e) => setEstadoFiltro(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm"><option value="">Todos</option><option value="Pendiente">Pendiente</option><option value="Compensado">Compensado</option></select></label>
-        <label className="w-full xl:w-56"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Oficina</span><input value={oficinaFiltro} onChange={(e) => setOficinaFiltro(e.target.value)} placeholder="Todas las oficinas" className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm" /></label>
+    <section className="overflow-hidden rounded-3xl border border-[var(--molsan-border)] bg-white shadow-sm">
+      <div className="border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4 sm:p-5"><div className="flex flex-col gap-3 xl:flex-row xl:items-end">
+        <label className="min-w-0 flex-1"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Buscar expediente</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="N.º de expediente…" className="w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[var(--molsan-border-strong)] focus:ring-4 focus:ring-[var(--molsan-primary-soft)]" /></label>
+        <label className="w-full xl:w-48"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Estado</span><select value={estadoFiltro} onChange={(e) => setEstadoFiltro(e.target.value)} className="w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-3.5 py-2.5 text-sm"><option value="">Todos</option><option value="Pendiente">Pendiente</option><option value="Compensado">Compensado</option></select></label>
+        <label className="w-full xl:w-56"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Oficina</span><input value={oficinaFiltro} onChange={(e) => setOficinaFiltro(e.target.value)} placeholder="Todas las oficinas" className="w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-3.5 py-2.5 text-sm" /></label>
         <button type="button" onClick={exportarExcel} disabled={exportando} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60">{exportando ? "Preparando…" : "↓ Descargar Excel"}</button>
       </div></div>
 
       {error && <div role="alert" className="m-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</div>}
       <div className="overflow-x-auto"><table className="w-full min-w-[1250px] border-collapse text-left text-sm">
-        <thead className="bg-white text-[10px] uppercase tracking-wider text-slate-500"><tr>{["Expediente", "Provisionado", "Saldo disponible", "Fecha de petición", "Saldo a solicitar", "Motivo", "Acciones", "Estado"].map((n) => <th key={n} className="border-b border-slate-200 px-4 py-3.5 font-extrabold">{n}</th>)}</tr></thead>
-        <tbody>{cargando ? <tr><td colSpan={8} className="px-5 py-14 text-center text-slate-500">Cargando solicitudes…</td></tr>
-          : items.length === 0 ? <tr><td colSpan={8} className="px-5 py-14 text-center"><div><MolsanIcon name="clipboardList" size={34} tone="ocean" /></div><p className="mt-2 font-bold text-slate-700">No hay solicitudes que mostrar</p><p className="mt-1 text-xs text-slate-500">Cuando se solicite un complemento desde la ficha de un expediente, aparecerá aquí.</p></td></tr>
-          : items.map((item) => { const cerrado = ["compensado", "cerrado"].includes(String(item.estado).toLowerCase()); return <tr key={item.id} className="border-b border-slate-100 last:border-0 hover:bg-blue-50/40">
-            <td className="px-4 py-3.5"><Link to={item.expediente_id ? `/expedientes/${item.expediente_id}` : "/expedientes"} className="font-extrabold text-blue-700 hover:underline">{item.numero_expediente}</Link></td>
-            <td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{euros(item.provisionado)}</td><td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{euros(item.saldo_disponible)}</td><td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{fecha(item.fecha_solicitud)}</td><td className="whitespace-nowrap px-4 py-3.5 font-extrabold tabular-nums text-slate-900">{euros(item.importe)}</td><td className="max-w-[280px] whitespace-normal px-4 py-3.5 text-slate-600">{item.motivo || item.observaciones || "—"}</td>
+        <thead className="bg-white text-[10px] uppercase tracking-wider text-[var(--molsan-text-secondary)]"><tr>{["Expediente", "Provisionado", "Saldo disponible", "Fecha de petición", "Saldo a solicitar", "Motivo", "Acciones", "Estado"].map((n) => <th key={n} className="border-b border-[var(--molsan-border)] px-4 py-3.5 font-extrabold">{n}</th>)}</tr></thead>
+        <tbody>{cargando ? <tr><td colSpan={8} className="px-5 py-14 text-center text-[var(--molsan-text-secondary)]">Cargando solicitudes…</td></tr>
+          : items.length === 0 ? <tr><td colSpan={8} className="px-5 py-14 text-center"><div><MolsanIcon name="clipboardList" size={34} tone="ocean" /></div><p className="mt-2 font-bold text-[var(--molsan-text)]">No hay solicitudes que mostrar</p><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Cuando se solicite un complemento desde la ficha de un expediente, aparecerá aquí.</p></td></tr>
+          : items.map((item) => { const cerrado = ["compensado", "cerrado"].includes(String(item.estado).toLowerCase()); return <tr key={item.id} className="border-b border-[var(--molsan-border-light)] last:border-0 hover:bg-[var(--molsan-primary-soft)]/40">
+            <td className="px-4 py-3.5"><Link to={item.expediente_id ? `/expedientes/${item.expediente_id}` : "/expedientes"} className="font-extrabold text-[var(--molsan-primary)] hover:underline">{item.numero_expediente}</Link></td>
+            <td className="whitespace-nowrap px-4 py-3.5 text-[var(--molsan-text-secondary)]">{euros(item.provisionado)}</td><td className="whitespace-nowrap px-4 py-3.5 text-[var(--molsan-text-secondary)]">{euros(item.saldo_disponible)}</td><td className="whitespace-nowrap px-4 py-3.5 text-[var(--molsan-text-secondary)]">{fecha(item.fecha_solicitud)}</td><td className="whitespace-nowrap px-4 py-3.5 font-extrabold tabular-nums text-[var(--molsan-primary)]">{euros(item.importe)}</td><td className="max-w-[280px] whitespace-normal px-4 py-3.5 text-[var(--molsan-text-secondary)]">{item.motivo || item.observaciones || "—"}</td>
                         <td className="px-4 py-3.5"><button type="button" disabled={cerrado} onClick={() => cambiarEstado(item)} className={`rounded-lg border px-3 py-2 text-xs font-bold ${cerrado ? "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100" : "border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"}`}>{cerrado ? "Regularizado" : "Compensar"}</button></td>
             <td className="px-4 py-3.5"><span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-bold ${cerrado ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>{cerrado ? "Compensado" : "Pendiente"}</span></td>
           </tr>; })}</tbody>
       </table></div>
-      <footer className="flex flex-col gap-1 border-t border-slate-200 bg-slate-50/70 px-4 py-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between"><span>{items.length} solicitud(es) en el resultado actual</span><span>Los indicadores se actualizan con los filtros aplicados.</span></footer>
+      <footer className="flex flex-col gap-1 border-t border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-4 py-3 text-xs text-[var(--molsan-text-secondary)] sm:flex-row sm:items-center sm:justify-between"><span>{items.length} solicitud(es) en el resultado actual</span><span>Los indicadores se actualizan con los filtros aplicados.</span></footer>
     </section>
   </div>;
 }
 
 function Metrica({ titulo, valor, detalle, icono, alerta = false, verde = false }) {
-  return <div className={`rounded-2xl border p-4 shadow-sm ${alerta ? "border-amber-200 bg-amber-50/70" : verde ? "border-emerald-200 bg-emerald-50/60" : "border-slate-200 bg-white"}`}>
-    <div className="flex items-start justify-between gap-2"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{titulo}</p><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/80 text-lg font-extrabold text-slate-600 shadow-sm">{icono}</span></div><p className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900">{valor}</p><p className="mt-1 text-xs text-slate-500">{detalle}</p>
+  return <div className={`rounded-2xl border p-4 shadow-sm ${alerta ? "border-amber-200 bg-amber-50/70" : verde ? "border-emerald-200 bg-emerald-50/60" : "border-[var(--molsan-border)] bg-white"}`}>
+    <div className="flex items-start justify-between gap-2"><p className="text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">{titulo}</p><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/80 text-lg font-extrabold text-[var(--molsan-text-secondary)] shadow-sm">{icono}</span></div><p className="mt-3 text-2xl font-extrabold tracking-tight text-[var(--molsan-primary)]">{valor}</p><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">{detalle}</p>
   </div>;
 }
