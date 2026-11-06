@@ -2,8 +2,6 @@ import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { Link } from "react-router-dom";
 
-import "../../css/ComponentesOperativosPremium.css";
-
 /**
  * HERRAMIENTAS — MOLSAN ERP PREMIUM 2027
  *
