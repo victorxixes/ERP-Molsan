@@ -1084,3 +1084,11 @@ Commits adicionales: 25193d7 y dd72d6d.
 - Se retiró la línea divisoria bajo el título; el encabezado queda integrado en la misma superficie que las fichas de notarías.
 
 Commits: 29f4a02 y b8c2b0f.
+
+
+### 19.4. Normalización de cabecera interna de NotarGest
+
+- El panel «Detalle por notaría / Situación individual» se ha integrado visualmente: su contenedor usa la superficie canónica, el título deja de ser una tarjeta independiente y se elimina el separador entre título y fichas.
+- Los selectores compartidos del portal conservan tipografía, estructura, espaciado y estados; se retiran únicamente fondos, bordes y sombras de presentación duplicados.
+
+Commits: 29f4a02 y b8c2b0f.
