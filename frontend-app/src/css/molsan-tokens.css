@@ -1,6 +1,30 @@
 /* MOLSAN ERP PREMIUM 2027 · GLASS LUXE
    Tokens semánticos únicos para todo el ERP y sus portales. */
 :root {
+  /* Vidrio y superficies compartidas */
+  --molsan-glass-border: rgba(6,70,117,.14);
+  --molsan-glass-shadow: 0 8px 22px rgba(6,70,117,.075);
+  --molsan-card-border: #D8E4EC;
+  --molsan-card-shadow: 0 9px 24px rgba(6,50,82,.065);
+  --molsan-card-shadow-hover: 0 19px 38px rgba(6,50,82,.13);
+  /* Geometría canónica de cabeceras, controles y contenido */
+  --molsan-canon-header-start: #CFE3EF;
+  --molsan-canon-header-mid: #BED9E8;
+  --molsan-canon-header-end: #D8E9F2;
+  --molsan-canon-header-text: #064675;
+  --molsan-canon-header-muted: #496B82;
+  --molsan-canon-gutter: 28px;
+  --molsan-canon-header-height: 82px;
+  --molsan-canon-card-radius: 20px;
+  --molsan-canon-control-radius: 11px;
+  --molsan-content-gutter: 28px;
+  --molsan-content-gutter-tablet: 22px;
+  --molsan-content-gutter-mobile: 14px;
+  --molsan-content-bottom: 32px;
+  --molsan-header-min-height: 82px;
+  --molsan-header-radius: 18px;
+  --molsan-header-gap: 16px;
+
   color-scheme: light;
   --molsan-font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --molsan-font-size-2xs: 11px;
