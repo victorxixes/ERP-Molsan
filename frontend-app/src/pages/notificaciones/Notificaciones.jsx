@@ -1,7 +1,6 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useMemo } from "react";
-import "./Notificaciones.css";
 import { useNotificacionesStore } from "../../store/notificacionesStore";
 
 /**
