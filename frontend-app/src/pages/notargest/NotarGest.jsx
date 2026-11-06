@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import Sidebar from "../../components/Sidebar";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
@@ -735,19 +736,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest notargest-workspace-premium">
             <div className="notargest ng-content">
-    <header className="ag-hero molsan-page-header ng-hero-apoderagest">
-      <div className="ag-hero-identidad molsan-page-header__identity">
-        <div className="ag-marca ng-marca-notargest" aria-label="NotarGest">NG</div>
-        <div>
-          <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-          <h1 className="molsan-page-header__title">NotarGest</h1>
-          <p className="molsan-page-header__description">Centro de gestión notarial, firmas y seguimiento registral.</p>
-        </div>
-      </div>
-      <div className="ag-hero-acciones">
-        {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"><span aria-hidden="true">▦</span> Ir a módulos</button>}
-      </div>
-    </header>
+    <MolsanPageHeader mark="NG" title="NotarGest" description="Centro de gestión notarial, firmas y seguimiento registral." actions={accesoERP ? <button type="button" onClick={() => navigate("/modulos")} className="molsan-premium-header__secondary-action">Ir a módulos</button> : null} className="ng-hero-apoderagest" />
     <nav className="ng-modulos-grid" aria-label="Secciones de NotarGest">
       {[
         { key: "inicio", label: "Dashboard", icon: "⌂", count: null },
