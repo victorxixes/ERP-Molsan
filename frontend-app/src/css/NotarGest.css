@@ -120,11 +120,6 @@
 .ng-dashboard-economica { min-width: 0; }
 .ng-dashboard-etapas { min-width: 0; }
 .ng-dashboard-hitos { min-width: 0; }
-.ng-dashboard-ciclo { min-width: 0; }
-.ng-dashboard-kpis { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
-.ng-dashboard-kpis article { min-width: 0; padding: 16px; }
-.ng-dashboard-kpis strong { display: block; color: var(--ng-primary); font-size: 25px; font-weight: 850; font-variant-numeric: tabular-nums; }
-.ng-dashboard-kpis small { color: var(--ng-muted); font-size: 11px; }
 .ng-barras-meses { display: flex; align-items: flex-end; justify-content: space-around; gap: 12px; min-height: 150px; padding: 8px 4px 0; }
 .ng-barra-mes { display: flex; flex: 1; flex-direction: column; align-items: center; gap: 7px; min-width: 0; color: var(--ng-muted); font-size: 10px; }
 .ng-barra-mes strong { color: var(--ng-primary); font-size: 11px; font-variant-numeric: tabular-nums; }
@@ -231,9 +226,6 @@
 .ng-panel { overflow: hidden; }
 .ng-panel-titulo { min-height: 58px; }
 .ng-panel-titulo h2 { margin: 0; }
-.ng-panel-titulo .ng-volver { margin-left: auto; }
-.ng-panel-titulo:has(.ng-volver) { flex-wrap: wrap; }
-.ng-volver { display: inline-flex; align-items: center; gap: 7px; margin-left: auto; color: var(--ng-primary); border: 0; background: transparent; font-size: 11px; font-weight: 800; cursor: pointer; }
 .ng-filtros { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; padding: 14px 17px; color: var(--ng-muted); border-bottom: 1px solid var(--ng-border); background: #fff; }
 .ng-filtros label { display: flex; flex: 1; flex-direction: column; gap: 6px; color: var(--ng-muted); font-size: 11px; font-weight: 750; }
 .ng-filtros input,
@@ -430,14 +422,13 @@
 }
 @media (max-width: 900px) {
   .notargest.ng-content,.ng-admin-notarias { padding: 16px; }
-  .ng-dashboard-graficos,.ng-dashboard-graficos-tres-columnas { grid-template-columns: repeat(2,minmax(0,1fr)); }
-  .ng-dashboard-kpis,.ng-admin-kpis { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .ng-dashboard-graficos,.ng-dashboard-graficos-tres-columnas { grid-template-columns: repeat(2,minmax(0,1fr)); }.ng-admin-kpis { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .ng-datos-superiores,.ng-documentacion-layout,.ng-carpeta-layout { grid-template-columns: minmax(0,1fr); }
   .ng-visor-documentos { min-height: 380px; }
 }
 @media (max-width: 640px) {
   .notargest.ng-content,.ng-admin-notarias { gap: 13px; padding: 12px; }
-  .ng-dashboard-graficos,.ng-dashboard-graficos-tres-columnas,.ng-dashboard-kpis,
+  .ng-dashboard-graficos,.ng-dashboard-graficos-tres-columnas,
   .ng-admin-kpis,.ng-admin-kpis-global,.ng-admin-notarias-grid,.ng-admin-circuitos { grid-template-columns: 1fr; }
   .ng-dashboard-grafico { padding: 13px; }
   .ng-dashboard-grafico > .ng-bloque-heading { margin: -13px -13px 0; }
@@ -564,17 +555,6 @@
 .notargest.ng-content .ng-dashboard-graficos {
 
   gap:12px;
-}
-
-/* Cabecera unificada: estructura y aspecto definidos por MolsanPageHeader. */
-
-.notargest.ng-content .ng-dashboard-kpi,
-.notargest.ng-content .ng-kpi-card {
-
-  position:relative;display:flex;flex-direction:column;align-items:flex-start;
-  justify-content:space-between;gap:9px;min-width:0;min-height:136px;
-  margin:0;padding:17px 18px;color:var(--molsan-prof-text);
-  text-align:left;
 }
 
 .notargest.ng-content .ng-panel,
