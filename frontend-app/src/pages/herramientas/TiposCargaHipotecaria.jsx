@@ -591,7 +591,7 @@ export default function TiposCargaHipotecaria() {
         <div className="flex w-full min-w-0 flex-wrap items-center justify-between gap-4">
 
           <div className="min-w-0 flex-1">
-            <div className="molsan-page-header__identity molsan-page-header__identity">
+            <div className="molsan-page-header__identity">
 
               <div
                 className="
