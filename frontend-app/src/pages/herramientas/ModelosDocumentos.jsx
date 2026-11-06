@@ -352,10 +352,6 @@ export default function ModelosDocumentos() {
       .catch(() => {
         if (activo) setDatosMolsan({});
       });
-    try {
-      const guardado = localStorage.getItem("molsan_logo_cliente_liquidacion");
-      if (guardado && activo) setLogoCliente(guardado);
-    } catch {}
     return () => { activo = false; };
   }, []);
 
@@ -400,12 +396,7 @@ export default function ModelosDocumentos() {
         setErrorLogo("No se ha podido leer la imagen seleccionada.");
         return;
       }
-      try {
-        localStorage.setItem("molsan_logo_cliente_liquidacion", resultado);
-        setLogoCliente(resultado);
-      } catch {
-        setErrorLogo("No se ha podido guardar la imagen en este navegador. Prueba con un archivo más pequeño.");
-      }
+      setLogoCliente(resultado);
     };
     lector.onerror = () => setErrorLogo("No se ha podido leer la imagen seleccionada.");
     lector.readAsDataURL(archivo);
@@ -417,10 +408,10 @@ export default function ModelosDocumentos() {
     {actual.id==="liquidacion" ? <section className="space-y-3"><div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wider text-sky-800">Diseño aprobado · referencia visual</p><h2 className="mt-1 text-xl font-bold text-slate-900">Hoja de liquidación · Cancelación</h2><p className="mt-1 text-sm text-slate-600">Maqueta visual basada en tu propuesta, con identidad MOLSAN PREMIUM 2027.</p></div><span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">PDF oficial conectado en Liquidar expediente</span></div><div className="grid grid-cols-1 items-stretch gap-3 lg:grid-cols-2"><section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div><h3 className="font-bold text-slate-900">Logotipo del cliente</h3><p className="mt-1 text-xs text-slate-500">Se mostrará en la cabecera de la hoja de liquidación. PNG, JPG o WEBP · máximo 1 MB.</p></div>
-        <div className="flex flex-wrap items-center gap-3">{logoCliente && <img src={logoCliente} alt="Vista previa del logotipo del cliente" className="max-h-12 max-w-36 object-contain"/>}<label className="cursor-pointer rounded-xl bg-sky-700 px-4 py-2 text-sm font-bold text-white hover:bg-sky-800">Subir logotipo<input type="file" className="hidden" accept="image/png,image/jpeg,image/webp" onChange={e => subirLogoCliente(e.target.files?.[0])}/></label>{logoCliente && <button type="button" onClick={() => { try { localStorage.removeItem("molsan_logo_cliente_liquidacion"); } catch {} setLogoCliente(""); }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600">Quitar</button>}</div>
+        <div className="flex flex-wrap items-center gap-3">{logoCliente && <img src={logoCliente} alt="Vista previa del logotipo del cliente" className="max-h-12 max-w-36 object-contain"/>}<label className="cursor-pointer rounded-xl bg-sky-700 px-4 py-2 text-sm font-bold text-white hover:bg-sky-800">Subir logotipo<input type="file" className="hidden" accept="image/png,image/jpeg,image/webp" onChange={e => subirLogoCliente(e.target.files?.[0])}/></label>{logoCliente && <button type="button" onClick={() => setLogoCliente("")} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600">Quitar</button>}</div>
       </div>
       {errorLogo && <p role="alert" className="mt-3 text-sm text-rose-700">{errorLogo}</p>}
-      <p className="mt-3 text-xs text-slate-500">Esta imagen se utiliza en esta referencia visual. La emisión oficial se realiza desde Liquidar expediente y no depende de esta previsualización.</p>
+      <p className="mt-3 text-xs text-slate-500">La imagen solo se conserva mientras mantengas abierta esta previsualización. La emisión oficial se realiza desde Liquidar expediente y no depende de esta maqueta.</p>
     </section><section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex flex-wrap items-end gap-3"><label className="min-w-[240px] flex-1 text-sm font-semibold text-slate-700">Número de expediente<input value={numeroExpediente} onChange={e => setNumeroExpediente(e.target.value)} onKeyDown={e => { if (e.key === "Enter") cargarExpediente(); }} placeholder="Introduce el número exacto del expediente" className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 font-normal"/></label><button type="button" onClick={cargarExpediente} disabled={cargandoExpediente} className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-bold text-white disabled:opacity-50">{cargandoExpediente ? "Cargando…" : "Cargar expediente"}</button></div>{errorExpediente && <p role="alert" className="mt-2 text-sm text-amber-700">{errorExpediente}</p>}{expedienteSeleccionado && <p className="mt-2 text-xs font-semibold text-emerald-700">Expediente cargado: {expedienteSeleccionado.id_expediente || expedienteSeleccionado.numero_expediente || numeroExpediente} · {gastosExpediente.length} gasto(s) recuperado(s).</p>}</section></div><DocumentoLayoutDesigner tipo="liquidacion"/><LiquidacionPreview datosMolsan={datosMolsan} logoCliente={logoCliente} expediente={expedienteSeleccionado} gastos={gastosExpediente} fechaEmision={fechaEmision}/><div className="rounded-2xl border border-emerald-100 bg-white p-4 text-sm leading-6 text-slate-700"><strong className="text-[#123e70]">Integración operativa:</strong> el PDF oficial se genera en «Liquidar expediente», reúne la documentación en el orden de cierre definido y se guarda en «Expediente digital completo» solo después de revisar y aceptar la vista previa. Los gastos figuran según sus registros y estados reales de pago.</div></section> : actual.id==="factura" ? <FacturaPlantillaEditor datosMolsan={datosMolsan} onGuardarLogoFactura={async (logoDataUrl) => { const actualizado = { ...datosMolsan, logo_data_url: logoDataUrl }; const { data } = await axios.put("/utilidades/datos-molsan", actualizado); if (!data?.ok) throw new Error(data?.mensaje || "No se pudo guardar el logotipo."); setDatosMolsan(actualizado); }} /> : actual.id==="provision" ? <ProvisionesFondosPage soloEditorPlantilla/> : <section className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,.85fr)]"><div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"><h2 className="text-xl font-bold text-slate-900">{actual.titulo}</h2><p className="mt-3 text-sm leading-6 text-slate-600">{actual.descripcion}</p><h3 className="mt-5 text-sm font-bold text-slate-800">Contenido previsto</h3><ul className="mt-3 grid gap-2 sm:grid-cols-2">{actual.campos.map(c=><li key={c} className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-sm text-slate-700">✓ {c}</li>)}</ul></div><div className="space-y-4"><HonorariosGestoria soloPlantilla/></div></section>}
   </main>;
 }
