@@ -9,7 +9,7 @@
 /* Superficies de página: blanco corporativo uniforme en todas las rutas. */
 :is(
   .erp-app-shell, .erp-main-content, .erp-main-inner, .erp-route-content, .erp-page,
-  .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium,
+  .cg-page, .cg-unified-workspace, .ctn-detalle-page, .empleado-perfil-premium, .expedientes-page, .expedientes-listado-premium,
   .ficha-expediente-premium, .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium, .fusiones-page,
   .apoderagest, .notargest, .notargest-workspace-premium, .encargagest,
   .encargagest-workspace-premium, .catalogos-premium-page, .catalogos-maestros-premium,
@@ -221,7 +221,7 @@ body :where(
 
 /* Tarjetas Tailwind heredadas en subpáginas: migración controlada al patrón Espacios de trabajo. */
 :where(
-  .apoderagest, .encargagest, .notargest-workspace-premium, .crear-noticia-premium,
+  .apoderagest, .encargagest, .notargest-workspace-premium, .crear-noticia-premium, .cg-page, .ctn-detalle-page, .empleado-perfil-premium,
   .ficha-expediente-premium, .expedientes-page,
   .seguridad-premium-page, .seguridad-subpagina-premium,
   .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
@@ -243,7 +243,7 @@ body :where(
   transition: transform .2s ease,border-color .2s ease,box-shadow .2s ease !important;
 }
 :where(
-  .apoderagest, .encargagest, .notargest-workspace-premium, .crear-noticia-premium,
+  .apoderagest, .encargagest, .notargest-workspace-premium, .crear-noticia-premium, .cg-page, .ctn-detalle-page, .empleado-perfil-premium,
   .ficha-expediente-premium, .expedientes-page,
   .seguridad-premium-page, .seguridad-subpagina-premium,
   .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
@@ -261,7 +261,7 @@ body :where(
   box-shadow: 0 16px 34px rgba(6,70,117,.15) !important;
 }
 :where(
-  .apoderagest, .encargagest, .notargest-workspace-premium, .crear-noticia-premium,
+  .apoderagest, .encargagest, .notargest-workspace-premium, .crear-noticia-premium, .cg-page, .ctn-detalle-page, .empleado-perfil-premium,
   .ficha-expediente-premium, .expedientes-page,
   .seguridad-premium-page, .seguridad-subpagina-premium,
   .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
