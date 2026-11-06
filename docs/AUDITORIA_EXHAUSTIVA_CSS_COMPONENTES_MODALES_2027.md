@@ -783,3 +783,11 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - No se han modificado acciones CRUD, confirmaciones, llamadas API, selección de tipo ni formularios.
 - La cabecera ya utilizaba `MolsanPageHeader`; no se ha alterado su geometría.
 - Pendiente build de Preview y revisión visual de los estados activo/inactivo y de los botones de fila.
+
+## 42. Subpáginas de Seguridad — retirada de sprites SVG locales (6 de noviembre de 2026)
+
+- `SeguridadLogs.jsx` y `SeguridadAuditoria.jsx` sustituyen sus componentes SVG locales por el wrapper corporativo basado en `MolsanIcon`.
+- Se conservan los nombres semánticos de eventos y sus alias (`edit`, `delete`, `user-group`, etc.), así como tamaños/clases de presentación.
+- No se modifica la consulta de registros, filtros, exportación, paginación ni el flujo del diálogo de auditoría.
+- Verificación estática posterior: cero referencias a `/icons/icons.svg` o etiquetas SVG locales en ambas páginas.
+- Build de Preview pendiente para este bloque.
