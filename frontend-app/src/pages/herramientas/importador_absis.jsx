@@ -909,8 +909,8 @@ export default function ImportadorAbsis() {
                             className="
                                 rounded-xl
                                 border
-                                border-blue-200
-                                bg-blue-50
+                                border-[var(--molsan-border-strong)]
+                                bg-[var(--molsan-primary-soft)]
                                 p-4
                             "
                         >
@@ -921,7 +921,7 @@ export default function ImportadorAbsis() {
                                     font-semibold
                                     uppercase
                                     tracking-wide
-                                    text-blue-700
+                                    text-[var(--molsan-primary)]
                                 "
                             >
                                 Expedientes actualizados
@@ -931,7 +931,7 @@ export default function ImportadorAbsis() {
                                 className="
                                     text-2xl
                                     font-bold
-                                    text-blue-700
+                                    text-[var(--molsan-primary)]
                                     mt-1
                                 "
                             >
