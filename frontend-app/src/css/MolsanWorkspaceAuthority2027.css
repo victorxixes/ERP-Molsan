@@ -1,0 +1,213 @@
+/* MOLSAN ERP PREMIUM 2027 · AUTORIDAD VISUAL ÚNICA
+   Última capa de cascada. Replica el patrón real de workspace en las
+   tarjetas y cabeceras de todas las rutas, sin tocar su lógica ni contenido. */
+
+:root {
+  --molsan-workspace-blue: #064675;
+  --molsan-workspace-muted: #617789;
+  --molsan-workspace-border: #D8E4EC;
+  --molsan-workspace-panel: #F2F7FB;
+  --molsan-workspace-accent: #1477A5;
+  --molsan-workspace-shadow: 0 9px 24px rgba(6,50,82,.065);
+  --molsan-workspace-shadow-hover: 0 19px 38px rgba(6,50,82,.13);
+  --molsan-workspace-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Tipografía corporativa real: título, descripción y texto auxiliar. */
+.erp-route-content,
+.erp-page.molsan-professional-shell,
+.ng-admin-notarias {
+  font-family: var(--molsan-workspace-font) !important;
+  color: var(--molsan-workspace-blue);
+}
+.erp-route-content :where(h1,h2,h3,h4),
+.erp-page.molsan-professional-shell :where(h1,h2,h3,h4),
+.ng-admin-notarias :where(h1,h2,h3,h4) {
+  font-family: var(--molsan-workspace-font) !important;
+  color: var(--molsan-workspace-blue) !important;
+  letter-spacing: -.025em !important;
+}
+.erp-route-content :where(p,.text-slate-500,.text-slate-600,.text-gray-500,.text-gray-600),
+.erp-page.molsan-professional-shell :where(p),
+.ng-admin-notarias :where(p) {
+  font-family: var(--molsan-workspace-font) !important;
+  color: var(--molsan-workspace-muted);
+}
+
+/* Cabeceras: una sola geometría, color Glass hielo, marca y jerarquía iguales. */
+:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero) {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-height: 82px !important;
+  margin: 0 0 20px !important;
+  padding: 14px 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  flex-wrap: wrap !important;
+  border: 1px solid rgba(6,70,117,.14) !important;
+  border-radius: 18px !important;
+  color: var(--molsan-workspace-blue) !important;
+  background:
+    radial-gradient(ellipse at 88% 8%, rgba(255,255,255,.96), transparent 46%),
+    linear-gradient(112deg,#EAF4F9 0%,#DCEBF3 58%,#F1F7FB 100%) !important;
+  box-shadow: 0 8px 22px rgba(6,70,117,.075) !important;
+  backdrop-filter: blur(18px) saturate(125%) !important;
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(h1,h2,.molsan-page-header__title,.erp-page-title,[class*="title"]) {
+  margin-top: 0 !important;
+  color: var(--molsan-workspace-blue) !important;
+  -webkit-text-fill-color: var(--molsan-workspace-blue) !important;
+  font-family: var(--molsan-workspace-font) !important;
+  font-size: clamp(21px,2vw,26px) !important;
+  font-weight: 800 !important;
+  letter-spacing: -.035em !important;
+  line-height: 1.18 !important;
+}
+:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(p,.molsan-page-header__description,.erp-page-description,.molsan-page-subtitle) {
+  color: #496B82 !important;
+  -webkit-text-fill-color: #496B82 !important;
+  font-family: var(--molsan-workspace-font) !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+}
+:where(.molsan-page-header__mark,.molsan-page-header__icon,.erp-page-header__icon) {
+  color: var(--molsan-workspace-blue) !important;
+  opacity: 1 !important;
+  border: 1px solid #C8DDE9 !important;
+  border-radius: 12px !important;
+  background: linear-gradient(145deg,#fff,#E2F0F7) !important;
+}
+:where(.molsan-page-header__mark,.molsan-page-header__icon,.erp-page-header__icon) svg {
+  color: var(--molsan-workspace-blue) !important;
+  opacity: 1 !important;
+}
+
+/* Tarjetas identificadas semánticamente + tarjetas estructurales Tailwind.
+   La selección se limita a contenedores de contenido, nunca a filas/campos. */
+:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-stat-card,
+  .eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card,.molsan-premium-card,
+  .ng-dashboard-grafico,.ng-dashboard-kpis article,
+  div[class~="border"][class*="rounded-"][class*="bg-white"],
+  section[class~="border"][class*="rounded-"][class*="bg-white"],
+  article[class~="border"][class*="rounded-"][class*="bg-white"]) {
+  position: relative !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  border: 1px solid var(--molsan-workspace-border) !important;
+  border-top: 4px solid var(--molsan-workspace-accent) !important;
+  border-radius: 19px !important;
+  background: linear-gradient(150deg,#FFFFFF 0%,#FFFFFF 58%,#F2F7FB 100%) !important;
+  box-shadow: var(--molsan-workspace-shadow) !important;
+  transition:
+    transform .22s cubic-bezier(.2,.75,.25,1),
+    border-color .22s ease,
+    box-shadow .22s ease,
+    background .22s ease !important;
+}
+:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-stat-card,
+  .eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card,.molsan-premium-card,
+  .ng-dashboard-grafico,.ng-dashboard-kpis article,
+  div[class~="border"][class*="rounded-"][class*="bg-white"],
+  section[class~="border"][class*="rounded-"][class*="bg-white"],
+  article[class~="border"][class*="rounded-"][class*="bg-white"]):hover {
+  z-index: 1 !important;
+  border-color: #B9D7E6 !important;
+  border-top-color: #064675 !important;
+  background: linear-gradient(150deg,#FFFFFF 0%,#F8FCFE 52%,#EAF5FA 100%) !important;
+  box-shadow: var(--molsan-workspace-shadow-hover) !important;
+  transform: translateY(-4px) !important;
+}
+
+/* Los iconos Molsan conservan su dibujo, pero reciben la misma cápsula,
+   escala y contraste del patrón de Espacios de trabajo. */
+:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-stat-card,
+  .eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card,.molsan-premium-card,
+  div[class~="border"][class*="rounded-"][class*="bg-white"],
+  section[class~="border"][class*="rounded-"][class*="bg-white"],
+  article[class~="border"][class*="rounded-"][class*="bg-white"])
+:where(.molsan-icon-wrap,.molsan-icon-3d,.ag-kpi-icono,.eg-kpi-icono,
+  .ng-admin-notaria-icono,.ng-admin-circuito-icono,[class*="icon-wrap"]) {
+  color: var(--molsan-workspace-blue) !important;
+  border-color: #D8E4EC !important;
+  background: #EAF4F9 !important;
+  transition: transform .22s ease, color .22s ease, background .22s ease !important;
+}
+:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-stat-card,
+  .eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card,.molsan-premium-card,
+  div[class~="border"][class*="rounded-"][class*="bg-white"],
+  section[class~="border"][class*="rounded-"][class*="bg-white"],
+  article[class~="border"][class*="rounded-"][class*="bg-white"]):hover
+:where(.molsan-icon-wrap,.molsan-icon-3d,.ag-kpi-icono,.eg-kpi-icono,
+  .ng-admin-notaria-icono,.ng-admin-circuito-icono,[class*="icon-wrap"]) {
+  transform: translateY(-2px) scale(1.045) !important;
+  color: #043B60 !important;
+  border-color: #B9D7E6 !important;
+  background: #FFFFFF !important;
+}
+:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-stat-card,
+  .eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card,.molsan-premium-card)
+:where(h2,h3,h4,[class*="title"]) {
+  color: var(--molsan-workspace-blue) !important;
+  font-family: var(--molsan-workspace-font) !important;
+  font-weight: 800 !important;
+  letter-spacing: -.025em !important;
+}
+
+/* Evita que las tarjetas clicables pierdan interacción por la normalización. */
+:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+:where(button.erp-card,a.erp-card,[role="button"].erp-card,button.card-sj,
+  button.dashboard-kpi,button.molsan-stat-card,button.eg-kpi,button.ng-admin-kpi-button) {
+  cursor: pointer !important;
+  text-align: left !important;
+}
+:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-stat-card,
+  .eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card,.molsan-premium-card):focus-visible {
+  outline: 3px solid rgba(6,70,117,.24) !important;
+  outline-offset: 3px !important;
+}
+
+@media (max-width: 720px) {
+  :where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+  :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero) {
+    min-height: 0 !important;
+    padding: 14px !important;
+    gap: 12px !important;
+  }
+  :where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-stat-card,
+    .eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card,.molsan-premium-card,
+    div[class~="border"][class*="rounded-"][class*="bg-white"],
+    section[class~="border"][class*="rounded-"][class*="bg-white"],
+    article[class~="border"][class*="rounded-"][class*="bg-white"]) {
+    border-radius: 15px !important;
+  }
+}
+
+/* Respetar la preferencia de accesibilidad del sistema operativo. */
+@media (prefers-reduced-motion: reduce) {
+  :where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-stat-card,
+    .eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card,.molsan-premium-card,
+    div[class~="border"][class*="rounded-"][class*="bg-white"],
+    section[class~="border"][class*="rounded-"][class*="bg-white"],
+    article[class~="border"][class*="rounded-"][class*="bg-white"]) {
+    transition-duration: .01ms !important;
+  }
+}
