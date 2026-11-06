@@ -3,16 +3,1228 @@
    ============================================================ */
 
 @import "tailwindcss";
-@import "./base.css";
-@import "./layout.css";
-@import "./cards.css";
-@import "./tables.css";
-@import "./forms.css";
-@import "./tabs.css";
-@import "./modals.css";
-@import "./animations.css";
-@import "./erp-theme.css";
 @config "../../tailwind.config.js";
+
+
+/* Compatibilidad heredada base.css · pendiente de migración de componentes */
+/* MOLSAN ERP PREMIUM 2027 · Base neutral y aislada
+ * Los resets se limitan al shell del ERP para no alterar contenido externo,
+ * widgets embebidos ni diálogos montados fuera de la aplicación.
+ */
+.erp-app-shell { scroll-behavior: smooth; }
+.erp-app-shell ::selection {
+  background: var(--molsan-primary, #064675);
+  color: #ffffff;
+}
+.erp-app-shell::-webkit-scrollbar,
+.erp-app-shell *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.erp-app-shell::-webkit-scrollbar-thumb,
+.erp-app-shell *::-webkit-scrollbar-thumb {
+  background: var(--molsan-border-strong, #b9cad8);
+  border-radius: 999px;
+}
+.erp-app-shell::-webkit-scrollbar-track,
+.erp-app-shell *::-webkit-scrollbar-track {
+  background: var(--molsan-surface-soft, #f2f7fb);
+}
+.erp-app-shell :is(button, input, textarea, select) { font: inherit; }
+.erp-app-shell button { cursor: pointer; }
+.erp-app-shell :is(button:active, input:hover, textarea:hover, select:hover) { transform: none; }
+.erp-app-shell hr {
+  border: 0;
+  border-top: 1px solid var(--molsan-border, #d8e4ec);
+}
+
+
+/* Compatibilidad heredada layout.css · pendiente de migración de componentes */
+/* ============================================================
+   ERP SJ‑2026 — Layout premium
+   ============================================================ */
+
+.container-sj {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: var(--sj-gap);
+
+}
+
+.section-sj {
+  margin-bottom: 40px;
+}
+
+.grid-sj {
+  display: grid;
+  gap: var(--sj-gap);
+
+}
+
+
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-5 { grid-template-columns: repeat(5, 1fr); }
+.grid-6 { grid-template-columns: repeat(6, 1fr); }
+
+.flex-sj {
+  display: flex;
+  gap: var(--sj-gap);
+}
+
+.row-sj {
+  display: flex;
+  flex-direction: row;
+  gap: var(--sj-gap);
+}
+
+.col-sj {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sj-gap);
+}
+
+
+
+/* Compatibilidad heredada cards.css · pendiente de migración de componentes */
+/* ============================================================
+   ERP SJ-2026 — Cards
+   Tema ERP claro
+   ============================================================ */
+
+.card-sj {
+  background: var(--erp-surface);
+  border: 1px solid var(--erp-border);
+  border-radius: var(--molsan-radius-card, 14px);
+  padding: 24px;
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+  transition: box-shadow var(--molsan-transition-fast, 150ms ease), border-color var(--molsan-transition-fast, 150ms ease);
+}
+
+.card-sj:hover {
+  border-color: var(--molsan-border-strong, #c4d0df);
+}
+
+
+/* ============================================================
+   CABECERA DE TARJETA
+   ============================================================ */
+
+.card-sj-header {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--erp-text);
+}
+
+
+/* ============================================================
+   PIE DE TARJETA
+   ============================================================ */
+
+.card-sj-footer {
+  margin-top: 16px;
+  text-align: right;
+}
+
+
+/* ============================================================
+   FADE-IN CORPORATIVO
+   ============================================================ */
+
+
+
+/* Compatibilidad heredada tables.css · pendiente de migración de componentes */
+/* ============================================================
+   ERP SJ-2026 — Tablas
+   Tema ERP claro
+   ============================================================ */
+
+.table-sj {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: var(--molsan-radius-card, 14px);
+  overflow: hidden;
+  border: 1px solid var(--erp-border);
+  background: var(--erp-surface);
+  color: var(--erp-text);
+}
+
+
+
+
+/* ============================================================
+   CABECERA
+   ============================================================ */
+
+.table-sj thead {
+  background-color: var(--molsan-surface-soft, #f7f9fc);
+  color: var(--molsan-text-secondary, #526176);
+  font-weight: 700;
+  letter-spacing: normal;
+}
+
+.table-sj th {
+  color: var(--molsan-text-secondary, #526176);
+  font-weight: 700;
+  background-color: var(--molsan-surface-soft, #f7f9fc);
+}
+
+
+/* ============================================================
+   CELDAS
+   ============================================================ */
+
+.table-sj th,
+.table-sj td {
+  padding: 14px;
+  border-bottom: 1px solid var(--erp-border);
+}
+
+.table-sj td {
+  color: var(--erp-text);
+}
+
+
+/* ============================================================
+   HOVER FILA
+   ============================================================ */
+
+.table-sj tr:hover {
+  background-color: var(--erp-primary-soft);
+}
+
+
+/* ============================================================
+   TABLA A RAYAS
+   ============================================================ */
+
+.table-sj.striped tr:nth-child(even) {
+  background-color: var(--erp-surface-soft);
+}
+
+
+/* ============================================================
+   FADE-IN CORPORATIVO
+   ============================================================ */
+
+
+
+/* Compatibilidad heredada forms.css · pendiente de migración de componentes */
+/* ============================================================
+   ERP SJ‑2026 — Inputs y formularios premium
+   ============================================================ */
+
+.input-sj,
+.select-sj,
+.textarea-sj {
+  width: 100%;
+  padding: 10px 14px;
+  min-height: var(--molsan-control-height, 38px);
+  border: 1px solid var(--molsan-border-strong, #c4d0df);
+  border-radius: var(--molsan-radius-control, 9px);
+  background: var(--molsan-surface, #fff);
+  transition: box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.input-sj:hover,
+.select-sj:hover,
+.textarea-sj:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.input-sj:focus,
+.select-sj:focus,
+.textarea-sj:focus {
+  border-color: var(--sj-azul);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
+}
+
+.input-sj.error,
+.select-sj.error,
+.textarea-sj.error {
+  border-color: var(--molsan-danger, #c43d4b);
+  box-shadow: 0 0 0 3px rgba(196, 61, 75, .12);
+}
+
+.input-sj.success,
+.select-sj.success,
+.textarea-sj.success {
+  border-color: var(--molsan-success, #16845b);
+  box-shadow: 0 0 0 3px rgba(22, 132, 91, .12);
+}
+
+.input-sj:disabled,
+.select-sj:disabled,
+.textarea-sj:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: var(--molsan-surface-soft, #f7f9fc);
+}
+
+.label-sj {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+  color: var(--molsan-primary, #3156b3);
+  letter-spacing: 0.2px;
+}
+
+.textarea-sj {
+  min-height: 120px;
+  resize: vertical;
+}
+
+
+/* Compatibilidad heredada tabs.css · pendiente de migración de componentes */
+/* ============================================================
+   ERP SJ‑2026 — Tabs premium
+   ============================================================ */
+
+.tabs-sj {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.tab-sj {
+  padding: 10px 18px;
+  border-radius: var(--molsan-radius-control, 9px);
+  background-color: var(--molsan-surface-soft, #f7f9fc);
+  color: var(--molsan-text-secondary, #526176);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color var(--molsan-transition-fast, 150ms ease), color var(--molsan-transition-fast, 150ms ease), border-color var(--molsan-transition-fast, 150ms ease);
+}
+
+.tab-sj:hover {
+  background-color: var(--molsan-primary-soft, #edf3ff);
+  color: var(--molsan-primary, #3156b3);
+}
+
+.tab-sj.active {
+  background-color: var(--molsan-primary, #3156b3);
+  color: white;
+}
+
+
+/* Compatibilidad heredada modals.css · pendiente de migración de componentes */
+/* ============================================================
+   ERP SJ‑2026 — Modales premium
+   ============================================================ */
+
+.modal-overlay-sj {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, .48);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.modal-sj {
+  background: var(--molsan-surface, #fff);
+  border-radius: var(--molsan-radius-dialog, 16px);
+  padding: 24px;
+  width: min(100%, 760px);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  box-shadow: var(--molsan-shadow-popover, 0 18px 45px rgba(15, 23, 42, .14));
+  border: 1px solid var(--molsan-border, #dce4ef);
+}
+
+
+.modal-sj-header {
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--molsan-primary, #3156b3);
+}
+
+.modal-sj-footer {
+  margin-top: 24px;
+  text-align: right;
+}
+
+
+
+/* Compatibilidad heredada animations.css · pendiente de migración de componentes */
+/* ============================================================
+   ERP SJ‑2026 — Animaciones premium oficiales
+   ============================================================ */
+
+/* Las utilidades de animación no referenciadas se han retirado.
+   Se conserva la reducción de movimiento para accesibilidad. */
+
+/* Accesibilidad: respeta la preferencia del sistema para reducir movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* Compatibilidad heredada erp-theme.css · pendiente de migración de componentes */
+/* ============================================================
+   ERP SJ-2026
+   TEMA VISUAL CORPORATIVO GLOBAL
+   ============================================================
+
+   Objetivo:
+   - Fondo claro y limpio
+   - Texto perfectamente legible
+   - Azul corporativo como color principal
+   - Tarjetas blancas
+   - Bordes suaves
+   - Formularios consistentes
+   - Tablas legibles
+   - Modales compatibles con tema claro
+   - Mantener compatibilidad con Tailwind
+   ============================================================ */
+
+
+/* ============================================================
+   VARIABLES CORPORATIVAS
+   ============================================================ */
+
+/* Los alias --erp-* se definen en molsan-tokens.css. */
+
+
+/* ============================================================
+   PÁGINA ERP
+   ============================================================ */
+
+.erp-page {
+
+  background:
+    var(--erp-bg);
+
+  color:
+    var(--erp-text);
+
+  min-height:
+    100%;
+
+}
+
+
+/* ============================================================
+   CONTENEDORES PRINCIPALES
+   ============================================================ */
+
+/* ============================================================
+   HOVER DE TARJETAS
+   ============================================================ */
+
+/* ============================================================
+   TÍTULOS DENTRO DE PÁGINAS ERP
+   ============================================================ */
+
+:where(.erp-page) :where(h1:not([class]), h2:not([class]), h3:not([class]), h4:not([class]), h5:not([class]), h6:not([class])) {
+
+  color:
+    var(--erp-text-strong);
+
+}
+
+
+/* ============================================================
+   TEXTO GENERAL
+   ============================================================ */
+
+.erp-page p,
+.erp-page span,
+.erp-page label,
+.erp-page div {
+
+  /*
+   * No forzamos color sobre componentes que ya
+   * utilizan clases Tailwind explícitas.
+   *
+   * Esta regla únicamente evita herencias blancas
+   * provenientes de estilos antiguos.
+   */
+
+}
+
+
+/* ============================================================
+   TEXTO SECUNDARIO
+   ============================================================ */
+
+.erp-text-soft {
+
+  color:
+    var(--erp-text-soft);
+
+}
+
+
+/* ============================================================
+   ENLACES
+   ============================================================ */
+
+.erp-page a:not([class]) {
+
+  color:
+    var(--erp-primary);
+
+  text-decoration:
+    none;
+
+  transition:
+    var(--erp-transition);
+
+}
+
+
+.erp-page a:not([class]):hover {
+
+  color:
+    var(--erp-primary-dark);
+
+}
+
+
+/* ============================================================
+   BOTONES ERP
+   ============================================================ */
+
+.erp-page button:not([class]) {
+
+  font-family:
+    inherit;
+
+}
+
+
+/* ============================================================
+   BOTÓN PRINCIPAL
+   ============================================================ */
+
+.erp-btn-primary {
+
+  background:
+    var(--erp-primary);
+
+  color:
+    #ffffff;
+
+  border:
+    1px solid var(--erp-primary);
+
+  border-radius:
+    10px;
+
+  transition:
+    var(--erp-transition);
+
+}
+
+
+.erp-btn-primary:hover {
+
+  background:
+    var(--erp-primary-dark);
+
+  border-color:
+    var(--erp-primary-dark);
+
+}
+
+
+/* ============================================================
+   BOTÓN SECUNDARIO
+   ============================================================ */
+
+.erp-btn-secondary {
+
+  background:
+    var(--erp-surface);
+
+  color:
+    var(--erp-text);
+
+  border:
+    1px solid var(--erp-border);
+
+  border-radius:
+    10px;
+
+  transition:
+    var(--erp-transition);
+
+}
+
+
+.erp-btn-secondary:hover {
+
+  background:
+    var(--erp-surface-soft);
+
+  border-color:
+    var(--erp-border-strong);
+
+}
+
+
+/* ============================================================
+   BOTÓN ÉXITO
+   ============================================================ */
+
+.erp-btn-success {
+
+  background:
+    var(--erp-success);
+
+  color:
+    #ffffff;
+
+  border:
+    1px solid var(--erp-success);
+
+  border-radius:
+    10px;
+
+}
+
+
+/* ============================================================
+   BOTÓN PELIGRO
+   ============================================================ */
+
+.erp-btn-danger {
+
+  background:
+    var(--erp-danger);
+
+  color:
+    #ffffff;
+
+  border:
+    1px solid var(--erp-danger);
+
+  border-radius:
+    10px;
+
+}
+
+
+/* ============================================================
+   INPUTS
+   ============================================================ */
+
+.erp-page :where(input:not([class]), textarea:not([class]), select:not([class])) {
+
+  background:
+    var(--erp-surface);
+
+  color:
+    var(--erp-text);
+
+  border-color:
+    var(--erp-border);
+
+}
+
+
+/* ============================================================
+   PLACEHOLDER
+   ============================================================ */
+
+.erp-page :where(input:not([class]), textarea:not([class]))::placeholder {
+
+  color:
+    var(--erp-text-muted);
+
+  opacity:
+    1;
+
+}
+
+
+/* ============================================================
+   FOCUS INPUTS
+   ============================================================ */
+
+.erp-page :where(input:not([class]), textarea:not([class]), select:not([class])):focus {
+
+  border-color:
+    var(--erp-primary);
+
+  outline:
+    none;
+
+  box-shadow:
+    0 0 0 3px var(--erp-primary-soft);
+
+}
+
+
+/* ============================================================
+   NO LEVANTAR INPUTS AL PASAR EL RATÓN
+   ============================================================
+
+   El base.css actual aplica:
+
+       transform: translateY(-2px)
+
+   a todos los inputs.
+
+   Para un ERP de escritorio resulta demasiado agresivo.
+   Lo anulamos aquí.
+   ============================================================ */
+
+.erp-page :where(input:not([class]), textarea:not([class]), select:not([class])):hover {
+
+  transform:
+    none;
+
+  box-shadow:
+    none;
+
+}
+
+
+/* ============================================================
+   TABLAS
+   ============================================================ */
+
+.erp-table {
+
+  width:
+    100%;
+
+  border-collapse:
+    separate;
+
+  border-spacing:
+    0;
+
+  background:
+    var(--erp-surface);
+
+  color:
+    var(--erp-text);
+
+}
+
+
+/* ============================================================
+   CABECERA TABLA
+   ============================================================ */
+
+.erp-table-header {
+
+  background:
+    var(--erp-primary);
+
+  color:
+    #ffffff;
+
+  font-weight:
+    600;
+
+}
+
+
+/* ============================================================
+   CELDAS CABECERA
+   ============================================================ */
+
+.erp-table-header th {
+
+  color:
+    #ffffff;
+
+  background:
+    var(--erp-primary);
+
+}
+
+
+/* ============================================================
+   FILAS
+   ============================================================ */
+
+.erp-table-row {
+
+  background:
+    var(--erp-surface);
+
+  color:
+    var(--erp-text);
+
+  border-color:
+    var(--erp-border);
+
+}
+
+
+.erp-table-row td {
+
+  color:
+    var(--erp-text);
+
+  border-bottom:
+    1px solid var(--erp-border-light);
+
+}
+
+
+/* ============================================================
+   HOVER TABLA
+   ============================================================ */
+
+.erp-table-row:hover {
+
+  background:
+    var(--erp-primary-soft);
+
+}
+
+
+/* ============================================================
+   TABLAS HTML NORMALES DENTRO DE ERP
+   ============================================================ */
+
+.erp-page table {
+
+  color:
+    var(--erp-text);
+
+}
+
+
+.erp-page table thead {
+
+  color:
+    #ffffff;
+
+}
+
+
+.erp-page table tbody tr {
+
+  color:
+    var(--erp-text);
+
+}
+
+
+.erp-page table tbody td {
+
+  color:
+    var(--erp-text);
+
+}
+
+
+/* ============================================================
+   CHECKBOXES
+   ============================================================ */
+
+.erp-page input[type="checkbox"] {
+
+  accent-color:
+    var(--erp-primary);
+
+}
+
+
+/* ============================================================
+   RADIO
+   ============================================================ */
+
+.erp-page input[type="radio"] {
+
+  accent-color:
+    var(--erp-primary);
+
+}
+
+
+/* ============================================================
+   SELECT
+   ============================================================ */
+
+.erp-page select {
+
+  cursor:
+    pointer;
+
+}
+
+
+/* ============================================================
+   ESTADOS
+   ============================================================ */
+
+.erp-success {
+
+  color:
+    var(--erp-success);
+
+  background:
+    var(--erp-success-soft);
+
+}
+
+
+.erp-warning {
+
+  color:
+    var(--erp-warning);
+
+  background:
+    var(--erp-warning-soft);
+
+}
+
+
+.erp-danger {
+
+  color:
+    var(--erp-danger);
+
+  background:
+    var(--erp-danger-soft);
+
+}
+
+
+.erp-info {
+
+  color:
+    var(--erp-info);
+
+  background:
+    var(--erp-info-soft);
+
+}
+
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+
+.erp-badge {
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    6px;
+
+  padding:
+    4px 9px;
+
+  border-radius:
+    999px;
+
+  font-size:
+    12px;
+
+  font-weight:
+    600;
+
+}
+
+
+/* ============================================================
+   SEPARADORES
+   ============================================================ */
+
+.erp-page hr {
+
+  border:
+    none;
+
+  border-top:
+    1px solid var(--erp-border);
+
+}
+
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+.erp-page::-webkit-scrollbar {
+
+  width:
+    8px;
+
+}
+
+
+.erp-page::-webkit-scrollbar-track {
+
+  background:
+    var(--erp-surface-soft);
+
+}
+
+
+.erp-page::-webkit-scrollbar-thumb {
+
+  background:
+    #b8c5d6;
+
+  border-radius:
+    999px;
+
+}
+
+
+.erp-page::-webkit-scrollbar-thumb:hover {
+
+  background:
+    #9eafc5;
+
+}
+
+
+/* ============================================================
+   MODALES
+   ============================================================
+
+   IMPORTANTE:
+
+   Los modales que aparecen en las capturas funcionan
+   correctamente con fondo oscuro.
+
+   NO modificamos aquí el backdrop global porque cada
+   componente puede tener su propia implementación.
+   ============================================================ */
+
+
+/* ============================================================
+   MODAL ERP CLARO
+   ============================================================ */
+
+.erp-modal {
+
+  background:
+    var(--erp-surface);
+
+  color:
+    var(--erp-text);
+
+  border:
+    1px solid var(--erp-border);
+
+  border-radius:
+    var(--erp-radius-lg);
+
+  box-shadow:
+    var(--erp-shadow-lg);
+
+}
+
+
+/* ============================================================
+   CABECERA MODAL
+   ============================================================ */
+
+.erp-modal-header {
+
+  background:
+    var(--erp-surface);
+
+  color:
+    var(--erp-text-strong);
+
+  border-bottom:
+    1px solid var(--erp-border);
+
+}
+
+
+/* ============================================================
+   CONTENIDO MODAL
+   ============================================================ */
+
+.erp-modal-body {
+
+  background:
+    var(--erp-surface);
+
+  color:
+    var(--erp-text);
+
+}
+
+
+/* ============================================================
+   PIE MODAL
+   ============================================================ */
+
+.erp-modal-footer {
+
+  background:
+    var(--erp-surface-soft);
+
+  border-top:
+    1px solid var(--erp-border);
+
+}
+
+
+/* ============================================================
+   TABLA / LISTA DENTRO DE MODAL
+   ============================================================ */
+
+.erp-modal input,
+.erp-modal textarea,
+.erp-modal select {
+
+  background:
+    var(--erp-surface);
+
+  color:
+    var(--erp-text);
+
+  border:
+    1px solid var(--erp-border);
+
+}
+
+
+/* ============================================================
+   FOCUS VISIBLE
+   ============================================================ */
+
+.erp-page button:focus-visible,
+.erp-page a:focus-visible,
+.erp-page input:focus-visible,
+.erp-page textarea:focus-visible,
+.erp-page select:focus-visible {
+
+  outline:
+    3px solid color-mix(in srgb, var(--molsan-primary) 25%, transparent);
+
+  outline-offset:
+    2px;
+
+}
+
+
+/* ============================================================
+   ELEMENTOS DESHABILITADOS
+   ============================================================ */
+
+.erp-page button:disabled,
+.erp-page input:disabled,
+.erp-page textarea:disabled,
+.erp-page select:disabled {
+
+  cursor:
+    not-allowed;
+
+}
+
+
+/* ============================================================
+   COMPATIBILIDAD CON TAILWIND
+   ============================================================
+
+   Estas clases permiten que los componentes actuales que ya
+   utilizan text-[var(--erp-text)] sigan funcionando.
+
+   No usamos !important de forma general para no romper
+   las clases Tailwind explícitas.
+   ============================================================ */
+
+.text-erp {
+
+  color:
+    var(--erp-text);
+
+}
+
+
+.text-erp-soft {
+
+  color:
+    var(--erp-text-soft);
+
+}
+
+
+.bg-erp {
+
+  background:
+    var(--erp-bg);
+
+}
+
+
+.bg-erp-surface {
+
+  background:
+    var(--erp-surface);
+
+}
+
+
+/* ============================================================
+   CORRECCIÓN ESPECÍFICA PARA COMPONENTES ERP ANTIGUOS
+   ============================================================
+
+   Algunas pantallas antiguas del ERP utilizan literalmente
+   "color: white" sobre el contenido de las páginas.
+
+   En un tema claro eso provoca exactamente el efecto que
+   vemos en las capturas: títulos, textos y tablas casi
+   desaparecen.
+
+   NO tocamos botones con fondo de color ni navegación.
+   ============================================================ */
+
+.erp-page > h1,
+.erp-page > h2,
+.erp-page > h3 {
+
+  color:
+    var(--erp-text-strong);
+
+}
+
+
+/* ============================================================
+   LEGIBILIDAD GENERAL
+   ============================================================ */
+
+.erp-page {
+
+  text-rendering:
+    optimizeLegibility;
+
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+  }
+
+
+/* ============================================================
+   FIN DEL TEMA ERP SJ-2026
+   ============================================================ */
+
 
 /* ============================================================
    ERP SJ‑2026 — Componentes personalizados
