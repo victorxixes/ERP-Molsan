@@ -455,16 +455,11 @@
   min-width: 0;
   margin: 0 0 18px;
   padding: 16px;
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: 18px;
-  background: #FFFFFF;
-  box-shadow: 0 8px 22px rgba(6, 70, 117, .055);
 }
 .ng-admin-individual-panel > .ng-admin-individual-titulo {
   margin: 0 0 14px;
-  padding: 0 0 12px;
+  padding: 0;
   border: 0;
-  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: 0;
   background: transparent;
   box-shadow: none;
