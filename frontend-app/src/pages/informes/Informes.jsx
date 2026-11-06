@@ -3433,7 +3433,7 @@ function InformeFacturacion() {
     <>
     <section className="space-y-5">
       <div role="note" className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900">
-        <span aria-hidden="true" className="text-lg">ℹ️</span>
+        <MolsanIcon name="help" size={18} tone="amber" />
         <p><strong>Importante:</strong> para que cada gasto quede correctamente asociado a su expediente en el ERP, debe relacionarse el <strong>IDGASTO</strong> del Excel ABSIS con el expediente correspondiente. Los gastos sin esa relación deben revisarse; este informe no crea el vínculo automáticamente.</p>
       </div>
       <div className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl">
