@@ -321,3 +321,25 @@
     transform: none !important;
   }
 }
+
+
+/* Informes · accesos de los cinco apartados migrados al componente canónico. */
+.informes-entry-card {
+  display: flex;
+  width: 100%;
+  min-height: 150px;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.informes-entry-card:focus-visible {
+  outline: 3px solid rgba(6,70,117,.24);
+  outline-offset: 3px;
+}
+.informes-entry-card .molsan-premium-card__content {
+  margin-top: auto;
+}
