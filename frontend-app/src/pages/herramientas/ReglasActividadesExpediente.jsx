@@ -3,8 +3,6 @@ import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { Link } from "react-router-dom";
-import "../../css/HerramientasPremium.css";
-
 const DOCUMENTOS_INICIALES = [
   { id: "solicitud", nombre: "Hoja de solicitud", detalle: "Debe estar incorporada en la carpeta digital del resumen del expediente." },
   { id: "justificante", nombre: "Justificante de cancelación", detalle: "Nombre vigente del documento; sustituye la denominación genérica «certificado de cancelación»." },
