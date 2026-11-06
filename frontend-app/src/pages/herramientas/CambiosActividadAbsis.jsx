@@ -1,8 +1,6 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import "../../css/ModalesHerramientasPremium.css";
-
 const ACTIVIDADES = [
   "Documentación previa",
   "Sede notarial",
