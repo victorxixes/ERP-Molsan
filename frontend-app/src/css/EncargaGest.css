@@ -920,17 +920,4 @@ background:rgba(255,255,255,.22)}
   margin: 24px 16px 16px;
 }
 
-.encargagest .eg-kpi::before,
-.encargagest .eg-main .ag-kpi::before {
 
-  content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  right: 18px;
-  left: 18px;
-  height: 3px;
-  border-radius: 0 0 6px 6px;
-  background: linear-gradient(90deg, #064675 0%, #2696A5 70%, #8BC8D8 100%);
-  pointer-events: none;
-}
