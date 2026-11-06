@@ -294,3 +294,16 @@
   color: #064675 !important;
   -webkit-text-fill-color: #064675 !important;
 }
+
+
+/* Subtítulos de cabecera: contraste explícito sobre el fondo azul Glass. */
+:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(.molsan-page-header__description,.erp-page-description,.molsan-page-subtitle,.page-subtitle,p[class*="description"]) {
+  color: #496B82 !important;
+  -webkit-text-fill-color: #496B82 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  font-weight: 500 !important;
+  text-shadow: none !important;
+}
