@@ -1127,3 +1127,8 @@ Commits: a49b218, c4ca98f, a2fa2d7, f102d44, 290b243, 657cf18, b4f4c7d, 7f4a250.
 ### 19.6. Retirada de subtarjetas anidadas en NotarGest
 
 Se han simplificado los bloques de métricas, circuitos y resumen de pagos que se dibujaban como pequeñas tarjetas con borde y fondo dentro de otras tarjetas. Conservan su estructura, espaciado y contenido; dejan de introducir cajas y líneas adicionales en el interior. Commit: 59f05e3.
+
+
+### 21.1. Cobertura de fondos de subpáginas
+
+Se amplió la lista de raíces blancas para incluir fichas maestras, subpáginas de seguridad, utilidades, herramientas operativas y páginas de inicio de herramientas. Se excluyó expresamente el login/portal de acceso para conservar el rediseño de acceso ya aprobado. Commits: 7762665 y 3c36284.
