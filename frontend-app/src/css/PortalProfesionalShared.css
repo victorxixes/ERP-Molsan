@@ -1699,3 +1699,5 @@
 @media(prefers-reduced-motion:reduce){.ag-kpi{transition:none}}
 
 .molsan-modal.ag-resumen-modal{width:min(1550px,calc(100vw - 36px));max-height:calc(100dvh - 36px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+
+.molsan-modal.ag-encargos-modal{width:min(100%,1280px);max-height:92vh}
