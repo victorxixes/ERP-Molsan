@@ -9,8 +9,6 @@ import { buildRealtimeWsUrl } from "../../api/monitorRealtime";
 import { useAuthStore } from "../../store/authStore";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
-import "./PanelTecnicoSubmodulos.css";
-
 /**
  * ============================================================
  * MONITOR REALTIME — MOLSAN ERP PREMIUM 2027
