@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "../../api/axios";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
 
