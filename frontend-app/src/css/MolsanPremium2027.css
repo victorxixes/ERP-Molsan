@@ -1191,7 +1191,7 @@
 ) :is(
   .erp-card-header, .molsan-panel__header, .ag-panel-cabecera,
   .ag-panel-header, .eg-card-header, .eg-panel-head, .ng-panel-titulo,
-  .ctn-tabla-cabecera, .eg-modal-section-heading, .agenda-list-heading, .molsan-section-header
+  .eg-modal-section-heading, .agenda-list-heading, .molsan-section-header
 ) {
   display: flex;
   align-items: center;
