@@ -122,8 +122,7 @@
 
 .agenda-today-action { min-height:38px; padding:0 13px; border:1px solid var(--agenda-border); border-radius:9px; background:white; color:var(--agenda-primary); font-size:12px; font-weight:750; }
 .agenda-today-action:hover { border-color:var(--agenda-primary); background:var(--agenda-primary-soft); }
-@media (prefers-reduced-motion: reduce) {
-}
+
 
 
 /* Correcciones Agenda: contraste, controles compactos y tarjetas canónicas */
