@@ -927,11 +927,11 @@
   gap: 12px;
   min-width: 0;
   padding: 16px 20px;
-  color:#FFFFFF;
+  color:#064675;
   border: 0;
-  border-bottom:1px solid rgba(255,255,255,.16);
+  border-bottom:0;
   border-radius: 20px 20px 0 0;
-  background:radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%), linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
+  background:#FFFFFF;
   box-shadow: none;
 }
 .molsan-modal-header::after { display: none; }
@@ -1016,10 +1016,10 @@
   gap: 12px;
   min-width: 0;
   padding: 16px 20px;
-  color:#FFFFFF;
-  background:radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%), linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
+  color:#064675;
+  background:#FFFFFF;
   border: 0;
-  border-bottom:1px solid rgba(255,255,255,.16);
+  border-bottom:0;
   box-shadow: none;
   margin-bottom: 0;
 }
@@ -1031,7 +1031,7 @@
   .expediente-operativo-modal [role="dialog"] > header,
   .empleado-operativo-modal [role="dialog"] > header
 ) :is(h1, h2, h3, p) {
-  color:#FFFFFF;
+  color:#064675;
 }
 @media (max-width: 640px) {
   :is(
