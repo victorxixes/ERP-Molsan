@@ -122,9 +122,9 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 | Revisión individual de modales y estados | Pendiente |
 | Consolidación/eliminación de CSS legacy | Pendiente de evidencia por consumidor |
 | Migración completa a cabeceras/tarjetas canónicas | Pendiente |
-| Pruebas de permisos 401/403/200 | Pendiente |
-| Pruebas funcionales de negocio y regresión | Pendiente |
-| Validación visual interactiva de Preview | Pendiente |
+| Pruebas de permisos 401/403/200 | Pendiente; no se han ejecutado en esta ronda |
+| Pruebas funcionales de negocio y regresión | Pendiente; no se han ejecutado en navegador |
+| Build y despliegue Render Preview | Correctos; deploy `dep-dbmuu11srm7s73a0a3m0` en estado `live` para commit `666114d` |\n| Validación visual interactiva de Preview | Pendiente; la URL no ha podido abrirse con el navegador de consulta disponible |
 
 ## 8. Límites de seguridad de esta fase
 
@@ -133,7 +133,7 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 - No borrar almacenamiento de sesión/autenticación requerido por el flujo actual.
 - No eliminar excepciones de Catálogos, CTN, Agenda, Expedientes o portales hasta verificar su función.
 - No dar por validado un modal, permiso o flujo solo porque el frontend compile.
-- Render Preview no debe desplegarse hasta que los cambios de código superen el build y la revisión de regresión acordada.
+- Render Preview solo se despliega tras build correcto; el despliegue está confirmado. La inspección visual real y la regresión funcional siguen pendientes.
 
 ## 9. Siguiente secuencia obligatoria
 
