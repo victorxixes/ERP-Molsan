@@ -918,3 +918,22 @@ Commit: `5ca6804988c9fa787d4a58237c82f37840ab1f40`.
 - Render Preview: deploy `dep-dbn0vcp5efls738q2pqg`, commit `5ca6804988c9fa787d4a58237c82f37840ab1f40`, estado `live`.
 
 El aviso de cuatro vulnerabilidades que aparece en el paso automático previo de instalación de Render procede de la instalación en la raíz del repositorio, fuera del audit específico de `frontend-app`. No se han actualizado dependencias de raíz ni backend dentro de esta tarea visual; queda anotado para revisión separada antes de modificar ese ámbito.
+
+
+## 53. Revisión estática de modales de los tres portales prioritarios — 6 de noviembre de 2026
+
+Se han vuelto a leer los JSX actuales de ApoderaGest, EncargaGest y NotarGest y se han contado los diálogos explícitos:
+
+| Portal | Diálogos con `role="dialog"` | `aria-modal="true"` | Invocaciones de `useAccessibleDialog` |
+|---|---:|---:|---:|
+| ApoderaGest | 2 | 2 | 2 |
+| EncargaGest | 5 | 5 | 5 |
+| NotarGest | 4 | 4 | 4 |
+| **Total** | **11** | **11** | **11** |
+
+- ApoderaGest utiliza además un portal React para su overlay de grupo.
+- EncargaGest mantiene overlays separados para alta/edición, incidencia, perfil y accesos; sus cinco diálogos tienen marcado ARIA y el hook compartido.
+- NotarGest mantiene los diálogos de avisos, pagos, perfil y resumen de expedientes; los cuatro tienen marcado ARIA y el hook compartido.
+- Se conservan los componentes y estados existentes; esta comprobación no cambia formularios ni acciones.
+
+**Límite:** se confirma el marcado y la asociación estática del hook, no el comportamiento real de tabulación, Escape, foco inicial/retorno, lector de pantalla, scroll interno ni viewport. Esas pruebas deben hacerse en navegador autenticado y en cada estado del modal.
