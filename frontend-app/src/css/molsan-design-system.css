@@ -736,11 +736,11 @@
   display: none;
 }
 .molsan-premium-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   border-color: #9FBFD2;
   border-top-color: #064675;
   background: #FFFFFF;
-  box-shadow: 0 12px 26px rgba(6,70,117,.13), 0 2px 5px rgba(6,50,82,.055);
+  box-shadow: 0 16px 34px rgba(6,70,117,.15);
 }
 .molsan-premium-card:focus-within { border-color: #A9CCDF; }
 .molsan-premium-card:hover .molsan-premium-card__title { color: #043B60; }
