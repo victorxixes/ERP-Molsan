@@ -15,7 +15,7 @@ export default function PanelTecnico() {
   return (
     <div className="molsan-page-stack panel-tecnico-premium w-full animate-fade-in">
       <header className="molsan-page-header panel-tecnico-header">
-        <div className="panel-tecnico-header__identity">
+        <div className="panel-tecnico-header__identity molsan-page-header__identity">
           <span className="panel-tecnico-operativo"><span aria-hidden="true" />Sistema operativo</span>
           <div className="molsan-page-header__mark" aria-hidden="true">
             <MolsanIcon name="shield" size={30} tone="ocean" />
