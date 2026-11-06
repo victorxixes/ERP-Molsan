@@ -87,7 +87,7 @@ export default function AuditoriaAvanzada({ embedded = false } = {}) {
   // ============================================================
 
   return (
-    <div className="auditoria-avanzada-premium panel-tecnico-submodulo-premium space-y-6 animate-fade-in">
+    <div className="auditoria-avanzada-premium panel-tecnico-submodulo-premium space-y-6">
 
       {!embedded && <MolsanPageHeader
         mark="AU"
