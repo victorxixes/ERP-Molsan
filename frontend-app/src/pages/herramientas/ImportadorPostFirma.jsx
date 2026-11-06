@@ -2,13 +2,13 @@ import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState, useEffect } from "react";
 import axios from "../../api/axios";
-const CAMPO = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-semibold file:text-blue-700";
+const CAMPO = "block w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-text)] file:mr-3 file:rounded-lg file:border-0 file:bg-[var(--molsan-primary-soft)] file:px-3 file:py-2 file:font-semibold file:text-[var(--molsan-primary)]";
 
 function Metrica({ titulo, valor, detalle }) {
-  return <div className="rounded-xl border border-slate-200 bg-white p-4">
-    <p className="text-xs font-semibold text-slate-500">{titulo}</p>
-    <p className="mt-1 text-xl font-bold text-slate-800">{valor ?? "—"}</p>
-    {detalle && <p className="mt-1 text-xs text-slate-500">{detalle}</p>}
+  return <div className="rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+    <p className="text-xs font-semibold text-[var(--molsan-text-secondary)]">{titulo}</p>
+    <p className="mt-1 text-xl font-bold text-[var(--molsan-primary)]">{valor ?? "—"}</p>
+    {detalle && <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">{detalle}</p>}
   </div>;
 }
 
@@ -106,44 +106,44 @@ export default function ImportadorPostFirma() {
   };
 
   return (
-    <main className="herramientas-subpagina-premium min-h-screen space-y-5 bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-100 p-4 text-slate-700 md:p-6">
+    <main className="herramientas-subpagina-premium min-h-screen space-y-5 bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-100 p-4 text-[var(--molsan-text)] md:p-6">
       <MolsanPageHeader
         mark="AB"
         title="Importador ABSIS · Post Firma"
         description="Carga histórica pura y aislada. Los ficheros de distintos meses permanecen separados y no se aplican a expedientes ni a los gastos operativos del ERP."
       />
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
-        <h2 className="text-lg font-bold text-slate-800">1. Seleccionar Excel</h2>
-        <p className="mt-1 text-sm text-slate-500">Se conserva el contenido original de cada fila con datos y todas las columnas detectadas, incluida TIPOCONCEPTO cuando venga en el fichero.</p>
+      <section className="rounded-2xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm md:p-6">
+        <h2 className="text-lg font-bold text-[var(--molsan-primary)]">1. Seleccionar Excel</h2>
+        <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Se conserva el contenido original de cada fila con datos y todas las columnas detectadas, incluida TIPOCONCEPTO cuando venga en el fichero.</p>
         <div className="mt-4 max-w-3xl">
-          <label htmlFor="postfirma-excel" className="mb-2 block text-sm font-semibold text-slate-700">Fichero histórico Post Firma (.xlsx)</label>
+          <label htmlFor="postfirma-excel" className="mb-2 block text-sm font-semibold text-[var(--molsan-text)]">Fichero histórico Post Firma (.xlsx)</label>
           <input id="postfirma-excel" type="file" accept=".xlsx" onChange={seleccionar} disabled={cargando} className={CAMPO} />
-          {archivo && <p className="mt-2 text-xs text-slate-500">Seleccionado: {archivo.name} · {(archivo.size / 1024 / 1024).toFixed(2)} MB</p>}
+          {archivo && <p className="mt-2 text-xs text-[var(--molsan-text-secondary)]">Seleccionado: {archivo.name} · {(archivo.size / 1024 / 1024).toFixed(2)} MB</p>}
         </div>
-        <p className="mt-3 max-w-3xl text-xs leading-5 text-slate-500">No hay filtros por fecha, estado, concepto o IDGASTO. No se deduplican filas. Cada nueva carga, incluso si el nombre o el contenido coincide con otra, queda registrada como una carga independiente.</p>
+        <p className="mt-3 max-w-3xl text-xs leading-5 text-[var(--molsan-text-secondary)]">No hay filtros por fecha, estado, concepto o IDGASTO. No se deduplican filas. Cada nueva carga, incluso si el nombre o el contenido coincide con otra, queda registrada como una carga independiente.</p>
         <div className="mt-5 flex flex-wrap gap-3">
-          <button type="button" onClick={() => ejecutar("validar")} disabled={cargando || !archivo} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Previsualizar sin guardar"}</button>
+          <button type="button" onClick={() => ejecutar("validar")} disabled={cargando || !archivo} className="rounded-xl border border-[var(--molsan-border-strong)] bg-white px-4 py-2.5 text-sm font-bold text-[var(--molsan-primary)] hover:bg-[var(--molsan-primary-soft)] disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Previsualizar sin guardar"}</button>
           <button type="button" onClick={() => ejecutar("importar")} disabled={cargando || !archivo} className="rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50">{cargando ? "Procesando…" : "Guardar histórico completo"}</button>
         </div>
         <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"><strong>Almacenamiento aislado:</strong> esta carga no crea ni actualiza gastos, pagos o expedientes y no relaciona los IDs del cliente con los identificadores internos del ERP.</div>
         {error && <div role="alert" className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{error}</div>}
       </section>
 
-      {validacion && <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
-        <div><h2 className="text-lg font-bold text-slate-800">2. Previsualización</h2><p className="mt-1 text-sm text-emerald-700">No se han guardado cambios.</p></div>
+      {validacion && <section className="space-y-4 rounded-2xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm md:p-6">
+        <div><h2 className="text-lg font-bold text-[var(--molsan-primary)]">2. Previsualización</h2><p className="mt-1 text-sm text-emerald-700">No se han guardado cambios.</p></div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Metrica titulo="Filas con datos" valor={validacion.filas_con_datos} detalle={"Filas Excel: " + (validacion.filas_excel ?? "—")} />
           <Metrica titulo="Filas vacías" valor={validacion.filas_vacias} />
           <Metrica titulo="Importe total IMPGASTO" valor={euros(validacion.suma_imp_gasto)} detalle={(validacion.filas_con_importe_valido ?? 0) + " filas con importe interpretable"} />
           <Metrica titulo="Columnas detectadas" valor={validacion.columnas_detectadas?.length ?? 0} />
         </div>
-        {Array.isArray(validacion.columnas_detectadas) && <div><h3 className="mb-2 font-bold text-slate-700">Columnas detectadas en el Excel</h3><p className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs leading-5 text-slate-600">{validacion.columnas_detectadas.join(" · ")}</p></div>}
-        {validacion.por_estado_absis && <div><h3 className="mb-2 font-bold text-slate-700">Conteo informativo por estado (sin filtrar la carga)</h3><div className="flex flex-wrap gap-2">{Object.entries(validacion.por_estado_absis).map(([estado, cantidad]) => <span key={estado} className="rounded-lg border border-slate-200 px-3 py-2 text-xs">{estado}: <strong>{cantidad}</strong></span>)}</div></div>}
+        {Array.isArray(validacion.columnas_detectadas) && <div><h3 className="mb-2 font-bold text-[var(--molsan-text)]">Columnas detectadas en el Excel</h3><p className="rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3 text-xs leading-5 text-[var(--molsan-text-secondary)]">{validacion.columnas_detectadas.join(" · ")}</p></div>}
+        {validacion.por_estado_absis && <div><h3 className="mb-2 font-bold text-[var(--molsan-text)]">Conteo informativo por estado (sin filtrar la carga)</h3><div className="flex flex-wrap gap-2">{Object.entries(validacion.por_estado_absis).map(([estado, cantidad]) => <span key={estado} className="rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-xs">{estado}: <strong>{cantidad}</strong></span>)}</div></div>}
       </section>}
 
       {resultado && <section className="space-y-4 rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm md:p-6">
-        <div><h2 className="text-lg font-bold text-slate-800">Carga Post Firma guardada</h2><p className="mt-1 text-sm text-slate-500">{resultado.nota}</p></div>
+        <div><h2 className="text-lg font-bold text-[var(--molsan-primary)]">Carga Post Firma guardada</h2><p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">{resultado.nota}</p></div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Metrica titulo="Filas Excel" valor={resultado.filas_excel} />
           <Metrica titulo="Filas guardadas" valor={resultado.filas_guardadas} />
@@ -151,24 +151,24 @@ export default function ImportadorPostFirma() {
           <Metrica titulo="Columnas conservadas" valor={resultado.columnas_detectadas?.length ?? 0} />
           <Metrica titulo="ID de carga" valor={resultado.carga_id} />
         </div>
-        <p className="break-all text-xs text-slate-500">Huella del fichero SHA-256: {resultado.sha256}</p>
-        <button type="button" onClick={() => document.getElementById("historico-postfirma")?.scrollIntoView({ behavior: "smooth" })} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">Ver histórico cargado <MolsanIcon name="arrowDown" size={14} tone="inherit" /></button>
+        <p className="break-all text-xs text-[var(--molsan-text-secondary)]">Huella del fichero SHA-256: {resultado.sha256}</p>
+        <button type="button" onClick={() => document.getElementById("historico-postfirma")?.scrollIntoView({ behavior: "smooth" })} className="rounded-xl bg-[var(--molsan-primary)] px-4 py-2.5 text-sm font-bold text-white hover:bg-[var(--molsan-primary)]">Ver histórico cargado <MolsanIcon name="arrowDown" size={14} tone="inherit" /></button>
       </section>}
 
-      <section id="historico-postfirma" className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+      <section id="historico-postfirma" className="space-y-4 rounded-2xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div><h2 className="text-lg font-bold text-slate-800">Histórico Post Firma · datos originales</h2><p className="mt-1 text-sm text-slate-500">Consulta independiente por fichero. Las filas repetidas y los meses distintos se conservan por separado.</p></div>
-          <button type="button" onClick={() => { cargarCargas(); cargarRegistros(cargaSeleccionada, offset); }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600"><MolsanIcon name="refresh" size={14} tone="inherit" /> Actualizar</button>
+          <div><h2 className="text-lg font-bold text-[var(--molsan-primary)]">Histórico Post Firma · datos originales</h2><p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Consulta independiente por fichero. Las filas repetidas y los meses distintos se conservan por separado.</p></div>
+          <button type="button" onClick={() => { cargarCargas(); cargarRegistros(cargaSeleccionada, offset); }} className="rounded-xl border border-[var(--molsan-border)] px-3 py-2 text-sm font-semibold text-[var(--molsan-text-secondary)]"><MolsanIcon name="refresh" size={14} tone="inherit" /> Actualizar</button>
         </div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-          <div><label htmlFor="postfirma-carga" className="mb-2 block text-sm font-semibold text-slate-700">Fichero / carga</label><select id="postfirma-carga" value={cargaSeleccionada} onChange={(e) => { setCargaSeleccionada(e.target.value); setOffset(0); }} className={CAMPO}><option value="">Todas las cargas</option>{cargas.map((carga) => <option key={carga.id} value={String(carga.id)}>{"#" + carga.id + " · " + carga.nombre_archivo + " · " + carga.filas_guardadas + " filas"}</option>)}</select></div>
-          <p className="text-sm text-slate-500">Registros: <strong className="text-slate-800">{totalRegistros.toLocaleString("es-ES")}</strong></p>
+          <div><label htmlFor="postfirma-carga" className="mb-2 block text-sm font-semibold text-[var(--molsan-text)]">Fichero / carga</label><select id="postfirma-carga" value={cargaSeleccionada} onChange={(e) => { setCargaSeleccionada(e.target.value); setOffset(0); }} className={CAMPO}><option value="">Todas las cargas</option>{cargas.map((carga) => <option key={carga.id} value={String(carga.id)}>{"#" + carga.id + " · " + carga.nombre_archivo + " · " + carga.filas_guardadas + " filas"}</option>)}</select></div>
+          <p className="text-sm text-[var(--molsan-text-secondary)]">Registros: <strong className="text-[var(--molsan-primary)]">{totalRegistros.toLocaleString("es-ES")}</strong></p>
         </div>
-        <div className="overflow-auto rounded-xl border border-slate-200"><table className="min-w-max w-full text-left text-xs">
-          <thead className="sticky top-0 z-10 bg-slate-100 text-slate-600"><tr><th className="whitespace-nowrap px-3 py-3">Carga</th><th className="whitespace-nowrap px-3 py-3">Fila Excel</th>{columnas.map((columna) => <th key={columna} className="whitespace-nowrap px-3 py-3">{columna || "(columna sin título)"}</th>)}</tr></thead>
-          <tbody className="divide-y divide-slate-100">{registros.map((fila) => <tr key={fila.id} className="hover:bg-blue-50/50"><td className="whitespace-nowrap px-3 py-2">{fila.archivo + " · #" + fila.carga_id}</td><td className="whitespace-nowrap px-3 py-2">{fila.numero_fila}</td>{columnas.map((columna) => { const valor = fila.datos?.[columna]; return <td key={columna} className="max-w-xs whitespace-nowrap px-3 py-2">{valor == null || valor === "" ? "—" : typeof valor === "object" ? JSON.stringify(valor) : String(valor)}</td>; })}</tr>)}{!registros.length && <tr><td colSpan={Math.max(2, columnas.length + 2)} className="px-4 py-8 text-center text-slate-500">Todavía no hay filas importadas en el histórico Post Firma.</td></tr>}</tbody>
+        <div className="overflow-auto rounded-xl border border-[var(--molsan-border)]"><table className="min-w-max w-full text-left text-xs">
+          <thead className="sticky top-0 z-10 bg-[var(--molsan-table-head)] text-[var(--molsan-text-secondary)]"><tr><th className="whitespace-nowrap px-3 py-3">Carga</th><th className="whitespace-nowrap px-3 py-3">Fila Excel</th>{columnas.map((columna) => <th key={columna} className="whitespace-nowrap px-3 py-3">{columna || "(columna sin título)"}</th>)}</tr></thead>
+          <tbody className="divide-y divide-slate-100">{registros.map((fila) => <tr key={fila.id} className="hover:bg-[var(--molsan-primary-soft)]/50"><td className="whitespace-nowrap px-3 py-2">{fila.archivo + " · #" + fila.carga_id}</td><td className="whitespace-nowrap px-3 py-2">{fila.numero_fila}</td>{columnas.map((columna) => { const valor = fila.datos?.[columna]; return <td key={columna} className="max-w-xs whitespace-nowrap px-3 py-2">{valor == null || valor === "" ? "—" : typeof valor === "object" ? JSON.stringify(valor) : String(valor)}</td>; })}</tr>)}{!registros.length && <tr><td colSpan={Math.max(2, columnas.length + 2)} className="px-4 py-8 text-center text-[var(--molsan-text-secondary)]">Todavía no hay filas importadas en el histórico Post Firma.</td></tr>}</tbody>
         </table></div>
-        <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-xs text-slate-500">Mostrando {registros.length ? offset + 1 : 0}–{Math.min(offset + registros.length, totalRegistros)} de {totalRegistros.toLocaleString("es-ES")}</p><div className="flex gap-2"><button type="button" disabled={offset <= 0} onClick={() => setOffset((v) => Math.max(0, v - TAMANO_PAGINA))} className="rounded-lg border border-slate-200 px-3 py-2 text-sm disabled:opacity-40">← Anterior</button><button type="button" disabled={offset + TAMANO_PAGINA >= totalRegistros} onClick={() => setOffset((v) => v + TAMANO_PAGINA)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm disabled:opacity-40">Siguiente →</button></div></div>
+        <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-xs text-[var(--molsan-text-secondary)]">Mostrando {registros.length ? offset + 1 : 0}–{Math.min(offset + registros.length, totalRegistros)} de {totalRegistros.toLocaleString("es-ES")}</p><div className="flex gap-2"><button type="button" disabled={offset <= 0} onClick={() => setOffset((v) => Math.max(0, v - TAMANO_PAGINA))} className="rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm disabled:opacity-40">← Anterior</button><button type="button" disabled={offset + TAMANO_PAGINA >= totalRegistros} onClick={() => setOffset((v) => v + TAMANO_PAGINA)} className="rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm disabled:opacity-40">Siguiente →</button></div></div>
       </section>
     </main>
   );
