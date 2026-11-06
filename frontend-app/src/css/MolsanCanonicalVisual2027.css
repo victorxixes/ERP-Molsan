@@ -6,7 +6,7 @@
    - márgenes idénticos en páginas y subpáginas
 */
 /* Geometría y posición iguales al Dashboard; tono Glass intermedio y legible. */
-:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero) {
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header) {
   box-sizing: border-box !important;
   width: 100% !important;
   max-width: none !important;
@@ -29,11 +29,11 @@
   -webkit-backdrop-filter: blur(16px) saturate(118%) !important;
   backdrop-filter: blur(16px) saturate(118%) !important;
 }
-:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header)
 :where(h1,h2,.molsan-page-header__title,.erp-page-title) {
   color: var(--molsan-canon-header-text) !important;
 }
-:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header)
 :where(p,.molsan-page-header__description,.erp-page-description) {
   color: var(--molsan-canon-header-muted) !important;
 }
@@ -235,7 +235,7 @@
 }
 
 @media(max-width:720px) {
-  :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero) {
+  :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header) {
     min-height: 0 !important;
     padding: 14px !important;
     margin-bottom: 16px !important;
@@ -296,12 +296,12 @@
 
 
 /* Títulos de cabecera: siempre azul corporativo, nunca blanco. */
-:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header)
 :where(h1,h2,.molsan-page-header__title,.erp-page-title,[class*="title"]) {
   color: #064675 !important;
   -webkit-text-fill-color: #064675 !important;
 }
-:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header)
 :where(h1,h2,.molsan-page-header__title,.erp-page-title,[class*="title"]) :where(span,strong,em) {
   color: #064675 !important;
   -webkit-text-fill-color: #064675 !important;
@@ -309,7 +309,7 @@
 
 
 /* Subtítulos de cabecera: contraste explícito sobre el fondo azul Glass. */
-:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header)
 :where(.molsan-page-header__description,.erp-page-description,.molsan-page-subtitle,.page-subtitle,p[class*="description"]) {
   color: #496B82 !important;
   -webkit-text-fill-color: #496B82 !important;
