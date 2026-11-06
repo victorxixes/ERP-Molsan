@@ -2,13 +2,16 @@
 
 **Fecha:** 6 de noviembre de 2026  
 **Rama auditada:** `fix/molsan-css-selector-audit-round1`  
-**Último commit de código con build frontend correcto:** `0bc43898b6392707cc0d92850599dabbcac13f15`  
-**Último commit de documentación:** `a48ff5656673902b1feed145a696c1465f033f30`  
-**Último commit con build Vite confirmado:** `6facf31bc108632018683345111cc684c9f77b3f`  
+**Último commit funcional de esta ronda:** `90cb63947ff879f63d4f01fbc6676d4c99d24555`  
+**Último commit de documentación de auditoría:** `14ff46f9107dc4d9011937c758bad31add5cf9e0`  
+**Último commit funcional desplegado y compilado por Render:** `90cb63947ff879f63d4f01fbc6676d4c99d24555` (incluido en el deploy `095efb9`)  
 **PR:** [#409](https://github.com/victorxixes/ERP-Molsan/pull/409)  
 **Alcance de seguridad:** solo frontend y documentación en la rama de Preview. No se han modificado producción, API, base de datos ni datos de expedientes.
 
 ## Resultado ejecutivo
+
+> **Estado actualizado a 6 de noviembre de 2026:** la rama de auditoría ya está desplegada en Preview. El último commit funcional es `90cb639`; Render sirve el deploy `095efb9` en estado `live`. La PR #409 sigue en Draft. Producción, API y base de datos principal permanecen intactas. La inspección visual autenticada y las pruebas manuales siguen pendientes.
+
 
 Esta auditoría distingue expresamente entre inspección estática, compilación y validación real en navegador. No se marca como validada una pantalla solo porque exista su componente o compile.
 
@@ -16,10 +19,10 @@ Esta auditoría distingue expresamente entre inspección estática, compilación
 - Se inspeccionaron los JSX principales de ApoderaGest, EncargaGest y NotarGest y sus tres hojas CSS.
 - Se inspeccionaron los puntos de entrada de estilos en `main.jsx`, además de las capas globales CanonicalVisual, GlobalConsistency, GlassLuxeUnified, Premium2027 y Redesign2027.
 - Se inspeccionaron los componentes principales de Expedientes, Agenda, CTN, Fusiones, Provisiones, Mensajería, Informes, Catálogos, Seguridad y Panel Técnico.
-- El workflow `Validar Fichaje Molsan` del commit `0bc43898` terminó correctamente: el job `Build del frontend` concluyó en `success`. También pasó la comprobación de sintaxis Python de ese workflow. Esto verifica compilación, no comportamiento funcional ni apariencia en Render.
-- Se consultó Render con autorización del usuario: el servicio `molsan-premium-2027-candidate-preview` está activo y su último deploy figura `live`, pero sirve el commit `fb0c71eb4fb908af3868a247802752972af7a8df` desde `integration/erp-molsan-supabase-ready`. El auto-deploy está desactivado; no se ha desplegado la rama PR #409.
+- GitHub Actions para el commit canónico `cdd387b`: `MOLSAN frontend premium build` #699, `Validar Fichaje Molsan` #3289 y `Frontend dependency security audit` #254 terminaron en `success`. Render completó además el build y deploy del commit `095efb9`, que incluye el último cambio funcional de Agenda (`90cb639`). Esto verifica compilación/despliegue, no la interacción visual autenticada.
+- Render Preview `molsan-premium-2027-candidate-preview` está `live` en el deploy `dep-dbmvmq5bedkc73dknrf0`, commit `095efb9`, que incluye el código `90cb639` de la rama `fix/molsan-css-selector-audit-round1`. El auto-deploy está desactivado; no se ha desplegado Producción ni la API.
 - La apertura de la URL del Preview desde el lector web no ha sido posible; no se declara una inspección visual real de escritorio, tablet o móvil.
-- El build del frontend ya está confirmado en el commit de código `0bc43898`. La validación visual en Preview y las pruebas funcionales siguen pendientes; por tanto, no se declara completado el punto de regresiones.
+- El build y despliegue del código actual están confirmados por Render en estado `live`. La validación visual autenticada en Preview y las pruebas funcionales siguen pendientes; por tanto, no se declara completado el punto de regresiones.
 
 ## 1. Portales profesionales
 
@@ -107,11 +110,11 @@ El trabajo solo puede declararse cerrado cuando:
 
 - `App.jsx`: se mantiene la estructura de rutas y los wrappers de autenticación/permisos. No se han cambiado paths, módulos protegidos ni accesos externos. Se ha retirado una importación lazy sin uso (`ModuloPendiente`).
 - `main.jsx`: el orden de importaciones CSS se conserva deliberadamente. `App` se evalúa antes de las últimas capas globales para que el CSS de la shell quede debajo de la normalización/capa canónica final. No se ha eliminado `index.css` ni hojas heredadas sin verificar sus clases en uso.
-- Preview Render: `molsan-premium-2027-candidate-preview` está `not_suspended` y su deploy actual `live`. Sirve `fb0c71e`, no la rama de esta PR. Su auto-deploy está `off`. Se ha consultado el estado; no se ha disparado ningún deploy ni cambiado la infraestructura.
-- La URL del Preview no pudo abrirse desde el lector web. El estado `live` del deploy confirma que Render lo publicó, no que la interfaz se haya inspeccionado visualmente.
-- El commit de código `0bc43898` tiene el job `Build del frontend` en `success`; el commit posterior `a48ff56` solo añade documentación.
+- Preview Render: `molsan-premium-2027-candidate-preview` está `not_suspended` y sirve el deploy `095efb9` de la rama de auditoría. Auto-deploy sigue `off`; el despliegue se hizo manualmente solo en Preview.
+- La URL del Preview no pudo abrirse desde el lector web. El estado `live` confirma que Render publicó la rama, pero no sustituye la inspección visual autenticada en navegador.
+- El último commit funcional desplegado es `90cb639`; los commits posteriores de esta auditoría solo actualizan documentación. La PR #409 sigue abierta y en Draft.
 
-**Siguiente control seguro:** ejecutar el build de la rama actual y, solo después de revisar el artefacto y acordar el despliegue, publicar esa rama en el servicio Preview (nunca en producción).
+**Siguiente control seguro:** realizar la inspección visual autenticada del Preview desplegado (`095efb9`) en escritorio, tablet y móvil; probar las rutas y los modales por estado. Cualquier corrección posterior debe volver a compilarse y desplegarse únicamente en Preview.
 
 ## 9. Limpieza adicional del arranque y CSS compartido
 
