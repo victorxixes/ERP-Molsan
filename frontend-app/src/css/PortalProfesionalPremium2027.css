@@ -17,55 +17,7 @@
   background:transparent!important;
 }.erp-page.molsan-professional-shell *,
 .erp-page.molsan-professional-shell *::before,
-.erp-page.molsan-professional-shell *::after {box-sizing:border-box}.apoderagest,
-.encargagest {
-  color:var(--molsan-prof-text)!important;
-}.apoderagest,
-.encargagest {
-  width:100%!important;max-width:none!important;min-width:0!important;
-}.apoderagest .ag-contenido,
-.encargagest .eg-main {
-  min-width:0!important;
-}.apoderagest .ag-grid-kpi,
-.apoderagest .ag-grid-secundario,
-.encargagest .eg-main>section.grid {
-  gap:12px!important;
-}.apoderagest>header.ag-hero.molsan-page-header,
-.encargagest>header.ag-hero.molsan-page-header {
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:nowrap;
-  gap:12px;
-  width:100%;
-  max-width:none;
-  min-width:0;
-  min-height:74px;
-  height:auto;
-  max-height:none;
-  margin:0 0 16px;
-  padding:10px 18px;
-  overflow:hidden;
-  color:#fff;
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:18px;
-  background:radial-gradient(circle at 86% 18%,rgba(116,199,219,.18),transparent 27%),linear-gradient(116deg,#032D4B 0%,#064675 54%,#0D638C 100%);
-  box-shadow:0 12px 28px rgba(4,55,91,.16);
-  animation:none;
-  transition:none;
-  opacity:1;
-  transform:none;
-  filter:none;
-  will-change:auto;
-}.apoderagest>header.ag-hero::after,
-.encargagest>header.ag-hero::after {
-  content:"";
-  position:absolute;
-  right:0;bottom:0;left:0;height:3px;
-  background:linear-gradient(90deg,#6CC5D9 0%,#8CB8D8 38%,rgba(255,255,255,.08) 100%);
-  pointer-events:none;
-}
+.erp-page.molsan-professional-shell *::after {box-sizing:border-box}
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__identity{
   display:flex;align-items:center;gap:10px;
   min-width:0;flex:1 1 auto;
@@ -106,78 +58,6 @@
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__actions>button:hover,
 :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__actions>a:hover{
   color:#fff;border-color:rgba(255,255,255,.58);background:rgba(255,255,255,.2);
-}.apoderagest .ag-kpi,
-.encargagest .eg-kpi,
-.encargagest .eg-main .ag-kpi {
-  position:relative!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;
-  justify-content:space-between!important;gap:9px!important;min-width:0!important;min-height:136px!important;
-  margin:0!important;padding:17px 18px!important;color:var(--molsan-prof-text)!important;
-  border:1px solid var(--molsan-prof-border)!important;border-radius:15px!important;
-  background:linear-gradient(145deg,#fff 0%,#fff 66%,#F7FAFC 100%)!important;
-  box-shadow:var(--molsan-prof-shadow)!important;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease!important;
-  text-align:left;
-}.apoderagest .ag-kpi:hover,
-.encargagest .eg-kpi:hover,
-.encargagest .eg-main .ag-kpi:hover {
-  transform:translateY(-2px)!important;border-color:#B9D7E6!important;box-shadow:0 10px 24px rgba(6,50,82,.09)!important;
-}.apoderagest .ag-kpi-titulo,
-.encargagest .eg-kpi>p:first-child {
-  color:var(--molsan-prof-muted)!important;font-size:11px!important;font-weight:800!important;letter-spacing:.08em!important;line-height:1.4!important;text-transform:uppercase;
-}.apoderagest .ag-kpi-valor,
-.encargagest .eg-kpi strong {
-  color:var(--molsan-prof-blue)!important;font-size:clamp(26px,2vw,32px)!important;font-weight:850!important;line-height:1.1!important;letter-spacing:-.035em!important;font-variant-numeric:tabular-nums;
-}
-.apoderagest .ag-kpi-icono,.encargagest .eg-kpi-icono{
-  display:grid!important;place-items:center!important;flex:0 0 40px!important;width:40px!important;height:40px!important;
-  color:var(--molsan-prof-blue)!important;border:1px solid var(--molsan-prof-border)!important;border-radius:12px!important;background:var(--molsan-prof-soft)!important;
-}
-.apoderagest .ag-kpi-detalle,.encargagest .eg-kpi>p:last-child{color:var(--molsan-prof-muted)!important;font-size:11px!important;line-height:1.45!important}.apoderagest .ag-panel,
-.encargagest .eg-panel {
-  min-width:0!important;border:1px solid var(--molsan-prof-border)!important;border-radius:18px!important;
-  background:#fff!important;box-shadow:var(--molsan-prof-shadow)!important;overflow:hidden!important;
-}.apoderagest .ag-panel-cabecera,
-.apoderagest .ag-titulo-seccion,
-.encargagest .eg-panel-head {
-  display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;
-  margin:0!important;padding:16px 19px!important;color:var(--molsan-prof-blue)!important;
-  border:0!important;border-bottom:1px solid var(--molsan-prof-border)!important;border-radius:0!important;
-  background:var(--molsan-prof-soft)!important;
-}.apoderagest .ag-panel-cabecera h3,
-.apoderagest .ag-titulo-seccion h2,
-.encargagest .eg-panel-head h2,
-.encargagest .eg-panel-head h3,
-.encargagest .eg-directorio-cabecera h2 {margin:0!important;color:var(--molsan-prof-blue)!important;font-weight:800!important}.apoderagest .ag-panel table thead th,
-.encargagest .eg-panel table thead th,
-.encargagest .eg-directorio-tabla thead th {
-  color:var(--molsan-prof-blue)!important;background:var(--molsan-prof-table)!important;border-color:var(--molsan-prof-border)!important;
-}.apoderagest .ag-panel table td,
-.encargagest .eg-panel table td,
-.encargagest .eg-directorio-tabla td {border-color:var(--molsan-prof-border)!important}
-.apoderagest .ag-busqueda,.encargagest .eg-directorio-input-wrap{display:flex!important;align-items:center!important;gap:9px!important;min-width:0!important}
-.apoderagest .ag-busqueda>input,.encargagest .eg-directorio-input-wrap>input{min-width:0!important}.apoderagest button:focus-visible,
-.encargagest button:focus-visible {outline:3px solid rgba(6,70,117,.22)!important;outline-offset:2px!important}.apoderagest .molsan-icon-3d,
-.encargagest .molsan-icon-3d {flex-shrink:0}.apoderagest .ag-resumen-modal-overlay,
-.encargagest .eg-modal-overlay {
-  background:rgba(3,28,46,.58)!important;backdrop-filter:blur(4px)!important;-webkit-backdrop-filter:blur(4px)!important;
-}.apoderagest .ag-resumen-modal,
-.encargagest .eg-modal-form {
-  color:var(--molsan-prof-text)!important;border:1px solid var(--molsan-prof-border)!important;
-  border-radius:18px!important;background:#fff!important;box-shadow:0 24px 64px rgba(3,28,46,.24)!important;
-}.apoderagest .ag-resumen-modal-cabecera,
-.encargagest .eg-modal-header {
-  display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important;
-  padding:18px 22px!important;color:#fff!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.14)!important;
-  border-radius:0!important;background:linear-gradient(116deg,#032D4B 0%,#064675 58%,#0D638C 100%)!important;
-}.apoderagest .ag-resumen-modal-cabecera :is(h2,h3,p,span),
-.encargagest .eg-modal-header :is(h2,h3,p,span) {color:#fff!important}
-.encargagest .eg-modal-close{
-  color:#fff!important;border-color:rgba(255,255,255,.32)!important;background:rgba(255,255,255,.12)!important;
-}
-.encargagest .eg-modal-close:hover{background:rgba(255,255,255,.22)!important}.apoderagest .ag-resumen-modal-cuerpo,
-.encargagest .eg-modal-layout {
-  background:#fff!important;
-}.encargagest .eg-modal-section {
-  border-color:var(--molsan-prof-border)!important;border-radius:12px!important;
 }
 @media(max-width:760px){
   .apoderagest .ag-resumen-modal-cabecera,.encargagest .eg-modal-header,.notargest .ng-modal>header,.notargest .ng-resumen-expedientes-modal>header{padding:15px!important}
@@ -216,46 +96,6 @@
 @media(prefers-reduced-motion:reduce){
   }
 
-
-/* APODERAGEST · iconos de indicadores y grupos, con cabecera común. */
-.erp-page.apoderagest .ag-grid-kpi .ag-kpi-icono,
-.erp-page.apoderagest .ag-grid-secundario .ag-kpi-icono {
-  display:grid !important;
-  flex:0 0 40px !important;
-  width:40px !important;
-  height:40px !important;
-  place-items:center !important;
-  border:1px solid rgba(255,255,255,.96) !important;
-  border-radius:12px !important;
-  background:linear-gradient(145deg,#FFFFFF 0%,var(--ag-kpi-icon-bg,#EAF2F8) 100%) !important;
-  box-shadow:0 6px 15px rgba(6,50,82,.12),inset 0 1px 0 #FFFFFF !important;
-}
-.erp-page.apoderagest .ag-grid-kpi .ag-kpi-icono .molsan-icon-3d,
-.erp-page.apoderagest .ag-grid-secundario .ag-kpi-icono .molsan-icon-3d {
-  width:34px !important;
-  height:34px !important;
-  filter:drop-shadow(0 3px 4px rgba(6,50,82,.16)) !important;
-}
-.erp-page.apoderagest .ag-grid-secundario .ag-kpi-icono {
-  flex-basis:40px !important;
-  width:40px !important;
-  height:40px !important;
-  border-radius:12px !important;
-}
-.erp-page.apoderagest .ag-grid-secundario .ag-kpi-icono .molsan-icon-3d {
-  width:34px !important;
-  height:34px !important;
-}
-.erp-page.apoderagest .ag-notario-grupo-icono {
-  flex:0 0 50px !important;
-  width:50px !important;
-  height:50px !important;
-  border:1px solid #D9D0F4 !important;
-  border-radius:15px !important;
-  background:linear-gradient(145deg,#FFFFFF 0%,#F0EBFC 100%) !important;
-  box-shadow:0 5px 13px rgba(62,43,117,.10) !important;
-}
-
 @media(max-width:520px) {
   .erp-page.apoderagest > header.ag-hero.molsan-page-header .molsan-page-header__identity {
     flex-basis:100% !important;
@@ -267,12 +107,6 @@
   }
 }
 
-/* EncargaGest comparte la misma caja exterior que ApoderaGest y NotarGest. */
-.encargagest > header.ag-hero.molsan-page-header {
-  width: calc(100% - 32px);
-  margin: 24px 16px 16px;
-}
-
 @media (min-width: 1024px) {
   .encargagest > header.ag-hero.molsan-page-header {
     width: calc(100% - 48px);
@@ -280,19 +114,6 @@
     margin-left: 24px;
   }
   
-}.apoderagest .ag-kpi::before,
-.encargagest .eg-kpi::before,
-.encargagest .eg-main .ag-kpi::before {
-  content: "" !important;
-  display: block !important;
-  position: absolute !important;
-  top: 0 !important;
-  right: 18px !important;
-  left: 18px !important;
-  height: 3px !important;
-  border-radius: 0 0 6px 6px !important;
-  background: linear-gradient(90deg, #064675 0%, #2696A5 70%, #8BC8D8 100%) !important;
-  pointer-events: none !important;
 }
 
 /* Accesibilidad: reducir movimiento solo cuando el sistema lo solicita. */
