@@ -35,6 +35,7 @@ import "./css/MolsanGlobalConsistency2027.css";
 import "./css/MolsanGlassLuxeUnified2027.css";
 // Autoridad canónica final: patrón Espacios de trabajo + geometría Dashboard.
 import "./css/MolsanCanonicalVisual2027.css";
+import "./css/NotarGest.css";
 
 
 // ============================================================
