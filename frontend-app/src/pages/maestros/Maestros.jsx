@@ -1,7 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import "./Maestros.css";
-
 import {
   getMaestros,
   crearMaestro,
