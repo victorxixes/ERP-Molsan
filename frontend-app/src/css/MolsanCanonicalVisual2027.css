@@ -12,13 +12,16 @@
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium,
   .ficha-expediente-premium, .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
   .apoderagest, .notargest, .notargest-workspace-premium, .encargagest,
-  .encargagest-workspace-premium, .catalogos-premium-page, .utilidades-premium-page,
+  .encargagest-workspace-premium, .catalogos-premium-page, .catalogos-maestros-premium,
+  .catalogos-maestros-page, .utilidades-premium-page, .herramientas-subpagina-premium,
+  .herramienta-operativa-premium, .herramientas-home-premium,
   .honorarios-gestoria-premium, .empleados-premium-page, .empleados-listado-premium,
   .empleado-ficha-premium, .empleado-editar-premium, .maestros-premium-page,
-  .logs-premium-page, .seguridad-premium-page, .notificaciones-premium-page,
-  .panel-tecnico-premium, .panel-tecnico-submodulo-premium, .informes-premium-page,
-  .mensajes-premium-page, .molsan-intranet-page, .fichajes-premium-page,
-  .provisiones-fondos-premium, .provisiones-fondos-page
+  .logs-premium-page, .seguridad-premium-page, .seguridad-subpagina-premium,
+  .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page,
+  .fichajes-premium-page, .portal-login-premium, .provisiones-fondos-premium,
+  .provisiones-fondos-page
 ) {
   background: #FFFFFF !important;
 }
