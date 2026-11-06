@@ -45,9 +45,7 @@
   letter-spacing: -.045em;
 }
 
-.dashboard-cancelagest .dashboard-kpi__icon {
-  border-radius: var(--molsan-radius-control, 9px);
-}
+
 
 .dashboard-cancelagest table thead th {
   font-size: 10px;
@@ -81,18 +79,13 @@
 
 
 /* Dashboard: actividad legible y comparativa de firmas compacta */
-.dashboard-cancelagest .dashboard-signatures-wrap .dashboard-firmas-grid { align-items: stretch; }
-.dashboard-cancelagest .dashboard-signatures-wrap .erp-card { height: 100%; padding: 16px; }
-.dashboard-cancelagest .dashboard-signatures-wrap .dashboard-kpi { min-height: 142px; }
-.dashboard-cancelagest .dashboard-signatures-wrap .dashboard-kpi__value { font-size: clamp(24px, 2vw, 30px); }
-.dashboard-cancelagest .dashboard-signatures-wrap .dashboard-kpi__icon { width: 36px; height: 36px; }
 .dashboard-cancelagest .dashboard-main-grid > section { min-width: 0; }
-.dashboard-cancelagest .dashboard-time-panel th { white-space: nowrap; }
-.dashboard-cancelagest .dashboard-time-panel tbody tr:last-child { border-bottom: 0; }
-.dashboard-cancelagest .dashboard-time-panel td { vertical-align: middle; }
-.dashboard-cancelagest .dashboard-activity-panel { padding: 0; }
-.dashboard-cancelagest .dashboard-activity-panel > div > div { padding: 13px 16px; }
-.dashboard-cancelagest .dashboard-activity-panel > div > div + div { border-top: 1px solid var(--molsan-border, var(--molsan-border, #D8E4EC)); }
+
+
+
+
+
+
 @media (max-width: 640px) {
   .dashboard-cancelagest .dashboard-signatures-wrap .dashboard-kpi { min-height: 0; }
   .dashboard-cancelagest .dashboard-signatures-wrap .erp-card { padding: 14px; }
@@ -122,13 +115,7 @@
   font-size:clamp(27px,2.2vw,34px);
   font-weight:850;
 }
-.dashboard-cancelagest .dashboard-kpi__icon {
-  width:46px;height:46px;
-  border:1px solid #D8E7F0;
-  border-radius:14px;
-  background:#EAF2F8 !important;
-  color:#064675 !important;
-}
+
 .dashboard-cancelagest section > .mb-4 h2,
 .dashboard-cancelagest section > .mb-4.flex h2 {
   position:relative;
