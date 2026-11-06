@@ -680,25 +680,6 @@
 .encargagest .eg-modal-form--edit { width:min(100%,1280px); }
 .encargagest .eg-modal-form--incidencia { width:min(100%,620px); }
 .encargagest .eg-modal-form--accesos { width:min(100%,760px); }
-.encargagest .eg-modal-header,.encargagest .eg-perfil-cabecera {
-  position:sticky;top:0;z-index:5;
-  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
-  padding:16px 20px!important;
-  color:var(--molsan-primary,#064675)!important;
-  border-bottom:1px solid var(--molsan-border,#D8E4EC)!important;
-  background:var(--molsan-surface-soft,#F2F7FB)!important;
-}
-.encargagest .eg-modal-header :is(h2,h3,p,span),.encargagest .eg-perfil-cabecera :is(h2,h3,p,span) { color:var(--molsan-primary,#064675)!important; }
-.encargagest .eg-modal-header--warning { color:#9A3412!important;background:#FFF7ED!important;border-bottom-color:#FED7AA!important; }
-.encargagest .eg-modal-header--warning :is(h2,h3,p,span) { color:#9A3412!important; }
-.encargagest .eg-modal-brand {
-  display:grid;flex:0 0 48px;width:48px;height:48px;place-items:center;
-  border:1px solid var(--molsan-border,#D8E4EC);border-radius:13px;
-  background:var(--molsan-surface,#FFFFFF);box-shadow:0 4px 12px rgba(6,50,82,.08);
-}
-.encargagest .eg-modal-brand .molsan-icon-3d { width:36px!important;height:36px!important;color:var(--molsan-primary,#064675); }
-.encargagest .eg-modal-close { color:var(--molsan-text-secondary,#617789)!important;border-color:var(--molsan-border,#D8E4EC)!important;background:#FFFFFF!important; }
-.encargagest .eg-modal-close:hover { color:var(--molsan-primary,#064675)!important;background:var(--molsan-surface-soft,#F2F7FB)!important; }
 .encargagest .eg-modal-footer {
   position:sticky;bottom:0;z-index:4;
   display:flex;align-items:center;justify-content:flex-end;gap:10px;
@@ -719,10 +700,8 @@
 }
 .encargagest .eg-perfil-avatar .molsan-icon-3d { width:36px!important;height:36px!important;color:#FFFFFF; }
 @media(max-width:760px) {
-  .encargagest .eg-modal-header,.encargagest .eg-perfil-cabecera { padding:14px!important; }
   .encargagest .eg-modal-footer { padding:12px!important; }
   .encargagest .eg-modal-form,.encargagest .eg-modal-perfil { width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:15px!important; }
-  .encargagest .eg-modal-brand { width:46px;height:46px;flex-basis:46px; }
 }
 @media(prefers-reduced-motion:reduce) {
   .encargagest .eg-modal-form { scroll-behavior:auto;transition:none!important; }
