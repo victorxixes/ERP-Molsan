@@ -160,7 +160,7 @@
 
 /* Sin saltos ni animaciones de entrada en cabeceras al cambiar de ruta. */
 @media (max-width: 760px) {
-  :where(.molsan-page-header, .ng-admin-notarias .ng-hero) {
+  :where(.molsan-page-header, .ng-admin-notarias .ng-hero, .erp-page-header) {
     min-height: 74px !important;
     padding: 12px 14px !important;
     gap: 10px !important;
