@@ -526,3 +526,17 @@ Se ha pasado la misma condición al callback de `useAccessibleDialog` (`if (!loa
 Commit: `90cb639`.
 
 **Validación pendiente:** probar crear/editar cita, Escape mientras guarda, Escape en reposo, backdrop, foco restaurado y navegación Tab/Shift+Tab en Preview.
+
+
+## 27. Cobertura de diálogos en módulos operativos — 6 de noviembre de 2026
+
+Se contrastaron los estados de render y los refs de los diálogos en seis módulos adicionales:
+
+- `CtnDetallePage.jsx`: modal de firmas conectado a `modalAbierto` y `useAccessibleDialog`.
+- `SeguridadAuditoria.jsx`: detalle de registro conectado a `Boolean(registro)` y su ref.
+- `MensajeriaMolsan.jsx`: diálogo conectado a `Boolean(modal)`.
+- `ProvisionesFondosPage.jsx`: borrador de correo conectado a `Boolean(emailDraft)`.
+- `AccionesExpediente.jsx`: diálogo de acción e importación con refs y callbacks separados.
+- `Agenda.jsx` / `ModalNuevaCita.jsx`: diálogo con foco gestionado por el hook; corregido el cierre por Escape durante el guardado.
+
+En los cinco primeros no se detectó un desacoplamiento entre el estado que abre el modal y la condición de render en la inspección estática. No se han alterado porque la conexión de estado/ref es coherente. La comprobación de teclado, backdrop, scroll y foco restaurado sigue pendiente en navegador.
