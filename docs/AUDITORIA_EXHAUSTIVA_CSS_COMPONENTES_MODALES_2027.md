@@ -2,7 +2,7 @@
 
 **Rama de trabajo:** `fix/molsan-css-selector-audit-round1`  
 **PR:** #409 (Draft)  
-**Último commit de código desplegado:** `fb03640ed90271cea7888eeabc94f4637f2998f5`  
+**Último commit de código desplegado:** `5ca6804988c9fa787d4a58237c82f37840ab1f40`  
 **Alcance de esta revisión:** frontend `frontend-app/src`; sin cambios en backend, API, Supabase, datos ni producción.
 
 ## 1. Inventario real del frontend
@@ -895,3 +895,26 @@ Commit: `fb03640ed90271cea7888eeabc94f4637f2998f5`.
 - Render Preview: deploy `dep-dbn0udou01pc73fr0q30`, commit `fb03640ed90271cea7888eeabc94f4637f2998f5`, estado `live`.
 
 No se ha tocado producción, API, base de datos ni la lógica funcional. La comprobación visual autenticada del Preview continúa pendiente.
+
+
+## 52. Eliminación de declaraciones repetidas y barrido de ocho capas globales — 6 de noviembre de 2026
+
+En `molsan-design-system.css` se habían repetido dos declaraciones de color que ya estaban definidas por los bloques base de botones:
+
+- `.molsan-btn--primary`: se retira el segundo `color: #fff`; se mantienen el gradiente y el borde de la variante Premium.
+- `.molsan-btn--danger`: se retira el segundo `color: #fff`; se mantienen el fondo rojo y el borde.
+
+El color efectivo sigue definido por el bloque base anterior de cada selector. El diff solo elimina esas dos declaraciones; no cambia dimensiones, estados hover, contraste, ni comportamiento.
+
+Se ha repetido el barrido estático de selectores y declaraciones exactas en ocho capas globales: `molsan-design-system.css`, `MolsanCanonicalVisual2027.css`, `MolsanCardsPremium2027.css`, `MolsanFase3.css`, `MolsanGlassLuxeUnified2027.css`, `MolsanGlobalConsistency2027.css`, `MolsanPremium2027.css` y `MolsanRedesign2027.css`. Se analizaron 593 bloques de reglas; después de esta corrección no quedan coincidencias de selector exacto con propiedades idénticas repetidas entre los bloques incluidos. Es una comprobación estática por selector literal, no sustituye computed styles ni inspección de cascada en navegador.
+
+### Verificación
+
+Commit: `5ca6804988c9fa787d4a58237c82f37840ab1f40`.
+
+- `MOLSAN frontend premium build` #943: success.
+- `Frontend dependency security audit` #374: success; el informe de `frontend-app` registra cero vulnerabilidades.
+- `Validar Fichaje Molsan` #3409: success.
+- Render Preview: deploy `dep-dbn0vcp5efls738q2pqg`, commit `5ca6804988c9fa787d4a58237c82f37840ab1f40`, estado `live`.
+
+El aviso de cuatro vulnerabilidades que aparece en el paso automático previo de instalación de Render procede de la instalación en la raíz del repositorio, fuera del audit específico de `frontend-app`. No se han actualizado dependencias de raíz ni backend dentro de esta tarea visual; queda anotado para revisión separada antes de modificar ese ámbito.
