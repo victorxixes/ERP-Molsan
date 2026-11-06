@@ -235,3 +235,67 @@
     .ng-dashboard-grafico,.ng-admin-kpi-button,.ng-admin-notaria-card
   ):hover { transform:none !important; }
 }
+
+
+/* Compatibilidad de botones heredados: conserva la acción, unifica geometría
+   y variantes visuales mientras las pantallas se migran a MolsanButton. */
+:where(.erp-route-content,.apoderagest,.encargagest,.notargest,.ng-admin-notarias)
+button:not(.workspace-app-card):not([role="tab"]):not([aria-pressed]) {
+  font-family: Inter, "Segoe UI", sans-serif;
+  font-weight: 650;
+  border-radius: 10px;
+  transition: color .18s ease,background-color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease;
+}
+:where(.erp-route-content,.apoderagest,.encargagest,.notargest,.ng-admin-notarias)
+button:is([class~="bg-blue-600"],[class~="bg-indigo-600"],[class~="bg-slate-900"],[class~="bg-slate-950"],[class~="bg-emerald-600"]) {
+  color: #fff !important;
+  border: 1px solid #064675 !important;
+  background: #064675 !important;
+  box-shadow: 0 3px 9px rgba(6,70,117,.14) !important;
+}
+:where(.erp-route-content,.apoderagest,.encargagest,.notargest,.ng-admin-notarias)
+button:is([class~="bg-blue-600"],[class~="bg-indigo-600"],[class~="bg-slate-900"],[class~="bg-slate-950"],[class~="bg-emerald-600"]):hover:not(:disabled) {
+  color: #fff !important;
+  border-color: #043B60 !important;
+  background: #043B60 !important;
+  box-shadow: 0 5px 13px rgba(6,70,117,.19) !important;
+}
+:where(.erp-route-content,.apoderagest,.encargagest,.notargest,.ng-admin-notarias)
+button:is([class~="bg-white"],[class~="bg-slate-50"],[class~="bg-slate-100"])[class*="border"] {
+  color: #064675;
+  border-color: #D8E4EC;
+  background: rgba(255,255,255,.94);
+}
+:where(.erp-route-content,.apoderagest,.encargagest,.notargest,.ng-admin-notarias)
+button:is([class~="bg-white"],[class~="bg-slate-50"],[class~="bg-slate-100"])[class*="border"]:hover:not(:disabled) {
+  color: #043B60;
+  border-color: #B9D7E6;
+  background: #F2F7FB;
+}
+:where(.erp-route-content,.apoderagest,.encargagest,.notargest,.ng-admin-notarias)
+button:is([class~="bg-red-600"],[class~="bg-rose-600"]) {
+  color: #fff !important;
+  border: 1px solid #B42318 !important;
+  background: #B42318 !important;
+}
+:where(.erp-route-content,.apoderagest,.encargagest,.notargest,.ng-admin-notarias)
+button:is([class~="bg-red-600"],[class~="bg-rose-600"]):hover:not(:disabled) {
+  border-color: #8F1D16 !important;
+  background: #8F1D16 !important;
+}
+:where(.erp-route-content,.apoderagest,.encargagest,.notargest,.ng-admin-notarias)
+button:is([class~="bg-red-50"],[class~="bg-rose-50"],[class~="bg-red-100"],[class~="bg-rose-100"]) {
+  color: #A12A23 !important;
+  border-color: #F0C9C5 !important;
+  background: #FFF7F6 !important;
+}
+:where(.erp-route-content,.apoderagest,.encargagest,.notargest,.ng-admin-notarias)
+button:is([class~="bg-red-50"],[class~="bg-rose-50"],[class~="bg-red-100"],[class~="bg-rose-100"]):hover:not(:disabled) {
+  border-color: #E6AAA5 !important;
+  background: #FDECE9 !important;
+}
+:where(.erp-route-content,.apoderagest,.encargagest,.notargest,.ng-admin-notarias)
+button:focus-visible {
+  outline: 3px solid rgba(6,70,117,.22);
+  outline-offset: 2px;
+}
