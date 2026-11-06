@@ -6,7 +6,6 @@
    - márgenes idénticos en páginas y subpáginas
 */
 /* Geometría y posición iguales al Dashboard; tono Glass intermedio y legible. */
-:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
 :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero) {
   box-sizing: border-box !important;
   width: 100% !important;
@@ -29,12 +28,10 @@
   -webkit-backdrop-filter: blur(16px) saturate(118%) !important;
   backdrop-filter: blur(16px) saturate(118%) !important;
 }
-:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
 :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
 :where(h1,h2,.molsan-page-header__title,.erp-page-title) {
   color: var(--molsan-canon-header-text) !important;
 }
-:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
 :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
 :where(p,.molsan-page-header__description,.erp-page-description) {
   color: var(--molsan-canon-header-muted) !important;
@@ -69,10 +66,11 @@
 /* Tarjetas funcionales: mismo acento superior, acabado, iconografía y hover cromático.
    No se aplica a bloques de contenido, formularios ni paneles de calendario. */
 :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,
-  .molsan-stat-card,.eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card) {
+  .molsan-stat-card,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card) {
   position: relative !important;
   overflow: hidden;
   border: 1px solid #D8E4EC !important;
+  border-top: 4px solid #6CC5D9 !important;
   border-radius: var(--molsan-canon-card-radius) !important;
   background: linear-gradient(145deg,#FFFFFF 0%,#FFFFFF 58%,#F2F7FB 100%) !important;
   box-shadow: 0 8px 23px rgba(6,70,117,.075) !important;
@@ -80,32 +78,20 @@
     border-color .23s ease,box-shadow .23s ease !important;
 }
 :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,
-  .molsan-stat-card,.eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card)::before {
-  content: "" !important;
-  position: absolute !important;
-  z-index: 2 !important;
-  top: 0 !important;
-  left: 18px !important;
-  right: 18px !important;
-  height: 4px !important;
-  border-radius: 0 0 6px 6px !important;
-  background: linear-gradient(90deg,#064675 0%,#2696A5 58%,#8BC8D8 100%) !important;
-  pointer-events: none !important;
-}
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,
-  .molsan-stat-card,.eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card):hover {
+  .molsan-stat-card,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card):hover {
   transform: translateY(-4px) !important;
   border-color: #AFCFDF !important;
+  border-top-color: #064675 !important;
   background: linear-gradient(145deg,#EAF5FA 0%,#F6FAFC 56%,#EAF2F8 100%) !important;
   box-shadow: 0 16px 34px rgba(6,70,117,.15) !important;
 }
 :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,
-  .molsan-stat-card,.eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card)
+  .molsan-stat-card,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card)
 :where(.molsan-icon-3d,.molsan-icon-wrap,.agenda-stat-icon,.ag-kpi-icono,.eg-kpi-icono) {
   transition: transform .23s ease,background .23s ease,box-shadow .23s ease !important;
 }
 :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,
-  .molsan-stat-card,.eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card):hover
+  .molsan-stat-card,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card):hover
 :where(.molsan-icon-3d,.molsan-icon-wrap,.agenda-stat-icon,.ag-kpi-icono,.eg-kpi-icono) {
   transform: translateY(-2px) scale(1.045) !important;
 }
@@ -172,10 +158,7 @@
   border-color: #79B4D0;
 }
 
-@media(max-width:1024px) {
-}
 @media(max-width:720px) {
-:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
   :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero) {
     min-height: 0 !important;
     padding: 14px !important;
@@ -184,12 +167,12 @@
 }
 @media(prefers-reduced-motion:reduce) {
   :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,
-    .molsan-stat-card,.eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card),
+    .molsan-stat-card,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card),
   :where(.erp-route-content,.apoderagest,.encargagest,.notargest) * {
     transition-duration: .01ms !important;
   }
   :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,
-    .molsan-stat-card,.eg-kpi,.ng-admin-kpi-button,.ng-admin-notaria-card):hover {
+    .molsan-stat-card,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card):hover {
     transform: none !important;
   }
 }
@@ -224,7 +207,6 @@
 
 
 /* Ajuste solicitado: cabecera algo más presente y marca/icono nítido. */
-:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
 :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
 :where(.molsan-page-header__mark,.molsan-page-header__icon,.erp-page-header__icon) {
   color: #064675 !important;
@@ -254,13 +236,11 @@
 
 
 /* Títulos de cabecera: siempre azul corporativo, nunca blanco. */
-:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
 :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
 :where(h1,h2,.molsan-page-header__title,.erp-page-title,[class*="title"]) {
   color: #064675 !important;
   -webkit-text-fill-color: #064675 !important;
 }
-:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
 :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
 :where(h1,h2,.molsan-page-header__title,.erp-page-title,[class*="title"]) :where(span,strong,em) {
   color: #064675 !important;
@@ -269,7 +249,6 @@
 
 
 /* Subtítulos de cabecera: contraste explícito sobre el fondo azul Glass. */
-:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
 :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
 :where(.molsan-page-header__description,.erp-page-description,.molsan-page-subtitle,.page-subtitle,p[class*="description"]) {
   color: #496B82 !important;
