@@ -2,8 +2,6 @@ import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import "../../css/ModalesHerramientasPremium.css";
-
 const EJEMPLOS = [
   { expediente: "2026480925", fecha: "24/10/2026", contrato: "CT-2026-01842", finca: "Finca 1842 · Registro 3", observaciones: "Copia recibida; pendiente de validación" },
   { expediente: "2026481041", fecha: "24/10/2026", contrato: "CT-2026-01857", finca: "Finca 507 · Registro 1", observaciones: "Documento de ejemplo detectado" },
