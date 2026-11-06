@@ -391,3 +391,25 @@ No se ha modificado JSX ni el comportamiento de apertura/cierre. **Validación p
 La inspección de `ApoderaGest.css` localiza cuatro capas para `.ag-resumen-modal` y dos grupos de reglas de overlay: geometría inicial, scroll/overscroll, acabado corporativo y ajustes móviles. Los dos bloques móviles comparten el breakpoint de 650 px, pero el segundo sustituye el padding por valores con `env(safe-area-inset-top/bottom)` y redefine el alto máximo. La cabecera del modal también tiene una variante azul oscuro específica del portal.
 
 No se han eliminado estas reglas por coincidencia de selector: hacerlo sin comprobar notch/safe-area, scroll del overlay, altura del viewport dinámico y cabecera del portal podría recortar el modal en móvil. Queda señalado para la prueba individual del resumen de apoderado en escritorio, tablet y móvil. Se conserva también la variante de grupo/notario, que es otro diálogo y no debe mezclarse con el resumen.
+
+## 16. Consolidación de la capa visual canónica — 6 de noviembre de 2026
+
+Se ha resuelto una de las colisiones globales identificadas en la auditoría:
+
+- `molsan-design-system.css` vuelve a ser el único propietario del componente `MolsanPremiumCard`: geometría, franja superior única de 4px, hover, foco y título. Se ha eliminado el pseudoelemento interior que duplicaba la franja.
+- `MolsanCanonicalVisual2027.css` deja de sobrescribir el componente `MolsanPremiumCard`; se mantiene como capa de compatibilidad para tarjetas legacy que aún no usan el componente.
+- `MolsanPremium2027.css` pasa a ser el único propietario del acabado base y hover de `MolsanIcon`; se han retirado sus reglas base duplicadas de `molsan-design-system.css`.
+- `MolsanRedesign2027.css` deja de repetir `color/background` de `.erp-app-shell` y `position/z-index` de `.mol-sidebar-premium`; conserva únicamente sus responsabilidades visuales propias.
+
+La capa Canonical reduce sus `!important` de 115 a 110 en esta pasada. El resultado conserva el acento superior, el movimiento sutil de tarjeta y la iconografía Molsan.
+
+### Validación
+
+- Commit de código: `cdd387b`.
+- `Build del frontend`: success.
+- `Vite production build`: success.
+- `Sintaxis del backend de fichajes`: success.
+- `Frontend dependency security audit`: success.
+- Render Preview todavía necesita el despliegue de este commit; el último deploy previo no contiene esta consolidación.
+- La inspección visual interactiva y las pruebas de foco/hover en navegador siguen pendientes.
+
