@@ -67,7 +67,7 @@
     overflow-wrap: anywhere;
   }
 
-  .erp-route-content :where(.molsan-page-header, .molsan-subpage-header, .erp-page-header) {
+  .erp-route-content :where(.molsan-subpage-header, .erp-page-header) {
     align-items: flex-start;
     gap: 10px;
   }
@@ -75,7 +75,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .erp-route-content *,
   .molsan-modal__panel *,
   .expediente-operativo-modal-panel *,
   .ctn-modal-dialog * {
