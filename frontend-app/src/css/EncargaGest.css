@@ -18,7 +18,7 @@
   margin-left: 0;
   margin-right: 0;
   padding-top: 4px;
-}.encargagest .eg-kpi{min-width: 0; padding: 18px 19px 17px; overflow: hidden}.encargagest .eg-panel{min-width: 0; overflow: hidden}
+}.encargagest .eg-kpi,.encargagest .eg-panel{min-width:0}
 .encargagest .eg-panel-head {}
 .encargagest .eg-panel-head h2,
 .encargagest .eg-panel-head h3 { font-weight: 800; }
@@ -662,16 +662,9 @@
 }
 
 
-/* Cabecera gestionada por PortalProfesionalPremium2027.css. */
-.encargagest .eg-panel,
-.encargagest .eg-kpi{
-  min-width:0;border:1px solid #D8E4EC!important;border-radius:16px!important;
-  background:#FFFFFF!important;box-shadow:0 6px 18px rgba(6,50,82,.05)!important;
-}
-.encargagest .eg-kpi{ transition:border-color .18s ease,box-shadow .18s ease!important; }
-.encargagest .eg-kpi:hover{ border-color:#C5DCE9!important;box-shadow:0 10px 24px rgba(6,50,82,.075)!important; }
-
-
+/* Tarjetas de KPI y paneles: superficie y elevación desde erp-card. */
+.encargagest .eg-kpi { min-height:144px; padding:17px 18px; }
+.encargagest .eg-kpi > div { display:flex; align-items:flex-end; justify-content:space-between; gap:14px; }
 /* Impresión de EncargaGest: conserva las clases de impresión existentes. */
 @media print {
   @page { size:A4 portrait; margin:12mm; }
@@ -680,30 +673,9 @@
   * { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
 }
 
-/* MOLSAN ERP PREMIUM 2027 · sistema de tarjetas y modales EncargaGest */
-.encargagest .eg-kpi {
-  display:flex;flex-direction:column;justify-content:space-between;gap:10px;
-  min-height:144px;padding:17px 18px;
-  border:1px solid #D8E4EC!important;border-radius:16px!important;
-  background:linear-gradient(155deg,#FFFFFF 0%,#F7FAFC 100%)!important;
-  box-shadow:0 7px 20px rgba(6,50,82,.065),inset 0 1px 0 #FFFFFF!important;
-}
-.encargagest .eg-kpi > div { display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important; }
-.encargagest .eg-kpi-icono {
-  display:grid!important;flex:0 0 54px!important;width:54px!important;height:54px!important;
-  place-items:center!important;color:#064675!important;
-  border:1px solid #D8E4EC!important;border-radius:15px!important;
-  background:linear-gradient(145deg,#FFFFFF 0%,#EAF2F8 100%)!important;
-  box-shadow:0 6px 15px rgba(6,50,82,.11),inset 0 1px 0 #FFFFFF!important;
-}
-.encargagest .eg-kpi-icono .molsan-icon-3d { width:40px!important;height:40px!important;filter:drop-shadow(0 3px 4px rgba(6,50,82,.16)); }
-.encargagest .eg-kpi-icono-alerta { border-color:#F1D8C5!important;background:linear-gradient(145deg,#FFFFFF,#FFF4E9)!important; }
-.encargagest .eg-kpi-icono-alerta .molsan-icon-3d { color:#B45309!important; }
-.encargagest .eg-empty-mark {
-  border:1px solid #D8E4EC;border-radius:16px;
-  background:linear-gradient(145deg,#FFFFFF,#EAF2F8);
-  box-shadow:0 7px 18px rgba(6,50,82,.10),inset 0 1px 0 #FFFFFF;
-}
+/* MOLSAN ERP PREMIUM 2027 · ajustes de contenido para tarjetas compartidas */
+.encargagest .eg-kpi { display:flex; flex-direction:column; justify-content:space-between; gap:10px; }
+.encargagest .eg-empty-mark { color:var(--molsan-primary,#064675); }
 .encargagest .eg-modal-overlay {
   z-index:10000;display:grid;place-items:center;
   padding:clamp(8px,2vw,24px);overflow-y:auto;
@@ -757,14 +729,11 @@
 }
 .encargagest .eg-perfil-avatar .molsan-icon-3d { width:36px!important;height:36px!important;color:#FFFFFF; }
 @media(max-width:760px) {
-  .encargagest .eg-kpi { min-height:126px;padding:14px!important; }
-  .encargagest .eg-kpi-icono { width:48px!important;height:48px!important;flex-basis:48px!important;border-radius:14px!important; }
-  .encargagest .eg-kpi-icono .molsan-icon-3d { width:36px!important;height:36px!important; }
   .encargagest .eg-modal-header,.encargagest .eg-perfil-cabecera { padding:14px!important; }
   .encargagest .eg-modal-footer { padding:12px!important; }
   .encargagest .eg-modal-form,.encargagest .eg-modal-perfil { width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:15px!important; }
   .encargagest .eg-modal-brand { width:46px;height:46px;flex-basis:46px; }
 }
 @media(prefers-reduced-motion:reduce) {
-  .encargagest .eg-modal-form,.encargagest .eg-kpi { scroll-behavior:auto;transition:none!important; }
+  .encargagest .eg-modal-form { scroll-behavior:auto;transition:none!important; }
 }
