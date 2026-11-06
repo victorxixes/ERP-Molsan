@@ -51,13 +51,6 @@
 .encargagest .eg-main select:focus-visible,
 .encargagest .eg-main textarea:focus-visible,
 .encargagest button:focus-visible { outline: 3px solid color-mix(in srgb, var(--molsan-primary) 28%, transparent); outline-offset: 2px; }
-.encargagest .eg-main [class~="bg-blue-50/70"] { background: var(--molsan-primary-soft, #EAF2F8); }
-.encargagest .eg-main .text-blue-900 { color: var(--molsan-primary-hover, #04375B); }
-.encargagest .eg-main .border-blue-100 { border-color: var(--molsan-border, #D8E4EC); }
-.encargagest .eg-main .ag-estado { white-space: nowrap; }
-@media (max-width: 700px) {
-  .encargagest .ag-fecha-actual { flex: 1; min-width: 0; }
-}
 
 
 /* Modal de nueva solicitud · MOLSAN ERP Premium / Glass Luxe */
