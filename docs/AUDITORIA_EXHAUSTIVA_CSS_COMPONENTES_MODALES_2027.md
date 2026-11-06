@@ -1275,3 +1275,20 @@ Pendiente en esta sección: build final del commit más reciente y comprobación
 - El navegador de inspección disponible no pudo abrir el dominio público del Preview; por tanto, el deploy y la compilación están verificados, pero no se afirma una inspección visual real de cada ruta. La comprobación visual final de cabeceras, tarjetas, botones, tablas y modales sigue pendiente de una sesión de navegador accesible.
 
 URL del Preview: https://molsan-premium-2027-candidate-preview.onrender.com
+
+
+## 25. Cruce focalizado JSX ↔ CSS de NotarGest y EncargaGest — 6 de noviembre de 2026, 21:xx
+
+Se ha repetido el cruce de clases CSS con sus consumidores JSX sobre el HEAD de `molsan-premium-deep-cleanup-continuation`, sin inferir que una clase esté muerta por no aparecer literalmente en el componente principal.
+
+- **NotarGest:** `NotarGest.css` contiene 145 nombres de clase únicos detectados estáticamente. Los dos tokens que no aparecen como texto literal en `NotarGest.jsx` son falsos positivos del análisis: `.css` procede de comentarios y `.molsan-icon-3d` lo genera el componente compartido `MolsanIcon`. No se autoriza borrar reglas de esta hoja por falta de consumidor.
+- **EncargaGest:** `EncargaGest.css` contiene 65 nombres de clase únicos. Los tokens `.molsan-print-encargos-lista` y `.molsan-print-encargos-fichas` no aparecen en los dos JSX de EncargaGest, pero el flujo de impresión del portal ApoderaGest añade esas clases al `body`; por tanto, son selectores globales compartidos y no deben eliminarse desde EncargaGest sin trasladar primero su responsabilidad de impresión. `.molsan-icon-3d` lo genera `MolsanIcon`.
+- Se han comprobado los consumidores de las tarjetas/controles de ambos portales: NotarGest utiliza `MolsanPageHeader`, `MolsanDataTable` y `MolsanStatCard`; EncargaGest utiliza `MolsanPageHeader` y `MolsanStatCard`. El espacio EncargaGest compone CTN, Agenda, Mensajes e Intranet como páginas hijas y no debe tratarse como una única hoja CSS aislada.
+- **Incidencia visual localizada en NotarGest:** el `Sidebar` recibe todavía `headerActions` con fecha actual y botón «Actualizar datos»; el botón llama a `actualizarDatosSidebar`, que realiza la recarga de la bandeja o de la lista de notarías para el administrador. La petición visual de retirar fecha/actualización de las cabeceras sigue vigente, pero no se debe borrar el handler de recarga ni sus estados sin reubicar o decidir expresamente esa acción. Queda marcado como migración de acción fuera de cabecera, no como selector CSS huérfano.
+
+### Resultado de esta comprobación
+
+- No se han eliminado reglas de NotarGest ni EncargaGest en esta pasada: el cruce no aporta evidencia suficiente de selectores muertos.
+- Se evita una regresión de impresión al conservar las clases globales activadas por ApoderaGest.
+- La migración pendiente de NotarGest es estructural (sacar fecha/actualización del área de cabecera/sidebar), no un borrado indiscriminado de CSS.
+- Esta revisión es estática. No sustituye la navegación autenticada ni la prueba visual responsive en Preview.
