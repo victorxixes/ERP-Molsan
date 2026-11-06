@@ -1075,3 +1075,12 @@ Commits adicionales: af8e1f7, 1b19d50, 60b3b1a, 57f21aa, 1bc3459.
 - Se mantienen las excepciones funcionales de estado (por ejemplo, botones deshabilitados y acciones de éxito) y las reglas de formularios/controles que no son tarjetas.
 
 Commits adicionales: 25193d7 y dd72d6d.
+
+
+### 19.3. NotarGest — panel de detalle individual
+
+- El bloque «Detalle por notaría / Situación individual» deja de renderizarse como una tarjeta visual independiente dentro de otra tarjeta: se retiraron su borde, fondo, sombra y radio propios.
+- El contenedor `.ng-admin-individual-panel` adopta la superficie canónica compartida.
+- Se retiró la línea divisoria bajo el título; el encabezado queda integrado en la misma superficie que las fichas de notarías.
+
+Commits: 29f4a02 y b8c2b0f.
