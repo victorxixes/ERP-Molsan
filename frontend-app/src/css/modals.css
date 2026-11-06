@@ -5,14 +5,14 @@
 .modal-overlay-sj {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, .48);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  background: rgba(3, 28, 46, .58);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .modal-sj {
   background: var(--molsan-surface, #fff);
-  border-radius: var(--molsan-radius-dialog, 16px);
+  border-radius: var(--molsan-radius-dialog, 18px);
   padding: 24px;
   width: min(100%, 760px);
   max-height: calc(100dvh - 32px);
