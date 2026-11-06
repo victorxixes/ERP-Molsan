@@ -222,10 +222,6 @@
 .notargest .ng-dashboard-etapas{grid-column:1/-1}
 @media(max-width:1000px){.notargest .ng-dashboard-graficos{grid-template-columns:1fr}}
 @media(max-width:560px){.notargest .ng-dashboard-grafico{padding:13px}.notargest .ng-media-row>div:first-child{align-items:flex-start;flex-direction:column;gap:3px}.notargest .ng-media-row small{text-align:left}}
-
-
-/* Cabecera NotarGest idéntica en estructura y proporciones a ApoderaGest */
-.notargest .ng-hero-apoderagest{display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;min-height:90px;margin:0 0 8px;padding:8px 4px 25px;border:0;border-radius:0;background:transparent;box-shadow:none}
 @media(max-width:700px){}
 
 
@@ -256,13 +252,6 @@
 .ng-modal-vacio{padding:38px 16px;text-align:center;color:#738199}.ng-modal-vacio strong{display:block;color:#1f6c4e;font-size:15px}.ng-modal-vacio p{margin:7px 0 0;font-size:12px}
 .ng-modal-perfil{width:min(100%,560px)}.ng-perfil-identidad{display:flex;align-items:center;gap:14px;padding:22px;border-bottom:1px solid var(--molsan-border-light,#e8edf4)}.ng-perfil-avatar{display:grid;place-items:center;width:54px;height:54px;border-radius:var(--molsan-radius-card,14px);background:linear-gradient(145deg,var(--molsan-primary,#3156b3),var(--molsan-primary-hover,#274694));color:white;font-size:17px;font-weight:900}.ng-perfil-identidad>div:last-child{display:grid;gap:5px;min-width:0}.ng-perfil-identidad strong{color:#1e2f4a;font-size:16px;font-weight:850}.ng-perfil-identidad span{color:#718099;font-size:12px}.ng-perfil-datos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:18px 22px}
 @media(max-width:760px){.ng-modal-overlay{padding:3vh 10px 16px}.ng-modal>header{padding:15px;flex-direction:column}.ng-modal-lista{padding:10px}.ng-aviso-item{padding:11px}.ng-perfil-datos{grid-template-columns:1fr;padding:14px}}
-
-
-/* NotarGest: distintivo NG equivalente al bloque AG de ApoderaGest */
-.notargest .ag-hero .ag-marca.ng-marca-notargest{
-  display:flex!important;align-items:center;justify-content:center;flex:0 0 46px;width:46px;height:46px;min-width:46px;min-height:46px;padding:0;border:0;border-radius:14px;background:linear-gradient(145deg,#4778f4,#2449c8);color:#fff;font-size:16px;line-height:1;font-weight:900;letter-spacing:-.04em;box-shadow:0 5px 14px rgba(49,94,232,.22);overflow:hidden
-}
-.notargest .ag-hero .ag-marca.ng-marca-notargest::before,.notargest .ag-hero .ag-marca.ng-marca-notargest::after{content:none!important;display:none!important}
 @media(min-width:1200px){}
 
 
