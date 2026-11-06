@@ -337,3 +337,14 @@ Se ha movido la regla responsive después de las reglas base y se ha definido el
 Commit: `0c18516`.
 
 **Validación pendiente:** comprobar en Preview Catálogos, Entidades bancarias, Registros de propiedad, Municipios, Tipos de carga hipotecaria y Honorarios, en anchuras de escritorio y móvil. No se declara corregido visualmente hasta esa comprobación.
+
+
+## 15. Validación automatizada tras la ronda CSS — 6 de noviembre de 2026
+
+El commit de código `0c18516` (ajuste responsive de cabeceras de Catálogos) quedó validado por GitHub Actions:
+
+- Workflow `Validar Fichaje Molsan`, ejecución `#3272`: job `Build del frontend` = **success**; job `Sintaxis del backend de fichajes` = **success**.
+- Workflow `Frontend dependency security audit`, ejecución `#237` = **success**.
+- La ejecución `MOLSAN frontend premium build` `#663` aparece como `cancelled`; no se interpreta como fallo de compilación, porque el build del frontend del workflow `#3272` sí terminó correctamente para el mismo commit de código.
+
+El commit posterior `c8bb1d3` solo actualiza esta documentación. La validación automatizada no acredita todavía la inspección de navegador, las pruebas de modales, la matriz funcional ni el responsive visual. Render Preview no se ha desplegado desde esta rama en esta ronda; Producción, API y Supabase permanecen fuera del alcance.
