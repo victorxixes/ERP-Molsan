@@ -2,11 +2,13 @@ import React, { useRef, useState } from "react";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import "./FichaExpedientePremium.css";
 
 /**
- * FichaExpediente de demostración.
- * Reproduce la organización funcional de la ficha operativa con campos vacíos
- * y estado local. No consulta API, no crea expedientes y no escribe en BD.
+ * Demostración aislada de FichaExpediente.
+ * Replica la jerarquía de la ficha operativa: resumen superior, banda de ficha,
+ * selector horizontal de actividades, documentación dentro de la actividad,
+ * y bloques inferiores de fincas/observaciones. Todos los cambios son locales.
  */
 const ACTIVIDADES = [
   { key: "documentacion-previa", label: "Documentación previa", icon: "file" },
@@ -15,7 +17,7 @@ const ACTIVIDADES = [
   { key: "liquidacion-impuestos", label: "Liquidación de impuestos", icon: "euro" },
   { key: "tramitacion-inscripcion", label: "Tramitación inscripción", icon: "building" },
   { key: "defectos-registrales", label: "Defectos registrales", icon: "alert" },
-  { key: "facturacion-cierre", label: "Facturación y cierre", icon: "receipt" },
+  { key: "facturacion-cierre", label: "Cierre del expediente", icon: "receipt" },
 ];
 
 const CAMPOS = {
@@ -34,85 +36,93 @@ const CAMPOS = {
     ["observaciones", "Observaciones", "textarea"],
   ],
   "sede-notarial-protocolo": [
-    ["nombre_notario", "Nombre notario"],
-    ["nif_notario", "NIF notario"],
-    ["tipo_gestoria", "Tipo gestoría", "select"],
-    ["fecha_firma", "Fecha de firma", "date"],
-    ["tipo_documento", "Tipo de documento"],
-    ["apoderado", "Apoderado"],
-    ["poblacion_firma", "Población"],
-    ["provincia_firma", "Provincia"],
-    ["numero_protocolo", "Número de protocolo"],
-    ["asiento_presentacion", "Asiento presentación"],
-    ["libro_diario", "Libro diario"],
-    ["fecha_presentacion", "Fecha presentación", "date"],
-    ["numero_entrada", "Número de entrada"],
-    ["fecha_recogida", "Fecha recogida / presentación telemática", "date"],
+    ["nombre_notario", "Nombre notario"], ["nif_notario", "NIF notario"],
+    ["tipo_gestoria", "Tipo gestoría", "select"], ["fecha_firma", "Fecha de firma", "date"],
+    ["tipo_documento", "Tipo de documento"], ["apoderado", "Apoderado"],
+    ["poblacion_firma", "Población"], ["provincia_firma", "Provincia"],
+    ["numero_protocolo", "Número de protocolo"], ["asiento_presentacion", "Asiento presentación"],
+    ["libro_diario", "Libro diario"], ["fecha_presentacion", "Fecha presentación", "date"],
+    ["numero_entrada", "Número de entrada"], ["fecha_recogida", "Fecha recogida / presentación telemática", "date"],
   ],
   "liquidacion-impuestos": [
     ["fecha_inicio_actividad", "Inicio actividad", "date"],
     ["fecha_presentacion_impuestos", "Fecha presentación", "date"],
     ["fecha_liquidacion_tributaria", "Fecha liquidación", "date"],
-    ["oficina_liquidadora", "Oficina liquidadora"],
-    ["comunidad_autonoma", "Comunidad autónoma"],
-    ["base_imponible", "Base imponible (€)", "number"],
-    ["tipo_tributacion", "Tipo de tributación", "select"],
-    ["tipo_impuesto", "Impuesto AJD / ITP", "select"],
-    ["justificante_impuestos", "Justificante AJD / ITP"],
+    ["oficina_liquidadora", "Oficina liquidadora"], ["comunidad_autonoma", "Comunidad autónoma"],
+    ["base_imponible", "Base imponible (€)", "number"], ["tipo_tributacion", "Tipo de tributación", "select"],
+    ["tipo_impuesto", "Impuesto AJD / ITP", "select"], ["justificante_impuestos", "Justificante AJD / ITP"],
     ["observaciones", "Observaciones", "textarea"],
   ],
   "tramitacion-inscripcion": [
-    ["fecha_inicio_actividad", "Inicio actividad", "date"],
-    ["registro", "Registro de la Propiedad"],
+    ["fecha_inicio_actividad", "Inicio actividad", "date"], ["registro", "Registro de la Propiedad"],
     ["fecha_presentacion_registro", "Fecha presentación", "date"],
     ["fecha_vencimiento_presentacion_registro", "Vencimiento presentación", "date"],
-    ["fecha_inscripcion", "Fecha inscripción", "date"],
-    ["hoja_inscripcion", "Hoja de inscripción"],
-    ["nota_registradores", "Nota / factura Registradores"],
-    ["observaciones", "Observaciones", "textarea"],
+    ["fecha_inscripcion", "Fecha inscripción", "date"], ["hoja_inscripcion", "Hoja de inscripción"],
+    ["nota_registradores", "Nota / factura Registradores"], ["observaciones", "Observaciones", "textarea"],
   ],
   "defectos-registrales": [
-    ["tipo_documento", "Tipo de documento"],
-    ["motivo_defecto", "Motivo del defecto", "textarea"],
-    ["fecha_calificacion", "Fecha calificación", "date"],
-    ["fecha_notificacion_registro", "Fecha notificación", "date"],
+    ["tipo_documento", "Tipo de documento"], ["motivo_defecto", "Motivo del defecto", "textarea"],
+    ["fecha_calificacion", "Fecha calificación", "date"], ["fecha_notificacion_registro", "Fecha notificación", "date"],
     ["fecha_vencimiento_presentacion_registro", "Vencimiento presentación", "date"],
     ["fecha_entrada_subsanacion", "Fecha entrada subsanación", "date"],
     ["observaciones_registro", "Observaciones Registro", "textarea"],
   ],
   "facturacion-cierre": [
-    ["fecha_fin_actividad", "Fecha de cierre", "date"],
-    ["estado_facturacion", "Estado facturación", "select"],
-    ["factura_gestoria", "Factura gestoría"],
-    ["expediente_digital", "Expediente digital completo", "select"],
+    ["fecha_fin_actividad", "Fecha de cierre", "date"], ["estado_facturacion", "Estado facturación", "select"],
+    ["factura_gestoria", "Factura gestoría"], ["expediente_digital", "Expediente digital completo", "select"],
     ["observaciones", "Observaciones", "textarea"],
   ],
 };
 
-const GRUPOS_DATOS = [
-  { title: "Titulares y solicitantes", icon: "users", fields: ["N.º expediente", "Estado expediente", "Estado actividad", "Fecha de alta", "Actividad actual", "Oficina"] },
-  { title: "Titulares y solicitantes", icon: "users", fields: ["Nombre titular", "NIF titular", "Nombre solicitante", "NIF solicitante", "Teléfono", "Correo electrónico"] },
-  { title: "Información crediticia", icon: "landmark", fields: ["Entidad", "Capital", "Importe", "Saldo real", "Saldo disponible", "Contrato", "Tipo operación", "Subtipo operación"] },
-  { title: "Notario", icon: "scroll", fields: ["Notario", "NIF notario", "Apoderado", "Fecha de firma", "Número de protocolo", "Población / provincia"] },
-];
+const DOCUMENTOS = {
+  "documentacion-previa": ["Hoja de solicitud / encargo", "Justificante de cancelación", "Nota simple"],
+  "sede-notarial": ["Documentación remitida a notaría", "Confirmación de cita"],
+  "sede-notarial-protocolo": ["Copia simple", "Escritura con protocolo", "Justificante de presentación"],
+  "liquidacion-impuestos": ["Justificante AJD / ITP"],
+  "tramitacion-inscripcion": ["Hoja de inscripción", "Nota / factura Registradores"],
+  "defectos-registrales": ["Calificación registral", "Documento de subsanación"],
+  "facturacion-cierre": ["Factura gestoría", "Expediente digital completo"],
+};
 
-function Field({ label, type = "text", value, onChange, placeholder = "Pendiente de completar", wide = false }) {
-  return <label className={`block min-w-0 ${wide ? "sm:col-span-2" : ""}`}>
-    <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide" style={{ color: "var(--molsan-secondary-text,#617789)" }}>{label}</span>
-    {type === "textarea" ? <textarea rows={3} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} className="w-full rounded-xl border bg-white px-3 py-2.5 text-sm outline-none" style={{ borderColor: "var(--molsan-border,#D8E4EC)" }} /> :
-      type === "select" ? <select value={value} onChange={e => onChange(e.target.value)} className="w-full rounded-xl border bg-white px-3 py-2.5 text-sm outline-none" style={{ borderColor: "var(--molsan-border,#D8E4EC)" }}><option value="">— Seleccionar —</option>{(label.includes("AJD") ? ["AJD", "ITP"] : label.includes("tributación") ? ["Sujeto", "Exento", "No sujeto"] : label.includes("documentación") ? ["Pendiente", "Incompleta", "Completa"] : label.includes("saldo") ? ["Sí", "No"] : ["Pendiente", "En curso", "Completado"]).map(v => <option key={v}>{v}</option>)}</select> :
-      <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} className="w-full rounded-xl border bg-white px-3 py-2.5 text-sm outline-none" style={{ borderColor: "var(--molsan-border,#D8E4EC)" }} />}
+function Field({ label, type = "text", value, onChange, wide = false }) {
+  const options = label.includes("AJD") ? ["AJD", "ITP"] :
+    label.includes("tributación") ? ["Sujeto", "Exento", "No sujeto"] :
+    label.includes("documentación") ? ["Pendiente", "Incompleta", "Completa"] :
+    label.includes("saldo") ? ["Sí", "No"] : ["Pendiente", "En curso", "Completado"];
+  return <label className={`block min-w-0 ${wide ? "sm:col-span-2 xl:col-span-3" : ""}`}>
+    <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wide text-slate-500">{label}</span>
+    {type === "textarea" ? <textarea rows={3} value={value || ""} onChange={e => onChange(e.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" /> :
+      type === "select" ? <select value={value || ""} onChange={e => onChange(e.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400"><option value="">— Seleccionar —</option>{options.map(x => <option key={x}>{x}</option>)}</select> :
+      <input type={type} value={value || ""} onChange={e => onChange(e.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />}
   </label>;
 }
 
-function SectionHeading({ icon, title, subtitle, action }) {
-  return <div className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-4" style={{ borderColor: "var(--molsan-border,#D8E4EC)" }}>
-    <div className="flex min-w-0 items-center gap-3">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border" style={{ color: "var(--molsan-blue,#064675)", background: "var(--molsan-panel,#F2F7FB)", borderColor: "var(--molsan-border,#D8E4EC)" }}><MolsanIcon name={icon} size={21} tone="ocean" bare /></span>
-      <div className="min-w-0"><h2 className="font-semibold" style={{ color: "var(--molsan-blue,#064675)" }}>{title}</h2>{subtitle && <p className="mt-0.5 text-xs" style={{ color: "var(--molsan-secondary-text,#617789)" }}>{subtitle}</p>}</div>
-    </div>
-    {action}
-  </div>;
+function Section({ title, subtitle, icon, children, className = "", action, id }) {
+  return <section id={id} className={`molsan-card min-w-0 overflow-hidden ${className}`}>
+    <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-[linear-gradient(110deg,#F2F7FB,#FFFFFF)] px-4 py-3">
+      <div className="flex min-w-0 items-center gap-3">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[#D8E4EC] bg-white text-[#064675]"><MolsanIcon name={icon} size={19} tone="ocean" bare /></span>
+        <div className="min-w-0"><h2 className="text-sm font-bold text-[#064675]">{title}</h2><p className="mt-0.5 text-[10px] text-[#617789]">{subtitle}</p></div>
+      </div>{action}
+    </header>
+    <div className="p-3 sm:p-4">{children}</div>
+  </section>;
+}
+
+function SummarySection({ title, subtitle, icon, children, open, onToggle, className = "" }) {
+  return <section className={`molsan-card h-full min-w-0 overflow-hidden ${className}`}>
+    <button type="button" aria-expanded={open} onClick={onToggle} className="flex w-full items-center justify-between gap-3 px-3 py-3 text-left transition hover:bg-[#F2F7FB]">
+      <span className="flex min-w-0 items-center gap-2.5">
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#F2F7FB] text-[#064675]"><MolsanIcon name={icon} size={17} tone="ocean" bare /></span>
+        <span className="min-w-0"><b className="block text-xs text-[#064675]">{title}</b><small className="block text-[10px] text-[#617789]">{subtitle}</small></span>
+      </span><MolsanIcon name={open ? "chevronUp" : "chevronDown"} size={16} tone="muted" bare />
+    </button>
+    {open && <div className="border-t border-[#D8E4EC] px-3 pb-3 pt-2">{children}</div>}
+  </section>;
+}
+
+function DataPoint({ label }) {
+  return <div className="min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 p-2"><p className="text-[9px] font-bold uppercase tracking-wide text-slate-500">{label}</p><p className="mt-1 break-words text-xs font-semibold text-slate-700">—</p></div>;
 }
 
 export default function FichaExpedienteDemo() {
@@ -124,65 +134,200 @@ export default function FichaExpedienteDemo() {
   const [promocion, setPromocion] = useState("");
   const [relacionados, setRelacionados] = useState([]);
   const [nuevoRelacionado, setNuevoRelacionado] = useState("");
-  const [abiertos, setAbiertos] = useState({});
+  const [abiertos, setAbiertos] = useState({ titulares: false, notario: false, credito: false });
   const [observaciones, setObservaciones] = useState("");
+  const [finca, setFinca] = useState({});
+  const [pagoDemo, setPagoDemo] = useState({ concepto: "", importe: "" });
   const dialogRef = useRef(null);
   useAccessibleDialog({ open: Boolean(modal), onClose: () => setModal(""), dialogRef });
+
   const actual = ACTIVIDADES.find(a => a.key === actividad) || ACTIVIDADES[0];
   const setField = (key, value) => setValores(p => ({ ...p, [key]: value }));
   const value = key => valores[key] || "";
-  const visibles = ACTIVIDADES.filter(a => a.key !== "gestion-economica");
-  const docs = actividad === "documentacion-previa" ? ["Hoja de solicitud / encargo","Justificante de cancelación","Nota simple"] : actividad === "liquidacion-impuestos" ? ["Justificante AJD / ITP"] : actividad === "tramitacion-inscripcion" ? ["Hoja de inscripción","Nota / factura Registradores"] : actividad === "defectos-registrales" ? ["Calificación registral","Documento de subsanación"] : ["Copia simple","Hoja de presentación","Documentación de la actividad"];
-  const field = (key,label,type) => <Field key={key} label={label} type={type || "text"} value={value(key)} onChange={v => setField(key,v)} wide={type === "textarea"} />;
-  const dato = label => <div className="ficha-dato"><p className="ficha-dato__label">{label}</p><div className="ficha-dato__value">—</div></div>;
-  const toggle = key => setAbiertos(p => ({...p,[key]:!p[key]}));
-  const summary = (key,title,subtitle,icon,children) => <section className="molsan-card min-w-0 overflow-hidden">
-    <button type="button" aria-expanded={!!abiertos[key]} onClick={()=>toggle(key)} className="flex w-full items-center justify-between gap-3 px-3 py-3 text-left transition hover:bg-[#F2F7FB]">
-      <span className="flex min-w-0 items-center gap-2.5"><span className="grid h-8 w-8 place-items-center rounded-lg" style={{background:"var(--molsan-panel,#F2F7FB)",color:"var(--molsan-blue,#064675)"}}><MolsanIcon name={icon} size={17} tone="ocean" bare /></span><span><b className="block text-xs" style={{color:"var(--molsan-blue,#064675)"}}>{title}</b><small style={{color:"var(--molsan-secondary-text,#617789)"}}>{subtitle}</small></span></span><MolsanIcon name={abiertos[key]?"chevronUp":"chevronDown"} size={16} tone="muted" bare />
-    </button>{abiertos[key] && <div className="border-t px-3 pb-3 pt-2" style={{borderColor:"var(--molsan-border,#D8E4EC)"}}>{children}</div>}
-  </section>;
-  const panel = (icon,title,subtitle,children) => <section className="molsan-card overflow-hidden"><div className="flex items-center gap-3 border-b px-4 py-3" style={{borderColor:"var(--molsan-border,#D8E4EC)",background:"linear-gradient(110deg,#F2F7FB,#fff)"}}><span className="grid h-9 w-9 place-items-center rounded-xl" style={{background:"#fff",color:"var(--molsan-blue,#064675)"}}><MolsanIcon name={icon} size={19} tone="ocean" bare /></span><div><h2 className="text-sm font-bold" style={{color:"var(--molsan-blue,#064675)"}}>{title}</h2><p className="text-[11px]" style={{color:"var(--molsan-secondary-text,#617789)"}}>{subtitle}</p></div></div><div className="p-4">{children}</div></section>;
+  const docs = DOCUMENTOS[actividad] || [];
+  const visibleRelacionados = relacionados.slice(0, 2);
+  const addRelacionado = () => {
+    const v = nuevoRelacionado.trim();
+    if (v && !relacionados.includes(v)) setRelacionados(p => [...p, v]);
+    setNuevoRelacionado("");
+  };
+  const openModal = name => setModal(name);
+  const closeModal = () => setModal("");
+  const renderFields = (keys = CAMPOS[actividad] || []) => <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+    {keys.map(([key, label, type]) => <Field key={key} label={label} type={type || "text"} value={value(key)} onChange={v => setField(key, v)} wide={type === "textarea"} />)}
+  </div>;
+
+  const modalTitle = modal === "relacionados" ? "Expedientes relacionados" :
+    modal === "carpeta" ? "Carpeta digital del expediente" :
+    modal === "datosActividad" ? "Datos de actividad" :
+    modal === "ppad" ? "PPAD · Conceptos y compensaciones" :
+    modal === "acciones" ? "Acciones del expediente" :
+    modal === "finca" ? "Fincas y Registros" :
+    modal === "observaciones" ? "Observaciones · Historial completo" :
+    modal === "defecto" ? "Alta de defecto registral" :
+    modal === "control" ? "Control del expediente" :
+    modal === "emails" ? "Emails del expediente" :
+    modal === "clientes" ? "Área de clientes" :
+    modal === "preview" ? "Vista previa de actividad" :
+    modal === "pago" ? "Registrar pago · Demostración" : "Demostración de ficha";
 
   return <main className="ficha-expediente-premium erp-page space-y-4 pb-8">
-    <MolsanPageHeader mark="EXP" title="Ficha de expediente" description="Demostración · estructura original · MOLSAN ERP PREMIUM 2027" />
-    <div className="flex flex-wrap items-start gap-3 rounded-xl border px-4 py-3 text-xs" style={{background:"var(--molsan-table-head,#EAF2F8)",borderColor:"var(--molsan-border,#D8E4EC)",color:"var(--molsan-blue,#064675)"}}><MolsanIcon name="eye" size={18} tone="ocean" bare /><div className="min-w-0 flex-1"><b>MODO DEMOSTRACIÓN · SIN EXPEDIENTE REAL</b><p className="mt-1" style={{color:"var(--molsan-secondary-text,#617789)"}}>Campos vacíos y acciones locales. No consulta API, no guarda datos y no modifica la base de datos.</p></div><span className="rounded-full border bg-white px-3 py-1 text-[10px] font-bold">SOLO VISUAL</span></div>
+    <div className="mb-1"><MolsanPageHeader mark="EXP" title="2026483148" description="Ficha completa del expediente · Datos, documentación y seguimiento" actions={<button type="button" onClick={() => openModal("control")} className="molsan-btn molsan-btn--secondary"><MolsanIcon name="shield" size={15} tone="ocean" bare /> Control del expediente</button>} /></div>
 
-    <div className="grid min-w-0 grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-12">
-      <div className="xl:col-span-4">{summary("titulares","Titulares y solicitantes","Datos independientes de titulares y solicitantes","users",<div className="grid gap-2 sm:grid-cols-2"><div className="rounded-lg border bg-[#F2F7FB] p-2"><b className="text-[10px]">TITULARES</b>{dato("Nombre titular")}{dato("NIF titular")}</div><div className="rounded-lg border bg-[#F2F7FB] p-2"><b className="text-[10px]">SOLICITANTES</b>{dato("Nombre solicitante")}{dato("NIF solicitante")}</div></div>)}</div>
-      <div className="xl:col-span-4">{summary("notario","Notario","Información del notario asociado","scroll",<div className="grid grid-cols-2 xl:grid-cols-4">{["Nombre notario","NIF notario","Apoderado","Tipo de firma"].map(dato)}</div>)}</div>
-      <div className="xl:col-span-4">{summary("credito","Información crediticia","Resumen económico y contractual","landmark",<div className="grid grid-cols-2 xl:grid-cols-4">{["Contrato","Capital","Importe","Finca","Tipo operación","Subtipo operación","N.º solicitud SIA","Observaciones"].map(dato)}</div>)}</div>
+    <div className="flex flex-wrap items-start gap-3 rounded-xl border border-[#D8E4EC] bg-[#EAF2F8] px-4 py-3 text-xs text-[#064675]">
+      <MolsanIcon name="eye" size={18} tone="ocean" bare />
+      <div className="min-w-0 flex-1"><b>MODO DEMOSTRACIÓN · SIN EXPEDIENTE REAL</b><p className="mt-1 text-[11px] text-[#617789]">Estructura y ventanas de muestra. Los campos y acciones funcionan solo en esta pantalla: no consulta API, no guarda datos ni modifica expedientes.</p></div>
+      <span className="rounded-full border border-[#D8E4EC] bg-white px-3 py-1 text-[10px] font-bold">SOLO PREVIEW</span>
     </div>
 
-    <section className="molsan-card overflow-hidden"><div className="flex min-w-0 flex-wrap items-center gap-2 px-3 py-3">
-      <div className="flex shrink-0 items-center gap-2 pr-2"><span className="grid h-9 w-9 place-items-center rounded-xl" style={{background:"var(--molsan-panel,#F2F7FB)",color:"var(--molsan-blue,#064675)"}}><MolsanIcon name="folderOpen" size={19} tone="ocean" bare /></span><div className="min-w-[145px]"><small className="block text-[9px] font-bold uppercase" style={{color:"var(--molsan-secondary-text,#617789)"}}>Ficha de expediente</small><b className="text-base" style={{color:"var(--molsan-blue,#064675)"}}>2026483148</b><small className="block text-[10px]" style={{color:"var(--molsan-secondary-text,#617789)"}}>Ficha completa del expediente</small></div></div>
-      <label className="flex items-center gap-2 rounded-lg border bg-white px-2 py-1.5" style={{borderColor:"var(--molsan-border,#D8E4EC)"}}><b className="text-[10px] uppercase">Promoción</b><input value={promocion} onChange={e=>setPromocion(e.target.value)} placeholder="Sin asignar" className="w-36 rounded border bg-[#F8FBFD] px-2 py-1.5 text-xs" /></label>
-      <button className="molsan-btn molsan-btn--secondary text-xs" onClick={()=>setModal("Agregar expediente relacionado")}>＋ Agregar expediente relacionado</button>
-      <div className="ml-auto flex flex-wrap gap-1.5">{["Alta defecto","Control y bloqueo","Emails","Área de clientes"].map(x=><button key={x} className="molsan-btn text-[10px]" onClick={()=>setModal(x)}>{x}</button>)}</div>
-      <div className="ml-auto flex flex-wrap gap-2"><span className="rounded-lg border bg-white px-2.5 py-2 text-[10px]"><b>Gestor asignado:</b> Pendiente</span><span className="rounded-lg border bg-[#EFF8F3] px-2.5 py-2 text-[10px] text-emerald-800"><b>Actividad actual:</b> Documentación previa</span></div>
-      {relacionados.length>0 && <div className="basis-full border-t pt-2 text-[10px]">Relacionados: {relacionados.slice(0,2).join(" · ")} {relacionados.length>2 && <button onClick={()=>setModal("Ver expedientes relacionados")}>+{relacionados.length-2} · Ver más</button>}</div>}
-    </div></section>
+    {/* BLOQUES SUPERIORES: misma distribución que la ficha operativa */}
+    <div className="grid min-w-0 grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-12">
+      <SummarySection className="xl:col-span-4" title="Titulares y solicitantes" subtitle="Datos independientes de titulares y solicitantes del expediente" icon="users" open={abiertos.titulares} onToggle={() => setAbiertos(p => ({...p,titulares:!p.titulares}))}>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <div className="rounded-lg border border-slate-100 bg-slate-50/70 p-2"><p className="mb-2 text-[9px] font-extrabold uppercase tracking-wide text-slate-500">Titulares</p><div className="grid gap-2"><DataPoint label="Nombre titular" /><DataPoint label="NIF titular" /></div></div>
+          <div className="rounded-lg border border-slate-100 bg-slate-50/70 p-2"><p className="mb-2 text-[9px] font-extrabold uppercase tracking-wide text-slate-500">Solicitantes</p><div className="grid gap-2"><DataPoint label="Nombre solicitante" /><DataPoint label="NIF solicitante" /></div></div>
+        </div>
+      </SummarySection>
+      <SummarySection className="xl:col-span-4" title="Notario" subtitle="Información del notario asociado" icon="courthouse" open={abiertos.notario} onToggle={() => setAbiertos(p => ({...p,notario:!p.notario}))}>
+        <div className="grid grid-cols-2 gap-2 xl:grid-cols-4">{["Nombre notario","NIF notario","Apoderado","Tipo de firma"].map(x => <DataPoint key={x} label={x} />)}</div>
+      </SummarySection>
+      <SummarySection className="xl:col-span-4" title="Información crediticia" subtitle="Resumen económico y contractual" icon="briefcase" open={abiertos.credito} onToggle={() => setAbiertos(p => ({...p,credito:!p.credito}))}>
+        <div className="grid grid-cols-2 gap-2 xl:grid-cols-4">{["Contrato","Capital","Importe","Finca","Tipo operación","Subtipo operación","N.º solicitud SIA","Observaciones"].map(x => <DataPoint key={x} label={x} />)}</div>
+      </SummarySection>
+    </div>
 
-    <section id="ficha-actividades" className="molsan-card min-w-0 overflow-hidden p-3 sm:p-4">
-      <div className="flex min-w-0 gap-2 overflow-x-auto pb-2">{visibles.map((item,index)=><button key={item.key} type="button" onClick={()=>{setControlCalidad(false);setActividad(item.key)}} aria-pressed={!controlCalidad&&actividad===item.key} className="group relative flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-md" style={{borderColor:!controlCalidad&&actividad===item.key?"var(--molsan-blue,#064675)":"var(--molsan-border,#D8E4EC)",background:!controlCalidad&&actividad===item.key?"var(--molsan-panel,#F2F7FB)":"#fff"}}><span className="absolute inset-x-0 top-0 h-[3px] rounded-t-xl transition-all group-hover:h-1" style={{background:!controlCalidad&&actividad===item.key?"var(--molsan-blue,#064675)":"#B8D1E2"}}/><span className="flex items-start gap-2 pt-1"><span className="grid h-8 w-8 place-items-center rounded-lg" style={{background:"var(--molsan-panel,#F2F7FB)",color:"var(--molsan-blue,#064675)"}}><MolsanIcon name={item.icon} size={17} tone="ocean" bare /></span><span><small className="block text-[9px] font-bold">ACTIVIDAD {String(index+1).padStart(2,"0")}</small><b className="mt-1 block text-[11px] leading-tight">{item.label}</b></span></span>{actividad===item.key&&!controlCalidad&&<small className="mt-1 font-bold text-emerald-700">● Actividad seleccionada</small>}</button>)}
-        <button type="button" onClick={()=>setControlCalidad(true)} className="flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col rounded-xl border px-3 py-2 text-left" style={{borderColor:controlCalidad?"#B9A5E8":"#D8CFF0",background:controlCalidad?"#F5F1FC":"#fff"}}><b className="flex items-center gap-2 text-xs text-violet-800"><MolsanIcon name="shieldCheck" size={18} tone="inherit" bare/>Control de calidad</b><small className="mt-2 text-[9px]">Revisión independiente</small></button>
-      </div>
-      <div className="mt-2 rounded-xl border p-4" style={{borderColor:"var(--molsan-border,#D8E4EC)",background:"rgba(242,247,251,.72)"}}>
-        {controlCalidad?<><h3 className="mb-3 text-sm font-bold">Control de calidad del expediente</h3><div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">{["Hoja de encargo firmada","Justificante de cancelación","Nota simple registral","Firma y protocolo","AJD / ITP","Hoja de inscripción y Registradores","Defectos registrales subsanados","Factura y expediente digital completo"].map(x=><div key={x} className="rounded-lg border bg-white p-3 text-xs">{x}<span className="float-right text-[10px]">Pendiente</span></div>)}</div></>:<>
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-3"><span className="grid h-9 w-9 place-items-center rounded-xl bg-white"><MolsanIcon name={actual.icon} size={19} tone="ocean" bare/></span><div><h3 className="text-sm font-bold" style={{color:"var(--molsan-blue,#064675)"}}>{actual.label}</h3><p className="text-[10px]">Estado actividad: —　 Oficina: —</p></div></div><span className="rounded-full border bg-white px-3 py-1 text-[10px]">Demostración · sin guardar</span></div>
-          {actividad==="gestion-economica"?<div className="space-y-3"><div className="grid grid-cols-2 gap-2 xl:grid-cols-4">{["Provisión inicial","Obligaciones / gastos","Pagos confirmados","Saldo disponible"].map(x=><div className="molsan-data-point" key={x}><p className="ficha-dato__label">{x}</p><b>—</b></div>)}</div><p className="text-xs">El saldo solo se reduce con pagos confirmados; adjuntar una factura no equivale a registrar un pago.</p><button className="molsan-btn molsan-btn--primary" onClick={()=>setModal("Registrar pago")}>Registrar pago</button></div>:<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">{(CAMPOS[actividad]||[]).map(([key,label,type])=>field(key,label,type))}</div>}
-          {actividad!=="gestion-economica"&&<div className="mt-4 rounded-xl border bg-white p-3" style={{borderColor:"var(--molsan-border,#D8E4EC)"}}><div className="mb-2 flex justify-between"><b className="text-xs">Documentación vinculada a la actividad</b><button className="molsan-btn text-[10px]" onClick={()=>setModal("Carpeta digital")}>Abrir carpeta digital</button></div><div className="flex flex-wrap gap-2">{docs.map(x=><span key={x} className="rounded-lg border bg-[#F8FBFD] px-2.5 py-2 text-[10px]">{x}</span>)}</div></div>}
-          <div className="mt-4 flex justify-end gap-2"><button className="molsan-btn" onClick={()=>setModal("Vista previa de actividad")}>Vista previa</button><button className="molsan-btn molsan-btn--primary" onClick={()=>setModal("Guardar datos de actividad")}>Guardar (demo deshabilitada)</button></div>
-        </>}
+    {/* BANDA DE IDENTIFICACIÓN Y ACCIONES: debajo de los tres bloques */}
+    <section className="molsan-card overflow-hidden">
+      <div className="flex w-full min-w-0 flex-wrap items-center gap-2 bg-slate-50/80 px-3 py-2.5">
+        <div className="flex min-w-0 shrink-0 items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-2">
+          <MolsanIcon name="folder" size={19} tone="ocean" bare />
+          <div><small className="block text-[9px] font-bold uppercase tracking-wide text-slate-500">Expediente</small><b className="text-sm text-[#064675]">2026483148</b></div>
+        </div>
+        <label className="flex min-w-0 items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-2"><span className="shrink-0 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Promoción</span><input value={promocion} onChange={e => setPromocion(e.target.value)} placeholder="Sin asignar" className="w-32 min-w-0 rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs outline-none focus:border-blue-400" /></label>
+        <button type="button" onClick={() => openModal("relacionados")} className="molsan-btn molsan-btn--secondary text-[11px]"><MolsanIcon name="plus" size={14} tone="ocean" bare /> Agregar expediente relacionado</button>
+        <div className="ml-auto flex flex-wrap gap-1.5">
+          <button type="button" onClick={() => openModal("defecto")} className="molsan-btn text-[10px]">Alta defecto</button>
+          <button type="button" onClick={() => openModal("control")} className="molsan-btn text-[10px]">Control y bloqueo</button>
+          <button type="button" onClick={() => openModal("emails")} className="molsan-btn text-[10px]">Emails</button>
+          <button type="button" onClick={() => openModal("clientes")} className="molsan-btn text-[10px]">Área de clientes</button>
+        </div>
+        {relacionados.length > 0 && <div className="flex basis-full flex-wrap items-center gap-2 border-t border-slate-200 pt-2 text-[10px]"><b className="uppercase tracking-wide text-slate-400">Relacionados</b>{visibleRelacionados.map(x => <span key={x} className="rounded-md border border-slate-200 bg-white px-2.5 py-1.5 font-semibold text-slate-700">{x}</span>)}{relacionados.length > 2 && <button type="button" onClick={() => openModal("relacionados")} className="font-bold text-amber-700">+{relacionados.length-2} · Ver más</button>}</div>}
       </div>
     </section>
 
-    <div className="grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2">
-      {panel("building","Fincas y Registros","Datos registrales del expediente",<><div className="rounded-xl border bg-white p-3" style={{borderColor:"var(--molsan-border,#D8E4EC)"}}><div className="flex justify-between"><b className="text-sm">Finca —</b><button className="molsan-btn text-[10px]" onClick={()=>setModal("Editar finca")}>Editar</button></div><p className="mt-1 text-[11px]">Registro: — · Sección: — · Población: — · Provincia: —</p><div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">{["CRU/Idufir","Cuantía","Inscripción","Contrato"].map(dato)}</div></div><button className="molsan-btn mt-3 w-full" onClick={()=>setModal("Nueva finca")}>＋ Nueva finca</button></>)}
-      {panel("messageSquare","Observaciones","Última observación · historial y validaciones",<><textarea value={observaciones} onChange={e=>setObservaciones(e.target.value)} rows={3} placeholder="Observaciones locales…" className="w-full rounded-lg border bg-white p-3 text-sm"/><button className="molsan-btn mt-2 w-full" onClick={()=>setModal("Historial de observaciones")}>Ver historial y gestionar observaciones</button></>)}
-    </div>
-    {panel("folderOpen","Carpeta digital","Documentos del expediente, actividad e histórico",<><div className="mb-3 flex gap-2"><button className="molsan-btn molsan-btn--primary" onClick={()=>setModal("Documentos")}>Documentos</button><button className="molsan-btn" onClick={()=>setModal("Historial documental")}>Historial documental</button></div><div className="overflow-x-auto rounded-lg border"><table className="w-full text-left text-xs"><thead style={{background:"var(--molsan-table-head,#EAF2F8)"}}><tr>{["Documento","Actividad","Estado","Fecha","Acciones"].map(x=><th key={x} className="px-3 py-3">{x}</th>)}</tr></thead><tbody><tr><td colSpan={5} className="p-5 text-center">La carpeta aparecerá tras la importación y carga documental.</td></tr></tbody></table></div></>)}
-    {panel("wallet","Gestión económica","Provisiones, obligaciones, pagos, PPAD y saldo",<><div className="mb-3 flex flex-wrap gap-2"><button className="molsan-btn molsan-btn--primary" onClick={()=>setTabEconomia("resumen")}>Resumen</button><button className="molsan-btn" onClick={()=>setTabEconomia("movimientos")}>Libro de gastos y pagos</button><button className="molsan-btn" onClick={()=>setTabEconomia("ppad")}>PPAD</button></div>{tabEconomia==="resumen"?<div className="grid grid-cols-2 gap-2 xl:grid-cols-4">{["Provisión inicial","Obligaciones / gastos","Pagos confirmados","Saldo disponible"].map(x=><div className="molsan-data-point" key={x}><p className="ficha-dato__label">{x}</p><b>—</b></div>)}</div>:<p className="rounded-lg border border-dashed p-4 text-xs">Sin registros en esta demostración.</p>}<p className="mt-3 rounded-lg border p-3 text-[10px]" style={{background:"var(--molsan-panel,#F2F7FB)",borderColor:"var(--molsan-border,#D8E4EC)"}}>Los pagos pendientes no reducen el saldo. Solo los pagos confirmados.</p></>)}
+    {/* SELECTOR HORIZONTAL DE ACTIVIDADES Y CONTROL DE CALIDAD */}
+    <section id="ficha-actividades" className="molsan-card min-w-0 overflow-hidden p-3 sm:p-4">
+      <div className="flex min-w-0 gap-2 overflow-x-auto pb-2">
+        {ACTIVIDADES.map((item,index) => <React.Fragment key={item.key}>
+          {index === ACTIVIDADES.length - 1 && <button type="button" onClick={() => setControlCalidad(true)} className={`group relative flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-md ${controlCalidad ? "border-violet-300 bg-violet-50" : "border-violet-200 bg-white hover:bg-violet-50"}`}><span className="absolute inset-x-0 top-0 h-[3px] rounded-t-xl bg-violet-300 transition-all group-hover:h-1" /><span className="flex items-center gap-2 pt-1 text-xs font-bold text-violet-800"><MolsanIcon name="shield" size={18} tone="violet" bare /> Control de calidad</span><span className="mt-2 text-[9px] font-semibold text-slate-500">Revisión independiente</span></button>}
+          <button type="button" onClick={() => {setControlCalidad(false);setActividad(item.key);}} aria-pressed={!controlCalidad && actividad === item.key} className={`group relative flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-md ${!controlCalidad && actividad === item.key ? "border-blue-300 bg-blue-50 shadow-sm" : "border-slate-200 bg-white"}`}>
+            <span className={`absolute inset-x-0 top-0 h-[3px] rounded-t-xl transition-all group-hover:h-1 ${!controlCalidad && actividad === item.key ? "bg-[#064675]" : "bg-[#B8D1E2]"}`} />
+            <span className="flex min-w-0 items-start gap-2 pt-1"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#F2F7FB] text-[#064675]"><MolsanIcon name={item.icon} size={18} tone="ocean" bare /></span><span className="min-w-0"><small className="block text-[9px] font-bold text-slate-500">ACTIVIDAD {String(index+1).padStart(2,"0")}</small><b className="mt-1 block text-[11px] leading-tight text-slate-800">{item.label}</b></span></span>
+            {!controlCalidad && actividad === item.key && <span className="mt-1.5 text-[9px] font-bold text-emerald-700">● Actividad seleccionada</span>}
+          </button>
+        </React.Fragment>)}
+      </div>
 
-    {modal&&<div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 p-4" onMouseDown={e=>{if(e.target===e.currentTarget)setModal("")}}><section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" className="w-full max-w-xl overflow-hidden rounded-2xl border bg-white shadow-2xl" style={{borderColor:"var(--molsan-border,#D8E4EC)"}}><header className="flex items-center justify-between border-b px-4 py-3" style={{borderColor:"var(--molsan-border,#D8E4EC)"}}><div><h2 className="text-sm font-bold" style={{color:"var(--molsan-blue,#064675)"}}>{modal}</h2><p className="text-[10px]">Acción local · no se guardará</p></div><button className="molsan-btn" onClick={()=>setModal("")}>Cerrar</button></header><div className="p-4"><p className="mb-3 rounded-lg border p-3 text-xs" style={{background:"var(--molsan-panel,#F2F7FB)",borderColor:"var(--molsan-border,#D8E4EC)"}}>La funcionalidad real y sus validaciones permanecen en la ficha operativa. Esta demo no ejecuta operaciones.</p>{modal==="Agregar expediente relacionado"&&<div className="flex gap-2"><input value={nuevoRelacionado} onChange={e=>setNuevoRelacionado(e.target.value)} placeholder="N.º expediente" className="min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm"/><button className="molsan-btn molsan-btn--primary" onClick={()=>{const v=nuevoRelacionado.trim();if(v&&!relacionados.includes(v))setRelacionados(p=>[...p,v]);setNuevoRelacionado("")}}>Añadir localmente</button></div>}</div></section></div>}
+      {controlCalidad ? <div className="mt-2 rounded-xl border border-violet-200 bg-violet-50/40 p-4">
+        <div className="mb-3 flex items-center gap-2"><MolsanIcon name="shield" size={20} tone="violet" bare /><div><h3 className="text-sm font-extrabold text-violet-900">Control de calidad del expediente</h3><p className="text-[10px] text-violet-700">Revisión transversal e independiente de las actividades</p></div></div>
+        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">{["Hoja de solicitud / encargo firmada","Justificante de cancelación","Nota simple registral","Firma y protocolo notarial","Justificante AJD / ITP","Hoja de inscripción","Nota / factura Registradores","Defectos registrales subsanados","Factura y expediente digital completo"].map(x => <label key={x} className="flex items-start gap-2 rounded-lg border border-violet-100 bg-white p-3 text-xs text-slate-700"><input type="checkbox" className="mt-0.5 accent-[#064675]" />{x}</label>)}</div>
+      </div> : <div className="mt-2 min-w-0 rounded-xl border border-slate-200 bg-slate-50/70 p-3 sm:p-4">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-[#064675]"><MolsanIcon name={actual.icon} size={19} tone="ocean" bare /></span><div><h3 className="text-sm font-extrabold text-[#064675]">{actual.label}</h3><p className="mt-0.5 text-[10px] text-slate-500">Estado actividad: — <span className="px-1">·</span> Oficina: — <span className="px-1">·</span> Fecha alta: —</p></div></div>
+          <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[9px] font-bold text-slate-500">DEMOSTRACIÓN · SIN GUARDAR</span>
+        </div>
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <button type="button" onClick={() => openModal("datosActividad")} className="molsan-btn text-[11px]"><MolsanIcon name="clipboardList" size={15} tone="ocean" bare /> Datos de actividad</button>
+          <button type="button" onClick={() => openModal("ppad")} className="molsan-btn text-[11px]"><MolsanIcon name="euro" size={15} tone="ocean" bare /> PPAD</button>
+          <button type="button" onClick={() => openModal("acciones")} className="molsan-btn text-[11px]"><MolsanIcon name="zap" size={15} tone="ocean" bare /> Acciones</button>
+          <span className="ml-auto text-[10px] font-semibold text-slate-500">Campos propios de la actividad seleccionada</span>
+        </div>
+
+        {/* LA CARPETA DIGITAL PERTENECE A LA ACTIVIDAD; NO ES UN BLOQUE SUELTO AL FINAL */}
+        <section className="mb-4 overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <header className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 py-2.5">
+            <div className="flex items-center gap-2"><MolsanIcon name="folderOpen" size={17} tone="ocean" bare /><div><h4 className="text-xs font-extrabold text-slate-800">Carpeta digital · {actual.label}</h4><p className="text-[9px] text-slate-500">Documentación asociada a esta actividad y su histórico</p></div></div>
+            <button type="button" onClick={() => openModal("carpeta")} className="molsan-btn molsan-btn--secondary text-[10px]">Abrir carpeta digital</button>
+          </header>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[620px] text-left text-[10px]"><thead className="bg-[#EAF2F8] text-slate-600"><tr>{["Documento requerido","Actividad","Estado","Fecha","Acción"].map(x => <th key={x} className="px-3 py-2 font-bold">{x}</th>)}</tr></thead>
+              <tbody>{docs.map((doc,i) => <tr key={doc} className="border-t border-slate-100"><td className="px-3 py-2.5 font-semibold text-slate-700">{doc}</td><td className="px-3 py-2.5 text-slate-500">{actual.label}</td><td className="px-3 py-2.5"><span className="rounded-full bg-amber-50 px-2 py-1 font-bold text-amber-700">Pendiente</span></td><td className="px-3 py-2.5 text-slate-400">—</td><td className="px-3 py-2.5"><button type="button" onClick={() => openModal("carpeta")} className="font-bold text-blue-700 hover:underline">Ver documento</button></td></tr>)}
+              {docs.length === 0 && <tr><td colSpan={5} className="px-3 py-5 text-center text-slate-500">No hay documentos configurados para esta actividad.</td></tr>}</tbody>
+            </table>
+          </div>
+        </section>
+
+        {renderFields()}
+        <div className="mt-4 flex flex-wrap justify-end gap-2 border-t border-slate-200 pt-3">
+          <button type="button" onClick={() => openModal("preview")} className="molsan-btn">Vista previa</button>
+          <button type="button" onClick={() => openModal("datosActividad")} className="molsan-btn molsan-btn--secondary">Consultar datos de actividad</button>
+          <button type="button" onClick={() => openModal("confirmarDemo")} className="molsan-btn molsan-btn--primary">Guardar datos · Demo</button>
+        </div>
+      </div>}
+    </section>
+
+    {/* BLOQUES INFERIORES EN LA POSICIÓN ORIGINAL: FINCAS Y OBSERVACIONES EN PARALELO */}
+    <div className="grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2">
+      <Section id="ficha-fincas" title="Fincas y Registros" subtitle="Datos registrales del expediente" icon="building" action={<button type="button" onClick={() => openModal("finca")} className="molsan-btn molsan-btn--secondary text-[10px]">＋ Nueva finca</button>}>
+        <article className="rounded-xl border border-slate-200 bg-white p-3">
+          <div className="flex flex-wrap items-start justify-between gap-2"><div><h3 className="text-sm font-bold text-slate-800">Finca —</h3><p className="mt-1 text-[10px] text-slate-500">Registro: — <span className="px-1">·</span> Sección: — <span className="px-1">·</span> Población: — <span className="px-1">·</span> Provincia: —</p></div><div className="flex gap-2"><button type="button" onClick={() => openModal("finca")} className="molsan-btn text-[10px]">Editar</button><button type="button" onClick={() => openModal("finca")} className="molsan-btn text-[10px]">Registro</button></div></div>
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">{["CRU/Idufir","Cuantía","Inscripción","Contrato"].map(x => <DataPoint key={x} label={x} />)}</div>
+        </article>
+      </Section>
+      <Section id="ficha-observaciones" title="Observaciones" subtitle="Última observación · historial y validaciones" icon="message" action={<button type="button" onClick={() => openModal("observaciones")} className="molsan-btn molsan-btn--secondary text-[10px]">Ver historial</button>}>
+        {observaciones ? <article className="rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-700">{observaciones}</article> : <p className="rounded-xl border border-dashed border-slate-200 bg-white px-3 py-4 text-xs text-slate-500">Todavía no hay observaciones añadidas.</p>}
+        <button type="button" onClick={() => openModal("observaciones")} className="mt-3 w-full rounded-xl border border-blue-200 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 hover:bg-blue-100"><MolsanIcon name="message" size={15} tone="ocean" bare /> Ver historial y gestionar observaciones</button>
+      </Section>
+    </div>
+
+    {/* GESTIÓN ECONÓMICA COMO BLOQUE INDEPENDIENTE, NO COMO CARPETA NI ACTIVIDAD DOCUMENTAL */}
+    <Section title="Gestión económica" subtitle="Provisiones, obligaciones, pagos, PPAD y saldo del expediente" icon="briefcase">
+      <div className="mb-3 flex flex-wrap gap-2 border-b border-slate-200 pb-3">
+        {[["resumen","Resumen"],["movimientos","Libro de gastos y pagos"],["ppad","PPAD"]].map(([key,label]) => <button key={key} type="button" onClick={() => setTabEconomia(key)} className={`rounded-lg border px-3 py-2 text-[11px] font-bold transition ${tabEconomia === key ? "border-[#064675] bg-[#EAF2F8] text-[#064675]" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}>{label}</button>)}
+      </div>
+      {tabEconomia === "resumen" && <div className="grid grid-cols-2 gap-2 xl:grid-cols-4">{["Provisión inicial","Obligaciones / gastos","Pagos confirmados","Saldo disponible"].map(x => <DataPoint key={x} label={x} />)}</div>}
+      {tabEconomia === "movimientos" && <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white"><table className="w-full min-w-[560px] text-left text-xs"><thead className="bg-[#EAF2F8]"><tr>{["Fecha","Concepto","Tipo","Importe","Estado"].map(x => <th key={x} className="px-3 py-2.5">{x}</th>)}</tr></thead><tbody><tr><td colSpan={5} className="p-5 text-center text-slate-500">No hay movimientos en esta demostración.</td></tr></tbody></table><div className="flex justify-end p-3"><button type="button" onClick={() => openModal("pago")} className="molsan-btn molsan-btn--primary text-[11px]">＋ Registrar pago · Demo</button></div></div>}
+      {tabEconomia === "ppad" && <div className="rounded-xl border border-dashed border-slate-200 bg-white p-4"><p className="text-xs text-slate-500">Sin registros PPAD en esta demostración.</p><button type="button" onClick={() => openModal("ppad")} className="molsan-btn molsan-btn--secondary mt-3 text-[11px]">Abrir PPAD</button></div>}
+      <p className="mt-3 rounded-lg border border-[#D8E4EC] bg-[#F2F7FB] p-3 text-[10px] text-[#617789]">Regla económica: adjuntar una factura o registrar un gasto no reduce el saldo. Solo los pagos confirmados descuentan saldo disponible.</p>
+    </Section>
+
+    {/* VENTANAS MODALES DE DEMOSTRACIÓN */}
+    {modal && <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6" onMouseDown={e => {if(e.target === e.currentTarget) closeModal();}}>
+      <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="ficha-demo-modal-title" className="my-auto max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-2xl border border-[#D8E4EC] bg-white shadow-2xl">
+        <header className="flex items-center justify-between gap-3 border-b border-slate-200 bg-[linear-gradient(110deg,#F2F7FB,#FFFFFF)] px-4 py-3 sm:px-5">
+          <div className="flex min-w-0 items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[#D8E4EC] bg-white text-[#064675]"><MolsanIcon name="file" size={18} tone="ocean" bare /></span><div className="min-w-0"><h2 id="ficha-demo-modal-title" className="text-sm font-extrabold text-[#064675]">{modalTitle}</h2><p className="text-[10px] text-[#617789]">Expediente 2026483148 · Entorno de demostración</p></div></div>
+          <button type="button" onClick={closeModal} aria-label="Cerrar ventana" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50"><MolsanIcon name="x" size={14} tone="muted" bare /> Cerrar</button>
+        </header>
+        <div className="max-h-[calc(92vh-70px)] overflow-y-auto p-4 sm:p-5">
+          <div className="mb-4 rounded-lg border border-[#D8E4EC] bg-[#F2F7FB] p-3 text-[10px] text-[#617789]">Esta ventana reproduce la interacción y distribución de la ficha. Los botones de confirmación son demostrativos: no se envían datos ni se ejecutan operaciones reales.</div>
+
+          {modal === "relacionados" && <div className="space-y-3"><div className="flex flex-wrap gap-2"><input value={nuevoRelacionado} onChange={e => setNuevoRelacionado(e.target.value)} onKeyDown={e => e.key === "Enter" && addRelacionado()} placeholder="Número de expediente" className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm" /><button type="button" onClick={addRelacionado} className="molsan-btn molsan-btn--primary">＋ Agregar</button></div><div className="overflow-hidden rounded-xl border border-slate-200"><table className="w-full text-left text-xs"><thead className="bg-[#EAF2F8]"><tr><th className="px-3 py-2.5">Expediente relacionado</th><th className="px-3 py-2.5">Relación</th><th className="px-3 py-2.5">Acción</th></tr></thead><tbody>{relacionados.map(x => <tr key={x} className="border-t border-slate-100"><td className="px-3 py-2.5 font-bold">{x}</td><td className="px-3 py-2.5">Añadido manualmente</td><td className="px-3 py-2.5"><button type="button" onClick={() => setRelacionados(p => p.filter(v => v !== x))} className="font-bold text-red-700">Quitar</button></td></tr>)}{relacionados.length === 0 && <tr><td colSpan={3} className="p-5 text-center text-slate-500">No hay expedientes relacionados en la demostración.</td></tr>}</tbody></table></div></div>}
+
+          {modal === "carpeta" && <div className="space-y-3"><div className="flex flex-wrap items-center justify-between gap-2"><div><h3 className="text-sm font-bold text-slate-800">Documentación · {actual.label}</h3><p className="text-[10px] text-slate-500">Vista de documentos de la actividad seleccionada</p></div><button type="button" className="molsan-btn molsan-btn--secondary text-[10px]" onClick={() => setModal("preview")}>Vista previa</button></div><div className="overflow-x-auto rounded-xl border border-slate-200"><table className="w-full min-w-[560px] text-left text-xs"><thead className="bg-[#EAF2F8]"><tr>{["Documento","Categoría","Estado","Fecha","Acciones"].map(x => <th key={x} className="px-3 py-2.5">{x}</th>)}</tr></thead><tbody>{docs.map(x => <tr key={x} className="border-t border-slate-100"><td className="px-3 py-3 font-semibold">{x}</td><td className="px-3 py-3">{actual.label}</td><td className="px-3 py-3"><span className="rounded-full bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-700">Pendiente</span></td><td className="px-3 py-3">—</td><td className="px-3 py-3"><button type="button" onClick={() => setModal("preview")} className="font-bold text-blue-700">Abrir</button></td></tr>)}</tbody></table></div><button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => setModal("subirDocumento")}>＋ Añadir documento · Demo</button></div>}
+
+          {modal === "datosActividad" && <><div className="mb-3 text-xs font-bold text-slate-700">{actual.label} · Datos complementarios</div>{renderFields([["fecha_inicio_actividad","Inicio actividad","date"],["fecha_fin_actividad","Fin actividad","date"],["fecha_envio_absis","Fecha de envío / integración","date"],["observaciones_actividad","Observaciones","textarea"]])}<div className="mt-4 flex justify-end"><button type="button" onClick={closeModal} className="molsan-btn molsan-btn--primary">Aceptar</button></div></>}
+
+          {modal === "ppad" && <div className="space-y-3"><div className="overflow-hidden rounded-xl border border-slate-200"><table className="w-full text-left text-xs"><thead className="bg-[#EAF2F8]"><tr>{["Concepto","Importe","Imputable a","Estado"].map(x => <th key={x} className="px-3 py-2.5">{x}</th>)}</tr></thead><tbody><tr><td colSpan={4} className="p-5 text-center text-slate-500">Todavía no hay conceptos PPAD añadidos.</td></tr></tbody></table></div><button type="button" onClick={() => setValores(p => ({...p,ppadDemoNuevo:!p.ppadDemoNuevo}))} className="molsan-btn molsan-btn--secondary">＋ Añadir concepto PPAD</button>{valores.ppadDemoNuevo && <div className="grid gap-3 rounded-xl border border-slate-200 p-3 sm:grid-cols-2"><Field label="Concepto" value={value("ppadConcepto")} onChange={v => setField("ppadConcepto",v)} /><Field label="Importe (€)" type="number" value={value("ppadImporte")} onChange={v => setField("ppadImporte",v)} /></div>}</div>}
+
+          {modal === "acciones" && <div className="grid gap-3 sm:grid-cols-2"><Field label="Acción" value={value("accionDemo")} onChange={v => setField("accionDemo",v)} /><Field label="Fecha" type="date" value={value("accionFecha")} onChange={v => setField("accionFecha",v)} /><Field label="Comentarios" type="textarea" value={value("accionComentario")} onChange={v => setField("accionComentario",v)} wide /></div>}
+
+          {modal === "finca" && <div className="grid gap-3 sm:grid-cols-2"><Field label="Número de finca" value={finca.numero || ""} onChange={v => setFinca(p => ({...p,numero:v}))} /><Field label="Registro de la Propiedad" value={finca.registro || ""} onChange={v => setFinca(p => ({...p,registro:v}))} /><Field label="CRU / Idufir" value={finca.cru || ""} onChange={v => setFinca(p => ({...p,cru:v}))} /><Field label="Población" value={finca.poblacion || ""} onChange={v => setFinca(p => ({...p,poblacion:v}))} /><Field label="Provincia" value={finca.provincia || ""} onChange={v => setFinca(p => ({...p,provincia:v}))} /><Field label="Inscripción" value={finca.inscripcion || ""} onChange={v => setFinca(p => ({...p,inscripcion:v}))} /></div>}
+
+          {modal === "observaciones" && <div className="space-y-3"><Field label="Nueva observación" type="textarea" value={observaciones} onChange={setObservaciones} /><div className="rounded-xl border border-dashed border-slate-200 p-4 text-xs text-slate-500">{observaciones ? "La observación se muestra en el bloque de la ficha mientras permanezca abierta esta demostración." : "No hay observaciones guardadas en esta demostración."}</div></div>}
+
+          {modal === "defecto" && <div className="grid gap-3 sm:grid-cols-2"><Field label="Tipo de documento" value={value("defectoTipo")} onChange={v => setField("defectoTipo",v)} /><Field label="Fecha de calificación" type="date" value={value("defectoFecha")} onChange={v => setField("defectoFecha",v)} /><Field label="Motivo del defecto" type="textarea" value={value("defectoMotivo")} onChange={v => setField("defectoMotivo",v)} wide /></div>}
+
+          {modal === "control" && <div className="space-y-3"><div className="grid gap-2 sm:grid-cols-2">{["Retención sin tramitar","Cambio de gestoría","Bloqueo manual","Expediente liquidado sin tramitar"].map(x => <label key={x} className="flex items-center gap-2 rounded-lg border border-slate-200 p-3 text-xs"><input type="checkbox" className="accent-[#064675]" />{x}</label>)}</div><Field label="Motivo / observaciones del control" type="textarea" value={value("controlMotivo")} onChange={v => setField("controlMotivo",v)} /></div>}
+
+          {modal === "emails" && <div className="rounded-xl border border-dashed border-slate-200 p-5 text-center text-xs text-slate-500">La correspondencia y el histórico de emails aparecerán aquí en el expediente operativo.</div>}
+          {modal === "clientes" && <div className="rounded-xl border border-dashed border-slate-200 p-5 text-center text-xs text-slate-500">Vista de demostración del acceso al área de clientes vinculada al expediente.</div>}
+          {modal === "preview" && <div className="rounded-xl border border-slate-200 bg-white p-5"><p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">MOLSAN ERP · Expediente 2026483148</p><h3 className="mt-2 text-lg font-extrabold text-slate-800">{actual.label}</h3><p className="mt-1 text-xs text-slate-500">Vista previa de los datos y documentos de la actividad.</p><div className="mt-4 grid gap-2 sm:grid-cols-2">{(CAMPOS[actividad] || []).slice(0,8).map(([key,label]) => <DataPoint key={key} label={label} />)}</div></div>}
+          {modal === "pago" && <div className="grid gap-3 sm:grid-cols-2"><Field label="Concepto del pago" value={pagoDemo.concepto} onChange={v => setPagoDemo(p => ({...p,concepto:v}))} /><Field label="Importe (€)" type="number" value={pagoDemo.importe} onChange={v => setPagoDemo(p => ({...p,importe:v}))} /></div>}
+          {(modal === "confirmarDemo" || modal === "subirDocumento") && <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-800">{modal === "subirDocumento" ? "La carga documental real se realiza desde la carpeta digital operativa. Esta demostración no adjunta archivos." : "La ficha de demostración no persiste cambios. La validación y el guardado reales permanecen en la ficha operativa."}</div>}
+
+          <div className="mt-5 flex flex-wrap justify-end gap-2 border-t border-slate-200 pt-3"><button type="button" onClick={closeModal} className="molsan-btn">Cerrar</button>{["datosActividad","acciones","finca","defecto","control","observaciones","pago"].includes(modal) && <button type="button" onClick={closeModal} className="molsan-btn molsan-btn--primary">Aceptar · Demo</button>}</div>
+        </div>
+      </section>
+    </div>}
   </main>;
 }
