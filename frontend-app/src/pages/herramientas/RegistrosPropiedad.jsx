@@ -6,6 +6,7 @@ import {
 } from "react";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 /**
  * ============================================================
@@ -3058,6 +3059,9 @@ function ModalImportarExcel({
   formatearTamano
 }) {
 
+  const importarRegistrosDialogRef = useRef(null);
+  useAccessibleDialog({ open: true, onClose: () => { if (!importando) onCerrar(); }, dialogRef: importarRegistrosDialogRef });
+
   return (
 
     <div
@@ -3088,6 +3092,11 @@ function ModalImportarExcel({
     >
 
       <div
+        ref={importarRegistrosDialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Importar Registros de la Propiedad"
         className="
           w-full
           max-w-3xl
@@ -3731,6 +3740,9 @@ function ModalRegistroPropiedad({
   }
 
 
+  const registroPropiedadDialogRef = useRef(null);
+  useAccessibleDialog({ open: true, onClose: () => { if (!guardando) onCerrar(); }, dialogRef: registroPropiedadDialogRef });
+
   return (
 
     <div
@@ -3761,6 +3773,11 @@ function ModalRegistroPropiedad({
     >
 
       <div
+        ref={registroPropiedadDialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Formulario de Registro de la Propiedad"
         className="
           max-h-[94vh]
           w-full
