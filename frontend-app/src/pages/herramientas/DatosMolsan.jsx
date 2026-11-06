@@ -83,13 +83,12 @@ export default function DatosMolsan() {
   return (
     <div className="molsan-page-stack herramientas-subpagina-premium min-h-full animate-fadeIn">
       <header className="molsan-page-header">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="flex items-start gap-4">
-          <MolsanIcon name="building" size={48} tone="indigo" />
-          <div>
-            <p className="text-xs font-black uppercase tracking-[.18em] text-indigo-600">Utilidades · Configuración corporativa</p>
-            <h1 className="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">Datos Molsan</h1>
-            <p className="mt-2 max-w-3xl text-sm text-slate-500">Guarda los datos oficiales de la empresa en un único lugar para reutilizarlos en documentos y facturación. No introducimos valores por defecto para evitar datos fiscales incorrectos.</p>
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="building" size={22} tone="ocean" /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">Utilidades · Configuración corporativa</p>
+            <h1 className="molsan-page-header__title">Datos Molsan</h1>
+            <p className="molsan-page-header__description">Guarda los datos oficiales de la empresa en un único lugar para reutilizarlos en documentos y facturación. No introducimos valores por defecto para evitar datos fiscales incorrectos.</p>
           </div>
         </div>
       </header>
