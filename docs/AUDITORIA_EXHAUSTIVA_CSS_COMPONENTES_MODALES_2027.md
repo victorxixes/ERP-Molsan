@@ -764,4 +764,5 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - Verificadas las dos vistas principales del archivo: catálogo de provisiones y gestión de provisiones; ambas utilizan `MolsanPageHeader` con títulos, descripciones y acciones dentro del mismo bloque cuando corresponde.
 - Sustituido el carácter Unicode «＋» de la acción «Nueva provisión» por `MolsanIcon name="plus"`, manteniendo el texto, el evento y el estilo del botón.
 - No se han alterado el editor de plantillas, los formularios, los importes, los cálculos ni la persistencia de provisiones.
-- Build de Preview pendiente para el cambio de iconografía.
+- El formulario de envío por email es el único diálogo declarado en esta página: tiene `role=dialog`, `aria-modal=true`, ref y llamada a `useAccessibleDialog`.
+- Render Preview construyó correctamente los 299 módulos y el despliegue del commit `79f9257` está `LIVE`; queda pendiente la prueba manual responsive y de teclado.
