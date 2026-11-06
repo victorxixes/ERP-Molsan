@@ -962,7 +962,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         <section className="mt-6 grid min-w-0 grid-cols-1 gap-5 2xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.45fr)]">
           <div className="eg-panel min-w-0">
             <div className="eg-panel-head">
-              <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><div className="flex items-center gap-2"><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span>{modo === "externo" && <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary whitespace-nowrap">＋ Nuevo encargo</button>}</div></div>
+              <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><div className="flex items-center gap-2"><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span>{modo === "externo" && <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="molsan-btn molsan-btn--primary whitespace-nowrap">＋ Nuevo encargo</button>}</div></div>
               <form className="mt-4 space-y-2" onSubmit={aplicarFiltros}>
                 <input className={inputClass} type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar referencia, notaría, titular o banco…" />
                 <div className="flex gap-2">
@@ -1270,8 +1270,8 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
             <footer className="eg-modal-footer">
               <span>{Object.values(archivosSolicitud).reduce((total, archivos) => total + archivos.length, 0)} archivo(s) seleccionado(s)</span>
               <div>
-                <button type="button" disabled={guardando} onClick={() => setModalNuevo(false)} className="eg-secondary">Cancelar</button>
-                <button type="submit" disabled={guardando || (modo === "interno" && !notarias.length)} className="eg-button-primary">
+                <button type="button" disabled={guardando} onClick={() => setModalNuevo(false)} className="molsan-btn molsan-btn--secondary">Cancelar</button>
+                <button type="submit" disabled={guardando || (modo === "interno" && !notarias.length)} className="molsan-btn molsan-btn--primary">
                   {guardando ? "Guardando encargo y documentos…" : "Guardar encargo"}
                 </button>
               </div>
