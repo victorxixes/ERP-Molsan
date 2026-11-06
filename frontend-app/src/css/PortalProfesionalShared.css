@@ -1678,7 +1678,7 @@
   font:inherit;text-align:left;color:inherit;cursor:pointer;
 }
 .apoderagest .ag-kpi-interactiva:focus-visible{outline:3px solid #8bbcf2;outline-offset:3px}
-.apoderagest .ag-kpi-ver-expedientes{display:block;margin-top:9px;color:#4e718f;font-size:10px;font-weight:800;letter-spacing:.15px}
+
 .apoderagest .ag-kpi-interactiva:hover .ag-kpi-ver-expedientes{color:#176a83}
 .ag-resumen-modal-overlay{
   position:fixed;inset:0;z-index:2500;display:flex;align-items:center;justify-content:center;
