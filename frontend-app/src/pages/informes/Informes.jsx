@@ -3547,7 +3547,7 @@ function InformeFacturacion() {
               <label className="text-xs font-semibold text-slate-600">Buscar expediente / factura<input className={campo} value={filtros.q || ""} onChange={(e) => cambiar("q", e.target.value)} placeholder="Nº expediente, IDGASTO o factura" /></label>
               <div className="flex flex-wrap items-center gap-2 sm:col-span-2 xl:col-span-4">
                 <button type="submit" className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">Aplicar filtros</button>
-                <button type="button" onClick={exportar} disabled={exportando} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:opacity-50">{exportando ? "Exportando…" : "↓ Descargar Excel"}</button>
+                <button type="button" onClick={exportar} disabled={exportando} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:opacity-50">{exportando ? "Exportando…" : <><MolsanIcon name="download" size={15} tone="inherit" /> Descargar Excel</>}</button>
                 <span className="text-xs text-slate-500">La selección de fechas también actualiza las tarjetas del informe.</span>
               </div>
             </form>
