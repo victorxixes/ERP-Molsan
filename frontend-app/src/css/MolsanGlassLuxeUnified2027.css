@@ -1,0 +1,139 @@
+/* MOLSAN ERP PREMIUM 2027 · GLASS LUXE UNIFIED COMPONENTS
+   Capa canónica de convergencia visual. Se importa después de las hojas
+   heredadas y compartidas. No cambia estructura, datos ni comportamiento. */
+
+:root {
+  --molsan-glass-border: rgba(255,255,255,.30);
+  --molsan-glass-surface: rgba(255,255,255,.13);
+  --molsan-glass-shadow: 0 10px 28px rgba(4,55,91,.13);
+  --molsan-card-border: #D8E4EC;
+  --molsan-card-shadow: 0 8px 24px rgba(6,50,82,.065);
+  --molsan-card-shadow-hover: 0 15px 32px rgba(6,50,82,.11);
+}
+
+/* CABECERA ÚNICA: aplicada a las cabeceras principales y a las de los portales.
+   El tinte azul translúcido y el blur deben verse igual en todas las rutas. */
+.erp-route-content .molsan-page-header,
+.erp-page.molsan-professional-shell > .molsan-page-header,
+.apoderagest > header.ag-hero.molsan-page-header,
+.encargagest > header.ag-hero.molsan-page-header,
+.notargest.ng-content > header.ng-hero.molsan-page-header,
+.ng-admin-notarias > header.ng-hero.molsan-page-header,
+.catalogos-premium-page > .molsan-page-header,
+.utilidades-premium-page > .molsan-page-header {
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 88% 10%, rgba(170,220,232,.26), transparent 43%),
+    linear-gradient(116deg, rgba(3,45,75,.90) 0%, rgba(6,70,117,.86) 55%, rgba(13,99,140,.82) 100%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(135%) !important;
+  backdrop-filter: blur(22px) saturate(135%) !important;
+  border: 1px solid var(--molsan-glass-border) !important;
+  box-shadow: var(--molsan-glass-shadow) !important;
+  color: #fff !important;
+}
+.erp-route-content .molsan-page-header::before,
+.erp-page.molsan-professional-shell > .molsan-page-header::before,
+.apoderagest > header.ag-hero.molsan-page-header::before,
+.encargagest > header.ag-hero.molsan-page-header::before,
+.notargest.ng-content > header.ng-hero.molsan-page-header::before,
+.ng-admin-notarias > header.ng-hero.molsan-page-header::before,
+.catalogos-premium-page > .molsan-page-header::before,
+.utilidades-premium-page > .molsan-page-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(125deg, rgba(255,255,255,.10), transparent 42%, rgba(108,197,217,.08));
+}
+.erp-route-content .molsan-page-header__title,
+.erp-page.molsan-professional-shell .molsan-page-header__title,
+:is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__title {
+  color: #fff !important;
+}
+.erp-route-content .molsan-page-header__description,
+.erp-page.molsan-professional-shell .molsan-page-header__description,
+:is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__description {
+  color: #D1E4EE !important;
+}
+
+/* TARJETAS: mismo lenguaje de superficie, profundidad, borde y hover.
+   Se enumeran clases existentes de los portales para que no queden aisladas
+   del sistema compartido por utilizar nomenclaturas históricas distintas. */
+:where(
+  .erp-card, .card-sj,
+  .apoderagest .ag-kpi,
+  .encargagest .eg-kpi,
+  .encargagest .eg-main .ag-kpi,
+  .notargest.ng-content .ng-dashboard-kpi,
+  .notargest.ng-content .ng-kpi-card,
+  .ng-admin-notarias .ng-admin-kpi-button
+) {
+  border: 1px solid var(--molsan-card-border) !important;
+  border-radius: 18px !important;
+  background: linear-gradient(150deg,#fff 0%,#fff 62%,#F2F7FB 100%) !important;
+  box-shadow: var(--molsan-card-shadow) !important;
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease, background .2s ease !important;
+}
+:where(
+  .erp-card, .card-sj,
+  .apoderagest .ag-kpi,
+  .encargagest .eg-kpi,
+  .encargagest .eg-main .ag-kpi,
+  .notargest.ng-content .ng-dashboard-kpi,
+  .notargest.ng-content .ng-kpi-card,
+  .ng-admin-notarias .ng-admin-kpi-button
+):hover {
+  border-color: #B9D7E6 !important;
+  box-shadow: var(--molsan-card-shadow-hover) !important;
+  transform: translateY(-2px);
+}
+
+/* ICONOS: una única cápsula visual para los wrappers de icono ya existentes.
+   No sustituye componentes React ni introduce iconos Unicode. */
+:where(
+  .apoderagest .ag-kpi-icono,
+  .encargagest .eg-kpi-icono,
+  .notargest.ng-content .ng-kpi-icon,
+  .notargest.ng-content .ng-dashboard-kpi-icon,
+  .ng-admin-notarias .ng-admin-kpi-icon,
+  .erp-card .molsan-icon-wrap,
+  .card-sj .molsan-icon-wrap
+) {
+  display: grid;
+  place-items: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  color: #064675 !important;
+  border: 1px solid #D8E4EC !important;
+  border-radius: 12px !important;
+  background: #F2F7FB !important;
+}
+
+/* Evita que las reglas de transición heredadas hagan parpadear cabeceras. */
+.erp-route-content .molsan-page-header,
+.erp-page.molsan-professional-shell .molsan-page-header,
+:is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+@media (max-width: 760px) {
+  .erp-route-content .molsan-page-header,
+  .erp-page.molsan-professional-shell .molsan-page-header,
+  :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header {
+    flex-wrap: wrap !important;
+    min-height: 74px;
+    padding: 12px 14px !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.erp-card,.card-sj,.ag-kpi,.eg-kpi,.ng-kpi-card,.ng-dashboard-kpi,.ng-admin-kpi-button) {
+    transition: none !important;
+  }
+  :where(.erp-card,.card-sj,.ag-kpi,.eg-kpi,.ng-kpi-card,.ng-dashboard-kpi,.ng-admin-kpi-button):hover {
+    transform: none !important;
+  }
+}
