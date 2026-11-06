@@ -1205,6 +1205,7 @@ function Modal({
         aria-label={titulo || "Diálogo del expediente"}
         tabIndex={-1}
         className={`
+          molsan-modal__panel
           relative
           flex
           max-h-[92vh]
@@ -1212,11 +1213,6 @@ function Modal({
           ${ancho}
           flex-col
           overflow-hidden
-          rounded-2xl
-          border
-          border-slate-200
-          bg-white
-          shadow-2xl
         `}
         onMouseDown={(event) => {
           event.stopPropagation();
@@ -1228,11 +1224,9 @@ function Modal({
             items-center
             justify-between
             gap-4
-            border-b
-            border-slate-200
-            bg-gradient-to-r
-            from-slate-50
-            to-white
+            molsan-modal-header
+            border-0
+            bg-white
             px-6
             py-5
           "
