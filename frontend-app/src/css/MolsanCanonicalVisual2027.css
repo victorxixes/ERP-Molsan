@@ -20,7 +20,7 @@
   .mensajes-premium-page, .molsan-intranet-page, .fichajes-premium-page,
   .provisiones-fondos-premium, .provisiones-fondos-page
 ) {
-  background-color: #FFFFFF;
+  background: #FFFFFF !important;
 }
 
 /* Geometría y posición iguales al Dashboard; superficie blanca y sobria. */
