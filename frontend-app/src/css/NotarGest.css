@@ -354,8 +354,8 @@
   min-width: 0;
   overflow: hidden;
   color: var(--ng-text);
-  border: 1px solid var(--ng-border);
-  border-radius: 17px;
+  border: 1px solid #D8E4EC;
+  border-radius: 18px;
   background: #fff;
   box-shadow: 0 24px 70px rgba(3,32,52,.24);
 }
@@ -365,8 +365,8 @@
   justify-content: space-between;
   gap: 16px;
   padding: 18px 20px;
-  border-bottom: 1px solid var(--ng-border);
-  background: var(--ng-soft);
+  border-bottom: 1px solid #D8E4EC;
+  background: #F2F7FB;
 }
 .ng-modal > header h2,.ng-resumen-expedientes-modal > header h2 { margin: 0; color: var(--ng-primary); font-size: 17px; font-weight: 850; }
 .ng-modal > header p,.ng-resumen-expedientes-modal > header p { margin: 5px 0 0; color: var(--ng-muted); font-size: 11px; }
@@ -481,16 +481,6 @@
   border-radius:15px;
   background:linear-gradient(145deg,#FFFFFF,#EAF2F8);
   box-shadow:0 5px 14px rgba(6,50,82,.09);
-}
-.ng-modal-overlay,.ng-resumen-expedientes-overlay { z-index:1200; }
-.ng-modal,.ng-resumen-expedientes-modal {
-  border:1px solid #D8E4EC;
-  border-radius:18px;
-  box-shadow:0 24px 70px rgba(3,32,52,.24);
-}
-.ng-modal > header,.ng-resumen-expedientes-modal > header {
-  background:#F2F7FB;
-  border-bottom:1px solid #D8E4EC;
 }
 .ng-modal :is(input,select,textarea),.ng-resumen-expedientes-modal :is(input,select,textarea) {
   max-width:100%;min-width:0;box-sizing:border-box;
