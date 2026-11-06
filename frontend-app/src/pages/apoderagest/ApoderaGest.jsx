@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 import AutocompleteNotario from "../../components/agenda/AutocompleteNotario";
 import Agenda from "../agenda/Agenda";
@@ -892,33 +893,7 @@ export default function ApoderaGest() {
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest">
-      <header className="ag-hero molsan-page-header">
-        <div className="ag-hero-identidad molsan-page-header__identity">
-          <div className="ag-marca">AG</div>
-          <div>
-            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1 className="molsan-page-header__title">ApoderaGest</h1>
-            <p className="molsan-page-header__description">Centro de gestión de encargos, firmas y actividad del apoderado.</p>
-          </div>
-        </div>
-        <div className="ag-hero-acciones">
-          <div className="ag-fecha-actual">
-            <span className="ag-punto-vivo" />
-            <span>{fechaActual}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/modulos")}
-            className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"
-          >
-            <span aria-hidden="true">▦</span> Ir a módulos
-          </button>
-          <button type="button" className="ag-boton-actualizar" onClick={cargarDatos} disabled={cargando}>
-            <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
-            {cargando ? "Actualizando…" : "Actualizar datos"}
-          </button>
-        </div>
-      </header>
+      <MolsanPageHeader mark="AG" title="ApoderaGest" description="Centro de gestión de encargos, firmas y actividad del apoderado." actions={<><div className="molsan-premium-header__date"><span aria-hidden="true" />{fechaActual}</div><button type="button" onClick={() => navigate("/modulos")} className="molsan-premium-header__secondary-action">Ir a módulos</button><button type="button" onClick={cargarDatos} disabled={cargando} className="molsan-premium-header__primary-action">{cargando ? "Actualizando…" : "Actualizar datos"}</button></>} />
 
       {error ? (
         <div className="ag-alerta-error" role="alert">
