@@ -231,40 +231,18 @@ export default function ModulosSelector() {
         className="pointer-events-none absolute -right-24 -top-28 -z-10 h-80 w-80 rounded-full border border-blue-100/70"
       />
 
-      <header className="mb-9 flex flex-wrap items-center justify-between gap-5">
-        <div className="flex items-center gap-4">
-          <div className="grid h-14 w-14 place-items-center rounded-2xl border border-white bg-gradient-to-br from-blue-600 to-indigo-800 text-sm font-black tracking-wide text-white shadow-lg shadow-blue-900/15">
-            M
-          </div>
-          <div>
-            <p className="text-[10px] font-extrabold tracking-[0.2em] text-blue-700">
-              MOLSAN ERP · PREMIUM 2027
-            </p>
-            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
-              Espacio de trabajo
-            </h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Hola, {empleado.nombre || empleado.usuario}. Selecciona el módulo al que quieres acceder.
-            </p>
+      <header className="molsan-premium-header">
+        <div className="molsan-premium-header__identity">
+          <span className="molsan-premium-header__mark" aria-hidden="true">M</span>
+          <div className="molsan-premium-header__copy">
+            <p className="molsan-premium-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-premium-header__title">Espacio de trabajo</h1>
+            <p className="molsan-premium-header__description">Hola, {empleado.nombre || empleado.usuario}. Selecciona el módulo al que quieres acceder.</p>
           </div>
         </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white/80 px-3 py-2 text-[11px] font-bold text-slate-600 shadow-sm">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            Sesión activa
-          </span>
-          <button
-            type="button"
-            onClick={() => {
-              logout();
-              navigate("/login", { replace: true });
-            }}
-            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs font-extrabold text-rose-700 shadow-sm transition hover:-translate-y-0.5 hover:border-rose-300 hover:bg-rose-100 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-rose-100"
-          >
-            <span aria-hidden="true">↪</span>
-            Cerrar sesión
-          </button>
+        <div className="molsan-premium-header__actions">
+          <span className="molsan-premium-header__status"><span aria-hidden="true" />Sesión activa</span>
+          <button type="button" onClick={() => { logout(); navigate("/login", { replace: true }); }} className="molsan-premium-header__logout">Cerrar sesión</button>
         </div>
       </header>
 
