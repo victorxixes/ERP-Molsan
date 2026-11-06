@@ -19,6 +19,5 @@
   .empleado-operativo-modal[role="dialog"]:not(.fixed) {
     width: 100%;
     max-height: calc(100dvh - .5rem);
-    border-radius: .85rem;
   }
 }
