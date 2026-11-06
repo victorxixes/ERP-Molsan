@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "../../api/axios";
 import useAccessibleDialog from "../ui/useAccessibleDialog";
 import { formatEuro as importe } from "../../utils/formatters";
+import MolsanIcon from "../ui/MolsanIcon";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
 
@@ -214,7 +215,7 @@ export default function ProvisionesModal({ idExpediente, onClose }) {
     <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Provisiones y cancelaciones" className="molsan-modal__panel flex max-h-screen w-full max-w-6xl flex-col overflow-hidden sm:max-h-[calc(100dvh-2rem)]">
       <header className="molsan-modal__header flex items-start justify-between gap-4 px-5 py-4 sm:px-6">
         <div><p className="uppercase">ERP · Expedientes</p><h2 className="mt-1">Provisiones de fondos y cancelaciones</h2><p className="mt-1">Expediente {idExpediente}{nombreTitular ? ` · ${nombreTitular}` : ""}</p></div>
-        <button type="button" className="px-3 py-2" onClick={onClose} aria-label="Cerrar">×</button>
+        <button type="button" className="px-3 py-2" onClick={onClose} aria-label="Cerrar"><MolsanIcon name="x" size={17} bare /></button>
       </header>
       <nav className="flex flex-wrap gap-2 px-4 py-3 sm:px-6">
         <button type="button" className={clsBoton} onClick={() => { setVista("historial"); setError(""); }}>Histórico</button>
