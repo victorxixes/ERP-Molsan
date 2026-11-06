@@ -131,18 +131,8 @@
   color:var(--molsan-prof-text)!important;border:1px solid var(--molsan-prof-border)!important;
   border-radius:18px!important;background:#fff!important;box-shadow:0 24px 64px rgba(3,28,46,.24)!important;
 }
-.apoderagest .ag-resumen-modal-cabecera,.encargagest .eg-modal-header,.notargest .ng-modal>header{
-  display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important;
-  padding:18px 22px!important;color:#fff!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.14)!important;
-  border-radius:0!important;background:linear-gradient(116deg,#032D4B 0%,#064675 58%,#0D638C 100%)!important;
-}
-.apoderagest .ag-resumen-modal-cabecera :is(h2,h3,p,span),
-.encargagest .eg-modal-header :is(h2,h3,p,span),
-.notargest .ng-modal>header :is(h2,h3,p,span,.ng-kicker){color:#fff!important}
-.encargagest .eg-modal-close{
-  color:#fff!important;border-color:rgba(255,255,255,.32)!important;background:rgba(255,255,255,.12)!important;
-}
-.encargagest .eg-modal-close:hover{background:rgba(255,255,255,.22)!important}
+/* Los encabezados de modales heredan el estándar global: superficie azul hielo,
+   texto azul corporativo y separador fino, igual en los tres portales. */
 .apoderagest .ag-resumen-modal-cuerpo,.encargagest .eg-modal-layout,.notargest .ng-modal-lista{
   background:#fff!important;
 }
@@ -152,7 +142,6 @@
   border-color:var(--molsan-prof-border)!important;border-radius:12px!important;
 }
 @media(max-width:760px){
-  .apoderagest .ag-resumen-modal-cabecera,.encargagest .eg-modal-header,.notargest .ng-modal>header{padding:15px!important}
   .apoderagest .ag-resumen-modal-cuerpo{padding:14px!important}
 }
 
