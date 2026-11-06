@@ -3,8 +3,6 @@ import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
-import "../../css/CtnListadoPage.css";
-
 const API_BASE = (import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com/api").replace(/\/$/, "");
 function headers() {
   const token = localStorage.getItem("token");
