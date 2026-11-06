@@ -209,8 +209,6 @@
   border-radius:.7rem; background:var(--molsan-surface,#fff); color:var(--molsan-text,#24324a); box-shadow:inset 0 1px 2px rgba(15,23,42,.025);
 }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(input,select,textarea):focus { border-color:var(--molsan-primary, #064675); outline:3px solid color-mix(in srgb,var(--molsan-primary, #064675) 15%,transparent); }
-@media(max-width:680px) {
-}
 @media(prefers-reduced-motion:reduce) { :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn { transition:none; } }
 
 
