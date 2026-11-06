@@ -1838,10 +1838,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   border-color:var(--molsan-border,#D8E4EC);
   border-radius:var(--molsan-radius-dialog,16px);
 }
-.apoderagest .ag-resumen-modal-cabecera{
-  flex:0 0 auto;
-  padding:18px 22px;
-}
+.apoderagest .ag-resumen-modal-cabecera { flex:0 0 auto; }
 .apoderagest .ag-resumen-tabla{
   min-width:1080px;
 }
@@ -1885,7 +1882,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
     gap:10px;
   }
   .apoderagest .ag-grupo-modal{max-height:calc(100dvh - 16px);border-radius:13px}
-  .apoderagest .ag-grupo-modal-cabecera{align-items:flex-start;padding:14px}
 }
 @media(max-width:480px){
   .apoderagest .ag-grid-kpi{grid-template-columns:1fr}
