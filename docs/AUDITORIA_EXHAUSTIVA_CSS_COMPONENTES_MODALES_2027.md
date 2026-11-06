@@ -137,7 +137,7 @@ Hallazgo importante: la existencia de estos componentes no demuestra que todas l
 | Migración completa a cabeceras/tarjetas canónicas | Pendiente |
 | Pruebas de permisos 401/403/200 | Pendiente; no se han ejecutado en esta ronda |
 | Pruebas funcionales de negocio y regresión | Pendiente; no se han ejecutado en navegador |
-| Build y despliegue Render Preview | Build correcto en `f11f225`; falta desplegar esta última tanda de limpieza en Preview |
+| Build y despliegue Render Preview | Correctos; deploy `dep-dbmvakmi0phs73cuf0i0` en estado `live`, commit `741029f` |
 | Validación visual interactiva de Preview | Pendiente; la URL no ha podido abrirse con el navegador de consulta disponible |
 
 ## 8. Límites de seguridad de esta fase
@@ -197,7 +197,7 @@ El commit de código `315f84c` ha terminado con resultado correcto en los tres w
 - `Frontend dependency security audit`: success.
 - `Validar Fichaje Molsan`: success.
 
-La actualización posterior `6ca454c` solo añade esta documentación. CI correcto confirma compilación y controles automatizados disponibles; no sustituye las pruebas interactivas en navegador ni el despliegue de Preview.
+La actualización posterior `6ca454c` solo añade esta documentación. CI correcto confirma compilación y controles automatizados disponibles; el despliegue de Preview está confirmado, pero no sustituye las pruebas interactivas en navegador.
 
 ## 12. Segunda pasada estática de las 41 hojas CSS
 
@@ -270,4 +270,4 @@ La compilación confirma que las nuevas referencias y hooks compilan en conjunto
 
 ### Alcance todavía abierto
 
-Quedan por cerrar el inventario completo de modales embebidos que no declaran `role="dialog"`, las subpáginas restantes y la matriz de validación funcional. Tampoco se ha publicado esta rama en Render Preview; no se debe confundir CI verde con despliegue ni con validación visual.
+Quedan por cerrar el inventario completo de modales embebidos que no declaran `role="dialog"`, las subpáginas restantes y la matriz de validación funcional. La rama está desplegada en Render Preview; la inspección visual interactiva y la regresión funcional siguen pendientes.
