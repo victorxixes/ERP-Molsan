@@ -957,19 +957,11 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 }
 
 .apoderagest .ag-notario-grupo-icono{
-  display:grid;
-  flex:0 0 48px;
-  width:48px;
-  height:48px;
-  place-items:center;
-  border:1px solid #D9D0F4;
-  border-radius:15px;
-  background:linear-gradient(145deg,#FFFFFF 0%,#F0EBFC 100%);
-  box-shadow:0 5px 13px rgba(62,43,117,.10);
+  display:grid;flex:0 0 48px;width:48px;height:48px;place-items:center;
+  color:#064675;border:1px solid #C5D8E5;border-radius:15px;
+  background:#F2F7FB;box-shadow:0 5px 14px rgba(6,70,117,.08);
 }
-.apoderagest .ag-notario-grupo-icono .molsan-icon-3d{
-  filter:drop-shadow(0 2px 3px rgba(57,42,107,.18));
-}
+.apoderagest .ag-notario-grupo-icono .molsan-icon-3d { color:#064675;filter:none; }
 .apoderagest .ag-carpeta-apoderado-icono{
   display:grid;
   width:48px;
@@ -1059,16 +1051,7 @@ flex-shrink:0}
 .apoderagest .ag-resumen-modal-cabecera :is(h2,h3) { color:#064675; }
 .apoderagest .ag-resumen-modal-cabecera :is(p,span) { color:#617789; }
 
-.erp-page.apoderagest .ag-notario-grupo-icono {
 
-  flex:0 0 50px;
-  width:50px;
-  height:50px;
-  border:1px solid #D9D0F4;
-  border-radius:15px;
-  background:linear-gradient(145deg,#FFFFFF 0%,#F0EBFC 100%);
-  box-shadow:0 5px 13px rgba(62,43,117,.10);
-}
 
 
 
