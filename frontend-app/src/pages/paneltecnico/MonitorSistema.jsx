@@ -23,7 +23,7 @@ import {
  * ============================================================
  */
 
-export default function MonitorSistema() {
+export default function MonitorSistema({ embedded = false } = {}) {
 
 
 
@@ -184,14 +184,14 @@ export default function MonitorSistema() {
   // ============================================================
 
   return (
-    <div className="monitor-sistema-premium panel-tecnico-submodulo-premium p-6 space-y-6 animate-fade-in">
+    <div className={`monitor-sistema-premium panel-tecnico-submodulo-premium ${embedded ? "space-y-6" : "p-6 space-y-6"} animate-fade-in`}>
 
-      <MolsanPageHeader
+      {!embedded && <MolsanPageHeader
         mark="MT"
         title="Monitor del Sistema"
         description="Supervisión técnica, WebSocket y diagnóstico de base de datos"
         actions={<span className="molsan-status molsan-status--success">Sistema operativo</span>}
-      />
+      />}
 
       {/* ======================================================
           MONITOR REALTIME
