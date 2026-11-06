@@ -1249,3 +1249,17 @@ Commits: e9fa1ec y 4d3dcec.
 ### 30.1. Catálogos, mensajería y honorarios
 
 Se amplió la regla de tarjetas heredadas a las raíces `catalogos-premium-page`, `catalogos-maestros-premium`, `catalogos-maestros-page` y `honorarios-gestoria-premium`. Mensajería Molsan y Mensajería Solicitudes reutilizan la raíz de Catálogos, por lo que quedan cubiertas sin tocar sus operaciones. Commit: a961530.
+
+
+## 31. Segunda pasada integral de portales, expedientes y subpáginas
+
+- La migración de tarjetas Tailwind al patrón Espacios de trabajo incluye ahora las raíces reales de ApoderaGest, EncargaGest, NotarGest y las páginas de listado/ficha de expedientes. También se incorporan paneles específicos `.ag-panel` y grupos `.ag-grupo-apoderado` al canon de tarjeta, evitando que queden fuera por no usar clases Tailwind.
+- Se amplió el selector canónico a bloques `div` con radio Tailwind de 26 px, además de secciones/artículos y tarjetas de 2xl; se mantienen excluidos diálogos y cualquier clase que contenga `modal`.
+- Se retiraron las últimas cabeceras locales oscuras de modales en ApoderaGest, EncargaGest y NotarGest; los paneles heredan superficie blanca, borde reforzado y sombra común. Se eliminaron duplicados de estilos de avatar/icono y gradientes púrpura/azul que no pertenecen al patrón de trabajo.
+- Se eliminaron bandas de fondo y líneas interiores de cabeceras de panel en ApoderaGest, EncargaGest y NotarGest; las cabeceras de tabla y separadores funcionales de filas se mantienen para conservar legibilidad y estructura de datos.
+- La pantalla Espacios de trabajo y sus cabeceras de modal pasan a fondo blanco, título azul corporativo, texto secundario #617789, borde 1,5 px y sombra suave reforzada. Las tarjetas de acceso mantienen su franja de acento, icono tonal y hover sutil.
+- Se retiró `animate-fade-in` de ExpedientesListado, OficinasLiquidadoras, Auditoría avanzada, Monitor del sistema y Auditoría de seguridad. Se conservan animaciones locales de mensajes y spinners porque son microinteracciones/estados funcionales, no entradas de página.
+
+Commits de código: 9088d8f, 52679ec, 74d6608, 325216b, 534d947, 33b13b3, 84de234, 65daa80, 5ae80fc, 6075174, d6ef950, 280ab9a, 661d2d9 y 05551d2.
+
+Pendiente en esta sección: build final del commit más reciente y comprobación de las rutas principales en Preview Render; no se considera validación visual cerrada hasta revisar el navegador.
