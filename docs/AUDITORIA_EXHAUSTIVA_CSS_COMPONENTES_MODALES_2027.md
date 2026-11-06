@@ -280,14 +280,22 @@ Quedan por cerrar el inventario completo de modales embebidos que no declaran `r
 
 ## 12. Limpieza adicional de reglas vacías — 6 de noviembre de 2026
 
-En una nueva pasada sobre las hojas CSS de la rama se verificaron bloques `@media` sin ninguna declaración interna. Se retiraron únicamente los bloques vacíos, sin modificar reglas activas, breakpoints con contenido ni selectores funcionales:
+La pasada de comprobación sobre las 41 hojas CSS identificó **47 bloques `@media` completamente vacíos**. Se retiraron exclusivamente esos contenedores sin declaraciones; no se eliminaron breakpoints que contuvieran reglas ni se alteró ninguna declaración activa.
 
-- `frontend-app/src/css/ApoderaGest.css`: 39 bloques `@media` vacíos retirados; el archivo reduce 1.090 caracteres.
-- `frontend-app/src/css/MolsanRedesign2027.css`: 1 bloque `@media` vacío retirado.
+Archivos afectados:
+- `css/ApoderaGest.css`: 39 bloques vacíos.
+- `css/MolsanRedesign2027.css`: 1.
+- `css/index.css`: 1.
+- `css/MolsanPremium2027.css`: 1.
+- `css/CtnListadoPage.css`: 1.
+- `css/DashboardCancelagest.css`: 1.
+- `pages/agenda/Agenda.css`: 1.
+- `pages/empleados/EmpleadoFicha.css`: 1.
+- `pages/notificaciones/Notificaciones.css`: 1.
 
-Commits: `43ecec9` (ApoderaGest) y `96ea71e` (MolsanRedesign2027).
+Commits de código: `43ecec9`, `96ea71e`, `2fa5ef1`, `7790be7`, `6f442d5`, `f49b8e9`, `b667804`, `d238722` y `b8394da`.
 
-**Validación pendiente:** estos dos commits no tienen todavía un resultado de build asociado consultable. La eliminación es estructural y no cambia declaraciones CSS, pero no se da por validada hasta ejecutar el build de la rama actual. Tampoco sustituye la inspección visual real de Preview ni la matriz de páginas, subpáginas y modales.
+**Validación pendiente:** no hay todavía un resultado de build asociado a estos commits en la consulta disponible. La limpieza es estructural y no cambia declaraciones CSS, pero no se da por validada hasta ejecutar el build de la rama actual. Tampoco sustituye la inspección visual real de Preview ni la matriz de páginas, subpáginas y modales.
 
 
 ## 13. Corrección de selectores canónicos inválidos — 6 de noviembre de 2026
