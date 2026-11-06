@@ -38,6 +38,9 @@ import "./css/MolsanGlobalConsistency2027.css";
 import "./css/MolsanGlassLuxeUnified2027.css";
 // Autoridad canónica final: patrón Espacios de trabajo + geometría Dashboard.
 import "./css/MolsanCanonicalVisual2027.css";
+// Autoridad definitiva: replica el componente visual real de Espacios de trabajo.
+// Debe permanecer al final para prevalecer sobre CSS heredado y módulos lazy.
+import "./css/MolsanWorkspaceAuthority2027.css";
 
 // Última capa: neutraliza diferencias visuales propias de los módulos.
 
