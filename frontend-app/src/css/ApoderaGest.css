@@ -9,11 +9,6 @@
 .apoderagest .ag-contenido{
   position: relative;
   min-width: 0;
-  animation: ag-aparecer .22s ease-out;
-}
-@keyframes ag-aparecer{
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 .apoderagest .ag-titulo-seccion{
   display: flex;
@@ -281,11 +276,11 @@
 
 .apoderagest .ag-panel-proximas .ag-cita-modalidad{display:inline-flex;align-items:center;padding:4px 8px;border:1px solid #d8e4f6;border-radius:999px;background:#f1f6ff;color:#355b98;font-size:10px;font-weight:800}
 
-.apoderagest .ag-grupo-notario{overflow:hidden;border:1px solid rgba(224,231,241,.95);border-radius:17px;background:rgba(255,255,255,.88);box-shadow:0 8px 24px rgba(31,48,79,.035)}
-.apoderagest .ag-notario-grupo-trigger{min-height:70px;padding:15px 18px;background:linear-gradient(135deg,rgba(248,250,255,.98),rgba(241,246,255,.92));border-bottom:1px solid #e9edf4}
+.apoderagest .ag-grupo-notario{overflow:hidden}
+.apoderagest .ag-notario-grupo-trigger{min-height:70px;padding:15px 18px;background:#FFFFFF;border:0}
 .apoderagest .ag-notario-grupo-info strong{color:#24334d;font-size:13px;font-weight:850}
 .apoderagest .ag-notario-grupo-info small{color:#8290a6;font-size:10px}
-.apoderagest .ag-ficha-bloque-heading{display:flex;flex-direction:column;gap:4px;margin:0 0 14px;padding-bottom:11px;border-bottom:1px solid #edf1f6}
+.apoderagest .ag-ficha-bloque-heading{display:flex;flex-direction:column;gap:4px;margin:0 0 14px;padding-bottom:0;border:0}
 .apoderagest .ag-ficha-bloque-heading>span{color:#7183a3;font-size:9px;font-weight:850;letter-spacing:.12em}
 .apoderagest .ag-ficha-bloque-heading h4{margin:0;color:#1e3352;font-size:14px;font-weight:850;letter-spacing:-.2px}
 .apoderagest .ag-ficha-bloque-heading p{margin:3px 0 0;color:#7d8ba1;font-size:10px;line-height:1.5}
@@ -294,7 +289,7 @@
 
 
 
-.apoderagest .ag-carpeta-apoderado{min-width:0;padding:12px;border:1px solid #e1e8f4;border-radius:13px;background:linear-gradient(145deg,#fff,#f8faff);box-shadow:0 4px 14px rgba(31,51,86,.035)}
+.apoderagest .ag-carpeta-apoderado{min-width:0;padding:12px}
 .apoderagest .ag-carpeta-apoderado-cabecera{display:flex;align-items:center;gap:10px;margin-bottom:9px}
 .apoderagest .ag-carpeta-apoderado-icono{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border:1px solid #dbe5fa;border-radius:10px;background:var(--molsan-primary-soft, #EAF2F8);color:#4265c7;font-size:19px}
 .apoderagest .ag-carpeta-apoderado-cabecera>div{display:grid;gap:3px;min-width:0}
