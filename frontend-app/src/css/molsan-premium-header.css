@@ -14,3 +14,12 @@
 .molsan-premium-header__logout:focus-visible{outline:3px solid rgba(6,70,117,.18);outline-offset:2px}
 @media(max-width:700px){.molsan-premium-header{align-items:flex-start;flex-direction:column;padding:18px;gap:18px}.molsan-premium-header__title{font-size:21px}.molsan-premium-header__actions{justify-content:flex-start;width:100%}}
 @media(prefers-reduced-motion:reduce){.molsan-premium-header__logout{transition:none}}
+
+.molsan-premium-header__date{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 12px;border:1px solid #d8e4ec;border-radius:11px;background:#fff;color:#617789;font-size:11px;font-weight:700;white-space:nowrap}
+.molsan-premium-header__date span{width:7px;height:7px;border-radius:50%;background:#26966c;box-shadow:0 0 0 3px rgba(38,150,108,.12)}
+.molsan-premium-header__secondary-action,.molsan-premium-header__primary-action{min-height:38px;padding:0 14px;border:1px solid #d8e4ec;border-radius:11px;background:#fff;color:#064675;font-size:12px;font-weight:800;transition:background .18s ease,border-color .18s ease,transform .18s ease}
+.molsan-premium-header__secondary-action:hover{transform:translateY(-1px);border-color:#9bbbd0;background:#f2f7fb}
+.molsan-premium-header__primary-action{border-color:#064675;background:#064675;color:#fff}
+.molsan-premium-header__primary-action:hover{transform:translateY(-1px);background:#083b60}
+.molsan-premium-header__primary-action:disabled{cursor:wait;opacity:.65;transform:none}
+.molsan-premium-header__secondary-action:focus-visible,.molsan-premium-header__primary-action:focus-visible{outline:3px solid rgba(6,70,117,.18);outline-offset:2px}
