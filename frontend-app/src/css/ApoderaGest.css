@@ -1474,12 +1474,8 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 .apoderagest .ag-grid-secundario > *,
 .apoderagest .ag-dashboard-inferior-grid > *{
   min-width: 0;
-  border-color: var(--molsan-border, #D8E4EC);
-  border-radius: var(--molsan-radius-card, 14px);
-  box-shadow: var(--molsan-shadow-card, 0 6px 18px rgba(6,50,82,.045));
 }
 
-.apoderagest .ag-panel-cabecera,
 .apoderagest .ag-titulo-seccion{
   border-color: var(--molsan-border, #D8E4EC);
   background: var(--molsan-surface, #FFFFFF);
@@ -1525,11 +1521,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   color:var(--molsan-text-secondary,#617789);
   background:var(--molsan-surface-soft,#F2F7FB);
 }
-.apoderagest .ag-notario-grupo-icono{
-  display:grid;flex:0 0 40px;width:40px;height:40px;place-items:center;
-  color:var(--molsan-primary,#064675);background:var(--molsan-primary-soft,#EAF2F8);
-  border:1px solid var(--molsan-border,#D8E4EC);border-radius:12px;
-}
+
 .apoderagest .ag-contador-firmas{
   color:#13734F;background:#E8F8F1;border-color:#CDEFE0;
 }
@@ -1703,11 +1695,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 .apoderagest .ag-apoderado-grupo-trigger:hover{
   background:#EAF2F8;
 }
-.apoderagest .ag-notario-grupo-icono{
-  width:42px;
-  height:42px;
-  border-radius:12px;
-}
+
 .apoderagest .ag-notario-grupo-info strong{
   color:var(--molsan-primary,#064675);
   font-size:13px;
@@ -1980,20 +1968,8 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   height:48px;
   border-radius:14px;
 }
-.apoderagest .ag-notario-grupo-icono{
-  display:grid;
-  flex:0 0 48px;
-  width:48px;
-  height:48px;
-  place-items:center;
-  border:1px solid #D9D0F4;
-  border-radius:15px;
-  background:linear-gradient(145deg,#FFFFFF 0%,#F0EBFC 100%);
-  box-shadow:0 5px 13px rgba(62,43,117,.10);
-}
-.apoderagest .ag-notario-grupo-icono .molsan-icon-3d{
-  filter:drop-shadow(0 2px 3px rgba(57,42,107,.18));
-}
+
+
 .apoderagest .ag-vacio-icono{
   display:grid;
   width:66px;
