@@ -179,28 +179,29 @@ export default function Catalogos() {
                 <Link
                   key={item.ruta}
                   to={item.ruta}
-                  className={`group relative overflow-hidden rounded-[22px] border p-5 shadow-[0_12px_35px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)] active:scale-[0.98] ${item.destacado ? "border-blue-200/80 bg-blue-50/70" : "border-slate-200/80 bg-white/85"}`}
+                  className={`workspace-app-card ${item.destacado ? "workspace-tone-cyan" : "workspace-tone-ocean"} group`}
                 >
-                  <div className="flex items-start gap-4">
-                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl ${item.destacado ? "border-blue-200 bg-blue-100" : "border-slate-200 bg-slate-50"}`}>
-                      <MolsanIcon name={item.icon || "file"} size={30} tone="ocean" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-base font-semibold text-slate-800">{item.titulo}</h3>
-                      <p className="mt-1.5 text-sm leading-5 text-slate-500">{item.descripcion}</p>
-                      {item.avisoConstruccion && (
-                        <div className="mt-3 flex flex-wrap items-center gap-2">
-                          <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-amber-800">
-                            En construcción
-                          </span>
-                          <span className="text-xs font-medium text-slate-500">
-                            Acceso disponible
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-slate-300 transition-all group-hover:translate-x-1 group-hover:text-blue-500">→</span>
-                  </div>
+                  <span className="workspace-card-accent" aria-hidden="true" />
+                  <span className="workspace-card-topline">
+                    <MolsanIcon className="workspace-app-icon" name={item.icon || "file"} size={58} tone="ocean" />
+                    <span className="workspace-card-open" aria-hidden="true">
+                      <MolsanIcon name="arrowRight" size={16} bare />
+                    </span>
+                  </span>
+                  <span className="workspace-app-category">
+                    {item.destacado ? "CATÁLOGO DESTACADO" : "CATÁLOGO ERP"}
+                  </span>
+                  <span className="workspace-app-title">{item.titulo}</span>
+                  <span className="workspace-app-description">{item.descripcion}</span>
+                  {item.avisoConstruccion && (
+                    <span className="mt-3 inline-flex w-fit rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800">
+                      En construcción · Acceso disponible
+                    </span>
+                  )}
+                  <span className="workspace-card-footer">
+                    <span>Abrir catálogo</span>
+                    <MolsanIcon name="arrowRight" size={18} bare />
+                  </span>
                 </Link>
               ))}
             </div>
