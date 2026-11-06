@@ -35,7 +35,7 @@ export default function PanelTecnico() {
   );
 
   return (
-    <div className="panel-tecnico-premium w-full space-y-8 animate-fade-in">
+    <div className="panel-tecnico-premium w-full space-y-8">
 
       <MolsanPageHeader
         mark="PT"
