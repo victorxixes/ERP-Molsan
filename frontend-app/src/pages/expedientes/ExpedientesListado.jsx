@@ -2266,7 +2266,7 @@ export default function ExpedientesListado() {
         indice === -1
       ) {
 
-        return "↕";
+        return <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />;
 
       }
 
@@ -2280,8 +2280,8 @@ export default function ExpedientesListado() {
       const flecha =
         orden.direccion ===
         "asc"
-          ? "↑"
-          : "↓";
+          ? "arrowUp"
+          : "arrowDown";
 
 
       if (
@@ -2290,13 +2290,16 @@ export default function ExpedientesListado() {
       ) {
 
         return (
-          `${flecha}${indice + 1}`
+          <span className="inline-flex items-center gap-1">
+            <MolsanIcon name={flecha} size={13} tone="inherit" />
+            <small>{indice + 1}</small>
+          </span>
         );
 
       }
 
 
-      return flecha;
+      return <MolsanIcon name={flecha} size={13} tone="inherit" />;
 
     };
 
