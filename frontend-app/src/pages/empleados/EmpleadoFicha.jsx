@@ -183,6 +183,7 @@ export default function EmpleadoFicha({
 
         <div className="
           flex
+          w-full
           flex-col
           lg:flex-row
           lg:items-center
