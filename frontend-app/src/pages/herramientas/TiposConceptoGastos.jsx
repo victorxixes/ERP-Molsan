@@ -689,7 +689,7 @@ export default function TiposConceptoGastos() {
       className="
         tipos-concepto-gastos-premium herramientas-subpagina-premium
         min-h-screen
-        bg-slate-50
+        bg-[var(--molsan-surface-soft)]
         p-4
         md:p-6
         lg:p-8
@@ -714,27 +714,27 @@ export default function TiposConceptoGastos() {
           actions={<button type="button" onClick={abrirNuevo} className="molsan-btn molsan-btn--primary">Nuevo concepto</button>}
         />
 
-        <section className="mb-6 rounded-2xl border border-indigo-100 bg-white p-5 shadow-sm md:p-6">
+        <section className="mb-6 rounded-2xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm md:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Plantilla documental vinculada</p>
-              <h2 className="mt-1 text-lg font-extrabold text-slate-800">Factura de honorarios · Concepto ID 6</h2>
-              <p className="mt-1 text-sm text-slate-500">La plantilla Word se asocia exclusivamente al registro «honorarios gestoría» del catálogo. Se utiliza al pulsar «Guardar y facturar» en la FichaExpediente y nunca se adjunta a los emails.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--molsan-primary)]">Plantilla documental vinculada</p>
+              <h2 className="mt-1 text-lg font-extrabold text-[var(--molsan-primary)]">Factura de honorarios · Concepto ID 6</h2>
+              <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">La plantilla Word se asocia exclusivamente al registro «honorarios gestoría» del catálogo. Se utiliza al pulsar «Guardar y facturar» en la FichaExpediente y nunca se adjunta a los emails.</p>
               {plantillaFactura?.plantilla_cargada && <p className="mt-3 break-all text-sm font-semibold text-emerald-700">✓ Plantilla actual: {plantillaFactura.factura_nombre}</p>}
-              {plantillaFactura && <p className="mt-1 text-xs text-slate-500">Vinculación confirmada: ID {plantillaFactura.concepto_gasto_id} · {plantillaFactura.concepto_gasto}</p>}
+              {plantillaFactura && <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Vinculación confirmada: ID {plantillaFactura.concepto_gasto_id} · {plantillaFactura.concepto_gasto}</p>}
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
-              {plantillaFactura?.plantilla_cargada && <button type="button" onClick={descargarPlantillaFactura} disabled={descargandoPlantillaFactura} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50">{descargandoPlantillaFactura ? "Descargando…" : "Descargar plantilla"}</button>}
+              {plantillaFactura?.plantilla_cargada && <button type="button" onClick={descargarPlantillaFactura} disabled={descargandoPlantillaFactura} className="rounded-xl border border-[var(--molsan-border)] px-4 py-2.5 text-sm font-bold text-[var(--molsan-text)] hover:bg-[var(--molsan-surface-soft)] disabled:opacity-50">{descargandoPlantillaFactura ? "Descargando…" : "Descargar plantilla"}</button>}
             </div>
           </div>
           {errorPlantillaFactura && <p role="alert" className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{errorPlantillaFactura}</p>}
           {mensajePlantillaFactura && <p role="status" className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{mensajePlantillaFactura}</p>}
           <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
             <label className="block">
-              <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">{plantillaFactura?.plantilla_cargada ? "Sustituir plantilla oficial (.docx)" : "Cargar plantilla oficial (.docx)"}</span>
-              <input type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(e) => setArchivoPlantillaFactura(e.target.files?.[0] || null)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" />
+              <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">{plantillaFactura?.plantilla_cargada ? "Sustituir plantilla oficial (.docx)" : "Cargar plantilla oficial (.docx)"}</span>
+              <input type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(e) => setArchivoPlantillaFactura(e.target.files?.[0] || null)} className="w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm" />
             </label>
-            <button type="button" onClick={subirPlantillaFactura} disabled={!archivoPlantillaFactura || subiendoPlantillaFactura} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-50">{subiendoPlantillaFactura ? "Guardando…" : "Vincular plantilla a honorarios gestoría"}</button>
+            <button type="button" onClick={subirPlantillaFactura} disabled={!archivoPlantillaFactura || subiendoPlantillaFactura} className="rounded-xl bg-[var(--molsan-primary)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--molsan-primary)] disabled:opacity-50">{subiendoPlantillaFactura ? "Guardando…" : "Vincular plantilla a honorarios gestoría"}</button>
           </div>
         </section>
 
@@ -758,7 +758,7 @@ export default function TiposConceptoGastos() {
             className="
               rounded-2xl
               border
-              border-slate-200
+              border-[var(--molsan-border)]
               bg-white
               p-5
               shadow-sm
@@ -785,7 +785,7 @@ export default function TiposConceptoGastos() {
                     font-semibold
                     uppercase
                     tracking-wider
-                    text-slate-400
+                    text-[var(--molsan-text-muted)]
                   "
                 >
                   Total
@@ -796,7 +796,7 @@ export default function TiposConceptoGastos() {
                     mt-2
                     text-3xl
                     font-bold
-                    text-slate-800
+                    text-[var(--molsan-primary)]
                   "
                 >
                   {estadisticas.total}
@@ -812,8 +812,8 @@ export default function TiposConceptoGastos() {
                   items-center
                   justify-center
                   rounded-xl
-                  bg-slate-100
-                  text-slate-600
+                  bg-[var(--molsan-table-head)]
+                  text-[var(--molsan-text-secondary)]
                 "
               >
                 <svg
@@ -891,7 +891,7 @@ export default function TiposConceptoGastos() {
                     mt-2
                     text-3xl
                     font-bold
-                    text-slate-800
+                    text-[var(--molsan-primary)]
                   "
                 >
                   {estadisticas.activos}
@@ -982,7 +982,7 @@ export default function TiposConceptoGastos() {
                     mt-2
                     text-3xl
                     font-bold
-                    text-slate-800
+                    text-[var(--molsan-primary)]
                   "
                 >
                   {estadisticas.inactivos}
@@ -1062,7 +1062,7 @@ export default function TiposConceptoGastos() {
             mb-6
             rounded-2xl
             border
-            border-slate-200
+            border-[var(--molsan-border)]
             bg-white
             p-4
             shadow-sm
@@ -1092,7 +1092,7 @@ export default function TiposConceptoGastos() {
                   font-semibold
                   uppercase
                   tracking-wider
-                  text-slate-500
+                  text-[var(--molsan-text-secondary)]
                 "
               >
                 Buscar concepto
@@ -1113,7 +1113,7 @@ export default function TiposConceptoGastos() {
                     flex
                     items-center
                     pl-3
-                    text-slate-400
+                    text-[var(--molsan-text-muted)]
                   "
                 >
 
@@ -1158,16 +1158,16 @@ export default function TiposConceptoGastos() {
                     w-full
                     rounded-xl
                     border
-                    border-slate-200
-                    bg-slate-50
+                    border-[var(--molsan-border)]
+                    bg-[var(--molsan-surface-soft)]
                     py-3
                     pl-10
                     pr-4
                     text-sm
-                    text-slate-700
+                    text-[var(--molsan-text)]
                     outline-none
                     transition-all
-                    focus:border-blue-500
+                    focus:border-[var(--molsan-border-strong)]
                     focus:bg-white
                     focus:ring-4
                     focus:ring-blue-500/10
@@ -1191,7 +1191,7 @@ export default function TiposConceptoGastos() {
                   font-semibold
                   uppercase
                   tracking-wider
-                  text-slate-500
+                  text-[var(--molsan-text-secondary)]
                 "
               >
                 Estado
@@ -1208,15 +1208,15 @@ export default function TiposConceptoGastos() {
                   min-w-[180px]
                   rounded-xl
                   border
-                  border-slate-200
-                  bg-slate-50
+                  border-[var(--molsan-border)]
+                  bg-[var(--molsan-surface-soft)]
                   px-4
                   py-3
                   text-sm
-                  text-slate-700
+                  text-[var(--molsan-text)]
                   outline-none
                   transition-all
-                  focus:border-blue-500
+                  focus:border-[var(--molsan-border-strong)]
                   focus:bg-white
                   focus:ring-4
                   focus:ring-blue-500/10
@@ -1373,7 +1373,7 @@ export default function TiposConceptoGastos() {
             overflow-hidden
             rounded-2xl
             border
-            border-slate-200
+            border-[var(--molsan-border)]
             bg-white
             shadow-sm
           "
@@ -1385,7 +1385,7 @@ export default function TiposConceptoGastos() {
               items-center
               justify-between
               border-b
-              border-slate-200
+              border-[var(--molsan-border)]
               px-5
               py-4
             "
@@ -1397,7 +1397,7 @@ export default function TiposConceptoGastos() {
                 className="
                   text-base
                   font-bold
-                  text-slate-800
+                  text-[var(--molsan-primary)]
                 "
               >
                 Catálogo
@@ -1407,7 +1407,7 @@ export default function TiposConceptoGastos() {
                 className="
                   mt-1
                   text-xs
-                  text-slate-400
+                  text-[var(--molsan-text-muted)]
                 "
               >
                 {tipos.length === 1
@@ -1426,7 +1426,7 @@ export default function TiposConceptoGastos() {
                   gap-2
                   text-xs
                   font-medium
-                  text-slate-400
+                  text-[var(--molsan-text-muted)]
                 "
               >
 
@@ -1437,7 +1437,7 @@ export default function TiposConceptoGastos() {
                     animate-spin
                     rounded-full
                     border-2
-                    border-slate-200
+                    border-[var(--molsan-border)]
                     border-t-blue-600
                   "
                 />
@@ -1467,7 +1467,7 @@ export default function TiposConceptoGastos() {
 
               <thead
                 className="
-                  bg-slate-50
+                  bg-[var(--molsan-surface-soft)]
                 "
               >
 
@@ -1482,7 +1482,7 @@ export default function TiposConceptoGastos() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     #
@@ -1497,7 +1497,7 @@ export default function TiposConceptoGastos() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Tipo concepto de gastos
@@ -1512,7 +1512,7 @@ export default function TiposConceptoGastos() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Estado
@@ -1527,7 +1527,7 @@ export default function TiposConceptoGastos() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Acciones
@@ -1577,8 +1577,8 @@ export default function TiposConceptoGastos() {
                             items-center
                             justify-center
                             rounded-2xl
-                            bg-slate-100
-                            text-slate-400
+                            bg-[var(--molsan-table-head)]
+                            text-[var(--molsan-text-muted)]
                           "
                         >
 
@@ -1612,7 +1612,7 @@ export default function TiposConceptoGastos() {
                             mt-4
                             text-sm
                             font-semibold
-                            text-slate-700
+                            text-[var(--molsan-text)]
                           "
                         >
                           No se encontraron conceptos
@@ -1622,7 +1622,7 @@ export default function TiposConceptoGastos() {
                           className="
                             mt-1
                             text-xs
-                            text-slate-400
+                            text-[var(--molsan-text-muted)]
                           "
                         >
                           Prueba con otro texto
@@ -1648,7 +1648,7 @@ export default function TiposConceptoGastos() {
                         className="
                           transition-all
                           duration-150
-                          hover:bg-blue-50/40
+                          hover:bg-[var(--molsan-primary-soft)]/40
                         "
                       >
 
@@ -1661,7 +1661,7 @@ export default function TiposConceptoGastos() {
                             py-4
                             text-sm
                             font-semibold
-                            text-slate-400
+                            text-[var(--molsan-text-muted)]
                           "
                         >
                           {index + 1}
@@ -1694,8 +1694,8 @@ export default function TiposConceptoGastos() {
                                 items-center
                                 justify-center
                                 rounded-xl
-                                bg-blue-50
-                                text-blue-600
+                                bg-[var(--molsan-primary-soft)]
+                                text-[var(--molsan-primary)]
                               "
                             >
 
@@ -1760,7 +1760,7 @@ export default function TiposConceptoGastos() {
                                 className="
                                   text-sm
                                   font-semibold
-                                  text-slate-700
+                                  text-[var(--molsan-text)]
                                 "
                               >
                                 {tipo.nombre}
@@ -1770,7 +1770,7 @@ export default function TiposConceptoGastos() {
                                 className="
                                   mt-0.5
                                   text-xs
-                                  text-slate-400
+                                  text-[var(--molsan-text-muted)]
                                 "
                               >
                                 ID {tipo.id}
@@ -1810,8 +1810,8 @@ export default function TiposConceptoGastos() {
                                     text-emerald-700
                                   `
                                   : `
-                                    bg-slate-100
-                                    text-slate-500
+                                    bg-[var(--molsan-table-head)]
+                                    text-[var(--molsan-text-secondary)]
                                   `
                               }
                             `}
@@ -1872,14 +1872,14 @@ export default function TiposConceptoGastos() {
                                 justify-center
                                 rounded-lg
                                 border
-                                border-slate-200
+                                border-[var(--molsan-border)]
                                 bg-white
                                 p-2
-                                text-slate-500
+                                text-[var(--molsan-text-secondary)]
                                 transition-all
-                                hover:border-blue-200
-                                hover:bg-blue-50
-                                hover:text-blue-600
+                                hover:border-[var(--molsan-border-strong)]
+                                hover:bg-[var(--molsan-primary-soft)]
+                                hover:text-[var(--molsan-primary)]
                               "
                             >
 
@@ -2145,7 +2145,7 @@ export default function TiposConceptoGastos() {
             mt-4
             text-center
             text-xs
-            text-slate-400
+            text-[var(--molsan-text-muted)]
           "
         >
           Los conceptos se almacenan siempre
@@ -2169,7 +2169,7 @@ export default function TiposConceptoGastos() {
             flex
             items-center
             justify-center
-            bg-slate-900/40
+            bg-[var(--molsan-primary)]/40
             p-4
             backdrop-blur-sm
           "
@@ -2211,7 +2211,7 @@ export default function TiposConceptoGastos() {
                 items-start
                 justify-between
                 border-b
-                border-slate-100
+                border-[var(--molsan-border-light)]
                 px-6
                 py-5
               "
@@ -2225,7 +2225,7 @@ export default function TiposConceptoGastos() {
                     font-semibold
                     uppercase
                     tracking-[0.18em]
-                    text-blue-600
+                    text-[var(--molsan-primary)]
                   "
                 >
                   Catálogo de gastos
@@ -2236,7 +2236,7 @@ export default function TiposConceptoGastos() {
                     mt-1
                     text-xl
                     font-bold
-                    text-slate-800
+                    text-[var(--molsan-primary)]
                   "
                 >
                   {modoEdicion
@@ -2253,10 +2253,10 @@ export default function TiposConceptoGastos() {
                 className="
                   rounded-xl
                   p-2
-                  text-slate-400
+                  text-[var(--molsan-text-muted)]
                   transition-all
-                  hover:bg-slate-100
-                  hover:text-slate-700
+                  hover:bg-[var(--molsan-table-head)]
+                  hover:text-[var(--molsan-text)]
                   disabled:cursor-not-allowed
                   disabled:opacity-50
                 "
@@ -2333,7 +2333,7 @@ export default function TiposConceptoGastos() {
                     block
                     text-sm
                     font-semibold
-                    text-slate-700
+                    text-[var(--molsan-text)]
                   "
                 >
                   Tipo concepto de gastos
@@ -2353,15 +2353,15 @@ export default function TiposConceptoGastos() {
                     w-full
                     rounded-xl
                     border
-                    border-slate-200
-                    bg-slate-50
+                    border-[var(--molsan-border)]
+                    bg-[var(--molsan-surface-soft)]
                     px-4
                     py-3
                     text-sm
-                    text-slate-700
+                    text-[var(--molsan-text)]
                     outline-none
                     transition-all
-                    focus:border-blue-500
+                    focus:border-[var(--molsan-border-strong)]
                     focus:bg-white
                     focus:ring-4
                     focus:ring-blue-500/10
@@ -2372,7 +2372,7 @@ export default function TiposConceptoGastos() {
                   className="
                     mt-2
                     text-xs
-                    text-slate-400
+                    text-[var(--molsan-text-muted)]
                   "
                 >
                   Se guardará automáticamente
@@ -2392,8 +2392,8 @@ export default function TiposConceptoGastos() {
                   justify-between
                   rounded-xl
                   border
-                  border-slate-200
-                  bg-slate-50
+                  border-[var(--molsan-border)]
+                  bg-[var(--molsan-surface-soft)]
                   px-4
                   py-3
                 "
@@ -2405,7 +2405,7 @@ export default function TiposConceptoGastos() {
                     className="
                       text-sm
                       font-semibold
-                      text-slate-700
+                      text-[var(--molsan-text)]
                     "
                   >
                     Concepto activo
@@ -2415,7 +2415,7 @@ export default function TiposConceptoGastos() {
                     className="
                       mt-0.5
                       text-xs
-                      text-slate-400
+                      text-[var(--molsan-text-muted)]
                     "
                   >
                     Permitido para su utilización
@@ -2441,7 +2441,7 @@ export default function TiposConceptoGastos() {
                     transition-all
                     ${
                       activo
-                        ? "bg-blue-600"
+                        ? "bg-[var(--molsan-primary)]"
                         : "bg-slate-300"
                     }
                   `}
@@ -2490,15 +2490,15 @@ export default function TiposConceptoGastos() {
                   className="
                     rounded-xl
                     border
-                    border-slate-200
+                    border-[var(--molsan-border)]
                     bg-white
                     px-5
                     py-3
                     text-sm
                     font-semibold
-                    text-slate-600
+                    text-[var(--molsan-text-secondary)]
                     transition-all
-                    hover:bg-slate-50
+                    hover:bg-[var(--molsan-surface-soft)]
                     disabled:cursor-not-allowed
                     disabled:opacity-50
                   "
@@ -2521,7 +2521,7 @@ export default function TiposConceptoGastos() {
                     justify-center
                     gap-2
                     rounded-xl
-                    bg-blue-600
+                    bg-[var(--molsan-primary)]
                     px-5
                     py-3
                     text-sm
@@ -2530,7 +2530,7 @@ export default function TiposConceptoGastos() {
                     shadow-lg
                     shadow-blue-600/20
                     transition-all
-                    hover:bg-blue-700
+                    hover:bg-[var(--molsan-primary)]
                     disabled:cursor-not-allowed
                     disabled:opacity-50
                   "
