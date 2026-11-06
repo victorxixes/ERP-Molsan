@@ -965,6 +965,1025 @@
 @media(prefers-reduced-motion:reduce){.agenda-toast-premium *,.notificaciones-toast-premium *,.informe-apoderado-premium *,.visibilidad-tablas-premium *,.provisiones-launcher-premium *,.select-sj-premium *,.herramientas-home-premium *,.mantenimiento-tecnico-premium *,.verifacti-premium *,.crear-noticia-premium *{animation:none!important;transition:none!important}}
 
 
+/* Tarjeta KPI compartida · misma superficie y hover del patrón Espacios de trabajo. */
+.molsan-stat-card {
+  --molsan-stat-accent:#1477A5;
+  --molsan-stat-ink:#07537D;
+  --molsan-stat-tint:#EAF5FA;
+  position:relative;
+  display:flex;
+  min-width:0;
+  min-height:150px;
+  flex-direction:column;
+  align-items:stretch;
+  overflow:hidden;
+  padding:18px 19px 16px;
+  text-align:left;
+  color:var(--molsan-text,#17384D);
+  border:1.5px solid #C5D8E5;
+  border-radius:20px;
+  background:#FFFFFF;
+  box-shadow:0 7px 20px rgba(6,70,117,.09),0 1px 3px rgba(6,50,82,.045);
+  transition:transform .2s cubic-bezier(.2,.75,.25,1),box-shadow .2s ease,border-color .2s ease;
+}
+.molsan-stat-card::before { content:""; position:absolute; inset:0 0 auto; height:4px; background:var(--molsan-stat-accent); }
+.molsan-stat-card--ocean { --molsan-stat-accent:#1477A5; --molsan-stat-ink:#07537D; --molsan-stat-tint:#EAF5FA; }
+.molsan-stat-card--cyan { --molsan-stat-accent:#238D9C; --molsan-stat-ink:#177A88; --molsan-stat-tint:#EAF7F8; }
+.molsan-stat-card--emerald { --molsan-stat-accent:#25866B; --molsan-stat-ink:#16745C; --molsan-stat-tint:#EAF7F2; }
+.molsan-stat-card--violet { --molsan-stat-accent:#7662B1; --molsan-stat-ink:#65509E; --molsan-stat-tint:#F1EEFA; }
+.molsan-stat-card--amber { --molsan-stat-accent:#B47A25; --molsan-stat-ink:#96651B; --molsan-stat-tint:#FBF4E8; }
+.molsan-stat-card--slate { --molsan-stat-accent:#8093A1; --molsan-stat-ink:#617789; --molsan-stat-tint:#F2F7FB; }
+.molsan-stat-card--rose { --molsan-stat-accent:#C45B65; --molsan-stat-ink:#A83D49; --molsan-stat-tint:#FCEFF0; }
+.molsan-stat-card__top { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.molsan-stat-card__title { color:var(--molsan-stat-ink); font-size:13px; font-weight:700; letter-spacing:0; line-height:1.4; }
+.molsan-stat-card__icon {
+  display:grid; width:48px; height:48px; flex:0 0 48px; place-items:center;
+  color:var(--molsan-stat-ink); border:1px solid #D8E4EC; border-radius:15px;
+  background:var(--molsan-stat-tint); box-shadow:0 5px 12px rgba(6,70,117,.08);
+}
+.molsan-stat-card__value { margin-top:7px; color:#17384D; font-size:clamp(23px,2vw,29px); font-weight:850; letter-spacing:-.045em; line-height:1.15; overflow-wrap:anywhere; }
+.molsan-stat-card__description { margin:6px 0 0; color:var(--molsan-text-muted,#617789); font-size:12px; line-height:1.45; }
+.molsan-stat-card__action { display:flex; align-items:center; gap:5px; margin-top:auto; padding-top:10px; color:var(--molsan-stat-ink); font-size:11px; font-weight:750; }
+.molsan-stat-card.is-interactive { cursor:pointer; font:inherit; }
+.molsan-stat-card.is-interactive:hover {
+  z-index:1; transform:translateY(-4px); border-color:#9FBFD2;
+  box-shadow:0 16px 34px rgba(6,70,117,.15);
+}
+.molsan-stat-card.is-interactive:focus-visible { outline:3px solid rgba(6,70,117,.28); outline-offset:3px; }
+@media (max-width:640px) {
+  .molsan-stat-card { min-height:138px; padding:16px; }
+  .molsan-stat-card__icon { width:43px; height:43px; flex-basis:43px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .molsan-stat-card,.molsan-stat-card * { transition:none !important; }
+  .molsan-stat-card.is-interactive:hover { transform:none; }
+}/*
+ * MOLSAN ERP · PREMIUM 2027 — Design system compartido
+ *
+ * Capa opt-in: las reglas visuales se aplican únicamente a los componentes
+ * que adoptan clases molsan-*. No modifica rutas, autenticación, permisos,
+ * llamadas API ni estilos de componentes existentes.
+ */
+
+:root {
+  --molsan-radius-panel: var(--molsan-radius-card);
+  --molsan-shadow-panel: var(--molsan-shadow-card);
+}
+
+/* Contenedor de página y cabecera común */
+.molsan-page {
+  min-width: 0;
+  color: var(--molsan-text);
+}
+
+/* Títulos de sección */
+.molsan-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  margin-bottom: 12px;
+}
+
+.molsan-section-header__title {
+  margin: 0;
+  color: var(--molsan-text);
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.molsan-section-header__description {
+  margin: 4px 0 0;
+  color: var(--molsan-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Paneles y tarjetas */
+.molsan-panel { min-width: 0; color: var(--molsan-text); }
+
+.molsan-panel__body {
+  min-width: 0;
+  padding: 16px;
+}
+
+/* Botones, campos, tablas y estados se definen en molsan-controls.css y molsan-tables.css. */
+
+/* Respeto a pantallas pequeñas y preferencias de movimiento */
+@media (max-width: 640px) {
+
+  .molsan-panel__body {
+    padding: 12px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .molsan-btn,
+  .molsan-field__control,
+  .molsan-table tbody tr {
+    transition: none;
+  }
+}
+
+.ag-tabla-marco,
+.ng-tabla-contenedor,
+.encargagest .eg-directorio-tabla-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  background: var(--molsan-surface);
+}
+
+.ag-tabla,
+.ng-tabla,
+.encargagest .eg-directorio-tabla {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: 13px;
+}
+
+.ag-tabla th,
+.ng-tabla th,
+.encargagest .eg-directorio-tabla th {
+  color: #52617a;
+  background: var(--molsan-surface-soft);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.ag-tabla th,
+.ag-tabla td,
+.ng-tabla th,
+.ng-tabla td,
+.encargagest .eg-directorio-tabla th,
+.encargagest .eg-directorio-tabla td {
+  padding: 9px 12px;
+}
+
+.ag-tabla td,
+.ng-tabla td,
+.encargagest .eg-directorio-tabla td {
+  border-bottom: 1px solid var(--molsan-border-light);
+}
+
+.ag-tabla tbody tr:hover,
+.ng-tabla tbody tr:hover,
+.encargagest .eg-directorio-tabla tbody tr:hover {
+  background: var(--molsan-surface-soft);
+}
+
+.cg-page .cg-button-primary,
+.encargagest .eg-button-primary {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--molsan-primary);
+  border-radius: var(--molsan-radius-control);
+  background: var(--molsan-primary);
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.cg-page .cg-button-primary:hover:not(:disabled),
+.encargagest .eg-button-primary:hover:not(:disabled) {
+  background: var(--molsan-primary-hover);
+  border-color: var(--molsan-primary-hover);
+  box-shadow: none;
+  transform: none;
+}
+
+.cg-page .cg-button-secondary,
+.encargagest .eg-secondary,
+.ng-boton-secundario,
+.ng-volver {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--molsan-border-strong);
+  border-radius: var(--molsan-radius-control);
+  color: var(--molsan-text);
+  background: var(--molsan-surface);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.cg-page .cg-button-secondary:hover,
+.encargagest .eg-secondary:hover,
+.ng-boton-secundario:hover,
+.ng-volver:hover {
+  color: var(--molsan-text);
+  background: var(--molsan-surface-soft);
+  border-color: var(--molsan-primary);
+  transform: none;
+}
+
+
+/*
+ * Acabado común de controles para las pantallas operativas ya existentes.
+ * Selectores limitados a los módulos identificados; no afecta al login ni
+ * modifica estados, validaciones, formularios controlados o eventos React.
+ */
+.apoderagest input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):focus-visible,
+.apoderagest select:focus-visible,
+.apoderagest textarea:focus-visible,
+.notargest input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):focus-visible,
+.notargest select:focus-visible,
+.notargest textarea:focus-visible,
+.encargagest input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):focus-visible,
+.encargagest select:focus-visible,
+.encargagest textarea:focus-visible,
+.cg-page input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):focus-visible,
+.cg-page select:focus-visible,
+.cg-page textarea:focus-visible {
+  outline: 3px solid rgba(6, 70, 117, 0.18);
+  outline-offset: 1px;
+  border-color: var(--molsan-primary);
+}
+
+.apoderagest .ag-panel-cabecera,
+.apoderagest .ag-ficha-bloque-heading,
+.apoderagest .ag-toolbar,
+.notargest .ng-panel-titulo,
+.notargest .ng-bloque-heading,
+.encargagest .eg-panel-head,
+.cg-page .cg-section-heading {
+  min-width: 0;
+}
+
+.apoderagest .ag-panel-cabecera h2,
+.apoderagest .ag-ficha-bloque-heading h4,
+.notargest .ng-panel-titulo h2,
+.notargest .ng-bloque-heading h2,
+.encargagest .eg-panel-head h2,
+.encargagest .eg-panel-head h3,
+.cg-page .cg-section-heading h2 {
+  letter-spacing: -0.015em;
+}
+
+.apoderagest button:focus-visible,
+.notargest button:focus-visible,
+.encargagest button:focus-visible,
+.cg-page button:focus-visible,
+.apoderagest a:focus-visible,
+.notargest a:focus-visible,
+.encargagest a:focus-visible,
+.cg-page a:focus-visible {
+  outline: 3px solid rgba(6, 70, 117, 0.22);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+
+  .apoderagest .ag-panel-cabecera,
+  .notargest .ng-panel-titulo,
+  .encargagest .eg-panel-head,
+  .cg-page .cg-section-heading {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* Intranet: misma jerarquía de cabecera, superficies y tablas que el ERP. */
+.molsan-intranet-page h1,
+.molsan-intranet-page h2,
+.molsan-intranet-page h3 {
+  letter-spacing: -0.02em;
+}
+
+.molsan-intranet-page input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.molsan-intranet-page textarea,
+.molsan-intranet-page select {
+  border-color: var(--molsan-border-strong);
+  border-radius: var(--molsan-radius-control);
+}
+
+.molsan-intranet-page input:focus-visible,
+.molsan-intranet-page textarea:focus-visible,
+.molsan-intranet-page select:focus-visible,
+.molsan-intranet-page button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary) 22%, transparent);
+  outline-offset: 2px;
+}
+
+.molsan-intranet-page table thead tr {
+  background: var(--molsan-surface-soft);
+}
+
+.molsan-intranet-page table thead th {
+  color: var(--molsan-text-secondary);
+  border-color: var(--molsan-border);
+}
+
+.molsan-intranet-page table tbody tr {
+  border-color: var(--molsan-border-light);
+}
+
+@media (max-width: 640px) {
+  .molsan-intranet-page {
+    gap: 16px;
+  }
+
+  }
+
+
+/* Tokens compartidos para los módulos operativos.
+   Mantiene sus fondos Glass Luxe, pero alinea color primario, texto y bordes. */
+:root .apoderagest,
+:root .encargagest,
+:root .notargest {
+  --ag-ink: var(--molsan-text);
+  --ag-muted: var(--molsan-text-muted);
+  --ag-line: var(--molsan-border);
+  --ag-blue: var(--molsan-primary);
+  --ag-blue-dark: var(--molsan-primary-hover);
+}
+
+/* NotarGest y ApoderaGest comparten los tokens corporativos MOLSAN. */
+:root .apoderagest.notargest {
+  --ag-ink: var(--molsan-text);
+  --ag-muted: var(--molsan-text-muted);
+  --ag-line: var(--molsan-border);
+  --ag-blue: var(--molsan-primary);
+  --ag-blue-dark: var(--molsan-primary-hover);
+}
+
+
+/* =========================================================
+   Revisión visual basada en pantallas reales · octubre 2026
+   Mejoras de lectura y adaptación, sin tocar rutas ni lógica.
+   ========================================================= */
+
+/* CancelaGest: tabla legible, scroll horizontal deliberado y acciones visibles. */
+.cg-page {
+  min-width: 0;
+  color: var(--molsan-text);
+}
+.cg-page .cg-table-wrap,
+.cg-page .cg-table-container,
+.cg-page .cg-table-scroll,
+.cg-page .cg-table-responsive {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+.cg-page table {
+  max-width: 100%;
+}
+.cg-page table th {
+  color: var(--molsan-text-secondary);
+}
+.cg-page table td {
+  line-height: 1.45;
+}
+.cg-page input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.cg-page select,
+.cg-page textarea {
+  max-width: 100%;
+  min-width: 0;
+}
+.cg-page :where(.cg-panel, .cg-card, .cg-stat, .cg-section) {
+  min-width: 0;
+}
+
+/* CTN: filtros fluidos y tabla desplazable en escritorio pequeño/móvil. */
+.ctn-listado-page {
+  min-width: 0;
+}
+.ctn-tabla-contenedor,
+.ctn-tabla-scroll {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+}
+.ctn-tabla td,
+.ctn-tabla th {
+  line-height: 1.45;
+}
+.ctn-modal-body,
+.ctn-modal-contenido {
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+@media (max-width: 1100px) {
+  .ctn-filtros-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .ctn-listado-header-acciones {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .ctn-filtros {
+    padding: 14px;
+  }
+  .ctn-filtros-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ctn-modal-overlay {
+    align-items: stretch;
+    padding: 8px;
+  }
+  .ctn-modal-panel { width:100%; max-height:calc(100dvh - 16px); }
+  }
+
+/* Provisiones de fondos: misma superficie, campos y tablas que el ERP. */
+.provisiones-fondos-page {
+  color: var(--molsan-text);
+  background: var(--molsan-page-bg);
+}
+.provisiones-fondos-page label {
+  min-width: 0;
+  line-height: 1.45;
+}
+.provisiones-fondos-page input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.provisiones-fondos-page select,
+.provisiones-fondos-page textarea {
+  max-width: 100%;
+  min-width: 0;
+  border-color: var(--molsan-border-strong);
+  border-radius: var(--molsan-radius-control);
+}
+.provisiones-fondos-page input:focus-visible,
+.provisiones-fondos-page select:focus-visible,
+.provisiones-fondos-page textarea:focus-visible,
+.provisiones-fondos-page button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary) 22%, transparent);
+  outline-offset: 2px;
+}
+.provisiones-fondos-page table {
+  font-variant-numeric: tabular-nums;
+}
+.provisiones-fondos-page thead {
+  background: var(--molsan-surface-soft);
+}
+.provisiones-fondos-page th {
+  color: var(--molsan-text-secondary);
+  white-space: nowrap;
+}
+.provisiones-fondos-page td {
+  line-height: 1.45;
+}
+.provisiones-fondos-page [role="alert"] {
+  border-radius: var(--molsan-radius-control);
+}
+.provisiones-fondos-page .sticky {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+@media (max-width: 640px) {
+  .provisiones-fondos-page .sticky {
+    position: static;
+  }
+}
+
+/* Agenda y calendarios: evitar que las tarjetas de citas rompan la cuadrícula. */
+:where(.agenda-page, .agenda-container, .calendario-agenda, .vista-mes) {
+  min-width: 0;
+}
+:where(.agenda-page, .agenda-container, .calendario-agenda, .vista-mes) :where(table, .calendar-grid, .calendario-grid) {
+  max-width: 100%;
+}
+:where(.agenda-page, .agenda-container, .calendario-agenda, .vista-mes) :where(button, input, select) {
+  max-width: 100%;
+}
+
+/* Layout compartido consolidado aquí para evitar una segunda hoja con
+   selectores duplicados de cabecera y panel. */
+.molsan-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--molsan-space-4, 16px);
+  min-width: 0;
+}
+.molsan-grid > * { min-width: 0; }
+
+@media (max-width: 700px) {
+  .molsan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+}
+
+
+
+/* Tablas y desplazamiento: estilos compartidos consolidados */
+/* MOLSAN ERP · tablas, listados y desplazamiento compartidos */
+.molsan-table-wrap { width:100%; min-width:0; overflow-x:auto; overscroll-behavior-x:contain; border:1px solid var(--molsan-border); border-radius:var(--molsan-radius-card); background:var(--molsan-surface); }
+.molsan-table { width:100%; border-collapse:separate; border-spacing:0; color:var(--molsan-text); font-family:var(--molsan-font-family); font-size:var(--molsan-font-size-md); }
+.molsan-table th { padding:10px 12px; color:var(--molsan-text-secondary); background:var(--molsan-surface-soft); border-bottom:1px solid var(--molsan-border); font-size:var(--molsan-font-size-sm); font-weight:700; text-align:left; white-space:nowrap; }
+.molsan-table td { padding:9px 12px; border-bottom:1px solid var(--molsan-border-light); vertical-align:middle; line-height:1.45; }
+.molsan-table tbody tr:last-child td { border-bottom:0; }
+.molsan-table tbody tr { transition:background-color var(--molsan-transition-fast); }
+.molsan-table tbody tr:hover { background:#f7f9fd; }
+.molsan-table-wrap :where(table) { margin:0; }
+@media(max-width:640px) { .molsan-table th,.molsan-table td { padding:8px 10px; } }
+
+
+/* Tabla MOLSAN PREMIUM · cabecera, ordenación accesible y datos tabulares */
+.molsan-data-table-wrap { box-shadow:0 5px 18px rgba(6,50,82,.045); }
+.molsan-data-table { font-variant-numeric:tabular-nums; }
+.molsan-data-table th { padding:0; color:#064675; background:var(--molsan-table-head, #EAF2F8); }
+.molsan-data-table-sort,
+.molsan-table-sort {
+  display:inline-flex; width:100%; min-height:42px; align-items:center; justify-content:flex-start;
+  gap:9px; padding:10px 12px; border:0; color:inherit; background:transparent;
+  font:inherit; font-weight:750; text-align:inherit; white-space:nowrap; cursor:pointer;
+}
+.molsan-table-sort:hover { color:#04375B; background:rgba(255,255,255,.55); }
+.molsan-table-sort:focus-visible { outline:2px solid #064675; outline-offset:-3px; border-radius:5px; }
+.molsan-table-sort__indicator { color:#9AAEBC; font-size:14px; line-height:1; }
+.molsan-table-sort__indicator.is-active { color:#064675; font-weight:900; }
+.molsan-data-table td { padding:10px 12px; }
+.molsan-data-table tbody tr:nth-child(even) { background:#FBFDFF; }
+.molsan-data-table tbody tr:hover { background:#F0F6FA; }
+.molsan-data-table__empty { padding:30px 16px !important; color:#718696; text-align:center; }
+.molsan-data-table td.text-right,.molsan-data-table th.text-right { text-align:right; }
+.molsan-data-table td.text-center,.molsan-data-table th.text-center { text-align:center; }
+
+/* MOLSAN DataTable: búsqueda, ajuste de columnas y paginación */
+.molsan-data-table { display:flex; flex-direction:column; gap:10px; min-width:0; width:100%; }
+.molsan-data-table__toolbar { display:flex; align-items:center; justify-content:flex-end; gap:10px; }
+.molsan-data-table__search { display:block; width:min(100%, 340px); }
+.molsan-data-table__search input {
+  width:100%; min-height:38px; padding:8px 12px; border:1px solid #D8E4EC; border-radius:11px;
+  color:#173247; background:#fff; font:inherit; outline:none;
+}
+.molsan-data-table__search input:focus { border-color:#7BA7C7; box-shadow:0 0 0 3px rgba(6,70,117,.10); }
+.molsan-data-table__scroll { width:100%; min-width:0; }
+.molsan-data-table th { position:relative; }
+.molsan-data-table__heading { position:relative; display:flex; align-items:center; min-width:0; }
+.molsan-data-table__heading .molsan-table-sort { min-width:0; }
+.molsan-data-table__resizer {
+  position:absolute; z-index:2; top:20%; right:0; width:6px; height:60%; border-radius:6px;
+  cursor:col-resize; touch-action:none; background:transparent; transition:background-color .15s ease;
+}
+.molsan-data-table__resizer:hover,
+.molsan-data-table__resizer:active { background:rgba(6,70,117,.28); }
+.molsan-data-table__pagination {
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:9px;
+  padding:10px 12px; border:1px solid #D8E4EC; border-radius:13px; background:#F7FAFC;
+}
+.molsan-data-table__count { margin-right:auto; color:#617789; font-size:12px; font-weight:650; }
+.molsan-data-table__page-size { display:inline-flex; align-items:center; gap:6px; color:#617789; font-size:12px; }
+.molsan-data-table__page-size select {
+  min-height:32px; padding:4px 8px; border:1px solid #D8E4EC; border-radius:8px; background:#fff; color:#173247;
+}
+.molsan-data-table__page-label { color:#617789; font-size:12px; font-weight:700; white-space:nowrap; }
+@media(max-width:640px) {
+  .molsan-data-table__toolbar { justify-content:stretch; }
+  .molsan-data-table__search { width:100%; }
+  .molsan-data-table__pagination { justify-content:center; }
+  .molsan-data-table__count { width:100%; margin:0; text-align:center; }
+}
+
+
+/* Controles, botones y estados · una única definición compartida */
+.molsan-btn {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  color: var(--molsan-text);
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: var(--molsan-surface);
+  box-shadow: 0 2px 5px rgba(6,50,82,.045);
+  font-family: var(--molsan-font-family);
+  font-size: var(--molsan-font-size-md);
+  font-weight: 700;
+  letter-spacing: -.01em;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 180ms ease, color 180ms ease, background-color 180ms ease,
+    border-color 180ms ease, box-shadow 180ms ease;
+}
+.molsan-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(6,50,82,.10);
+}
+.molsan-btn:active:not(:disabled) { transform: translateY(0); }
+.molsan-btn:focus-visible,
+.molsan-field__control:focus-visible { outline: 3px solid rgba(6,70,117,.22); outline-offset: 2px; }
+.molsan-btn:disabled,
+.molsan-btn[aria-disabled="true"] { cursor: not-allowed; opacity: .55; }
+.molsan-btn--primary {
+  color: #FFFFFF;
+  background: linear-gradient(135deg,#075487,#064675);
+  border-color: #064675;
+}
+.molsan-btn--primary:hover:not(:disabled) {
+  color: #FFFFFF;
+  background: #04375B;
+  border-color: #04375B;
+}
+.molsan-btn--secondary {
+  color: #064675;
+  background: linear-gradient(145deg,#FFFFFF,#F2F7FB);
+  border-color: #D8E4EC;
+}
+.molsan-btn--secondary:hover:not(:disabled) {
+  color: #043B60;
+  background: #EAF2F8;
+  border-color: #AFCFDF;
+}
+.molsan-btn--success {
+  color: #176B4B;
+  background: linear-gradient(145deg,#F3FBF6,#E6F4EB);
+  border-color: #BFE2CC;
+}
+.molsan-btn--success:hover:not(:disabled) {
+  color: #145A40;
+  background: #DDF0E5;
+  border-color: #9CCFB1;
+}
+.molsan-btn--warning {
+  color: #8A620D;
+  background: linear-gradient(145deg,#FFFCF2,#FFF4D8);
+  border-color: #EEDCA8;
+}
+.molsan-btn--warning:hover:not(:disabled) {
+  color: #76520A;
+  background: #FCECC2;
+  border-color: #E5CD88;
+}
+.molsan-btn--danger {
+  color: #FFFFFF;
+  background: #B42318;
+  border-color: #B42318;
+}
+.molsan-btn--danger:hover:not(:disabled) { background: #941B13; border-color: #941B13; }
+.molsan-btn--excel {
+  color: #FFFFFF;
+  background: linear-gradient(135deg,#16845B,#11734E);
+  border-color: #11734E;
+}
+.molsan-btn--excel:hover:not(:disabled) {
+  color: #FFFFFF;
+  background: linear-gradient(135deg,#11734E,#0D6242);
+  border-color: #0D6242;
+}
+.molsan-btn--ghost {
+  color: #617789;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.molsan-btn--ghost:hover:not(:disabled) {
+  color: #064675;
+  background: #EAF2F8;
+  box-shadow: none;
+}
+.molsan-btn--compact {
+  min-height: var(--molsan-control-height-compact);
+  padding-inline: 9px;
+  font-size: var(--molsan-font-size-sm);
+}
+.molsan-btn__icon { width: 16px; height: 16px; flex: 0 0 auto; }
+.molsan-btn__spinner {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: molsan-spin .7s linear infinite;
+}
+@keyframes molsan-spin { to { transform: rotate(360deg); } }
+
+.molsan-field { display:flex; min-width:0; flex-direction:column; gap:6px; }
+.molsan-field__label { color:var(--molsan-text); font-size:var(--molsan-font-size-md); font-weight:600; line-height:1.4; }
+.molsan-field__control {
+  width:100%; min-width:0; min-height:var(--molsan-control-height); padding:7px 10px;
+  color:var(--molsan-text); background:var(--molsan-surface);
+  border:1px solid var(--molsan-border-strong); border-radius:var(--molsan-radius-control);
+  font:inherit; font-size:var(--molsan-font-size-md);
+}
+.molsan-field__control:focus-visible { outline:none; border-color:var(--molsan-primary); box-shadow:0 0 0 3px rgba(6,70,117,.14); }
+.molsan-field__control:disabled { color:var(--molsan-text-muted); background:var(--molsan-surface-soft); cursor:not-allowed; }
+.molsan-status { display:inline-flex; align-items:center; gap:6px; max-width:100%; padding:3px 8px; border:1px solid transparent; border-radius:999px; font-size:var(--molsan-font-size-sm); font-weight:650; line-height:1.4; }
+.molsan-status--success { color:var(--molsan-success); background:#eaf8f0; border-color:#ccebd9; }
+.molsan-status--warning { color:var(--molsan-warning); background:#fff7e8; border-color:#f4e1b6; }
+.molsan-status--danger { color:var(--molsan-danger); background:#fff0f1; border-color:#f4d0d4; }
+.molsan-status--info { color:var(--molsan-primary); background:var(--molsan-primary-soft); border-color:var(--molsan-border); }
+
+@media (prefers-reduced-motion: reduce) {
+  .molsan-btn { transition: none; }
+  .molsan-btn:hover:not(:disabled) { transform: none; }
+  .molsan-btn__spinner { animation: none; }
+}
+
+/* Estructura común de navegación lateral consolidada */
+/* MOLSAN ERP · sidebar conservado
+   Solo se mantienen reglas de navegación y perfil del sidebar.
+*/
+.mol-sidebar-premium {
+  isolation: isolate;
+  position: relative;
+  z-index: 50;
+  min-width: 0;
+}
+.mol-sidebar-premium > div { min-width: 0; }
+.mol-sidebar-premium nav {
+  min-width: 0;
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.mol-sidebar-premium a,
+.mol-sidebar-premium button { cursor: pointer; }
+.mol-sidebar-premium nav a,
+.mol-sidebar-premium nav button {
+  min-height: 36px;
+  flex-shrink: 0;
+}
+.mol-sidebar-premium :is(a,button):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.sidebar-perfil-modal-premium {
+  min-width: 0;
+}
+.sidebar-perfil-modal-premium [role="dialog"] {
+  max-height: calc(100dvh - 1rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+@media (max-width: 760px) {
+  .mol-sidebar-premium nav :is(a,button) { min-height: 34px; }
+  .sidebar-perfil-modal-premium [role="dialog"] {
+    width: 100%;
+    max-height: calc(100dvh - .5rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mol-sidebar-premium *,
+  .sidebar-perfil-modal-premium * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+
+/* Tarjeta estructural canónica Molsan Premium · una sola franja superior */
+.molsan-premium-card {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  overflow: hidden;
+  border: 1.5px solid #C5D8E5;
+  border-top: 4px solid #6CC5D9;
+  border-radius: var(--molsan-canon-card-radius, 20px);
+  background: #FFFFFF;
+  box-shadow: 0 7px 20px rgba(6,70,117,.09), 0 1px 3px rgba(6,50,82,.045);
+  transition: transform .2s cubic-bezier(.2,.75,.25,1), border-color .2s ease,
+    box-shadow .2s ease;
+}
+.molsan-premium-card::before,
+.molsan-premium-card::after {
+  content: none;
+  display: none;
+}
+.molsan-premium-card:hover {
+  transform: translateY(-4px);
+  border-color: #9FBFD2;
+  border-top-color: #064675;
+  background: #FFFFFF;
+  box-shadow: 0 16px 34px rgba(6,70,117,.15);
+}
+.molsan-premium-card:focus-within { border-color: #A9CCDF; }
+.molsan-premium-card:hover .molsan-premium-card__title { color: #043B60; }
+.molsan-premium-card__header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 0;
+  padding: 22px 22px 0;
+  border: 0;
+  background: transparent;
+}
+.molsan-premium-card__icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 54px;
+  width: 54px;
+  height: 54px;
+  color: #064675;
+  border: 1px solid #D8E4EC;
+  border-radius: 16px;
+  background: #F2F7FB;
+  transition: transform .24s ease, background .24s ease, color .24s ease;
+}
+.molsan-premium-card:hover .molsan-premium-card__icon {
+  transform: translateY(-2px) scale(1.045);
+  color: #043B60;
+  background: #FFFFFF;
+}
+.molsan-premium-card__identity {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  gap: 3px;
+}
+.molsan-premium-card__eyebrow {
+  color: #617789;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+.molsan-premium-card__title {
+  color: #064675;
+  font-size: 18px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+.molsan-premium-card__description {
+  color: #617789;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.molsan-premium-card__content {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  padding: 16px 22px 22px;
+  border: 0;
+  background: transparent;
+}
+@media (max-width: 760px) {
+  .molsan-premium-card { border-radius: 16px; }
+  .molsan-premium-card__header { padding: 17px 17px 0; }
+  .molsan-premium-card__icon { flex-basis: 48px; width: 48px; height: 48px; }
+  .molsan-premium-card__title { font-size: 16px; }
+  .molsan-premium-card__content { padding: 13px 17px 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .molsan-premium-card,.molsan-premium-card::before,.molsan-premium-card__icon { transition: none; }
+  .molsan-premium-card:hover,.molsan-premium-card:hover .molsan-premium-card__icon { transform: none; }
+}
+
+
+/* Componentes compartidos de acceso, UI y operaciones consolidados */
+/* MOLSAN ERP Premium 2027 · acceso, perfiles y CTN */
+.login-principal-premium,.modulo-pendiente-premium,.empleado-perfil-premium,.ctn-workspace-premium { min-width:0; }
+.login-principal-premium input:focus-visible,.login-principal-premium button:focus-visible,.modulo-pendiente-premium button:focus-visible,.empleado-perfil-premium button:focus-visible,.empleado-perfil-premium input:focus-visible,.empleado-perfil-premium select:focus-visible,.ctn-workspace-premium button:focus-visible,.ctn-workspace-premium input:focus-visible { outline:2px solid var(--molsan-primary, #064675); outline-offset:2px; }
+.login-principal-premium input,.login-principal-premium button { max-width:100%; }
+.modulo-pendiente-premium { min-height:calc(100dvh - 6rem); }
+.empleado-perfil-premium img { max-width:100%; }
+.empleado-perfil-premium table,.ctn-workspace-premium table { width:100%; border-collapse:separate; border-spacing:0; }
+.empleado-perfil-premium td,.empleado-perfil-premium th,.ctn-workspace-premium td,.ctn-workspace-premium th { overflow-wrap:anywhere; }
+@media(max-width:640px){.empleado-perfil-premium,.ctn-workspace-premium{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}}
+@media(prefers-reduced-motion:reduce){.login-principal-premium *,.modulo-pendiente-premium *,.empleado-perfil-premium *,.ctn-workspace-premium *{animation:none!important;transition:none!important}}
+
+
+/* =========================================================
+   LOGIN · HÍBRIDO MOLSAN 2027
+   Refuerza la identidad visual sin alterar el formulario,
+   autenticación, validaciones ni navegación.
+   ========================================================= */
+.login-principal-premium {
+  --login-ink: #123F5E;
+  --login-muted: #617789;
+  --login-line: #D8E4EC;
+  background:
+    radial-gradient(ellipse at 12% 16%, rgba(20,119,165,.11), transparent 31%),
+    radial-gradient(ellipse at 88% 84%, rgba(6,70,117,.09), transparent 32%),
+    linear-gradient(135deg,#F2F7FB 0%,#FFFFFF 48%,#F6FAFC 100%) !important;
+}
+.login-principal-premium::before,
+.login-principal-premium::after {
+  position:absolute;
+  content:"";
+  pointer-events:none;
+  border:1px solid rgba(6,70,117,.075);
+  border-radius:50%;
+}
+.login-principal-premium::before {
+  width:min(58vw,680px);height:min(58vw,680px);
+  top:-31%;left:-17%;
+  box-shadow:0 0 0 34px rgba(6,70,117,.018),0 0 0 78px rgba(6,70,117,.014);
+}
+.login-principal-premium::after {
+  width:min(48vw,560px);height:min(48vw,560px);
+  right:-15%;bottom:-30%;
+  background:radial-gradient(circle,rgba(20,119,165,.045),transparent 68%);
+}
+.login-principal-premium > .relative.z-10 { max-width:460px !important; }
+.login-principal-premium > .relative.z-10 > div {
+  border:1px solid rgba(216,228,236,.92) !important;
+  border-radius:28px !important;
+  background:rgba(255,255,255,.91) !important;
+  box-shadow:0 28px 78px rgba(6,50,82,.13),0 3px 12px rgba(6,50,82,.035) !important;
+  backdrop-filter:blur(22px);
+}
+.login-principal-premium img[alt="Molsan"] {
+  filter:drop-shadow(0 8px 14px rgba(6,50,82,.09));
+}
+.login-principal-premium h1 {
+  color:#064675 !important;
+  font-weight:850 !important;
+  letter-spacing:-.045em !important;
+}
+.login-principal-premium h1::after {
+  display:block;
+  width:46px;height:3px;
+  margin:13px auto 0;
+  border-radius:99px;
+  background:linear-gradient(90deg,#064675,#55A9C5);
+  content:"";
+}
+.login-principal-premium label {
+  color:#24465D !important;
+  font-weight:750 !important;
+  letter-spacing:-.01em;
+}
+.login-principal-premium input {
+  min-height:50px;
+  border-color:#D8E4EC !important;
+  border-radius:13px !important;
+  background:#FBFDFE !important;
+  color:#173247 !important;
+  box-shadow:inset 0 1px 2px rgba(6,50,82,.025) !important;
+}
+.login-principal-premium input:hover { border-color:#AFC5D4 !important; }
+.login-principal-premium input:focus {
+  border-color:#397EA4 !important;
+  box-shadow:0 0 0 4px rgba(6,70,117,.10) !important;
+}
+.login-principal-premium form > button[type="submit"] {
+  min-height:52px;
+  border:1px solid #064675 !important;
+  border-radius:14px !important;
+  background:linear-gradient(112deg,#04375B 0%,#064675 62%,#1477A5 100%) !important;
+  box-shadow:0 12px 25px rgba(6,70,117,.20) !important;
+  letter-spacing:.01em;
+}
+.login-principal-premium form > button[type="submit"]:hover:not(:disabled) {
+  background:linear-gradient(112deg,#032D4B 0%,#064675 58%,#0D638C 100%) !important;
+  box-shadow:0 16px 30px rgba(6,70,117,.25) !important;
+  transform:translateY(-1px);
+}
+.login-principal-premium > .relative.z-10 > div > div:last-child {
+  border-color:#E5EDF2 !important;
+}
+.login-principal-premium > .relative.z-10 > div > div:last-child p:first-child {
+  color:#617789 !important;
+  font-weight:700 !important;
+}
+@media(max-width:520px) {
+  .login-principal-premium { padding:18px 14px !important; }
+  .login-principal-premium > .relative.z-10 > div { border-radius:22px !important; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .login-principal-premium::before,.login-principal-premium::after { display:none; }
+}
+
+
+/* MOLSAN ERP Premium 2027 · componentes compartidos */
+.autocomplete-notario-premium { min-width:0; }
+.autocomplete-notario-premium button:focus-visible,.mensaje-bubble-premium button:focus-visible,.mensajes-header-premium button:focus-visible,.tabla-logs-premium button:focus-visible,.agenda-vista-premium button:focus-visible { outline:2px solid var(--molsan-primary,#064675); outline-offset:2px; }
+.autocomplete-notario-premium [role=option],.autocomplete-notario-premium button { transition:background-color .15s ease,border-color .15s ease; }
+.mensaje-bubble-premium { min-width:0; overflow-wrap:anywhere; }
+.mensaje-bubble-premium img { max-width:100%; }
+.mensajes-header-premium { min-width:0; }
+.mensajes-header-premium > * { min-width:0; }
+.tabla-logs-premium { min-width:0; }
+.tabla-logs-premium table { width:100%; border-collapse:separate; border-spacing:0; }
+.tabla-logs-premium th { background:var(--molsan-table-head,#EAF2F8); }
+.tabla-logs-premium td,.tabla-logs-premium th { overflow-wrap:anywhere; }
+.agenda-vista-premium { min-width:0; }
+.agenda-vista-premium button { touch-action:manipulation; }
+.agenda-vista-premium [class*=rounded] { transition:box-shadow .16s ease,border-color .16s ease; }
+@media(max-width:640px){.mensajes-header-premium{flex-wrap:wrap}.tabla-logs-premium{overflow-x:auto;-webkit-overflow-scrolling:touch}.agenda-vista-premium{font-size:.93rem}}
+@media(prefers-reduced-motion:reduce){.autocomplete-notario-premium *,.mensaje-bubble-premium *,.mensajes-header-premium *,.tabla-logs-premium *,.agenda-vista-premium *{animation:none!important;transition:none!important}}
+
+
+/* MOLSAN ERP Premium 2027 · componentes operativos */
+.agenda-toast-premium,.notificaciones-toast-premium,.informe-apoderado-premium,.visibilidad-tablas-premium,.provisiones-launcher-premium,.select-sj-premium,.herramientas-home-premium,.mantenimiento-tecnico-premium,.verifacti-premium,.crear-noticia-premium { min-width:0; }
+.agenda-toast-premium button:focus-visible,.notificaciones-toast-premium button:focus-visible,.informe-apoderado-premium button:focus-visible,.visibilidad-tablas-premium button:focus-visible,.provisiones-launcher-premium button:focus-visible,.select-sj-premium button:focus-visible,.herramientas-home-premium a:focus-visible,.mantenimiento-tecnico-premium button:focus-visible,.verifacti-premium button:focus-visible,.crear-noticia-premium button:focus-visible,.crear-noticia-premium input:focus-visible,.crear-noticia-premium textarea:focus-visible { outline:2px solid var(--molsan-primary,#064675); outline-offset:2px; }
+.informe-apoderado-premium table,.visibilidad-tablas-premium table,.mantenimiento-tecnico-premium table,.verifacti-premium table { width:100%; border-collapse:separate; border-spacing:0; }
+.informe-apoderado-premium td,.informe-apoderado-premium th,.visibilidad-tablas-premium td,.visibilidad-tablas-premium th,.mantenimiento-tecnico-premium td,.mantenimiento-tecnico-premium th,.verifacti-premium td,.verifacti-premium th { overflow-wrap:anywhere; }
+.select-sj-premium { max-width:100%; }
+.select-sj-premium [role=listbox] { max-height:min(18rem,45dvh); overflow-y:auto; overscroll-behavior:contain; }
+.crear-noticia-premium input,.crear-noticia-premium textarea,.mantenimiento-tecnico-premium input,.mantenimiento-tecnico-premium select,.verifacti-premium input,.verifacti-premium select { max-width:100%; min-width:0; }
+@media(max-width:640px){.informe-apoderado-premium,.visibilidad-tablas-premium,.mantenimiento-tecnico-premium,.verifacti-premium{overflow-x:auto;-webkit-overflow-scrolling:touch}.select-sj-premium [role=listbox]{max-height:40dvh}}
+@media(prefers-reduced-motion:reduce){.agenda-toast-premium *,.notificaciones-toast-premium *,.informe-apoderado-premium *,.visibilidad-tablas-premium *,.provisiones-launcher-premium *,.select-sj-premium *,.herramientas-home-premium *,.mantenimiento-tecnico-premium *,.verifacti-premium *,.crear-noticia-premium *{animation:none!important;transition:none!important}}
+
+
 /* Tarjeta KPI compartida: estructura y microinteracciones del patrón Espacios de trabajo. */
 .molsan-stat-card {
   --molsan-stat-accent:#1477A5; --molsan-stat-ink:#07537D; --molsan-stat-tint:#EAF5FA;
