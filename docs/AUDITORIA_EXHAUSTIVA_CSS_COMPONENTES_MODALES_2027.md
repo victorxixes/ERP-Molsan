@@ -1132,3 +1132,10 @@ Se han simplificado los bloques de métricas, circuitos y resumen de pagos que s
 ### 21.1. Cobertura de fondos de subpáginas
 
 Se amplió la lista de raíces blancas para incluir fichas maestras, subpáginas de seguridad, utilidades, herramientas operativas y páginas de inicio de herramientas. Se excluyó expresamente el login/portal de acceso para conservar el rediseño de acceso ya aprobado. Commits: 7762665 y 3c36284.
+
+
+## 22. Consolidación del sistema de botones
+
+Se han fusionado las dos definiciones base duplicadas de `.molsan-btn` en una sola regla y se han integrado sus variantes semánticas (principal, secundaria, éxito, aviso, peligro, Excel y ghost). Se conserva el spinner de carga; se elimina el movimiento independiente del icono del botón y se deja un hover discreto de 1 px, con soporte de `prefers-reduced-motion`. Los botones ya no dependen de dos bloques de estilos superpuestos.
+
+Commit: 37a0042. Pendiente build del nuevo HEAD y revisión visual de botones primarios/secundarios y estados deshabilitados en módulos y portales.
