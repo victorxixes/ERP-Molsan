@@ -1110,11 +1110,6 @@
   font-weight: 800;
 }
 
-/* El stack común ya controla la separación bajo la cabecera hero. */
-.molsan-page-stack > .molsan-page-header {
-  margin-bottom: 0;
-}
-
 /* Base de botones corporativa: conserva variantes de color y tamaños funcionales. */
 :is(.erp-main-content, .apoderagest, .notargest, .encargagest, .cg-page) :is(
   .molsan-btn, .ctn-btn, .agenda-open-cita, .agenda-today-action,
