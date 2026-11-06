@@ -1,5 +1,4 @@
 import MolsanIcon from "./MolsanIcon";
-import "../../css/MolsanPremiumCard.css";
 
 /**
  * Tarjeta estructural canónica Molsan Premium 2027.
