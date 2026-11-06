@@ -1,8 +1,6 @@
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useMemo, useCallback } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
-import "../../css/ComponentesCompartidosPremium.css";
-
 const HORAS = Array.from(
   { length: 12 },
   (_, i) => `${9 + i}:00`
