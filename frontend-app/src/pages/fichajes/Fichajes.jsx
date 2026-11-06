@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
@@ -245,9 +246,14 @@ export default function Fichajes({ modo = "empleado" }) {
       {cargando ? <div className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-8 text-sm text-[var(--erp-text-soft)]">Cargando fichajes…</div> : (
         <>
           {!esAdminVista && (
-            <section className="rounded-3xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-5 shadow-sm sm:p-6">
+            <MolsanPremiumCard
+              icon="clock"
+              title="Jornada de hoy"
+              description={reloj.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+              className="fichajes-jornada-card"
+            >
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div><h2 className="text-lg font-bold">Jornada de hoy</h2><p className="mt-1 text-sm text-[var(--erp-text-soft)]">{reloj.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p><p className="mt-2 font-mono text-4xl font-extrabold tracking-tight text-blue-800 tabular-nums">{reloj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p><p className="text-xs text-slate-500">Hora local · reloj en tiempo real</p></div>
+                <div><p className="font-mono text-4xl font-extrabold tracking-tight text-blue-800 tabular-nums">{reloj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p><p className="text-xs text-slate-500">Hora local · reloj en tiempo real</p></div>
                 <div className="rounded-xl bg-slate-50 px-3 py-2 text-sm"><span className="text-slate-500">Último movimiento: </span><strong>{ultimoMarcaje ? formatearTipo(ultimoMarcaje.tipo) : "Sin marcajes hoy"}</strong>{ultimoMarcaje && <span className="ml-2 text-slate-500">{hora(ultimoMarcaje.fecha_hora)}</span>}</div>
               </div>
               <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -264,8 +270,7 @@ export default function Fichajes({ modo = "empleado" }) {
                 </select>
                 {tiposAusencia.length === 0 && <p className="mt-2 text-xs font-medium text-rose-700">No se ha podido cargar el catálogo de ausencias. Actualiza Fichaje Molsan o contacta con administración.</p>}
               </label><button type="button" disabled={guardando || !tipoAusencia || tiposAusencia.length === 0} onClick={() => enviarMarcaje("AUSENCIA")} className="mt-3 rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Registrando…" : "Confirmar ausencia"}</button><button type="button" disabled={guardando} onClick={() => { setMostrarSelectorAusencia(false); setTipoAusencia(""); setError(""); }} className="ml-2 rounded-xl border border-violet-200 px-4 py-2.5 text-sm font-semibold text-violet-900 disabled:opacity-50">Cancelar</button></div>}
-
-            </section>
+            </MolsanPremiumCard>
           )}
 
           {!esAdminVista && <FichajesResumen recargar={recargarEmpleado} />}
