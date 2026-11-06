@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import axios from "../../api/axios";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 const euros = (value) => Number(value || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
