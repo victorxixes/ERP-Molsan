@@ -20,7 +20,7 @@
 }
 .apoderagest .ag-titulo-seccion h2{
   margin: 5px 0 5px;
-  color: #1b2a43;
+  color: var(--molsan-primary, #064675);
   font-size: clamp(20px, 2vw, 25px);
   font-weight: 800;
   letter-spacing: -.65px;
@@ -28,7 +28,7 @@
 }
 .apoderagest .ag-titulo-seccion p{
   margin: 0;
-  color: #7a879b;
+  color: var(--molsan-text-secondary, #617789);
   font-size: 12px;
   line-height: 1.6;
 }
