@@ -6,6 +6,7 @@ import Chart from "chart.js/auto";
 import SelectSJ from "../../components/ui/SelectSJ";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
+import MolsanStatCard from "../../components/ui/MolsanStatCard";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 const MESES = [
   { value: 1, label: "Enero" },
@@ -2666,16 +2667,14 @@ function SelectFiltroInforme({ label, value, onChange, children }) {
 
 function InformeKpi({ titulo, valor, subtitulo, icono }) {
   return (
-    <div className="rounded-2xl border border-white/80 bg-white/75 p-4 shadow-[0_8px_25px_rgba(55,85,120,0.07)] backdrop-blur-xl">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{titulo}</div>
-          <div className="mt-2 text-2xl font-bold tracking-tight text-slate-800">{valor}</div>
-          {subtitulo && <div className="mt-1 text-xs text-slate-400">{subtitulo}</div>}
-        </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50"><MolsanIcon name={icono} size={22} tone="ocean" /></span>
-      </div>
-    </div>
+    <MolsanStatCard
+      title={titulo}
+      value={valor}
+      description={subtitulo}
+      icon={icono}
+      tone="ocean"
+      className="informe-kpi-card"
+    />
   );
 }
 
@@ -3404,10 +3403,10 @@ function InformeFacturacion() {
           <InformeKpi titulo="Impuestos" valor={loadingTarjetas ? "…" : euros(r.total_impuesto)} subtitulo="Importe total de impuesto" icono="euro" />
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-emerald-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Cobrado</div><div className="mt-1 text-xl font-bold text-emerald-700">{loadingTarjetas ? "…" : euros(r.total_cobrado)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.cobrado)} registros</div></div>
-          <div className="rounded-2xl border border-amber-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Pendiente de cobro</div><div className="mt-1 text-xl font-bold text-amber-700">{loadingTarjetas ? "…" : euros(r.total_pendiente_cobro)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.pendiente_cobro)} registros</div></div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Pendiente de factura</div><div className="mt-1 text-xl font-bold text-slate-700">{loadingTarjetas ? "…" : euros(r.total_pendiente_factura)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.pendiente_factura)} registros</div></div>
-          <div className="rounded-2xl border border-rose-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Importe con incidencias</div><div className="mt-1 text-xl font-bold text-rose-700">{loadingTarjetas ? "…" : euros(r.total_incidencias)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.incidencias)} registros</div></div>
+          <MolsanStatCard title="Cobrado" value={loadingTarjetas ? "…" : euros(r.total_cobrado)} description={numeroInforme(r.cobrado) + " registros"} icon="checkCircle" tone="emerald" />
+          <MolsanStatCard title="Pendiente de cobro" value={loadingTarjetas ? "…" : euros(r.total_pendiente_cobro)} description={numeroInforme(r.pendiente_cobro) + " registros"} icon="clock" tone="amber" />
+          <MolsanStatCard title="Pendiente de factura" value={loadingTarjetas ? "…" : euros(r.total_pendiente_factura)} description={numeroInforme(r.pendiente_factura) + " registros"} icon="file" tone="slate" />
+          <MolsanStatCard title="Importe con incidencias" value={loadingTarjetas ? "…" : euros(r.total_incidencias)} description={numeroInforme(r.incidencias) + " registros"} icon="alert" tone="rose" />
         </div>
         <div className="flex justify-center border-t border-slate-100 pt-4">
           <button
