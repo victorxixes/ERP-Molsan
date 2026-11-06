@@ -791,3 +791,11 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - No se modifica la consulta de registros, filtros, exportación, paginación ni el flujo del diálogo de auditoría.
 - Verificación estática posterior: cero referencias a `/icons/icons.svg` o etiquetas SVG locales en ambas páginas.
 - Build de Preview pendiente para este bloque.
+
+## 43. Modales de Empleados, Expedientes y detalle CTN — revisión estática adicional (6 de noviembre de 2026)
+
+- `EmpleadosListado.jsx`: un diálogo de alta, con `role=dialog`, `aria-modal=true` y `useAccessibleDialog`.
+- `ExpedientesListado.jsx`: dos diálogos (principal y ayuda de plazos), ambos con marcado ARIA y dos llamadas al hook compartido.
+- `FichaExpediente.jsx`: cuatro diálogos, todos con `role=dialog`, `aria-modal=true` y gestión mediante el hook compartido; se mantienen las restricciones de cierre durante guardados.
+- `CtnDetallePage.jsx`: un diálogo de firmas, con ARIA y `useAccessibleDialog`.
+- Resultado estático de esta ronda: ocho diálogos adicionales con marcado y hook verificados. No se han modificado operaciones, formularios ni persistencia. La prueba manual con teclado, lector de pantalla y tamaños reales continúa pendiente.
