@@ -1163,3 +1163,12 @@ Commits: 78bf3f6 y 02d6d2d. Esta capa es de migración: a medida que cada consum
 Se ajustó el hover de tarjetas canónicas y legacy a una elevación de 4 px y sombra más profunda, próxima al movimiento de 5 px de `.workspace-app-card`. Se mantienen fondos blancos y bordes reforzados; no se reintroducen gradientes de hover. Los botones conservan su elevación discreta de 1 px y los iconos de botón ya no hacen zoom independiente.
 
 Commits: 9c2d0bc y 2834229.
+
+
+## 25. Herramientas, utilidades, intranet y fusiones
+
+- Se retiró la clase `animate-fadeIn` de las raíces de Herramientas, Utilidades, Importar CTN, Crear noticia, Logs, Subir documento, Firmas email, Catálogos, Datos Molsan, Intranet, Mensajes, Verifacti, Tipos de expediente y Catálogo de oficinas. También se retiró de MensajesHeader.
+- Se mantiene la animación de acceso en LoginPage/PortalLogin y las transiciones funcionales de desplegables y modales.
+- Fusiones se incorpora a la superficie de página blanca y al patrón de tarjeta heredada para su panel de solicitudes.
+
+Commits: df2d3fd, 57328dd, 1337ba9, 237ebe0, 73f9e36, b7c9c4c, 8f2153e, da17b82, 7a0dbac, 299feb3, 28a7ec3, 1aff1d5, 414c719, 04525e4, 9934185, 3724ed6, 6361f4b.
