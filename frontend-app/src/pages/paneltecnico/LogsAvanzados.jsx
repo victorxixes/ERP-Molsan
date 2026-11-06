@@ -14,7 +14,7 @@ import { getLogs } from "../../api/logs";
  * ============================================================
  */
 
-export default function LogsAvanzados() {
+export default function LogsAvanzados({ embedded = false } = {}) {
   const [logs, setLogs] = useState([]);
   const [busqueda, setBusqueda] = useState("");
 
@@ -76,12 +76,12 @@ export default function LogsAvanzados() {
   return (
     <div className="logs-avanzados-premium panel-tecnico-submodulo-premium space-y-6 animate-fade-in">
 
-      <MolsanPageHeader
+      {!embedded && <MolsanPageHeader
         mark="LG"
         title="Logs Técnicos"
         description="Registro de actividad técnica del sistema"
         actions={<span className="molsan-status molsan-status--info">{filtrados.length} registros</span>}
-      />
+      />}
 
       {/* ======================================================
           BUSCADOR
