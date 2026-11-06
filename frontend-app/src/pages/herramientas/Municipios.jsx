@@ -1482,11 +1482,11 @@ export default function Municipios() {
           CABECERA
       ===================================================== */}
 
-      <header className="molsan-page-header catalogos-subpage-header">
+      <header className="molsan-page-header">
 
-        <div className="catalogos-subpage-header__layout">
+        <div className="flex w-full min-w-0 flex-wrap items-center justify-between gap-4">
 
-          <div className="molsan-page-header__identity catalogos-subpage-header__identity">
+          <div className="molsan-page-header__identity molsan-page-header__identity">
 
             <div className="molsan-page-header__mark">
               <MolsanIcon name="building" size={22} tone="ocean" />
@@ -1531,7 +1531,7 @@ export default function Municipios() {
               BOTONES CABECERA
           ================================================= */}
 
-          <div className="molsan-page-header__actions catalogos-subpage-header__actions">
+          <div className="molsan-page-header__actions molsan-page-header__actions">
 
             <button
               type="button"
