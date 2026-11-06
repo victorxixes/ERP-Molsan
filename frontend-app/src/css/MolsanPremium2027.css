@@ -855,8 +855,7 @@
   .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .ctn-detalle-panel,
   .ctn-detalle-info-card, .ctn-detalle-stat, .expedientes-panel,
   .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
-  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
-  .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+  .pf-card, .dashboard-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
   .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-calendar-card, .agenda-list-table-wrap,
   .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, [data-panel="true"], [data-cg-panel="true"]
 ){
@@ -887,8 +886,7 @@
   .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .ctn-detalle-panel,
   .ctn-detalle-info-card, .ctn-detalle-stat, .expedientes-panel,
   .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
-  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
-  .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+  .pf-card, .dashboard-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
   .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-calendar-card, .agenda-list-table-wrap,
   .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, [data-panel="true"], [data-cg-panel="true"]
 ) {
@@ -918,8 +916,7 @@
   .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .ctn-detalle-panel,
   .ctn-detalle-info-card, .ctn-detalle-stat, .expedientes-panel,
   .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
-  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
-  .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+  .pf-card, .dashboard-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
   .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-calendar-card, .agenda-list-table-wrap,
   .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, [data-panel="true"], [data-cg-panel="true"]
 ):hover {
@@ -934,8 +931,7 @@
   .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
   .panel-tecnico-premium, .seguridad-premium-page,
   .herramientas-subpagina-premium, .catalogos-maestros-premium
-) :is(.erp-card-soft, .cg-kpi, .ag-kpi, .ng-contador, .eg-kpi,
-     .stat-card, .kpi-card):is(a, button, [role="button"]):hover {
+) :is(.erp-card-soft, .cg-kpi, .ag-kpi, .ng-contador, .stat-card, .kpi-card):is(a, button, [role="button"]):hover {
   transform: translateY(-5px);
 }
 @media (prefers-reduced-motion: reduce) {
@@ -951,8 +947,7 @@
       .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
       .eg-card, .eg-directorio-card, .ctn-panel,
       .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .expedientes-panel, .expediente-card,
-      .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
-      .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+      .pf-card, .dashboard-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
       .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-calendar-card, .agenda-list-table-wrap,
       .logs-panel, .maestros-panel
     ) {
