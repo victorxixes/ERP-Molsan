@@ -7,7 +7,7 @@
 */
 
 /* Superficies de página: blanco corporativo uniforme en todas las rutas. */
-:where(
+:is(
   .erp-app-shell, .erp-main-content, .erp-main-inner, .erp-route-content, .erp-page,
   .cg-page, .cg-unified-workspace, .expedientes-page, .expedientes-listado-premium,
   .ficha-expediente-premium, .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
