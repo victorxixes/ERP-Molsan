@@ -111,7 +111,7 @@ const ALIASES = {
   AG: "users",
   NG: "landmark",
 };
-const TONES = new Set(["ocean", "emerald", "violet", "amber", "cyan", "indigo", "slate", "inherit"]);
+const TONES = new Set(["ocean", "emerald", "violet", "amber", "cyan", "indigo", "slate", "rose", "inherit"]);
 
 export default function MolsanIcon({ name = "activity", size = 42, tone, className = "", title, bare = false }) {
   const key = ALIASES[name] || name;
