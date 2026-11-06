@@ -146,13 +146,15 @@
   display: grid;
   flex: 1 1 auto;
   min-height: 0;
-  grid-template-columns: minmax(0, 1.02fr) minmax(380px, .98fr);
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  align-items: start;
   gap: 16px;
   padding: 16px 24px 20px;
   overflow-y: auto;
   scrollbar-color: #cbd5e1 transparent;
   scrollbar-width: thin;
-}.eg-modal-section{min-width: 0; padding: 18px}
+}
+.eg-modal-section { min-width: 0; padding: 18px; }
 .eg-modal-section-heading {margin-bottom: 16px}
 .eg-modal-section-icono {
   display: grid;
@@ -252,27 +254,6 @@
 .eg-modal-footer > div { display: flex; align-items: center; justify-content: flex-end; gap: 9px; }
 .eg-modal-footer .eg-secondary,
 .eg-modal-footer .eg-button-primary { min-height: 40px; }
-@media (max-width: 1100px) {
-  .eg-modal-overlay { padding: 10px; }
-  .eg-modal-form { max-height: calc(100dvh - 20px); }
-  .eg-modal-layout { grid-template-columns: minmax(0, 1fr); gap: 13px; }
-  .eg-modal-carpeta { grid-row: auto; }
-}
-@media (max-width: 650px) {
-  .eg-modal-overlay { padding: 7px; }
-  .eg-modal-form { max-height: calc(100dvh - 14px);  }
-  .eg-modal-brand { flex-basis: 43px; width: 43px; height: 43px; border-radius: 13px; font-size: 15px; }
-  .eg-modal-heading h2 { font-size: 19px; }
-  .eg-modal-heading p { font-size: 10px; }
-  .eg-modal-contexto { padding: 10px 12px 0; }
-  .eg-modal-layout { padding: 12px; gap: 11px; }.eg-modal-section{padding: 13px}
-  .eg-modal-field-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-  .eg-modal-field-grid .eg-span-2 { grid-column: 1; }
-  .eg-modal-footer { align-items: stretch; flex-direction: column; padding: 12px; }
-  .eg-modal-footer > div { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); }
-  .eg-modal-footer > div > button { padding: 0 10px; }
-  .eg-modal-error { margin: 0 12px 10px; }
-}
 
 
 /* Visor integrado del modal: visor a la izquierda y categorías a la derecha */
@@ -309,30 +290,37 @@
 
 
 /* Estructura única del formulario de alta y edición. */
-.eg-modal-layout {
-  display:grid;
-  grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
-  align-items:start;
-  gap:16px;
+.eg-modal-datos { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; min-width: 0; }
+.eg-modal-datos > .eg-modal-field-grid { display: flex; flex-direction: column; min-width: 0; }
+.eg-modal-carpeta-lateral { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.eg-modal-carpeta-contrato { min-width: 0; padding: 14px; background: #fff; border: 1px solid var(--molsan-border,#D8E4EC); border-radius: 14px; }
+.eg-modal-carpeta-panel { margin: 0 !important; border: 0 !important; padding: 0 !important; }
+.eg-modal-carpeta-panel > .grid { grid-template-columns: minmax(0,1fr) !important; }
+.eg-contrato-layout { display: flex; flex-direction: column; gap: 14px; width: 100%; min-width: 0; }
+.eg-contrato-layout > * { width: 100%; min-width: 0; }
+
+@media (max-width: 1100px) {
+  .eg-modal-layout { grid-template-columns: minmax(0,1fr); gap: 13px; }
+  .eg-modal-carpeta { grid-row: auto; }
+  .eg-modal-datos,.eg-modal-carpeta-lateral { grid-column: 1; grid-row: auto; }
+  .eg-modal-carpeta-panel > .grid { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
 }
-.eg-modal-datos { grid-column:2; grid-row:1; display:flex; flex-direction:column; min-width:0; }
-.eg-modal-datos > .eg-modal-field-grid { display:flex; flex-direction:column; min-width:0; }
-.eg-modal-carpeta-lateral { grid-column:1; grid-row:1; display:flex; flex-direction:column; gap:14px; min-width:0; }
-.eg-modal-carpeta-contrato { min-width:0; padding:14px; background:#fff; border:1px solid var(--molsan-border,#D8E4EC); border-radius:14px; }
-.eg-modal-carpeta-panel { margin:0 !important; border:0 !important; padding:0 !important; }
-.eg-modal-carpeta-panel > .grid { grid-template-columns:minmax(0,1fr) !important; }
-.eg-contrato-layout { display:flex; flex-direction:column; gap:14px; width:100%; min-width:0; }
-.eg-contrato-layout > * { width:100%; min-width:0; }
-@media(max-width:1100px) {
-  .eg-modal-layout { grid-template-columns:minmax(0,1fr); }
-  .eg-modal-datos,.eg-modal-carpeta-lateral { grid-column:1; grid-row:auto; }
-  .eg-modal-carpeta-panel > .grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
-}
-@media(max-width:650px) {
-  .eg-modal-layout { padding:12px; gap:12px; }
-  .eg-modal-carpeta-panel > .grid { grid-template-columns:minmax(0,1fr) !important; }
-  .eg-modal-field-grid { grid-template-columns:minmax(0,1fr); }
-  .eg-modal-field-grid .eg-span-2 { grid-column:1; }
+@media (max-width: 650px) {
+  .eg-modal-overlay { padding: 7px; }
+  .eg-modal-form { max-height: calc(100dvh - 14px); }
+  .eg-modal-brand { flex-basis: 43px; width: 43px; height: 43px; border-radius: 13px; font-size: 15px; }
+  .eg-modal-heading h2 { font-size: 19px; }
+  .eg-modal-heading p { font-size: 10px; }
+  .eg-modal-contexto { padding: 10px 12px 0; }
+  .eg-modal-layout { padding: 12px; gap: 12px; }
+  .eg-modal-section { padding: 13px; }
+  .eg-modal-field-grid { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .eg-modal-field-grid .eg-span-2 { grid-column: 1; }
+  .eg-modal-carpeta-panel > .grid { grid-template-columns: minmax(0,1fr) !important; }
+  .eg-modal-footer { align-items: stretch; flex-direction: column; padding: 12px; }
+  .eg-modal-footer > div { display: grid; grid-template-columns: minmax(0,.8fr) minmax(0,1.2fr); }
+  .eg-modal-footer > div > button { padding: 0 10px; }
+  .eg-modal-error { margin: 0 12px 10px; }
 }
 
 /* Ajustes de uniformidad corporativa: azul MOLSAN, sin dorados decorativos */
