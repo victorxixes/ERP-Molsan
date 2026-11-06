@@ -116,7 +116,7 @@ function TarjetaIndicador({
     <>
       <div className="ag-kpi-superior">
         <span className="ag-kpi-titulo">{titulo}</span>
-        <span className="ag-kpi-icono" aria-hidden="true"><MolsanIcon name={icono} size={40} tone={tono} /></span>
+        <MolsanIcon name={icono} size={40} tone="ocean" />
       </div>
       <div className="ag-kpi-valor">{valor}</div>
       {detalle ? <div className="ag-kpi-detalle">{detalle}</div> : null}
