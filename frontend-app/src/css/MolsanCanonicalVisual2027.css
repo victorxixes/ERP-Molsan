@@ -77,7 +77,7 @@
    No se aplica a bloques de contenido, formularios ni paneles de calendario. */
 :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
-.agenda-upcoming-card,
+.agenda-upcoming-card,.ag-grupo-notario,.ag-carpeta-apoderado,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
 .notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card) {
   position: relative !important;
@@ -92,7 +92,7 @@
 }
 :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
-.agenda-upcoming-card,
+.agenda-upcoming-card,.ag-grupo-notario,.ag-carpeta-apoderado,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
 .notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card):hover {
   transform: translateY(-2px) !important;
@@ -103,7 +103,7 @@
 }
 :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
-.agenda-upcoming-card,
+.agenda-upcoming-card,.ag-grupo-notario,.ag-carpeta-apoderado,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
 .notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card)
 :where(.molsan-icon-3d,.molsan-icon-wrap) {
@@ -111,7 +111,7 @@
 }
 :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
-.agenda-upcoming-card,
+.agenda-upcoming-card,.ag-grupo-notario,.ag-carpeta-apoderado,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
 .notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card):hover
 :where(.molsan-icon-3d,.molsan-icon-wrap) {
@@ -120,7 +120,7 @@
 
 :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
-.agenda-upcoming-card,
+.agenda-upcoming-card,.ag-grupo-notario,.ag-carpeta-apoderado,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,.notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card):focus-within {
   border-color: #A9CCDF !important;
 }
@@ -241,7 +241,7 @@
 @media(prefers-reduced-motion:reduce) {
   :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
-.agenda-upcoming-card,
+.agenda-upcoming-card,.ag-grupo-notario,.ag-carpeta-apoderado,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
   .notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card),
   :where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest) * {
@@ -249,7 +249,7 @@
   }
   :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
-.agenda-upcoming-card,
+.agenda-upcoming-card,.ag-grupo-notario,.ag-carpeta-apoderado,
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
   .notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card):hover {
     transform: none !important;
