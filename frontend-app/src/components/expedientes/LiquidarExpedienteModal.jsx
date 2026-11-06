@@ -141,7 +141,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
   };
   const contenido = (
     <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="liquidar-expediente-titulo">
-      <section className="flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-white/70 bg-slate-50 shadow-2xl">
+      <section className="modal-sj flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden bg-white shadow-2xl">
         <header className="molsan-modal-header flex items-start justify-between gap-3">
           <div><p className="text-[10px] font-extrabold uppercase tracking-[.18em]">MOLSAN ERP · Cierre</p><h2 id="liquidar-expediente-titulo" className="mt-1 text-xl font-extrabold">Liquidar expediente</h2><p className="mt-1 text-xs">Expediente {expediente?.id_expediente || expediente?.id || "—"}. Revisar y guardar no cierra el expediente.</p></div>
           <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-lg leading-none text-slate-600 hover:bg-slate-100" aria-label="Cerrar modal">×</button>
