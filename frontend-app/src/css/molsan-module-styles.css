@@ -21,6 +21,7 @@
 @import "./ModalesOperativosPremium.css";
 
 /* Módulos */
+@import "./ApoderaGest.css";
 @import "./Cancelagest.css";
 @import "./CancelagestUnified.css";
 @import "./CatalogosMaestrosPremium.css";
