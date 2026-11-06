@@ -3,9 +3,6 @@ import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
-
 const euroFecha = (v) => {
   if (!v) return "—";
   const s = String(v).replace("T", " ").slice(0, 16);
