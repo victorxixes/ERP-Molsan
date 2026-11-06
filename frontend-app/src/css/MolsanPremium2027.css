@@ -1198,10 +1198,11 @@
   justify-content: space-between;
   gap: 10px;
   min-width: 0;
-  padding: 14px 16px;
+  margin: 0 0 12px;
+  padding: 0 0 12px;
   color: #064675;
-  background: #F2F7FB;
-  border-bottom: 1px solid #D8E4EC;
+  background: transparent;
+  border: 0;
 }
 :is(
   .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
