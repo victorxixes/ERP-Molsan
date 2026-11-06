@@ -1545,7 +1545,7 @@ export default function EntidadesBancarias() {
           CABECERA
       ===================================================== */}
 
-      <header className="molsan-page-header catalogos-subpage-header">
+      <header className="molsan-page-header">
 
         <div
           className="
@@ -1561,9 +1561,9 @@ export default function EntidadesBancarias() {
         />
 
 
-        <div className="catalogos-subpage-header__layout">
+        <div className="flex w-full min-w-0 flex-wrap items-center justify-between gap-4">
 
-          <div className="molsan-page-header__identity catalogos-subpage-header__identity">
+          <div className="molsan-page-header__identity molsan-page-header__identity">
 
             <div className="molsan-page-header__mark">
               <MolsanIcon name="bank" size={22} tone="ocean" />
@@ -1609,7 +1609,7 @@ export default function EntidadesBancarias() {
               BOTONES
           ================================================= */}
 
-          <div className="molsan-page-header__actions catalogos-subpage-header__actions">
+          <div className="molsan-page-header__actions molsan-page-header__actions">
 
             
 
