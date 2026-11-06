@@ -56,23 +56,6 @@
 
 
 .eg-modal-form{width:min(100%,1480px);max-height:calc(100dvh - 36px);min-height:0;overflow:hidden}
-.eg-modal-header {
-  position: relative;
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 15px;
-  padding: 19px 24px;
-  border-bottom: 1px solid var(--molsan-border-light, #e8edf4);
-  background: var(--molsan-surface-soft, #f7f9fc);
-}
-.eg-modal-header::before {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  content: "";
-  background: linear-gradient(90deg, transparent, var(--molsan-primary, #3156b3) 28%, var(--molsan-primary-hover, #274694) 70%, transparent);
-}
 .eg-modal-brand {
   display: grid;
   place-items: center;
@@ -89,15 +72,6 @@
   letter-spacing: -.6px;
 }
 .eg-modal-heading { flex: 1; min-width: 0; }
-.eg-modal-heading h2 {
-  margin: 4px 0 4px;
-  color: var(--molsan-text, #17243a);
-  font-size: clamp(20px, 2vw, 27px);
-  font-weight: 850;
-  letter-spacing: -.7px;
-  line-height: 1.2;
-}
-.eg-modal-heading p { margin: 0; color: var(--molsan-text-muted, #64748b); font-size: 12px; line-height: 1.55; }
 .eg-modal-close {
   display: grid;
   flex: 0 0 38px;
@@ -275,10 +249,7 @@
   .eg-modal-carpeta { grid-row: auto; }
 }
 @media (max-width: 650px) {
-  .eg-modal-header { gap: 10px; padding: 14px; }
   .eg-modal-brand { flex-basis: 43px; width: 43px; height: 43px; border-radius: 13px; font-size: 15px; }
-  .eg-modal-heading h2 { font-size: 19px; }
-  .eg-modal-heading p { font-size: 10px; }
   .eg-modal-contexto { padding: 10px 12px 0; }
   .eg-modal-layout { padding: 12px; gap: 11px; }
   .eg-modal-section { padding: 13px; border-radius: 14px; }
