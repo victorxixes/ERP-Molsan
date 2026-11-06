@@ -1491,7 +1491,7 @@ Se ha comprobado `frontend-app/package.json`: el comando de compilación disponi
 
 Para el commit `0cdde89adb6c1cc8a4901c5afa4f20c5a45515a3`, GitHub devuelve cero ejecuciones asociadas y cero status checks. No se ha podido ejecutar `npm run build` desde esta sesión ni se declara build correcto. La compilación sigue siendo una condición pendiente, no un resultado supuesto.
 
-**Cobertura restante:** 98 JSX continúan sin trazabilidad individual inequívoca en la sección 28; 0 JS pendientes de localizar; quedan pendientes consumidores de componentes compartidos, modales, estados responsive y navegación visual autenticada en Preview.
+**Cobertura restante:** 98 JSX que al inicio de esta pasada carecían de trazabilidad individual inequívoca en la sección 28; 0 JS pendientes de localizar; quedan pendientes consumidores de componentes compartidos, modales, estados responsive y navegación visual autenticada en Preview.
 
 
 ## 31. Tercera pasada de componentes compartidos y expedientes — 6 de noviembre de 2026
@@ -1555,3 +1555,47 @@ La reconciliación JavaScript queda cerrada. La cobertura JSX y la validación d
 - Se ha comprobado por lectura posterior que los siete componentes de la sección 33 conservan su clase raíz compartida.
 
 **Límite:** esta pasada estática reduce clases inválidas conocidas y pictogramas inconsistentes, pero no sustituye el build de Vite ni la prueba real en navegador. El estado de compilación sigue sin confirmarse.
+
+
+## 37. Reconciliación final de JSX y validación de compilación — 6 de noviembre de 2026
+
+### Cobertura JSX cerrada a nivel de lectura estática
+
+Se han leído individualmente los 98 JSX enumerados inicialmente en la sección 28. Sumados a los 45 que ya tenían referencias explícitas en la auditoría anterior, queda revisado el conjunto documentado de **143/143 JSX** del árbol `frontend-app/src`.
+
+En esta última pasada se incluyeron:
+- Autenticación y navegación: `LoginPage`, `ModulosSelector`, `ModuloPendiente`, `Sidebar`, `SidebarPerfilModal`, guards y contexto.
+- Vistas de Agenda, CTN, Dashboard, empleados, expedientes, Fichajes, Fusiones, Intranet, Maestros, Mensajería, Mensajes, Notificaciones, Panel Técnico y todas las subpáginas de Seguridad.
+- Las 33 herramientas/catálogos enumerados en secciones 29–35.
+- Componentes compartidos de portales, notificaciones, logs, tablas, informes, formularios, modales y pictogramas.
+
+No se han forzado cambios en las superficies que ya responden al patrón acordado: el login se conserva porque su rediseño ya está consolidado; `ModulosSelector` se conserva como referencia visual de Espacios de trabajo; Dashboard, CTN, Seguridad y Maestros mantienen sus componentes/tokens compartidos. Los colores de estado y los controles de decisión se conservan por semántica, no como decoración.
+
+### Últimas conexiones CSS
+
+- `PortalAccessTabs.jsx` recibe `portal-access-tabs-premium`.
+- `DocumentosTable.jsx` recibe `intranet-documentos-table-premium`.
+- `NoticiasFeed.jsx` recibe `intranet-noticias-feed-premium`.
+- `InformeApoderado.jsx` recibe `informe-apoderado-premium`.
+- Los estilos de foco/reducción de movimiento de perfil se vinculan al selector real `.empleado-operativo-modal`.
+- La página operativa de `MantenimientoTecnico.jsx` y la raíz de `Verifacti.jsx` reciben sus clases premium compartidas.
+- `DocumentosAdmin.jsx` normaliza cabecera de tabla, inputs y botón de descarga con tokens Molsan; los botones Aprobar/Rechazar mantienen colores de resultado.
+
+### Compilación
+
+<badge color="success">Build frontend correcto</badge>
+
+Para el commit de código `b8baf97b85358ebdd028767154390ae7f54306fe`, la ejecución GitHub Actions `42293606642` terminó con:
+- Build del frontend: **success** (`npm install` + `npm run build`).
+- Sintaxis Python del backend de fichajes: **success**.
+
+El commit posterior de documentación no cambia código ejecutable. Se observan ejecuciones independientes de `supabase-schema-audit` que terminan en failure sin jobs; no son el workflow de compilación frontend y esta rama no ha modificado backend, esquema ni datos de Supabase.
+
+### Estado real de cierre
+
+- CSS: 41/41 hojas con pasada estática documentada.
+- JSX: 143/143 leídos individualmente.
+- JS: 57/57 leídos y clasificados.
+- Build: correcto en el último commit de código.
+- Pendiente externo: navegación visual autenticada y responsive en Render Preview. No se afirma que el aspecto final esté validado en navegador.
+- PR #411 continúa abierta y en Draft; no se fusiona ni se despliega a producción sin revisión visual y aprobación.
