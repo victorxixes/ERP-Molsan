@@ -848,7 +848,7 @@
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
   .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
-  .eg-modal-section,
+  .eg-modal-section, .ng-admin-global-resumen,
   .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
   .expedientes-panel,
   .expedientes-filter-panel, .expedientes-table-panel,
@@ -876,7 +876,7 @@
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
   .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
-  .eg-modal-section,
+  .eg-modal-section, .ng-admin-global-resumen,
   .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
   .expedientes-panel,
   .expedientes-filter-panel, .expedientes-table-panel,
@@ -898,7 +898,7 @@
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
   .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
-  .eg-modal-section,
+  .eg-modal-section, .ng-admin-global-resumen,
   .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
   .expedientes-panel,
   .expedientes-filter-panel, .expedientes-table-panel,
