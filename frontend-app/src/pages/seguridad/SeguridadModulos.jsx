@@ -469,7 +469,7 @@ export default function SeguridadModulos() {
                           ? `
                             border-[var(--molsan-border-strong)]
                             bg-[var(--molsan-primary-soft)]
-                            hover:bg-[var(--molsan-primary-soft)]/70
+                            hover:bg-[var(--molsan-primary-soft)]
                           `
                           : `
                             border-[var(--erp-border)]
