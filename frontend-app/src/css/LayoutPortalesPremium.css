@@ -1,7 +1,7 @@
 /* MOLSAN ERP Premium 2027 · layout, portales e intranet */
 .mol-sidebar-premium a,.mol-sidebar-premium button { transition:background-color .16s ease,color .16s ease,border-color .16s ease; }
 .mol-sidebar-premium nav { min-width:0; max-width:100%; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:var(--molsan-border, #D8E4EC) transparent; }
-.portal-login-premium input:focus-visible,.portal-login-premium button:focus-visible,.portal-access-tabs-premium button:focus-visible,.sidebar-perfil-modal-premium button:focus-visible,.sidebar-perfil-modal-premium input:focus-visible,.sidebar-perfil-modal-premium select:focus-visible { outline:2px solid var(--molsan-primary, #064675); outline-offset:2px; }
+.portal-login-premium input:focus-visible,.portal-login-premium button:focus-visible,.portal-access-tabs-premium button:focus-visible,.empleado-operativo-modal button:focus-visible,.empleado-operativo-modal input:focus-visible,.empleado-operativo-modal select:focus-visible { outline:2px solid var(--molsan-primary, #064675); outline-offset:2px; }
 .portal-login-premium input,.portal-login-premium button { max-width:100%; }
 .portal-access-tabs-premium { min-width:0; }
 .portal-access-tabs-premium [role=tablist] { display:flex; flex-wrap:wrap; gap:.5rem; }
@@ -11,10 +11,10 @@
 .intranet-documentos-table-premium td,.intranet-documentos-table-premium th { overflow-wrap:anywhere; }
 .intranet-noticias-feed-premium { min-width:0; }
 .intranet-noticias-feed-premium img { max-width:100%; }
-.sidebar-perfil-modal-premium { min-width:0; }
-.sidebar-perfil-modal-premium [role=dialog] { max-height:calc(100dvh - 1rem); overflow-y:auto; overscroll-behavior:contain; }
-@media(max-width:640px){.portal-access-tabs-premium [role=tablist]{gap:.35rem}.intranet-documentos-table-premium{overflow-x:auto;-webkit-overflow-scrolling:touch}.sidebar-perfil-modal-premium [role=dialog]{width:100%;max-height:calc(100dvh - .5rem)}}
-@media(prefers-reduced-motion:reduce){.mol-sidebar-premium *,.portal-login-premium *,.portal-access-tabs-premium *,.intranet-documentos-table-premium *,.intranet-noticias-feed-premium *,.sidebar-perfil-modal-premium *{transition:none!important;animation:none!important}}
+.empleado-operativo-modal { min-width:0; }
+.empleado-operativo-modal [role=dialog] { max-height:calc(100dvh - 1rem); overflow-y:auto; overscroll-behavior:contain; }
+@media(max-width:640px){.portal-access-tabs-premium [role=tablist]{gap:.35rem}.intranet-documentos-table-premium{overflow-x:auto;-webkit-overflow-scrolling:touch}.empleado-operativo-modal [role=dialog]{width:100%;max-height:calc(100dvh - .5rem)}}
+@media(prefers-reduced-motion:reduce){.mol-sidebar-premium *,.portal-login-premium *,.portal-access-tabs-premium *,.intranet-documentos-table-premium *,.intranet-noticias-feed-premium *,.empleado-operativo-modal *{transition:none!important;animation:none!important}}
 
 
 /* Navegación principal MOLSAN ONE: cabecera limpia y barra consistente. */
@@ -57,7 +57,7 @@
   outline: 3px solid color-mix(in srgb, var(--molsan-primary) 32%, transparent);
   outline-offset: 2px;
 }
-.sidebar-perfil-modal-premium [role="dialog"] {
+.empleado-operativo-modal [role="dialog"] {
   border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: 16px;
   box-shadow: 0 24px 72px rgba(15,23,42,.22);
