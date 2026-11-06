@@ -1,104 +1,205 @@
 /* MOLSAN ERP PREMIUM 2027 · GLASS LUXE UNIFIED COMPONENTS
-   Capa canónica de convergencia visual. Se importa después de las hojas
-   heredadas y compartidas. No cambia estructura, datos ni comportamiento. */
+   Autoridad visual común. Se importa después de las hojas heredadas.
+   Mantiene intactos lógica, datos, rutas, permisos y componentes funcionales. */
 
 :root {
   --molsan-glass-border: rgba(255,255,255,.30);
-  --molsan-glass-surface: rgba(255,255,255,.13);
   --molsan-glass-shadow: 0 10px 28px rgba(4,55,91,.13);
   --molsan-card-border: #D8E4EC;
   --molsan-card-shadow: 0 8px 24px rgba(6,50,82,.065);
   --molsan-card-shadow-hover: 0 15px 32px rgba(6,50,82,.11);
+  --molsan-card-radius: 18px;
 }
 
-/* CABECERA ÚNICA: aplicada a las cabeceras principales y a las de los portales.
-   El tinte azul translúcido y el blur deben verse igual en todas las rutas. */
-.erp-route-content .molsan-page-header,
-.erp-page.molsan-professional-shell > .molsan-page-header,
-.apoderagest > header.ag-hero.molsan-page-header,
-.encargagest > header.ag-hero.molsan-page-header,
-.notargest.ng-content > header.ng-hero.molsan-page-header,
-.ng-admin-notarias > header.ng-hero.molsan-page-header,
-.catalogos-premium-page > .molsan-page-header,
-.utilidades-premium-page > .molsan-page-header {
+/* =========================================================
+   1. CABECERA CANÓNICA
+   Se aplica a MolsanPageHeader y a las cabeceras equivalentes
+   de los tres portales, estén dentro o fuera de erp-route-content.
+   ========================================================= */
+:where(
+  .molsan-page-header,
+  .apoderagest > .ag-hero,
+  .encargagest > .ag-hero,
+  .notargest.ng-content > .ng-hero,
+  .ng-admin-notarias > .ng-hero
+) {
+  position: relative;
   isolation: isolate;
-  background:
-    radial-gradient(ellipse at 88% 10%, rgba(170,220,232,.26), transparent 43%),
-    linear-gradient(116deg, rgba(3,45,75,.90) 0%, rgba(6,70,117,.86) 55%, rgba(13,99,140,.82) 100%) !important;
-  -webkit-backdrop-filter: blur(22px) saturate(135%) !important;
-  backdrop-filter: blur(22px) saturate(135%) !important;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  min-height: 82px;
+  margin: 0 0 20px;
+  padding: 14px 20px;
+  overflow: hidden;
+  color: #fff !important;
   border: 1px solid var(--molsan-glass-border) !important;
+  border-radius: 18px !important;
+  background:
+    radial-gradient(ellipse at 88% 10%, rgba(108,197,217,.25), transparent 42%),
+    linear-gradient(116deg, rgba(3,45,75,.94) 0%, rgba(6,70,117,.91) 56%, rgba(13,99,140,.89) 100%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  backdrop-filter: blur(22px) saturate(140%);
   box-shadow: var(--molsan-glass-shadow) !important;
-  color: #fff !important;
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  transition: none !important;
 }
-.erp-route-content .molsan-page-header::before,
-.erp-page.molsan-professional-shell > .molsan-page-header::before,
-.apoderagest > header.ag-hero.molsan-page-header::before,
-.encargagest > header.ag-hero.molsan-page-header::before,
-.notargest.ng-content > header.ng-hero.molsan-page-header::before,
-.ng-admin-notarias > header.ng-hero.molsan-page-header::before,
-.catalogos-premium-page > .molsan-page-header::before,
-.utilidades-premium-page > .molsan-page-header::before {
-  content: "";
+:where(
+  .molsan-page-header,
+  .apoderagest > .ag-hero,
+  .encargagest > .ag-hero,
+  .notargest.ng-content > .ng-hero,
+  .ng-admin-notarias > .ng-hero
+)::before {
   position: absolute;
-  inset: 0;
   z-index: -1;
+  inset: 0;
+  content: "";
   pointer-events: none;
-  background: linear-gradient(125deg, rgba(255,255,255,.10), transparent 42%, rgba(108,197,217,.08));
+  background: linear-gradient(125deg, rgba(255,255,255,.11), transparent 42%, rgba(108,197,217,.09));
 }
-.erp-route-content .molsan-page-header__title,
-.erp-page.molsan-professional-shell .molsan-page-header__title,
-:is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__title {
+:where(.molsan-page-header, .ag-hero, .ng-hero) :where(h1, .molsan-page-header__title) {
   color: #fff !important;
 }
-.erp-route-content .molsan-page-header__description,
-.erp-page.molsan-professional-shell .molsan-page-header__description,
-:is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__description {
+:where(.molsan-page-header, .ag-hero, .ng-hero) :where(p, .molsan-page-header__description) {
   color: #D1E4EE !important;
 }
+:where(.molsan-page-header__identity, .ag-hero-identidad) {
+  display: flex;
+  align-items: center;
+  flex: 1 1 320px;
+  gap: 12px;
+  min-width: 0;
+}
+:where(.molsan-page-header__actions, .ag-hero-acciones) {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  margin-left: auto;
+}
+:where(.molsan-page-header__actions, .ag-hero-acciones) > :where(button, a) {
+  min-height: 36px;
+  border-radius: 10px;
+}
+:where(.molsan-page-header__mark, .ag-marca) {
+  flex-shrink: 0;
+}
+:where(.molsan-page-header__eyebrow, .ag-eyebrow, .ag-kicker) {
+  color: #C6DFEC !important;
+}
 
-/* TARJETAS: mismo lenguaje de superficie, profundidad, borde y hover.
-   Se enumeran clases existentes de los portales para que no queden aisladas
-   del sistema compartido por utilizar nomenclaturas históricas distintas. */
+/* =========================================================
+   2. TARJETAS Y KPI
+   Clases verificadas en el JSX real de ApoderaGest, EncargaGest
+   y NotarGest. No se aplican reglas genéricas a cualquier div.
+   ========================================================= */
 :where(
-  .erp-card, .card-sj,
-  .apoderagest .ag-kpi,
+  .erp-card,
+  .card-sj,
+  .dashboard-kpi,
+  .apoderagest .molsan-stat-card,
   .encargagest .eg-kpi,
-  .encargagest .eg-main .ag-kpi,
-  .notargest.ng-content .ng-dashboard-kpi,
-  .notargest.ng-content .ng-kpi-card,
-  .ng-admin-notarias .ng-admin-kpi-button
+  .notargest.ng-content .ng-dashboard-grafico,
+  .notargest.ng-content .ng-dashboard-kpis article,
+  .ng-admin-notarias .ng-admin-kpi-button,
+  .ng-admin-notarias .ng-admin-notaria-card
 ) {
+  position: relative;
+  min-width: 0;
   border: 1px solid var(--molsan-card-border) !important;
-  border-radius: 18px !important;
+  border-radius: var(--molsan-card-radius) !important;
   background: linear-gradient(150deg,#fff 0%,#fff 62%,#F2F7FB 100%) !important;
   box-shadow: var(--molsan-card-shadow) !important;
   transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease, background .2s ease !important;
 }
 :where(
-  .erp-card, .card-sj,
-  .apoderagest .ag-kpi,
+  .erp-card,
+  .card-sj,
+  .dashboard-kpi,
+  .apoderagest .molsan-stat-card,
   .encargagest .eg-kpi,
-  .encargagest .eg-main .ag-kpi,
-  .notargest.ng-content .ng-dashboard-kpi,
-  .notargest.ng-content .ng-kpi-card,
-  .ng-admin-notarias .ng-admin-kpi-button
-):hover {
+  .notargest.ng-content .ng-dashboard-grafico,
+  .notargest.ng-content .ng-dashboard-kpis article,
+  .ng-admin-notarias .ng-admin-kpi-button,
+  .ng-admin-notarias .ng-admin-notaria-card
+):not(:disabled):hover {
   border-color: #B9D7E6 !important;
   box-shadow: var(--molsan-card-shadow-hover) !important;
   transform: translateY(-2px);
 }
+/* Accesos interactivos: mantienen el cursor y el foco accesible. */
+:where(
+  .apoderagest button.molsan-stat-card,
+  .encargagest button.eg-kpi,
+  .ng-admin-notarias button.ng-admin-kpi-button
+) {
+  cursor: pointer;
+  text-align: left;
+}
+:where(
+  .erp-card,
+  .card-sj,
+  .dashboard-kpi,
+  .molsan-stat-card,
+  .eg-kpi,
+  .ng-dashboard-grafico,
+  .ng-admin-kpi-button,
+  .ng-admin-notaria-card
+):focus-visible,
+:where(
+  .erp-card,
+  .card-sj,
+  .dashboard-kpi,
+  .molsan-stat-card,
+  .eg-kpi,
+  .ng-dashboard-grafico,
+  .ng-admin-kpi-button,
+  .ng-admin-notaria-card
+):focus-within {
+  outline-color: rgba(6,70,117,.24);
+  border-color: #A9CCDF !important;
+}
 
-/* ICONOS: una única cápsula visual para los wrappers de icono ya existentes.
-   No sustituye componentes React ni introduce iconos Unicode. */
+/* Línea de identidad discreta, coherente con las tarjetas de Espacios de trabajo. */
+:where(
+  .erp-card,
+  .card-sj,
+  .dashboard-kpi,
+  .apoderagest .molsan-stat-card,
+  .encargagest .eg-kpi,
+  .notargest.ng-content .ng-dashboard-grafico,
+  .ng-admin-notarias .ng-admin-notaria-card
+)::after {
+  pointer-events: none;
+}
+
+/* =========================================================
+   3. ICONOGRAFÍA
+   Los wrappers conservan MolsanIcon; solo se unifica su contenedor.
+   ========================================================= */
 :where(
   .apoderagest .ag-kpi-icono,
   .encargagest .eg-kpi-icono,
-  .notargest.ng-content .ng-kpi-icon,
-  .notargest.ng-content .ng-dashboard-kpi-icon,
-  .ng-admin-notarias .ng-admin-kpi-icon,
+  .notargest.ng-content .ng-admin-notaria-icono,
+  .notargest.ng-content .ng-admin-circuito-icono,
+  .notargest.ng-content .ng-aviso-icono,
   .erp-card .molsan-icon-wrap,
-  .card-sj .molsan-icon-wrap
+  .card-sj .molsan-icon-wrap,
+  .molsan-stat-card .ag-kpi-icono
 ) {
   display: grid;
   place-items: center;
@@ -110,30 +211,87 @@
   border-radius: 12px !important;
   background: #F2F7FB !important;
 }
-
-/* Evita que las reglas de transición heredadas hagan parpadear cabeceras. */
-.erp-route-content .molsan-page-header,
-.erp-page.molsan-professional-shell .molsan-page-header,
-:is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header {
-  animation: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
+:where(.ag-kpi-icono, .eg-kpi-icono, .ng-admin-notaria-icono, .ng-admin-circuito-icono) .molsan-icon-3d {
+  max-width: 30px;
+  max-height: 30px;
 }
+
+/* =========================================================
+   4. PORTALES: evita que el contenido y los títulos se desalineen.
+   ========================================================= */
+:where(.apoderagest, .encargagest, .notargest.ng-content, .ng-admin-notarias) {
+  min-width: 0;
+}
+:where(.apoderagest, .encargagest, .notargest.ng-content, .ng-admin-notarias)
+  :where(.ag-grid-kpi, .eg-grid-kpi, .ng-dashboard-kpis, .ng-admin-kpis) {
+  min-width: 0;
+}
+:where(.apoderagest, .encargagest, .notargest.ng-content, .ng-admin-notarias)
+  :where(.ag-grid-kpi, .ng-dashboard-kpis, .ng-admin-kpis) > * {
+  min-width: 0;
+}
+
+/* =========================================================
+   5. RESPONSIVE Y MOVIMIENTO REDUCIDO
+   ========================================================= */
 @media (max-width: 760px) {
-  .erp-route-content .molsan-page-header,
-  .erp-page.molsan-professional-shell .molsan-page-header,
-  :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header {
-    flex-wrap: wrap !important;
+  :where(
+    .molsan-page-header,
+    .apoderagest > .ag-hero,
+    .encargagest > .ag-hero,
+    .notargest.ng-content > .ng-hero,
+    .ng-admin-notarias > .ng-hero
+  ) {
     min-height: 74px;
     padding: 12px 14px !important;
+    gap: 10px;
+  }
+  :where(.molsan-page-header__identity, .ag-hero-identidad) {
+    flex-basis: 100%;
+  }
+  :where(.molsan-page-header__actions, .ag-hero-acciones) {
+    width: 100%;
+    justify-content: flex-start;
+    margin-left: 0;
+  }
+}
+@media (max-width: 520px) {
+  :where(
+    .erp-card,
+    .card-sj,
+    .dashboard-kpi,
+    .apoderagest .molsan-stat-card,
+    .encargagest .eg-kpi,
+    .notargest.ng-content .ng-dashboard-grafico,
+    .ng-admin-notarias .ng-admin-kpi-button,
+    .ng-admin-notarias .ng-admin-notaria-card
+  ) {
+    border-radius: 15px !important;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  :where(.erp-card,.card-sj,.ag-kpi,.eg-kpi,.ng-kpi-card,.ng-dashboard-kpi,.ng-admin-kpi-button) {
+  :where(
+    .erp-card,
+    .card-sj,
+    .dashboard-kpi,
+    .molsan-stat-card,
+    .eg-kpi,
+    .ng-dashboard-grafico,
+    .ng-admin-kpi-button,
+    .ng-admin-notaria-card
+  ) {
     transition: none !important;
   }
-  :where(.erp-card,.card-sj,.ag-kpi,.eg-kpi,.ng-kpi-card,.ng-dashboard-kpi,.ng-admin-kpi-button):hover {
+  :where(
+    .erp-card,
+    .card-sj,
+    .dashboard-kpi,
+    .molsan-stat-card,
+    .eg-kpi,
+    .ng-dashboard-grafico,
+    .ng-admin-kpi-button,
+    .ng-admin-notaria-card
+  ):hover {
     transform: none !important;
   }
 }
