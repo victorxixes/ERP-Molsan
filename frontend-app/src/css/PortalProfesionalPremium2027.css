@@ -239,8 +239,7 @@
   .ng-admin-notarias .ng-admin-kpis,.ng-admin-notarias .ng-admin-kpis-global{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 @media(prefers-reduced-motion:reduce){
-  .apoderagest *, .encargagest *, .notargest.ng-content *, .ng-admin-notarias *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
-}
+  }
 
 
 /* APODERAGEST · iconos de indicadores y grupos, con cabecera común. */
