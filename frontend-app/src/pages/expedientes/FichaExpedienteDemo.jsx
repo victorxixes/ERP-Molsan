@@ -76,7 +76,7 @@ export default function FichaExpedienteDemo() {
   return (
     <main className="ficha-expediente-premium erp-page space-y-5">
       <MolsanPageHeader
-        mark="▣"
+        mark="EXP"
         title="Ficha de expediente"
         description="Vista de demostración del diseño MOLSAN ERP PREMIUM 2027"
       />
@@ -150,7 +150,7 @@ export default function FichaExpedienteDemo() {
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
         <section className="molsan-card">
           <div className="flex items-center gap-3 px-5 py-4">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ color: "var(--molsan-blue)", background: "var(--molsan-panel)" }}>▤</span>
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ color: "var(--molsan-blue)", background: "var(--molsan-panel)" }}><MolsanIcon name="fileCheck" size={22} tone="ocean" bare /></span>
             <div><h2 className="font-semibold">Documentación de la actividad</h2><p className="text-xs">Documentos y seguimiento</p></div>
           </div>
           <div className="p-5">
@@ -174,7 +174,7 @@ export default function FichaExpedienteDemo() {
 
         <section className="molsan-card">
           <div className="flex items-center gap-3 px-5 py-4">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ color: "var(--molsan-blue)", background: "var(--molsan-panel)" }}>€</span>
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ color: "var(--molsan-blue)", background: "var(--molsan-panel)" }}><MolsanIcon name="wallet" size={22} tone="ocean" bare /></span>
             <div><h2 className="font-semibold">Gestión económica</h2><p className="text-xs">Resumen ilustrativo de provisiones y pagos</p></div>
           </div>
           <div className="grid grid-cols-1 gap-3 p-5 sm:grid-cols-2">
