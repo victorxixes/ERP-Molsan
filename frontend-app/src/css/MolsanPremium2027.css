@@ -420,10 +420,10 @@
   padding: 24px;
   text-align: left;
   color: var(--molsan-text);
-  border: 1px solid #D8E4EC;
+  border: 1.5px solid #C5D8E5;
   border-radius: 21px;
-  background: linear-gradient(150deg, #FFFFFF 0%, #FFFFFF 56%, #F7FAFC 100%);
-  box-shadow: 0 9px 24px rgba(6,50,82,.065);
+  background: #FFFFFF;
+  box-shadow: 0 7px 20px rgba(6,70,117,.09), 0 1px 3px rgba(6,50,82,.045);
   cursor: pointer;
   transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
 }
@@ -533,10 +533,10 @@
 
 .workspace-app-card:hover {
   z-index: 1;
-  transform: translateY(-5px);
-  border-color: var(--workspace-border);
-  background: linear-gradient(150deg, #FFFFFF 0%, #FFFFFF 56%, var(--workspace-tint) 100%);
-  box-shadow: 0 19px 38px rgba(6,50,82,.13);
+  transform: translateY(-4px);
+  border-color: #9FBFD2;
+  background: #FFFFFF;
+  box-shadow: 0 16px 34px rgba(6,70,117,.15);
 }
 
 .workspace-app-card:hover .workspace-card-open {
