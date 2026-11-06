@@ -1123,4 +1123,11 @@ color:#fff}
   box-shadow:0 5px 13px rgba(62,43,117,.10);
 }
 
-
+/* ApoderaGest · prioridad responsive tras la consolidación del bloque KPI.
+   La regla base final de .ag-kpi no debe anular las alturas móviles anteriores. */
+@media (max-width:760px) {
+  .apoderagest .ag-kpi { min-height:138px; }
+}
+@media (max-width:480px) {
+  .apoderagest .ag-kpi { min-height:126px; }
+}
