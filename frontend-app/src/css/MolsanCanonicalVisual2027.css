@@ -37,11 +37,23 @@
   color: var(--molsan-canon-header-muted) !important;
 }
 :where(.molsan-page-header__mark) {
+  display: inline-grid;
+  place-items: center;
   color: #064675 !important;
-  border: 1px solid #C5DCE9 !important;
-  border-radius: 13px !important;
-  background: linear-gradient(145deg,#FFFFFF,#EAF2F8) !important;
-  box-shadow: 0 4px 12px rgba(6,70,117,.10) !important;
+  border: 1px solid #AFCFDF !important;
+  border-radius: 15px !important;
+  background: radial-gradient(circle at 28% 20%,#FFFFFF 0%,#FFFFFF 16%,#EAF2F8 62%,#D9E9F3 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.98),0 5px 13px rgba(6,50,82,.12) !important;
+  text-shadow: 0 1px 1px rgba(6,70,117,.16);
+  transform: translateZ(0);
+  transition: transform .22s ease,box-shadow .22s ease;
+}
+:where(.molsan-page-header):hover :where(.molsan-page-header__mark) {
+  transform: translateY(-1px) scale(1.035);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.98),0 8px 17px rgba(6,50,82,.16) !important;
+}
+:where(.molsan-page-header__mark) :where(svg,img) {
+  filter: drop-shadow(0 1px 1px rgba(6,70,117,.2));
 }
 
 /* Tarjetas funcionales: mismo acento superior, acabado, iconografía y hover cromático.
@@ -140,6 +152,47 @@
   transform: translateY(-1px);
 }
 
+/* Variantes semánticas de acción en cabecera, centralizadas en la capa canónica. */
+.molsan-page-header .molsan-btn--success {
+  color: #176B4B !important;
+  background: linear-gradient(145deg,#F3FBF6,#E6F4EB) !important;
+  border-color: #BFE2CC !important;
+}
+.molsan-page-header .molsan-btn--warning {
+  color: #8A620D !important;
+  background: linear-gradient(145deg,#FFFCF2,#FFF4D8) !important;
+  border-color: #EEDCA8 !important;
+}
+.molsan-page-header .molsan-btn--danger {
+  color: #FFFFFF !important;
+  background: #B42318 !important;
+  border-color: #B42318 !important;
+}
+.molsan-page-header .molsan-btn--excel {
+  color: #FFFFFF !important;
+  background: linear-gradient(135deg,#16845B,#11734E) !important;
+  border-color: #11734E !important;
+}
+.molsan-page-header .molsan-btn--success:hover:not(:disabled) {
+  color: #145A40 !important;
+  background: #DDF0E5 !important;
+  border-color: #9CCFB1 !important;
+}
+.molsan-page-header .molsan-btn--warning:hover:not(:disabled) {
+  color: #76520A !important;
+  background: #FCECC2 !important;
+  border-color: #E5CD88 !important;
+}
+.molsan-page-header .molsan-btn--danger:hover:not(:disabled) {
+  color: #FFFFFF !important;
+  background: #941B13 !important;
+}
+.molsan-page-header .molsan-btn--excel:hover:not(:disabled) {
+  color: #FFFFFF !important;
+  background: linear-gradient(135deg,#11734E,#0D6242) !important;
+  border-color: #0D6242 !important;
+}
+
 /* Formularios y selectores comparten alturas, bordes y foco, sin inflar controles. */
 :where(.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea,.select-sj > button) {
@@ -184,9 +237,9 @@
 }
 
 
-/* Ajuste solicitado: cabecera algo más presente y marca/icono nítido. */
-:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
-:where(.molsan-page-header__mark,.molsan-page-header__icon,.erp-page-header__icon) {
+/* Compatibilidad de pictogramas en cabeceras heredadas. La marca MolsanPageHeader
+   ya tiene su acabado completo definido arriba; aquí solo se normalizan iconos legacy. */
+:where(.molsan-page-header__icon,.erp-page-header__icon) {
   color: #064675 !important;
   opacity: 1 !important;
   background: linear-gradient(145deg,#FFFFFF 0%,#E2F0F7 100%) !important;
