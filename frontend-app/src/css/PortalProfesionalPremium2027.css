@@ -121,7 +121,7 @@
 }
 .apoderagest .molsan-icon-3d,.encargagest .molsan-icon-3d,.notargest .molsan-icon-3d,.ng-admin-notarias .molsan-icon-3d { flex-shrink:0; }
 
-/* /* Modales de las tres áreas: misma identidad, contraste y jerarquía. */
+/* Modales de las tres áreas: misma identidad, contraste y jerarquía. */
 .apoderagest .ag-resumen-modal-overlay,.encargagest .eg-modal-overlay,.notargest .ng-modal-overlay{
   background:rgba(3,28,46,.58)!important;backdrop-filter:blur(4px)!important;-webkit-backdrop-filter:blur(4px)!important;
 }
