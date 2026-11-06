@@ -142,6 +142,55 @@
   transform: translateY(-1px) !important;
 }
 
+/* Tarjetas Tailwind heredadas en subpáginas: migración controlada al patrón Espacios de trabajo. */
+:where(
+  .seguridad-premium-page, .seguridad-subpagina-premium,
+  .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page, .informes-premium-page,
+  .notificaciones-premium-page, .logs-premium-page, .herramientas-subpagina-premium,
+  .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
+  .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
+  .agenda-premium-page
+) :where(section.rounded-2xl.border, article.rounded-2xl.border, div.rounded-2xl.border) {
+  position: relative;
+  min-width: 0;
+  border: 1.5px solid #C5D8E5 !important;
+  border-top: 4px solid #6CC5D9 !important;
+  border-radius: var(--molsan-canon-card-radius) !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 7px 20px rgba(6,70,117,.09),0 1px 3px rgba(6,50,82,.045) !important;
+  transition: transform .2s ease,border-color .2s ease,box-shadow .2s ease !important;
+}
+:where(
+  .seguridad-premium-page, .seguridad-subpagina-premium,
+  .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page, .informes-premium-page,
+  .notificaciones-premium-page, .logs-premium-page, .herramientas-subpagina-premium,
+  .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
+  .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
+  .agenda-premium-page
+) :where(section.rounded-2xl.border, article.rounded-2xl.border, div.rounded-2xl.border):hover {
+  transform: translateY(-2px);
+  border-color: #9FBFD2 !important;
+  border-top-color: #064675 !important;
+  box-shadow: 0 12px 26px rgba(6,70,117,.13),0 2px 5px rgba(6,50,82,.055) !important;
+}
+:where(
+  .seguridad-premium-page, .seguridad-subpagina-premium,
+  .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page, .informes-premium-page,
+  .notificaciones-premium-page, .logs-premium-page, .herramientas-subpagina-premium,
+  .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
+  .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
+  .agenda-premium-page
+) :where(section.rounded-2xl.border, article.rounded-2xl.border, div.rounded-2xl.border) > :where(.border-b,header.border-b) {
+  border-bottom: 0 !important;
+  background: transparent !important;
+}
+
 /* Botones de acción con icono (Excel, imprimir, importar, exportar, descargar):
    tratamiento de acceso de Espacios de trabajo, sin cambiar el significado cromático. */
 :where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
