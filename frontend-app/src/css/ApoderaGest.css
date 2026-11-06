@@ -6,27 +6,8 @@
 .apoderagest *::after{
   box-sizing: border-box;
 }
-.apoderagest .ag-fecha-actual{
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 13px;
-  color: #65738b;
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(221, 229, 240, 0.9);
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 650;
-  text-transform: capitalize;
-}
-.apoderagest .ag-punto-vivo{
-  width: 7px;
-  height: 7px;
-  flex: 0 0 7px;
-  background: #21b982;
-  border-radius: 50%;
-  box-shadow: 0 0 0 4px rgba(33, 185, 130, 0.10);
-}
+
+
 @keyframes ag-girar{
   to { transform: rotate(360deg); }
 }
@@ -444,11 +425,7 @@
 
 }
 @media (max-width: 700px){
-.apoderagest .ag-fecha-actual{
-    flex: 1;
-    min-width: 0;
-    font-size: 10px;
-  }
+
 .apoderagest .ag-grid-kpi{
     gap: 10px;
   }
@@ -516,9 +493,7 @@
 .apoderagest .ag-kpi-valor{
     font-size: 28px;
   }
-.apoderagest .ag-fecha-actual{
-    flex-basis: 100%;
-  }
+
 
 }
 @media (prefers-reduced-motion: reduce){
