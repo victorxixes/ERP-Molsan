@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   getMaestros,
@@ -455,24 +456,7 @@ export default function Maestros() {
                   `}
                 >
 
-                  <svg
-                    className={`
-                      w-4
-                      h-4
-                      ${
-                        activo
-                          ? "text-white"
-                          : "text-[var(--erp-primary)]"
-                      }
-                    `}
-                    aria-hidden="true"
-                  >
-
-                    <use
-                      href={`/icons/icons.svg#${tipo.icon}`}
-                    />
-
-                  </svg>
+                  <MolsanIcon name={tipo.icon} size={16} tone={activo ? "inherit" : "ocean"} />
 
                   {tipo.label}
 
@@ -612,14 +596,7 @@ export default function Maestros() {
               "
             >
 
-              <svg
-                className="w-4 h-4"
-                aria-hidden="true"
-              >
-                <use
-                  href="/icons/icons.svg#plus"
-                />
-              </svg>
+              <MolsanIcon name="plus" size={16} tone="inherit" />
 
               Nuevo {tipoActual.singular}
 
@@ -861,14 +838,7 @@ export default function Maestros() {
                   "
                 >
 
-                  <svg
-                    className="w-6 h-6"
-                    aria-hidden="true"
-                  >
-                    <use
-                      href="/icons/icons.svg#database"
-                    />
-                  </svg>
+                  <MolsanIcon name="archive" size={24} tone="ocean" />
 
                 </div>
 
@@ -1069,14 +1039,7 @@ export default function Maestros() {
                                 "
                               >
 
-                                <svg
-                                  className="w-3.5 h-3.5"
-                                  aria-hidden="true"
-                                >
-                                  <use
-                                    href="/icons/icons.svg#edit"
-                                  />
-                                </svg>
+                                <MolsanIcon name="pen" size={14} tone="ocean" />
 
                                 Editar
 
@@ -1108,14 +1071,7 @@ export default function Maestros() {
                                 "
                               >
 
-                                <svg
-                                  className="w-3.5 h-3.5"
-                                  aria-hidden="true"
-                                >
-                                  <use
-                                    href="/icons/icons.svg#trash"
-                                  />
-                                </svg>
+                                <MolsanIcon name="trash" size={14} tone="inherit" />
 
                                 Eliminar
 
