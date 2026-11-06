@@ -635,3 +635,14 @@ Commits de esta pasada: `f813d0b`, `3bdc64a`, `813ea20`, `f239d47`, `cb0bbb3` y 
 - Preview sigue live en `0884cf2`; la rama tiene cambios CSS posteriores todavía no publicados en Preview. No se ha activado producción ni se ha cambiado la base de datos.
 
 La comprobación visual autenticada y la regresión de teclado/responsive de los modales siguen pendientes; por tanto, esta limpieza está validada por build y análisis estático, no por inspección visual completa.
+
+
+## 25. Alineación de cabeceras de Catálogos con el patrón canónico — 6 de noviembre de 2026
+
+En `MolsanCardsPremium2027.css` se ha reducido la responsabilidad local de la cabecera de Catálogos. Se han retirado las declaraciones de altura, padding, radio, margen, anchura y wrapping que duplicaban la geometría de `MolsanCanonicalVisual2027.css`. La hoja de Catálogos conserva únicamente su distribución interna específica (identidad a la izquierda, acciones a la derecha y separación entre ambas), además del ajuste responsive que apila identidad y acciones en pantallas estrechas.
+
+La referencia visual de tarjetas queda en el componente `MolsanPremiumCard` y su definición estructural en `molsan-design-system.css`: una sola franja superior, icono corporativo integrado, título y descripción dentro de la tarjeta, contenido separado y hover cromático sutil. No se ha añadido otra capa global ni se han inferido tarjetas a partir de utilidades Tailwind.
+
+- Commit: `7b822fc`.
+- Alcance: CSS de presentación; sin cambios JSX, datos, permisos, API, Supabase ni producción.
+- Pendiente: comprobar Catálogos en Preview en escritorio/tablet/móvil y validar visualmente que las acciones no se desbordan; la compilación y la revisión de cascada de esta modificación aún no se han ejecutado.
