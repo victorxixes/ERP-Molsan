@@ -239,7 +239,7 @@
 
 /* Responsive: misma jerarquía sin cabeceras comprimidas ni tarjetas desiguales. */
 @media(max-width:760px){
-  :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias)>header.ag-hero.molsan-page-header{
+  :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias)>header.molsan-page-header{
     min-height:88px;height:auto;max-height:none;
     flex-wrap:wrap;gap:8px 12px;padding:8px 12px;
   }
@@ -311,7 +311,7 @@
 }
 
 @media(max-width:520px) {
-  .erp-page.apoderagest > header.ag-hero.molsan-page-header .molsan-page-header__identity {
+  .erp-page.apoderagest > header.molsan-page-header .molsan-page-header__identity {
     flex-basis:100% !important;
   }
   .erp-page.apoderagest .ag-grid-kpi .ag-kpi-icono {
