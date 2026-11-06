@@ -851,3 +851,16 @@ Los cambios se limitan a CSS y no alteran rutas, estructura de negocio, autentic
 - Render Preview `molsan-premium-2027-candidate-preview`: deploy `dep-dbn0sj5g1s2s73c4m650`, commit `6b98941dd2dc9df924c6e1d93b8d2c59f3ed11cd`, estado `live`.
 
 La validación visual autenticada y las pruebas manuales en desktop/tablet/móvil siguen pendientes. El navegador de consulta no puede abrir la URL del Preview; no se declara una inspección visual que no se ha realizado.
+
+
+## 49. Matriz de rutas, componentes y cadena de estilos — 6 de noviembre de 2026
+
+- Se ha generado en `docs/INVENTARIO_RUTAS_FRONTEND_2027.md` una matriz de las **110 declaraciones Route** de `App.jsx`, asociando cada ruta con el componente de página que recibe la navegación, excluyendo los wrappers de autenticación/módulo.
+- La matriz identifica **91 componentes de destino** distintos. Varias rutas comparten componente (por ejemplo, vistas de Agenda, Informes, Seguridad, portales externos y alias de compatibilidad); por ello no se interpreta el número de rutas como número de pantallas independientes.
+- Se han comprobado los **40 archivos JSX/TSX modificados en PR #409**: no contienen importaciones CSS locales directas; el punto de entrada de estilos es centralizado. `main.jsx` importa las capas globales y `molsan-module-styles.css` agrega 26 hojas de módulos/páginas.
+- El orden de carga comprobado en `main.jsx` y las 26 importaciones del agregador se mantienen sin cambios. No se reordena la cascada sin prueba de estilos computados.
+- Esta matriz cierra el vínculo ruta → componente a nivel de enrutador, pero no certifica todavía cada selector JSX → regla CSS ni los estados internos, subpestañas y modales. Esos consumidores deben verificarse por componente y sección.
+
+### Estado de revisión
+
+La ruta → componente está inventariada. La asociación componente → hoja CSS se establece a través del agregador central y de las clases consumidas, no mediante imports locales en los JSX revisados. La inspección de clases, subpáginas y modales continúa siendo una tarea separada; no se marca como completada por inferencia.
