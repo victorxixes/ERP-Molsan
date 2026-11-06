@@ -30,7 +30,9 @@
   max-width: none;
   min-width: 0;
   margin: 0;
-  padding: 22px 26px 30px;
+  /* El wrapper de NotarGest ya aporta el gutter común (px-4/py-6 y lg:px-6).
+     Evita sumar un segundo margen interior frente a ApoderaGest y EncargaGest. */
+  padding: 0;
   color: var(--ng-text);
   background: transparent;
   font-family: var(--molsan-font-family, Inter, ui-sans-serif, system-ui, sans-serif);
