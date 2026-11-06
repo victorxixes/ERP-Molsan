@@ -21,6 +21,8 @@ const paths = {
   monitor: <><rect x="3" y="4" width="18" height="13" rx="2" /><path d="M8 21h8M12 17v4M7 10l3 3 3-4 2 2 2-3" /></>,
   database: <><ellipse cx="12" cy="5" rx="8" ry="3" /><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7" /></>,
   bell: <><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></>,
+  refresh: <><path d="M20 7v5h-5M4 17v-5h5" /><path d="M5.6 9a7 7 0 0 1 11.8-2L20 12M4 12l2.6 5a7 7 0 0 0 11.8-2" /></>,
+  signature: <><path d="m4 17 9-9 4 4-9 9H4zM13 8l2-2a2.8 2.8 0 0 1 4 4l-2 2M4 21h16" /></>,
 };
 
 export default function MolsanIcon({ name = "file", size = 22, className = "" }) {
