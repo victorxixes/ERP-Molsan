@@ -763,7 +763,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           <span className="ng-modulo-top"><span className="ng-modulo-icono"><MolsanIcon name={item.icon} size={23} /></span>{item.count !== null && <span className="ng-modulo-count">{item.count}</span>}</span>
           <span className="ng-modulo-label">{item.label}</span>
           <span className="ng-modulo-description">{item.description}</span>
-          <span className="ng-modulo-open">Abrir sección <span aria-hidden="true">→</span></span>}
+          <span className="ng-modulo-open">Abrir sección <span aria-hidden="true">→</span></span>
         </button>
       ))}
     </nav>
