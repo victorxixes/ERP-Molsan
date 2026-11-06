@@ -766,3 +766,12 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - No se han alterado el editor de plantillas, los formularios, los importes, los cálculos ni la persistencia de provisiones.
 - El formulario de envío por email es el único diálogo declarado en esta página: tiene `role=dialog`, `aria-modal=true`, ref y llamada a `useAccessibleDialog`.
 - Render Preview construyó correctamente los 299 módulos y el despliegue del commit `79f9257` está `LIVE`; queda pendiente la prueba manual responsive y de teclado.
+
+## 40. Seguridad y Panel Técnico — homogeneización de indicadores y cabecera (6 de noviembre de 2026)
+
+- Centro de Seguridad: los cinco indicadores informativos pasan a `MolsanStatCard`, con tonos semánticos de la paleta compartida y los mismos datos de empleados, activos, roles, permisos y auditoría.
+- Sustituida la implementación SVG local por `MolsanIcon` en los accesos, actividad reciente y bloque de supervisión; también el indicador de navegación usa el pictograma corporativo.
+- Se conservan rutas, permisos, carga de datos, ordenación de actividad y mensajes. No se ha alterado la lógica de seguridad.
+- Panel Técnico: el estado «Sistema operativo» pasa a la propiedad `actions` de `MolsanPageHeader`; deja de existir un contenedor flex externo que separaba el estado de la cabecera canónica.
+- Las tarjetas de empleados del Panel Técnico ya estaban basadas en `MolsanPremiumCard`; se mantienen sin duplicar su estructura.
+- Pendiente build y revisión visual autenticada de ambas pantallas, especialmente el comportamiento de la cabecera en móvil.
