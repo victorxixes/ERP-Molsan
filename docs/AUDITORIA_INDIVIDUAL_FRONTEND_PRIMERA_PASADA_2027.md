@@ -175,3 +175,13 @@ Rama: `molsan-premium-2027-production-ready`.
 - No se considera migrado el frontend completo. Quedan pendientes las restantes páginas, subpáginas, tarjetas, formularios, tablas y modales de los 96 componentes de página y 107 rutas.
 - No se han retirado aún todas las hojas CSS particulares; solo se han retirado reglas de cabecera/controles/tablas sustituidas y verificadas en las familias indicadas.
 - No se ha fusionado la PR #410 ni se ha desplegado a producción. No se han tocado API ni base de datos.
+
+
+### Segunda tanda de migración — 2026-11-06
+- Migradas a `MolsanPageHeader`: ExpedientesListado, CTN listado y detalle, ProvisionesFondos (modo principal y catálogo), HonorariosGestoría, TiposExpediente, Intranet, Seguridad, AccionesExpediente y EntidadesBancarias.
+- Retiradas las hojas/reglas de cabecera particulares de ExpedientesListado y CTN listado/detalle; retirada la cabecera particular de ProvisionesFondos.
+- La ficha modal CTN utiliza el shell compartido de modal, con cabecera, metadatos y distintivo comunes.
+- Se eliminó la acción «Actualizar» de la cabecera del listado CTN; se conserva la exportación Excel.
+- La compilación completa de frontend y las comprobaciones de backend asociadas finalizaron correctamente en el commit `a5ff6b0edf5e7c06888780c1b33ce7ce153f9fca`.
+
+**Pendiente:** migración visual del resto de páginas/subpáginas y sus diálogos, revisión funcional y responsive, y validación autenticada de Preview. No desplegar a producción todavía.
