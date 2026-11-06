@@ -918,3 +918,34 @@ a:hover .molsan-icon-3d,button:hover .molsan-icon-3d,.molsan-icon-3d.is-active {
 .crear-noticia-premium input,.crear-noticia-premium textarea,.mantenimiento-tecnico-premium input,.mantenimiento-tecnico-premium select,.verifacti-premium input,.verifacti-premium select { max-width:100%; min-width:0; }
 @media(max-width:640px){.informe-apoderado-premium,.visibilidad-tablas-premium,.mantenimiento-tecnico-premium,.verifacti-premium{overflow-x:auto;-webkit-overflow-scrolling:touch}.select-sj-premium [role=listbox]{max-height:40dvh}}
 @media(prefers-reduced-motion:reduce){.agenda-toast-premium *,.notificaciones-toast-premium *,.informe-apoderado-premium *,.visibilidad-tablas-premium *,.provisiones-launcher-premium *,.select-sj-premium *,.herramientas-home-premium *,.mantenimiento-tecnico-premium *,.verifacti-premium *,.crear-noticia-premium *{animation:none!important;transition:none!important}}
+
+
+/* Tarjeta KPI compartida: estructura y microinteracciones del patrón Espacios de trabajo. */
+.molsan-stat-card {
+  --molsan-stat-accent:#1477A5; --molsan-stat-ink:#07537D; --molsan-stat-tint:#EAF5FA;
+  position:relative; display:flex; min-width:0; min-height:150px; flex-direction:column; align-items:stretch; overflow:hidden;
+  padding:18px 19px 16px; text-align:left; color:var(--molsan-text,#17384D); border:1px solid var(--molsan-border,#D8E4EC);
+  border-radius:19px; background:linear-gradient(150deg,#fff 0%,#fff 58%,var(--molsan-stat-tint) 100%);
+  box-shadow:0 8px 22px rgba(6,50,82,.065); transition:transform .24s cubic-bezier(.2,.8,.2,1),box-shadow .24s ease,border-color .24s ease;
+}
+.molsan-stat-card::before { content:""; position:absolute; inset:0 0 auto; height:4px; background:var(--molsan-stat-accent); }
+.molsan-stat-card--ocean { --molsan-stat-accent:#1477A5; --molsan-stat-ink:#07537D; --molsan-stat-tint:#EAF5FA; }
+.molsan-stat-card--cyan { --molsan-stat-accent:#238D9C; --molsan-stat-ink:#177A88; --molsan-stat-tint:#EAF7F8; }
+.molsan-stat-card--emerald { --molsan-stat-accent:#25866B; --molsan-stat-ink:#16745C; --molsan-stat-tint:#EAF7F2; }
+.molsan-stat-card--violet { --molsan-stat-accent:#7662B1; --molsan-stat-ink:#65509E; --molsan-stat-tint:#F1EEFA; }
+.molsan-stat-card--amber { --molsan-stat-accent:#B47A25; --molsan-stat-ink:#96651B; --molsan-stat-tint:#FBF4E8; }
+.molsan-stat-card--slate { --molsan-stat-accent:#8093A1; --molsan-stat-ink:#617789; --molsan-stat-tint:#F2F7FB; }
+.molsan-stat-card__top { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.molsan-stat-card__title { color:var(--molsan-stat-ink); font-size:11px; font-weight:800; letter-spacing:.1em; line-height:1.35; text-transform:uppercase; }
+.molsan-stat-card__icon { display:grid; width:48px; height:48px; flex:0 0 48px; place-items:center; border:1px solid color-mix(in srgb,var(--molsan-stat-accent) 27%,#fff); border-radius:15px; background:radial-gradient(circle at 28% 18%,#fff 0 10%,var(--molsan-stat-tint) 58%,color-mix(in srgb,var(--molsan-stat-accent) 14%,#fff)); box-shadow:0 7px 16px color-mix(in srgb,var(--molsan-stat-accent) 13%,transparent),inset 0 1px 1px rgba(255,255,255,.95); transition:transform .24s ease,box-shadow .24s ease; }
+.molsan-stat-card__value { margin-top:7px; color:#17384D; font-size:clamp(23px,2vw,29px); font-weight:850; letter-spacing:-.045em; line-height:1.15; overflow-wrap:anywhere; }
+.molsan-stat-card__description { margin:6px 0 0; color:var(--molsan-text-muted,#617789); font-size:12px; line-height:1.45; }
+.molsan-stat-card__action { display:flex; align-items:center; gap:5px; margin-top:auto; padding-top:10px; color:var(--molsan-stat-ink); font-size:11px; font-weight:750; }
+.molsan-stat-card__action svg { transition:transform .2s ease; }
+.molsan-stat-card.is-interactive { cursor:pointer; font:inherit; }
+.molsan-stat-card.is-interactive:hover { z-index:1; transform:translateY(-4px); border-color:color-mix(in srgb,var(--molsan-stat-accent) 42%,#fff); box-shadow:0 17px 32px rgba(6,50,82,.13); }
+.molsan-stat-card.is-interactive:hover .molsan-stat-card__icon { transform:translateY(-2px) rotate(-2deg) scale(1.035); box-shadow:0 12px 22px color-mix(in srgb,var(--molsan-stat-accent) 20%,transparent),inset 0 1px 1px rgba(255,255,255,.98); }
+.molsan-stat-card.is-interactive:hover .molsan-stat-card__action svg { transform:translateX(4px); }
+.molsan-stat-card.is-interactive:focus-visible { outline:3px solid rgba(6,70,117,.28); outline-offset:3px; }
+@media (max-width:640px) { .molsan-stat-card { min-height:138px; padding:16px; } .molsan-stat-card__icon { width:43px; height:43px; flex-basis:43px; } }
+@media (prefers-reduced-motion:reduce) { .molsan-stat-card,.molsan-stat-card * { transition:none !important; } .molsan-stat-card.is-interactive:hover { transform:none; } }
