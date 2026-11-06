@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import "./CtnDetallePage.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useNavigate, useParams } from "react-router-dom";
 import {
