@@ -136,7 +136,7 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
   const modalTitle = { solicitud: editing ? "Editar solicitud" : "Nueva solicitud de mensajería", servicio: editing ? "Editar servicio y tarifa" : "Nuevo servicio y tarifa", albaran: editing ? "Editar albarán" : "Registrar albarán", factura: editing ? "Editar factura" : "Registrar factura de mensajería" }[modal];
 
   return <main className="molsan-page-stack catalogos-premium-page min-h-full ">
-    <header className="molsan-page-header molsan-page-header--standard">
+    <header className="molsan-page-header">
       <div className="molsan-page-header__identity">
         <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="truck" size={22} tone="ocean" /></div>
         <div className="min-w-0">
