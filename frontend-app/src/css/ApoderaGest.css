@@ -1558,13 +1558,13 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 .apoderagest .ag-panel,
 .apoderagest .ag-grid-kpi > .ag-kpi,
 .apoderagest .ag-grid-secundario > .ag-kpi{
-  min-width:0;border:1px solid #D8E4EC!important;border-radius:16px!important;
-  background:#FFFFFF!important;box-shadow:0 6px 18px rgba(6,50,82,.05)!important;
+  min-width:0;border:1px solid #D8E4EC;border-radius:16px;
+  background:#FFFFFF;box-shadow:0 6px 18px rgba(6,50,82,.05);
 }
 .apoderagest .ag-grid-kpi > .ag-kpi,
-.apoderagest .ag-grid-secundario > .ag-kpi{ transition:border-color .18s ease,box-shadow .18s ease!important; }
+.apoderagest .ag-grid-secundario > .ag-kpi{ transition:border-color .18s ease,box-shadow .18s ease; }
 .apoderagest .ag-grid-kpi > .ag-kpi:hover,
-.apoderagest .ag-grid-secundario > .ag-kpi:hover{ border-color:#C5DCE9!important;box-shadow:0 10px 24px rgba(6,50,82,.075)!important; }
+.apoderagest .ag-grid-secundario > .ag-kpi:hover{ border-color:#C5DCE9;box-shadow:0 10px 24px rgba(6,50,82,.075); }
 
 
 
@@ -1696,8 +1696,8 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 }
 .apoderagest .ag-kpi-interactiva:hover{
   transform:translateY(-2px);
-  border-color:var(--molsan-border-strong,#B8CBD9)!important;
-  box-shadow:0 12px 26px rgba(6,50,82,.09)!important;
+  border-color:var(--molsan-border-strong,#B8CBD9);
+  box-shadow:0 12px 26px rgba(6,50,82,.09);
 }
 .apoderagest .ag-kpi-interactiva:active{transform:translateY(0)}
 .apoderagest .ag-grid-secundario{
