@@ -2357,7 +2357,7 @@ body {
 }:where(
   .notargest .ng-panel,
   .apoderagest .ag-panel,
-  .encargagest .eg-kpi,
+
   .ctn-listado-page .ctn-panel,
   .provisiones-fondos-page .pf-card,
   .cg-page .cg-card,
