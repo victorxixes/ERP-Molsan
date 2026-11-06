@@ -46,14 +46,6 @@
 }
 .notargest.ng-content :where(button:disabled) { cursor: not-allowed; opacity: .58; }
 
-/* Acciones propias de la cabecera de Sidebar. No dependen de ApoderaGest. */
-.ng-sidebar-date { display:flex; align-items:center; gap:8px; padding:8px 11px; color:var(--ng-muted,#617789); border:1px solid var(--ng-border,#D8E4EC); border-radius:10px; background:#fff; font-size:10px; font-weight:700; text-transform:capitalize; }
-.ng-sidebar-live-dot { width:7px; height:7px; flex:0 0 7px; border-radius:50%; background:#21A675; box-shadow:0 0 0 4px rgba(33,166,117,.10); }
-.ng-sidebar-refresh { display:inline-flex; align-items:center; gap:7px; min-height:36px; padding:7px 11px; color:var(--ng-primary,#064675); border:1px solid var(--ng-border,#D8E4EC); border-radius:9px; background:#fff; font-size:11px; font-weight:750; cursor:pointer; }
-.ng-sidebar-refresh:disabled { cursor:wait; opacity:.65; }
-.ng-icono-girando { display:inline-block; animation:ng-girar 1s linear infinite; }
-@keyframes ng-girar { to { transform:rotate(360deg); } }
-
 /* Cabecera gestionada por PortalProfesionalPremium2027.css. */
 /* Dashboard: métricas y paneles */
 .ng-dashboard-analitica { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
