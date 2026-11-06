@@ -1503,3 +1503,20 @@ Para el commit `0cdde89adb6c1cc8a4901c5afa4f20c5a45515a3`, GitHub devuelve cero 
 - Inspeccionados `AgendaToast.jsx`, `AutocompleteNotario.jsx`, `PortalAccessTabs.jsx`, `VisibilidadTablas.jsx`, `InformeApoderado.jsx`, `DocumentosTable.jsx`, `NoticiasFeed.jsx`, `TablaLogs.jsx`, `MensajeBubble.jsx`, `RealtimeGlobal.jsx`, `MolsanStatCard.jsx`, `MolsanPremiumCard.jsx` y `SelectSJ.jsx`. No se reescriben componentes cuyo estilo está gobernado por clases compartidas o tokens existentes sin tener confirmados todos sus consumidores. Continúa pendiente la comprobación visual y responsive.
 
 **Verificación de contenido tras escritura:** se recuperaron los ficheros modificados y se comprobaron las nuevas clases/tokens. Esto no equivale a compilación.
+
+
+## 32. Cuarta pasada de subpáginas operativas y herramientas — 6 de noviembre de 2026
+
+Se han inspeccionado y normalizado a tokens corporativos, sin cambiar sus operaciones:
+
+- Fichajes: `FestivosCompensaciones.jsx`, `Fichajes.jsx` y `SolicitudesAusencia.jsx`; se sustituyen paletas slate/blue/violet de controles, formularios, tablas y botones por los tokens Molsan. Los estados semánticos de aprobación, error y éxito se conservan.
+- Expedientes: `FichaExpedienteDemo.jsx` y componentes compartidos de provisiones; se alinean superficies y controles, el acceso flotante usa azul corporativo + icono wallet y el cierre del modal usa MolsanIcon.
+- ApoderaGest: `ControlApoderados.jsx` migra tarjetas, tablas, campos y botones a tokens; sus controles de mes usan iconos Molsan en lugar de flechas Unicode.
+- Herramientas: se normalizan `CambiosActividadAbsis.jsx`, `CatalogoAbsis.jsx`, `CatalogoFichajes.jsx`, `ComplementosSaldo.jsx`, `CorrespondenciaTipificada.jsx`, `DatosMolsan.jsx`, `FirmasEmail.jsx`, `ImportadorPostFirma.jsx`, `ImportarCTN.jsx`, `LecturaCancelaI.jsx`, `LecturaCopias.jsx`, `MantenimientoTecnico.jsx`, `ModelosDocumentos.jsx`, `Municipios.jsx`, `PPAD.jsx`, `ProcesoAbsis.jsx`, `ReasignarNotarioExpediente.jsx`, `RegistrosPropiedad.jsx`, `ReglasActividadesExpediente.jsx`, `SubirDocumento.jsx`, `TiposConceptoGastos.jsx`, `TiposImpositivos.jsx`, `Verifacti.jsx`, `importador_absis.jsx`, `AdministracionEmpleadoConfig.jsx`, `CrearNoticia.jsx` y `OficinasLiquidadoras.jsx`. Se migran tonos decorativos slate/blue/indigo/violet/cyan a variables corporativas; se conservan colores de estados, advertencias y acciones de riesgo cuando son semánticos. El signo de suma de «Nueva oficina» pasa a MolsanIcon.
+- Intranet y comunicación: `Intranet.jsx`, `MensajeriaProveedores.jsx`, `Mensajes.jsx` y `MensajesHeader.jsx` normalizan controles, superficies, tablas y texto a tokens Molsan.
+- Seguridad: `SeguridadFicha.jsx` y `SeguridadModulos.jsx` normalizan sus colores decorativos a la paleta corporativa; se mantienen badges/estados con significado.
+- ApoderaGest CSS: títulos y subtítulos base usan los tokens Molsan en lugar de los dos tonos antiguos.
+
+**Preservación funcional:** no se han cambiado endpoints, payloads, permisos, datos, reglas de negocio ni llamadas de guardado/importación. Son sustituciones de clases de presentación y de pictogramas de interfaz.
+
+**Validación:** cada fichero editado se recuperó de GitHub antes de escribir y las escrituras devolvieron commit SHA. No se ha ejecutado build ni inspección visual autenticada. Algunos componentes complejos (Maestros, Oficinas Liquidadoras, municipios y modales anidados) necesitan prueba visual específica antes de declararlos cerrados.
