@@ -1237,3 +1237,10 @@ Commit: 7022944.
 ### 26.3. Radio responsive de modales
 
 Los paneles modales especiales de EncargaGest/NotarGest y los paneles compartidos bajan a radio de 18 px en móvil, conservando 22 px en escritorio. Commit: b23585a.
+
+
+## 30. Intranet — tarjetas y subpanel de publicación
+
+La Intranet ya utilizaba MolsanPageHeader, MolsanStatCard y MolsanIcon; se incorporó su raíz al canon de tarjetas heredadas, incluyendo los paneles con radio 26 px. Se retiró el fondo/borde azul del formulario de publicación anidado para que el formulario quede integrado dentro de la tarjeta principal, sin crear una tarjeta dentro de otra.
+
+Commits: e9fa1ec y 4d3dcec.
