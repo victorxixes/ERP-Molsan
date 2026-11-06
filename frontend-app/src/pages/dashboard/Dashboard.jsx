@@ -7,8 +7,6 @@ import { useDashboard } from "../../hooks/useDashboard";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
-import "../../css/DashboardCancelagest.css";
-
 // ============================================================
 // ACTIVIDADES
 // ============================================================
