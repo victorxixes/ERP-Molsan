@@ -1674,6 +1674,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .erp-app-shell,
   .erp-app-shell *,
   .erp-app-shell *::before,
   .erp-app-shell *::after {
