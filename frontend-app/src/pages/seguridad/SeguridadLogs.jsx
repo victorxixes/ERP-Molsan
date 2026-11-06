@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import {
   useMemo,
   useState,
@@ -25,22 +26,8 @@ import { useSeguridad } from "../../hooks/useSeguridad";
 // ICONO
 // ============================================================
 
-const Icono = ({
-  name,
-  className = "w-5 h-5",
-}) => (
-
-  <svg
-    className={`${className} flex-shrink-0`}
-    aria-hidden="true"
-  >
-
-    <use
-      href={`/icons/icons.svg#${name}`}
-    />
-
-  </svg>
-
+const Icono = ({ name, className = "w-5 h-5" }) => (
+  <MolsanIcon name={name} size={20} className={className} />
 );
 
 
