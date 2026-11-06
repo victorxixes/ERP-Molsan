@@ -142,6 +142,46 @@
   transform: translateY(-1px) !important;
 }
 
+/* Superficie modal única: conserva overlays y geometría funcional, unifica el panel. */
+:is(
+  .encargagest .eg-modal-form, .encargagest .eg-modal-perfil,
+  .notargest .ng-modal, .notargest .ng-resumen-expedientes-modal,
+  .molsan-modal__panel, .erp-modal-panel, .expediente-operativo-modal-panel,
+  .ctn-detalle-modal
+) {
+  color: #173247 !important;
+  border: 1.5px solid #C5D8E5 !important;
+  border-radius: 22px !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 22px 54px rgba(6,70,117,.18) !important;
+}
+:is(
+  .encargagest .eg-modal-header, .encargagest .eg-perfil-cabecera,
+  .notargest .ng-modal > header, .notargest .ng-resumen-expedientes-modal > header
+) {
+  color: #064675 !important;
+  border: 0 !important;
+  border-bottom: 0 !important;
+  background: #FFFFFF !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+:is(
+  .encargagest .eg-modal-header, .encargagest .eg-perfil-cabecera,
+  .notargest .ng-modal > header, .notargest .ng-resumen-expedientes-modal > header
+) :is(h1,h2,h3) { color: #064675 !important; }
+:is(
+  .encargagest .eg-modal-header, .encargagest .eg-perfil-cabecera,
+  .notargest .ng-modal > header, .notargest .ng-resumen-expedientes-modal > header
+) :is(p,small) { color: #617789 !important; }
+.encargagest .eg-modal-footer {
+  border-top: 0 !important;
+  background: #FFFFFF !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
 /* Tarjetas Tailwind heredadas en subpáginas: migración controlada al patrón Espacios de trabajo. */
 :where(
   .seguridad-premium-page, .seguridad-subpagina-premium,
