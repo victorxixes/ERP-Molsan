@@ -1486,7 +1486,7 @@ export default function Municipios() {
 
         <div className="flex w-full min-w-0 flex-wrap items-center justify-between gap-4">
 
-          <div className="molsan-page-header__identity molsan-page-header__identity">
+          <div className="molsan-page-header__identity">
 
             <div className="molsan-page-header__mark">
               <MolsanIcon name="building" size={22} tone="ocean" />
