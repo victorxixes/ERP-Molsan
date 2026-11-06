@@ -920,7 +920,7 @@ export default function ApoderaGest() {
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="erp-page molsan-page molsan-professional-shell w-full apoderagest">
       <MolsanPageHeader
-        mark="AG"
+        mark="AP"
         title="ApoderaGest"
         description="Centro de gestión de encargos, firmas y actividad del apoderado."
       />
