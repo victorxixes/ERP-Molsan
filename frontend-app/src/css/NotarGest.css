@@ -74,10 +74,6 @@
 .ng-admin-resumen-principal,
 .ng-admin-resumen {
   min-width: 0;
-  border: 1px solid var(--ng-border, #D8E4EC);
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 6px 18px rgba(6,50,82,.05);
 }
 .ng-dashboard-grafico { display: flex; flex-direction: column; gap: 14px; padding: 18px; }
 .ng-bloque-heading,
@@ -91,8 +87,8 @@
   min-width: 0;
   padding: 14px 17px;
   color: var(--ng-primary, #064675);
-  border-bottom: 1px solid var(--ng-border, #D8E4EC);
-  background: var(--ng-soft, #F2F7FB);
+  border: 0;
+  background: transparent;
 }
 .ng-dashboard-grafico > .ng-bloque-heading { margin: -18px -18px 0; }
 .ng-bloque-heading h3,
@@ -157,10 +153,6 @@
   padding: 18px;
   text-align: left;
   cursor: pointer;
-  border: 1px solid #D8E4EC;
-  border-radius: 17px;
-  background: #FFFFFF;
-  box-shadow: 0 7px 20px rgba(6,50,82,.055);
   transition: transform .18s ease,border-color .18s ease,box-shadow .18s ease;
 }
 .ng-admin-notaria-activa { border-color: var(--ng-primary,#064675); background: #F2F7FB; }
