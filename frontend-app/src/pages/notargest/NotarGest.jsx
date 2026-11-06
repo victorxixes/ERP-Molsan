@@ -736,7 +736,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest notargest-workspace-premium">
             <div className="notargest ng-content">
-    <MolsanPageHeader mark="NG" title="NotarGest" description="Centro de gestión notarial, firmas y seguimiento registral." actions={accesoERP ? <button type="button" onClick={() => navigate("/modulos")} className="molsan-premium-header__secondary-action">Ir a módulos</button> : null} className="ng-hero-apoderagest" />
+    <MolsanPageHeader mark="NG" title="NotarGest" description="Centro de gestión notarial, firmas y seguimiento registral." actions={accesoERP ? <button type="button" onClick={() => navigate("/modulos")} className="molsan-premium-header__secondary-action">Ir a módulos</button> : null} />
     <nav className="ng-modulos-grid" aria-label="Secciones de NotarGest">
       {[
         { key: "inicio", label: "Dashboard", icon: "⌂", count: null },
