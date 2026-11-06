@@ -94,18 +94,15 @@ export default function Seguridad() {
   return (
     <div className="molsan-page-stack seguridad-premium-page animate-fade-in">
       <header className="molsan-page-header">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="molsan-page-header__identity">
-            <span className="molsan-page-header__mark">
-              <Icono name="shield" className="h-6 w-6" />
-            </span>
-            <div>
-              <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
-              <h1 className="molsan-page-header__title">Centro de seguridad</h1>
-              <p className="molsan-page-header__description">Resumen general y accesos a la administración de seguridad de Molsan ERP.</p>
-            </div>
+        <div className="molsan-page-header__identity">
+          <span className="molsan-page-header__mark">
+            <Icono name="shield" className="h-6 w-6" />
+          </span>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Centro de seguridad</h1>
+            <p className="molsan-page-header__description">Resumen general y accesos a la administración de seguridad de Molsan ERP.</p>
           </div>
-
         </div>
       </header>
 
