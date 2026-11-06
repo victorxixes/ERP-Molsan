@@ -1053,3 +1053,16 @@ Commits de código: d60cdf9, 70a0a49, 45a0a40, 21da073.
 - El deploy contiene las modificaciones de iconografía y tarjetas realizadas en esta tanda, además de los últimos ajustes de superficie canónica presentes en el HEAD de la rama en ese momento.
 - El despliegue es únicamente de Preview. Producción, API, Supabase y datos siguen sin modificarse.
 - Continúan pendientes la inspección visual autenticada de todas las rutas, las pruebas responsive y la interacción real de cada modal. La compilación correcta no equivale a certificación visual.
+
+
+### 19.1. Retirada de skins particulares en portales — misma ronda
+
+- ApoderaGest: las superficies `.ag-grupo-notario` y `.ag-carpeta-apoderado` pasan a la capa canónica. Se retiraron sus fondos, bordes, sombras y degradados locales; también se eliminó la animación de entrada `ag-aparecer`, que no forma parte del patrón de Espacios de trabajo. Se retiró el separador inferior de la cabecera interna del grupo y el separador del título de bloque registral.
+- EncargaGest: `.eg-panel` deja de definir borde, radio, fondo y sombra propios; conserva únicamente su estructura y overflow. La apariencia pasa a la regla compartida.
+- NotarGest: las superficies de paneles y tarjetas de administración dejan de definir borde, radio, fondo y sombra local. Las cabeceras internas de esas superficies dejan de dibujar banda de fondo y línea inferior; conservan estructura y espaciado.
+- Canonical Visual amplía sus selectores de tarjeta a estas familias de portales. Se mantiene el CSS funcional de formularios, tablas, estados, gráficos, directorios y modales.
+- Comprobación estática posterior: las cinco hojas modificadas tienen balance de llaves CSS igual a cero y sin cierres prematuros.
+
+Commits adicionales: af8e1f7, 1b19d50, 60b3b1a, 57f21aa, 1bc3459.
+
+**Pendiente:** build CI del nuevo HEAD y comprobación visual en Preview de las tres áreas de portal, incluidas fichas y estados responsive. La inspección estática no certifica que el resultado visual sea correcto.
