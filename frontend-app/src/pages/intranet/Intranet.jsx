@@ -1,4 +1,6 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
+import MolsanStatCard from "../../components/ui/MolsanStatCard";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
@@ -147,19 +149,10 @@ export default function Intranet() {
       description="Noticias, documentación y actividad interna de Molsan"
       actions={<span className="molsan-status molsan-status--success"><span className="h-2 w-2 rounded-full bg-emerald-500" />Actualización automática activa</span>}
     />
-    <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-      <article className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-4 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--erp-text-soft)]">Noticias publicadas</p>
-        <p className="mt-1 text-2xl font-bold text-[var(--erp-primary)]">{noticias.length}</p>
-      </article>
-      <article className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-4 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--erp-text-soft)]">Documentos internos</p>
-        <p className="mt-1 text-2xl font-bold text-[var(--erp-primary)]">{documentos.length}</p>
-      </article>
-      <article className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-4 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--erp-text-soft)]">Sesión</p>
-        <p className="mt-1 truncate font-bold text-[var(--erp-text)]">{empleado?.nombre || empleado?.username || empleado?.email || "Empleado conectado"}</p>
-      </article>
+    <section className="grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="Resumen de intranet">
+      <MolsanStatCard title="Noticias publicadas" value={noticias.length} description="Publicaciones disponibles" icon="newspaper" tone="ocean" />
+      <MolsanStatCard title="Documentos internos" value={documentos.length} description="Archivos compartidos" icon="file" tone="cyan" />
+      <MolsanStatCard title="Sesión" value={empleado?.nombre || empleado?.username || empleado?.email || "Empleado conectado"} description={empleado?.username || empleado?.email || "Usuario autenticado"} icon="user" tone="slate" />
     </section>
 
     {(mensaje || error) && <div role="status" className={`rounded-2xl border px-4 py-3 text-sm ${error || /no se ha podido|no permitido|supera|selecciona|obligatorio|completa/i.test(mensaje) ? "border-amber-200 bg-amber-50 text-amber-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>{mensaje || error}</div>}
@@ -170,13 +163,23 @@ export default function Intranet() {
       <section className="rounded-[26px] border border-white bg-white/85 p-5 shadow-[0_18px_55px_rgba(15,23,42,0.07)] sm:p-6">
         <div className="mb-5 flex items-center justify-between gap-3"><div className="flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl"><MolsanIcon name="newspaper" size={22} tone="ocean" /></div><div><h2 className="text-lg font-bold text-slate-800">Noticias internas</h2><p className="text-xs text-slate-400">Publicaciones y avisos de empresa</p></div></div><span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">{noticiasFiltradas.length}</span></div>
         {(puede("crear") || noticiaId) && <form onSubmit={guardarNoticia} className="mb-5 space-y-3 rounded-2xl border border-blue-100 bg-blue-50/50 p-4"><div className="flex justify-between gap-3"><h3 className="text-sm font-bold text-slate-700">{noticiaId ? "Editar noticia" : "Publicar noticia"}</h3>{noticiaId && <button type="button" className="text-xs text-slate-500" onClick={resetNoticia}>Cancelar</button>}</div><label className="block text-xs font-semibold text-slate-500">Título<input className={input} required maxLength={300} value={tituloNoticia} onChange={(e) => setTituloNoticia(e.target.value)} /></label><label className="block text-xs font-semibold text-slate-500">Contenido<textarea className={input} required rows={4} maxLength={20000} value={textoNoticia} onChange={(e) => setTextoNoticia(e.target.value)} /></label><div className="flex justify-end"><button className={primary} disabled={guardandoNoticia}>{guardandoNoticia ? "Guardando…" : noticiaId ? "Guardar cambios" : "Publicar noticia"}</button></div></form>}
-        <div className="space-y-3">{noticiasFiltradas.length ? noticiasFiltradas.map((n) => <article key={n.id} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm hover:border-blue-200"><div className="flex items-start justify-between gap-3"><h3 className="font-bold text-slate-800">{n.titulo}</h3><span className="shrink-0 text-right text-[11px] text-slate-400">{prettyDate(n.fecha_publicacion)}</span></div><p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-slate-600">{n.descripcion}</p>{(puede("editar") || puede("eliminar")) && <div className="mt-4 flex justify-end gap-2 border-t border-slate-100 pt-3">{puede("editar") && <button className={secondary} onClick={() => editarNoticia(n)}>Editar</button>}{puede("eliminar") && <button className={danger} onClick={() => borrarNoticia(n)}>Eliminar</button>}</div>}</article>) : <p className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">No hay noticias para estos filtros.</p>}</div>
+        <div className="space-y-3">{noticiasFiltradas.length ? noticiasFiltradas.map((n) => (
+          <MolsanPremiumCard key={n.id} icon="newspaper" eyebrow={prettyDate(n.fecha_publicacion)} title={n.titulo} className="intranet-item-card">
+            <p className="whitespace-pre-wrap break-words text-sm leading-6 text-slate-600">{n.descripcion}</p>
+            {(puede("editar") || puede("eliminar")) && <div className="mt-4 flex justify-end gap-2 border-t border-slate-100 pt-3">{puede("editar") && <button className={secondary} onClick={() => editarNoticia(n)}>Editar</button>}{puede("eliminar") && <button className={danger} onClick={() => borrarNoticia(n)}>Eliminar</button>}</div>}
+          </MolsanPremiumCard>
+        )) : <p className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">No hay noticias para estos filtros.</p>}</div>
       </section>
 
       <section className="rounded-[26px] border border-white bg-white/85 p-5 shadow-[0_18px_55px_rgba(15,23,42,0.07)] sm:p-6">
         <div className="mb-5 flex items-center justify-between gap-3"><div className="flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-100 bg-cyan-50 text-xl"><MolsanIcon name="folder" size={22} tone="ocean" /></div><div><h2 className="text-lg font-bold text-slate-800">Documentación interna</h2><p className="text-xs text-slate-400">Archivos protegidos con autenticación</p></div></div><span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-bold text-cyan-700">{documentosFiltrados.length}</span></div>
         {(puede("crear") || documentoId) && <form onSubmit={guardarDocumento} className="mb-5 space-y-3 rounded-2xl border border-cyan-100 bg-cyan-50/40 p-4"><div className="flex justify-between gap-3"><h3 className="text-sm font-bold text-slate-700">{documentoId ? "Editar ficha del documento" : "Publicar documento"}</h3>{documentoId && <button type="button" className="text-xs text-slate-500" onClick={resetDocumento}>Cancelar</button>}</div><label className="block text-xs font-semibold text-slate-500">Título<input className={input} required maxLength={300} value={tituloDocumento} onChange={(e) => setTituloDocumento(e.target.value)} /></label><label className="block text-xs font-semibold text-slate-500">Concepto<textarea className={input} rows={2} maxLength={2000} value={conceptoDocumento} onChange={(e) => setConceptoDocumento(e.target.value)} /></label>{!documentoId && <label className="block text-xs font-semibold text-slate-500">Archivo (máximo 20 MB)<input id="intranet-file" className={input} type="file" required accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.png,.jpg,.jpeg" onChange={elegirArchivo} /><span className="mt-1 block font-normal text-slate-400">PDF, Office, TXT, CSV, PNG o JPG.</span></label>}<div className="flex justify-end"><button className={primary} disabled={guardandoDocumento}>{guardandoDocumento ? "Guardando…" : documentoId ? "Guardar cambios" : "Publicar documento"}</button></div></form>}
-        <div className="space-y-3">{documentosFiltrados.length ? documentosFiltrados.map((d) => <article key={d.id} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm hover:border-cyan-200"><div className="flex items-start gap-3"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-lg"><MolsanIcon name="file" size={20} tone="ocean" /></div><div className="min-w-0 flex-1"><h3 className="break-words font-bold text-slate-800">{d.titulo}</h3>{d.concepto && <p className="mt-1 whitespace-pre-wrap break-words text-sm text-slate-500">{d.concepto}</p>}<p className="mt-2 text-[11px] text-slate-400">Publicado: {prettyDate(d.fecha_publicacion)}</p></div></div><div className="mt-4 flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-3"><button className={primary} onClick={() => descargar(d)}>Descargar</button>{puede("editar") && <button className={secondary} onClick={() => editarDocumento(d)}>Editar</button>}{puede("eliminar") && <button className={danger} onClick={() => borrarDocumento(d)}>Eliminar</button>}</div></article>) : <p className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">No hay documentos para estos filtros.</p>}</div>
+        <div className="space-y-3">{documentosFiltrados.length ? documentosFiltrados.map((d) => (
+          <MolsanPremiumCard key={d.id} icon="file" eyebrow={`Publicado: ${prettyDate(d.fecha_publicacion)}`} title={d.titulo} className="intranet-item-card">
+            {d.concepto && <p className="whitespace-pre-wrap break-words text-sm text-slate-500">{d.concepto}</p>}
+            <div className="mt-4 flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-3"><button className={primary} onClick={() => descargar(d)}>Descargar</button>{puede("editar") && <button className={secondary} onClick={() => editarDocumento(d)}>Editar</button>}{puede("eliminar") && <button className={danger} onClick={() => borrarDocumento(d)}>Eliminar</button>}</div>
+          </MolsanPremiumCard>
+        )) : <p className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">No hay documentos para estos filtros.</p>}</div>
       </section>
     </div>
 
