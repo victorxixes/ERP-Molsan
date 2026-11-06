@@ -2,8 +2,6 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import ProvisionesModal from "./ProvisionesModal";
 
-import "../../css/ComponentesOperativosPremium.css";
-
 export default function ProvisionesLauncher() {
   const { pathname } = useLocation();
   const [abierto, setAbierto] = useState(false);
