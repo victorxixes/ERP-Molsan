@@ -5,8 +5,6 @@ import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
 import { puedeVerModulo } from "../../utils/permisos";
 
-import "../../css/ComponentesOperativosPremium.css";
-
 /**
  * MANTENIMIENTO TÉCNICO — MOLSAN ERP PREMIUM 2027
  *
