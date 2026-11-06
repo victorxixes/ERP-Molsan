@@ -704,7 +704,7 @@ export default function Mensajes({
           <div
             className="
               border-b
-              border-slate-200/80
+              border-[var(--molsan-border)]
               px-5
               py-5
               shrink-0
@@ -727,7 +727,7 @@ export default function Mensajes({
                     text-lg
                     font-bold
                     tracking-tight
-                    text-slate-800
+                    text-[var(--molsan-primary)]
                   "
                 >
                   Mensajes
@@ -737,7 +737,7 @@ export default function Mensajes({
                   className="
                     mt-1
                     text-xs
-                    text-slate-400
+                    text-[var(--molsan-text-muted)]
                   "
                 >
                   Personas disponibles para conversar
@@ -848,8 +848,8 @@ export default function Mensajes({
                 className="
                   rounded-2xl
                   border
-                  border-slate-200
-                  bg-slate-50/80
+                  border-[var(--molsan-border)]
+                  bg-[var(--molsan-surface-soft)]
                   px-4
                   py-8
                   text-center
@@ -866,7 +866,7 @@ export default function Mensajes({
                     items-center
                     justify-center
                     rounded-2xl
-                    bg-slate-100
+                    bg-[var(--molsan-table-head)]
                     text-xl
                   "
                 >
@@ -877,7 +877,7 @@ export default function Mensajes({
                   className="
                     text-sm
                     font-medium
-                    text-slate-600
+                    text-[var(--molsan-text-secondary)]
                   "
                 >
                   No hay empleados
@@ -888,7 +888,7 @@ export default function Mensajes({
                   className="
                     mt-1
                     text-xs
-                    text-slate-400
+                    text-[var(--molsan-text-muted)]
                   "
                 >
                   Los usuarios online
@@ -946,14 +946,14 @@ export default function Mensajes({
                       ${
                         seleccionado
                           ? `
-                            border-blue-200
-                            bg-blue-50
+                            border-[var(--molsan-border-strong)]
+                            bg-[var(--molsan-primary-soft)]
                             shadow-[0_8px_25px_rgba(37,99,235,0.10)]
                           `
                           : `
-                            border-slate-200/80
+                            border-[var(--molsan-border)]
                             bg-white/70
-                            hover:border-blue-200
+                            hover:border-[var(--molsan-border-strong)]
                             hover:bg-white
                             hover:shadow-[0_8px_25px_rgba(15,23,42,0.07)]
                           `
@@ -990,7 +990,7 @@ export default function Mensajes({
                           w-11
                           rounded-full
                           border
-                          border-slate-200
+                          border-[var(--molsan-border)]
                           object-cover
                           shadow-sm
                         "
@@ -1027,7 +1027,7 @@ export default function Mensajes({
                           truncate
                           text-sm
                           font-semibold
-                          text-slate-700
+                          text-[var(--molsan-text)]
                         "
                       >
                         {
@@ -1085,7 +1085,7 @@ export default function Mensajes({
                           className="
                             mt-0.5
                             text-xs
-                            text-slate-400
+                            text-[var(--molsan-text-muted)]
                           "
                         >
                           Disponible ahora
@@ -1214,8 +1214,8 @@ export default function Mensajes({
                     justify-center
                     rounded-[24px]
                     border
-                    border-blue-100
-                    bg-blue-50
+                    border-[var(--molsan-border)]
+                    bg-[var(--molsan-primary-soft)]
                     text-3xl
                     shadow-sm
                   "
@@ -1229,7 +1229,7 @@ export default function Mensajes({
                     text-xl
                     font-bold
                     tracking-tight
-                    text-slate-700
+                    text-[var(--molsan-text)]
                   "
                 >
                   Mensajería interna
@@ -1241,7 +1241,7 @@ export default function Mensajes({
                     mt-2
                     text-sm
                     leading-6
-                    text-slate-400
+                    text-[var(--molsan-text-muted)]
                   "
                 >
                   Selecciona un empleado
@@ -1295,9 +1295,9 @@ export default function Mensajes({
                   rounded-2xl
 
                   border
-                  border-slate-200/70
+                  border-[var(--molsan-border)]/70
 
-                  bg-slate-50/50
+                  bg-[var(--molsan-surface-soft)]/50
 
                   px-3
                   py-4
@@ -1345,7 +1345,7 @@ export default function Mensajes({
                         className="
                           text-sm
                           font-medium
-                          text-slate-500
+                          text-[var(--molsan-text-secondary)]
                         "
                       >
                         No hay mensajes todavía
@@ -1355,7 +1355,7 @@ export default function Mensajes({
                         className="
                           mt-1
                           text-xs
-                          text-slate-400
+                          text-[var(--molsan-text-muted)]
                         "
                       >
                         Envía el primer mensaje.
@@ -1396,7 +1396,7 @@ export default function Mensajes({
                             className="
                               rounded-full
                               border
-                              border-slate-200
+                              border-[var(--molsan-border)]
                               bg-white
                               px-3
                               py-1
@@ -1404,7 +1404,7 @@ export default function Mensajes({
                               font-semibold
                               uppercase
                               tracking-wide
-                              text-slate-400
+                              text-[var(--molsan-text-muted)]
                               shadow-sm
                             "
                           >
@@ -1480,7 +1480,7 @@ export default function Mensajes({
                       py-2
                       text-xs
                       italic
-                      text-slate-400
+                      text-[var(--molsan-text-muted)]
                     "
                   >
                     {
@@ -1502,9 +1502,9 @@ export default function Mensajes({
                   rounded-2xl
 
                   border
-                  border-slate-200/80
+                  border-[var(--molsan-border)]
 
-                  bg-white/85
+                  bg-white
 
                   p-3
 
@@ -1533,13 +1533,13 @@ export default function Mensajes({
                       justify-center
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
                       bg-white
                       text-lg
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                       transition
-                      hover:border-blue-200
-                      hover:bg-blue-50
+                      hover:border-[var(--molsan-border-strong)]
+                      hover:bg-[var(--molsan-primary-soft)]
                     "
                     title="Adjuntar archivo"
                   >
@@ -1608,26 +1608,26 @@ export default function Mensajes({
                       rounded-xl
 
                       border
-                      border-slate-200
+                      border-[var(--molsan-border)]
 
-                      bg-slate-50/70
+                      bg-[var(--molsan-surface-soft)]
 
                       px-4
                       py-3
 
                       text-sm
-                      text-slate-700
+                      text-[var(--molsan-text)]
 
                       outline-none
 
                       transition
 
-                      placeholder:text-slate-400
+                      placeholder:text-[var(--molsan-text-muted)]
 
                       focus:border-blue-300
                       focus:bg-white
                       focus:ring-2
-                      focus:ring-blue-100
+                      focus:ring-[var(--molsan-primary-soft)]
                     "
                   />
 
@@ -1651,12 +1651,12 @@ export default function Mensajes({
                       items-center
                       justify-center
                       rounded-xl
-                      bg-blue-600
+                      bg-[var(--molsan-primary)]
                       text-lg
                       text-white
                       shadow-sm
                       transition
-                      hover:bg-blue-700
+                      hover:bg-[var(--molsan-primary)]
                       disabled:cursor-not-allowed
                       disabled:opacity-40
                     "
@@ -1673,7 +1673,7 @@ export default function Mensajes({
                     mt-2
                     px-1
                     text-[10px]
-                    text-slate-400
+                    text-[var(--molsan-text-muted)]
                   "
                 >
                   Enter para enviar · Shift+Enter
