@@ -1156,3 +1156,10 @@ Commit: 35851f0. Pendiente build y revisión visual de la cabecera con acciones 
 Se añadió una regla de compatibilidad acotada a raíces de Seguridad, Panel Técnico, Empleados, Maestros, Informes, Notificaciones, Logs, Herramientas/Utilidades, Provisiones, Fichajes, Mensajes, CTN y Agenda. Las tarjetas heredadas explícitas (`section/article/div.rounded-2xl.border`) reciben fondo blanco, borde reforzado, franja superior, sombra y hover suave del patrón Espacios de trabajo. Se neutralizan separadores inferiores de encabezados directos dentro de esas tarjetas. Los diálogos con `role=dialog`, `.modal` o `.erp-modal` quedan excluidos para no alterar modales.
 
 Commits: 78bf3f6 y 02d6d2d. Esta capa es de migración: a medida que cada consumidor se pase a MolsanPremiumCard, deben retirarse los estilos Tailwind de presentación y reducirse los selectores de compatibilidad. Pendiente inspección de subpáginas y revisión de posibles tarjetas anidadas.
+
+
+### 24.1. Microinteracción alineada con Espacios de trabajo
+
+Se ajustó el hover de tarjetas canónicas y legacy a una elevación de 4 px y sombra más profunda, próxima al movimiento de 5 px de `.workspace-app-card`. Se mantienen fondos blancos y bordes reforzados; no se reintroducen gradientes de hover. Los botones conservan su elevación discreta de 1 px y los iconos de botón ya no hacen zoom independiente.
+
+Commits: 9c2d0bc y 2834229.
