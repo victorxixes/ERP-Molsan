@@ -185,3 +185,15 @@ Rama: `molsan-premium-2027-production-ready`.
 - La compilación completa de frontend y las comprobaciones de backend asociadas finalizaron correctamente en el commit `a5ff6b0edf5e7c06888780c1b33ce7ce153f9fca`.
 
 **Pendiente:** migración visual del resto de páginas/subpáginas y sus diálogos, revisión funcional y responsive, y validación autenticada de Preview. No desplegar a producción todavía.
+
+
+### Tercera tanda — páginas técnicas, informes, iconografía y modales
+- Cabeceras comunes aplicadas también a Panel Técnico, Monitor del Sistema, Maestros, Notificaciones, Logs e Informes (incluidos los subinformes de firmas, notarios y SLA).
+- Migradas también las cabeceras de Acciones del expediente, Entidades bancarias, Honorarios, Tipos de expediente, Intranet, Seguridad, Provisiones y las dos vistas de CTN.
+- El selector «Espacio de trabajo» conserva su composición de tarjetas de referencia, pero sustituye las siglas por iconografía SVG compartida `MolsanIcon`.
+- Dashboard, ApoderaGest y EncargaGest sustituyen iconos funcionales emoji/glyph por iconos SVG; las tarjetas KPI comparten la base visual con franja superior, superficie blanca, borde y hover sutil.
+- Controles de cabecera y botones principales/secundarios de varias familias migrados a `molsan-btn`.
+- Shell común de modal aplicado a los diálogos de NotarGest, CTN detalle, EncargaGest, resumen y detalle de ApoderaGest, Informes de facturación y Tipos de expediente.
+- Se retiraron reglas locales de cabecera, tabla, botón, modal y tarjeta solo donde el JSX ya usa el componente común. Las excepciones de anchura de diálogos grandes se conservan como variantes de tamaño, no como rediseños independientes.
+
+La última tanda está en comprobación CI; no marcar como cerrada hasta obtener resultado verde de todos los builds y revisar el estado de Preview. La migración del resto de rutas, subpáginas, formularios, tablas y diálogos sigue abierta.
