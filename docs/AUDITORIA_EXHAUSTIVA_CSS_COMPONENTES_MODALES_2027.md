@@ -497,3 +497,10 @@ La inspección estática de `FichaExpediente.jsx` (9.924 líneas) confirma que:
 - El panel de solicitud de complemento de saldo es una expansión inline dentro de Gestión económica, no un modal de bloqueo; no se fuerza `aria-modal` ni trampa de foco sobre él.
 
 No se modifica FichaExpediente en esta pasada porque la estructura de sus diálogos propios está correctamente conectada en el JSX revisado. La validación final sigue requiriendo abrir cada diálogo, comprobar Escape/Tab/Shift+Tab, backdrop, foco restaurado, scroll y responsive en Preview.
+
+
+## 24. Despliegue de la corrección de estado de ApoderaGest — 6 de noviembre de 2026
+
+La corrección del diálogo de grupo y la retirada de los listeners duplicados se incluyeron en el commit `a82d38a`. Render completó el despliegue `dep-dbmvlsqjnfac73bj64k0` con estado `live` sobre el servicio `molsan-premium-2027-candidate-preview`. El Preview ya contiene el cambio funcional de ApoderaGest y las consolidaciones CSS anteriores.
+
+El HEAD del PR añade después documentación de auditoría, sin cambios adicionales de código. Producción y API siguen intactas. Pendiente únicamente la prueba visual/funcional autenticada en navegador; el deploy live por sí solo no acredita foco real, comportamiento de teclado ni responsive.
