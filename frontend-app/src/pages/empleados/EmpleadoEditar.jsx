@@ -268,7 +268,7 @@ export default function EmpleadoEditar({
 
       {/* CABECERA */}
 
-      <div className="molsan-page-header">
+      <div className="molsan-modal-header">
         <div className="molsan-page-header__identity">
           <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="person" size={22} tone="ocean" /></div>
           <div>
