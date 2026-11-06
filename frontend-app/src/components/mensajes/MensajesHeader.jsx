@@ -40,7 +40,7 @@ export default function MensajesHeader({
         px-4
         py-3
         shadow-sm
-        animate-fadeIn
+        
       "
     >
       {/* =====================================================
