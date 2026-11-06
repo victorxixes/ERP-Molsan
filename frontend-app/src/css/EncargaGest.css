@@ -26,7 +26,6 @@
 @media (min-width:1024px) {
   .encargagest .eg-main { padding-right:24px; padding-left:24px; }
 }.encargagest .eg-panel{min-width: 0; overflow: hidden}
-.encargagest .eg-panel-head {}
 .encargagest .eg-panel-head h2,
 .encargagest .eg-panel-head h3 { font-weight: 800; }
 .encargagest .eg-secondary {
@@ -722,11 +721,6 @@
 .encargagest {
 
   width:100%;max-width:none;min-width:0;
-}
-
-.encargagest .eg-main {
-
-  min-width:0;
 }
 
 .encargagest .eg-main>section.grid {
