@@ -2,7 +2,7 @@
 
 **Fecha:** 6 de noviembre de 2026  
 **Rama auditada:** `fix/molsan-css-selector-audit-round1`  
-**Último commit de limpieza App/main:** `f024f3c61bb3a99ff48ca5ec814120d95127266a`  
+**Último commit de limpieza App/main y CSS global:** `3f407f05ec99d7661d08171fe9e0cb671e16ff5a`  
 **Último commit con build Vite confirmado:** `6facf31bc108632018683345111cc684c9f77b3f`  
 **PR:** [#409](https://github.com/victorxixes/ERP-Molsan/pull/409)  
 **Alcance de seguridad:** solo frontend y documentación en la rama de Preview. No se han modificado producción, API, base de datos ni datos de expedientes.
@@ -11,7 +11,7 @@
 
 Esta auditoría distingue expresamente entre inspección estática, compilación y validación real en navegador. No se marca como validada una pantalla solo porque exista su componente o compile.
 
-- El enrutador de `frontend-app/src/App.jsx` contiene **109 declaraciones de ruta**: 108 rutas concretas y una ruta comodín (`*`). No hay duplicados literales entre las declaraciones encontradas. El número 109 no equivale automáticamente a 109 pantallas: incluye rutas de acceso externo, variantes, rutas dinámicas y compatibilidad.
+- El enrutador de `frontend-app/src/App.jsx` contiene **110 elementos `Route`**: 109 con atributo `path` (108 rutas concretas y una ruta comodín `*`) y una ruta índice. No hay duplicados literales entre paths. El inventario se ha guardado en `docs/INVENTARIO_RUTAS_FRONTEND_2027.md`. El número no equivale automáticamente a pantallas: incluye rutas externas, variantes, rutas dinámicas y compatibilidad.
 - Se inspeccionaron los JSX principales de ApoderaGest, EncargaGest y NotarGest y sus tres hojas CSS.
 - Se inspeccionaron los puntos de entrada de estilos en `main.jsx`, además de las capas globales CanonicalVisual, GlobalConsistency, GlassLuxeUnified, Premium2027 y Redesign2027.
 - Se inspeccionaron los componentes principales de Expedientes, Agenda, CTN, Fusiones, Provisiones, Mensajería, Informes, Catálogos, Seguridad y Panel Técnico.
@@ -85,8 +85,8 @@ La revisión de un modal debe comprobar apertura, cierre, foco, Escape, validaci
 | 1. Consolidar ApoderaGest, EncargaGest y NotarGest | **En revisión estática; no consolidación destructiva sin contraste visual** |
 | 2. Módulos técnicos y subpáginas | **Componentes principales inspeccionados; inventario de subrutas y estados pendiente de cerrar** |
 | 3. Auditar modales individualmente | **Inventario parcial; pruebas individuales pendientes** |
-| 4. Inventario de 98 páginas/rutas | **Conteo actualizado: 109 declaraciones (108 concretas + comodín); reconciliar el alcance de las 98 pantallas con las rutas y subcomponentes** |
-| 5. Eliminar reglas heredadas sin uso | **Eliminadas las reglas verificadas de PR #409; quedan capas solapadas que requieren contraste de cascada** |
+| 4. Inventario de 98 páginas/rutas | **Inventario de 110 elementos Route creado; reconciliar las 98 pantallas con componentes, subpáginas internas y modales** |
+| 5. Eliminar reglas heredadas sin uso | **Nuevas reglas muertas/duplicadas verificadas eliminadas; quedan reglas legacy cuya retirada exige revisar componentes y estados** |
 | 6. Validar build y Preview visualmente | **Build correcto; Preview desktop/tablet/móvil pendiente de comprobación real** |
 | 7. Regresiones funcionales | **Pendiente de pruebas de navegación, permisos, formularios, modales, persistencia y flujos** |
 
@@ -111,3 +111,10 @@ El trabajo solo puede declararse cerrado cuando:
 - El commit final `f024f3c` no tiene todavía un workflow de build asociado visible en la consulta de GitHub Actions. El build previo `6facf31` no certifica los cambios posteriores.
 
 **Siguiente control seguro:** ejecutar el build de la rama actual y, solo después de revisar el artefacto y acordar el despliegue, publicar esa rama en el servicio Preview (nunca en producción).
+
+## 9. Limpieza adicional del arranque y CSS compartido
+
+- Se conserva la jerarquía de CSS: base heredada → tokens → design system opt-in → estilos de shell/componentes → módulos/portales → armonización → tarjetas → consistencia → botones legacy → canon visual. No se ha reordenado porque el orden actual tiene efecto real en la cascada.
+- El análisis de coincidencias se limitó a selectores y declaraciones textuales de las diez hojas globales; no sustituye una prueba de computed styles ni detecta todos los solapamientos por especificidad, `:where()`, `:is()`, media queries o selectores ancestro.
+- La limpieza no modifica estructura JSX de páginas, handlers de negocio, rutas, guards, API ni almacenamiento.
+- La compilación del commit final sigue pendiente. El último build confirmado pertenece al commit anterior `6facf31`.
