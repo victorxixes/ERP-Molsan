@@ -551,3 +551,17 @@ En los cinco primeros no se detectó un desacoplamiento entre el estado que abre
 - PR #409 sigue en Draft y sin merge. Producción, API y base de datos principal no se han tocado.
 - Build del frontend, auditoría de dependencias y sintaxis backend: correctos en los commits de código anteriores a este estado.
 - Pendiente: revisión visual autenticada en navegador, responsive real, prueba de foco/Tab/Shift+Tab/Escape/backdrop de cada modal, matriz de permisos 401/403/200 y regresión funcional por módulo. No se declara finalizada la auditoría global.
+
+
+## 28. Cobertura adicional de modales en Informes, Empleados, Fichajes, Mensajería y Catálogos — 6 de noviembre de 2026
+
+Se revisaron las condiciones de apertura, refs y cierres en:
+
+- `Informes.jsx`: modal de facturación conectado a `modalAbierto` y `modalFacturacionRef`.
+- `EmpleadosListado.jsx`: alta de empleado conectada a `mostrarNuevo` y `nuevoEmpleadoDialogRef`.
+- `ControlFichajesAdmin.jsx`: editor conectado a `Boolean(editor)`.
+- `MensajeriaSolicitudes.jsx`: detalle conectado a `Boolean(seleccionada)`.
+- `EntidadesBancarias.jsx`: importación y edición/alta con refs independientes; los cierres respetan los estados `importando` y `guardando`.
+- `TiposExpediente.jsx`: diálogo conectado a `mostrarModal` y `tipoDialogRef`.
+
+En la inspección estática no se detectó desacoplamiento entre el estado que controla cada diálogo y su render. No se han modificado estos archivos; quedan pendientes las pruebas de interacción y responsive en Preview.
