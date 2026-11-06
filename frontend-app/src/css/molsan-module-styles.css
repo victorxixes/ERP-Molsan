@@ -27,8 +27,6 @@
 @import "./EncargaGest.css";
 
 @import "./HerramientasPremium.css";
-@import "./NotarGest.css";
-
 /* Páginas */
 @import "../pages/agenda/Agenda.css";
 @import "../pages/ctn/CtnDetallePage.css";
