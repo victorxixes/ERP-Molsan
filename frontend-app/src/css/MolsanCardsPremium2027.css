@@ -17,19 +17,7 @@
     transform .2s ease;
 }
 
-/* Línea superior de identidad, como en Espacio de trabajo. */
-:where(.erp-card, .card-sj)::before {
-  position: absolute;
-  top: 0;
-  left: 18px;
-  right: 18px;
-  height: 3px;
-  border-radius: 0 0 6px 6px;
-  background: linear-gradient(90deg, #1477A5 0%, #6CC5D9 58%, rgba(108,197,217,0) 100%);
-  content: "";
-  pointer-events: none;
-  opacity: .9;
-}
+/* La franja superior exterior la dibuja la capa canónica; no se crea una segunda línea interior. */
 
 /* Los paneles de contenido ganan profundidad sin desplazarse. */
 :where(.erp-card, .card-sj):not(button):not(a):hover {
@@ -86,10 +74,6 @@
 @media (max-width: 760px) {
   :where(.erp-card, .card-sj) {
     border-radius: 15px !important;
-  }
-  :where(.erp-card, .card-sj)::before {
-    left: 14px;
-    right: 14px;
   }
 }
 
