@@ -399,19 +399,19 @@
 
 /* NotarGest externo: pestañas en cuadrícula debajo de la cabecera principal */
 .notargest .ng-modulos-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;width:100%;margin:0 0 20px}
-.notargest .ng-modulo-card{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;min-width:0;min-height:66px;padding:11px 12px;border:1px solid var(--erp-border,#dce4f0);border-radius:14px;background:rgba(255,255,255,.92);color:var(--erp-text,#172b4d);text-align:left;box-shadow:0 4px 12px rgba(25,45,80,.035);cursor:pointer;transition:background .16s,border-color .16s,transform .16s,box-shadow .16s}
-.notargest .ng-modulo-card:hover{transform:translateY(-1px);border-color:#b8c9ff;background:#fbfcff;box-shadow:0 7px 17px rgba(25,45,80,.07)}
-.notargest .ng-modulo-card.activa{border-color:#365fe5;background:#eef2ff;box-shadow:inset 0 0 0 1px rgba(54,95,229,.12)}
-.notargest .ng-modulo-icono{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;border:1px solid #dce5ff;background:#edf2ff;color:#365fe5;font-size:18px;font-weight:850}
-.notargest .ng-modulo-card.activa .ng-modulo-icono{background:#365fe5;border-color:#365fe5;color:#fff}
-.notargest .ng-modulo-label{min-width:0;font-size:11px;font-weight:780;line-height:1.35}
-.notargest .ng-modulo-count{display:grid;place-items:center;min-width:23px;height:23px;padding:0 6px;border:1px solid #e0e7f1;border-radius:8px;background:#f0f3f9;color:#52617a;font-size:11px;font-weight:850;font-variant-numeric:tabular-nums}
-.notargest .ng-modulo-card.urgente{border-color:#fecaca;background:#fff7f7}
-.notargest .ng-modulo-card.urgente .ng-modulo-icono{color:#b91c1c;border-color:#fecaca;background:#fff1f2}
-.notargest .ng-modulo-card.urgente.activa{border-color:#dc2626;background:#fff1f2}
+.notargest .ng-modulo-card{display:flex;position:relative;flex-direction:column;align-items:stretch;gap:0;min-width:0;min-height:210px;padding:22px 20px 17px;overflow:hidden;border:1px solid #d8e4ec;border-radius:18px;background:#fff;color:#064675;text-align:left;box-shadow:0 7px 22px rgba(6,70,117,.055);cursor:pointer;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.notargest .ng-modulo-card:hover{transform:translateY(-3px);border-color:#a9c5d8;box-shadow:0 16px 32px rgba(6,70,117,.11)}
+.notargest .ng-modulo-card.activa{border-color:#064675;box-shadow:0 0 0 2px rgba(6,70,117,.1),0 12px 28px rgba(6,70,117,.08)}
+.notargest .ng-modulo-icono{display:grid;place-items:center;width:48px;height:48px;border:1px solid #d8e4ec;border-radius:14px;background:#f2f7fb;color:#064675}
+.notargest .ng-modulo-card.activa .ng-modulo-icono{border-color:#c5d9e8;background:#eaf2f8;color:#064675}
+.notargest .ng-modulo-label{display:block;margin-top:18px;color:#064675;font-size:15px;font-weight:850;line-height:1.3}
+.notargest .ng-modulo-count{display:grid;place-items:center;min-width:28px;height:28px;padding:0 8px;border:1px solid #d8e4ec;border-radius:9px;background:#f2f7fb;color:#064675;font-size:12px;font-weight:850;font-variant-numeric:tabular-nums}
+.notargest .ng-modulo-card.urgente{border-color:#f1c6c6;background:#fff}
+.notargest .ng-modulo-card.urgente .ng-modulo-icono{border-color:#f1c6c6;background:#fff4f4;color:#a32129}
+.notargest .ng-modulo-card.urgente.activa{border-color:#a32129;background:#fff8f8}
 @media(max-width:1250px){.notargest .ng-modulos-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:950px){.notargest .ng-modulos-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:680px){.notargest .ng-modulos-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.notargest .ng-modulo-card{grid-template-columns:31px minmax(0,1fr) auto;min-height:60px;padding:9px;gap:7px}.notargest .ng-modulo-icono{width:30px;height:30px;font-size:15px}.notargest .ng-modulo-label{font-size:10px}}
+@media(max-width:680px){.notargest .ng-modulos-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.notargest .ng-modulo-card{display:flex;position:relative;flex-direction:column;align-items:stretch;gap:0;min-width:0;min-height:210px;padding:22px 20px 17px;overflow:hidden;border:1px solid #d8e4ec;border-radius:18px;background:#fff;color:#064675;text-align:left;box-shadow:0 7px 22px rgba(6,70,117,.055);cursor:pointer;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}.notargest .ng-modulo-icono{display:grid;place-items:center;width:48px;height:48px;border:1px solid #d8e4ec;border-radius:14px;background:#f2f7fb;color:#064675}.notargest .ng-modulo-label{display:block;margin-top:18px;color:#064675;font-size:15px;font-weight:850;line-height:1.3}}
 @media(max-width:390px){.notargest .ng-modulos-grid{grid-template-columns:1fr}}
 
 
@@ -877,3 +877,14 @@
     max-height: calc(100dvh - 16px);
   }
 }
+
+.notargest .ng-modulos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:16px;margin:0 0 24px}
+.notargest .ng-modulo-acento{position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,#064675,#78a8c8)}
+.notargest .ng-modulo-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.notargest .ng-modulo-description{display:block;margin-top:7px;color:#617789;font-size:12px;line-height:1.55}
+.notargest .ng-modulo-open{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:15px;border-top:1px solid #eaf0f4;color:#064675;font-size:11px;font-weight:800}
+.notargest .ng-modulo-open span{transition:transform .18s ease}
+.notargest .ng-modulo-card:hover .ng-modulo-open span{transform:translateX(4px)}
+.notargest .ng-modulo-card:focus-visible{outline:3px solid rgba(6,70,117,.2);outline-offset:3px}
+.notargest .ng-modulo-card.urgente .ng-modulo-acento{background:linear-gradient(90deg,#a32129,#e8a1a1)}
+@media(prefers-reduced-motion:reduce){.notargest .ng-modulo-card,.notargest .ng-modulo-open span{transition:none}}
