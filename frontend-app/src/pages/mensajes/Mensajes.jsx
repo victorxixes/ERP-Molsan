@@ -1295,9 +1295,9 @@ export default function Mensajes({
                   rounded-2xl
 
                   border
-                  border-[var(--molsan-border)]/70
+                  border-[var(--molsan-border)]
 
-                  bg-[var(--molsan-surface-soft)]/50
+                  bg-[var(--molsan-surface-soft)]
 
                   px-3
                   py-4
