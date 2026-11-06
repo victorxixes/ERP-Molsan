@@ -451,11 +451,6 @@
   .ng-detalle-bloque,.ng-ficha-premium > .ng-detalle-bloque { padding: 12px; }
   .ng-media-row { grid-template-columns: 1fr; gap: 6px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  
-}
-
-
 .ng-modal :is(input,select,textarea),.ng-resumen-expedientes-modal :is(input,select,textarea) {
   max-width:100%;min-width:0;box-sizing:border-box;
 }
