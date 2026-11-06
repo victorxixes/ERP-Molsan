@@ -327,7 +327,7 @@ export default function ModalCtnDetalle({
 
   return (
     <div
-      className="ctn-modal-overlay"
+      className="molsan-modal-overlay ctn-modal-overlay"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
@@ -336,7 +336,7 @@ export default function ModalCtnDetalle({
       }}
     >
       <section
-        className="ctn-modal-panel molsan-panel"
+        className="ctn-modal-panel molsan-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="ctn-ficha-titulo"
@@ -344,21 +344,21 @@ export default function ModalCtnDetalle({
       {/* CABECERA DE LA FICHA */}
 
       <header
-        className="ctn-modal-header molsan-page-header ctn-modal-header-unified"
+        className="molsan-modal__header"
       >
-        <div className="ctn-modal-header-identity">
-          <span className="ctn-modal-eyebrow">
+        <div className="molsan-modal__identity">
+          <span className="molsan-modal__eyebrow">
             MOLSAN ERP · CTN
           </span>
 
           <h2
             id="ctn-ficha-titulo"
-            className="ctn-modal-title"
+            className="molsan-modal__title"
           >
             {nombreNotario(datos)}
           </h2>
 
-          <p className="ctn-modal-meta">
+          <p className="molsan-modal__meta">
             NIF: {valor(datos.nif)}
             {" · "}
             Código: {valor(datos.codigo)}
@@ -367,13 +367,13 @@ export default function ModalCtnDetalle({
           </p>
         </div>
 
-        <span className="ctn-modal-header-badge">
+        <span className="molsan-modal__badge">
           Ficha de notaría
         </span>
 
         <button
           type="button"
-          className="ctn-modal-cerrar molsan-btn molsan-btn--secondary"
+          className="molsan-btn molsan-btn--secondary"
           aria-label="Cerrar ficha"
           onClick={() => (onClose || onCerrar)?.()}
         >
