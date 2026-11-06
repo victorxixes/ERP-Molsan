@@ -935,6 +935,7 @@ a:hover .molsan-icon-3d,button:hover .molsan-icon-3d,.molsan-icon-3d.is-active {
 .molsan-stat-card--violet { --molsan-stat-accent:#7662B1; --molsan-stat-ink:#65509E; --molsan-stat-tint:#F1EEFA; }
 .molsan-stat-card--amber { --molsan-stat-accent:#B47A25; --molsan-stat-ink:#96651B; --molsan-stat-tint:#FBF4E8; }
 .molsan-stat-card--slate { --molsan-stat-accent:#8093A1; --molsan-stat-ink:#617789; --molsan-stat-tint:#F2F7FB; }
+.molsan-stat-card--rose { --molsan-stat-accent:#C45B65; --molsan-stat-ink:#A83D49; --molsan-stat-tint:#FCEFF0; }
 .molsan-stat-card__top { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .molsan-stat-card__title { color:var(--molsan-stat-ink); font-size:11px; font-weight:800; letter-spacing:.1em; line-height:1.35; text-transform:uppercase; }
 .molsan-stat-card__icon { display:grid; width:48px; height:48px; flex:0 0 48px; place-items:center; border:1px solid color-mix(in srgb,var(--molsan-stat-accent) 27%,#fff); border-radius:15px; background:radial-gradient(circle at 28% 18%,#fff 0 10%,var(--molsan-stat-tint) 58%,color-mix(in srgb,var(--molsan-stat-accent) 14%,#fff)); box-shadow:0 7px 16px color-mix(in srgb,var(--molsan-stat-accent) 13%,transparent),inset 0 1px 1px rgba(255,255,255,.95); transition:transform .24s ease,box-shadow .24s ease; }
