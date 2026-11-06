@@ -8,7 +8,6 @@ import Sidebar from "../../components/Sidebar";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
-import "../../css/NotarGest.css";
 import { formatEuro as euros } from "../../utils/formatters";
 
 const TOKEN_KEY = "notargest_token";
