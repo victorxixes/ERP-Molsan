@@ -6,6 +6,7 @@
 import { useDashboard } from "../../hooks/useDashboard";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
 import "../../css/DashboardCancelagest.css";
 
 // ============================================================
@@ -99,26 +100,17 @@ function porcentaje(valor) {
 
 function KpiCard({ icono, titulo, valor, descripcion }) {
   return (
-    <div className="erp-card dashboard-kpi group relative overflow-hidden p-4 transition-all duration-150">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="mb-2 text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--erp-text-soft)" }}>
-            {titulo}
-          </div>
-          <div className="dashboard-kpi__value text-3xl font-bold tracking-tight" style={{ color: "var(--erp-text)" }}>
-            {valor}
-          </div>
-          {descripcion && (
-            <div className="mt-1 text-sm" style={{ color: "var(--erp-text-soft)" }}>
-              {descripcion}
-            </div>
-          )}
-        </div>
-        <div className="dashboard-kpi__icon flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg" style={{ background: "var(--erp-primary-soft)", color: "var(--erp-primary)" }}>
-          <MolsanIcon name={icono} size={34} tone="ocean" />
-        </div>
+    <MolsanPremiumCard
+      icon={icono}
+      title={titulo}
+      description={descripcion}
+      className="dashboard-kpi"
+      iconSize={34}
+    >
+      <div className="dashboard-kpi__value text-3xl font-bold tracking-tight" style={{ color: "var(--erp-text)" }}>
+        {valor}
       </div>
-    </div>
+    </MolsanPremiumCard>
   );
 }
 
@@ -155,32 +147,23 @@ function ActividadCard({ actividad, total, porcentajeValor }) {
 
 function FirmaCard({ icono, titulo, total, porcentajeValor }) {
   return (
-    <div className="erp-card p-5">
-      <div className="flex items-center gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl" style={{ background: "var(--erp-primary-soft)" }}>
-          <MolsanIcon name={icono} size={38} tone="ocean" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-sm font-semibold" style={{ color: "var(--erp-text)" }}>
-            {titulo}
-          </div>
-          <div className="mt-1 text-xs" style={{ color: "var(--erp-text-soft)" }}>
-            Firmas realizadas
-          </div>
-        </div>
-        <div className="text-right">
-          <div className="text-2xl font-bold" style={{ color: "var(--erp-text)" }}>
-            {numero(total)}
-          </div>
-          <div className="text-xs font-medium" style={{ color: "var(--erp-primary)" }}>
-            {porcentaje(porcentajeValor)}
-          </div>
-        </div>
+    <MolsanPremiumCard
+      icon={icono}
+      title={titulo}
+      description="Firmas realizadas"
+      className="dashboard-kpi"
+      iconSize={38}
+    >
+      <div className="text-2xl font-bold" style={{ color: "var(--erp-text)" }}>
+        {numero(total)}
+      </div>
+      <div className="text-xs font-medium" style={{ color: "var(--erp-primary)" }}>
+        {porcentaje(porcentajeValor)}
       </div>
       <div className="mt-4 h-2 overflow-hidden rounded-full" style={{ background: "var(--erp-surface-soft)" }}>
         <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.min(Math.max(Number(porcentajeValor || 0), 0), 100)}%`, background: "var(--erp-primary)" }} />
       </div>
-    </div>
+    </MolsanPremiumCard>
   );
 }
 
