@@ -105,7 +105,7 @@ export default function TiposExpediente() {
   const activos = tipos.filter((t) => t.activo !== false).length;
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
+    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
       <MolsanPageHeader
         mark="TIP"
         title="Tipos de expediente"
