@@ -1599,7 +1599,7 @@ export default function EntidadesBancarias() {
               "
               title="Descargar el catálogo filtrado en Excel"
             >
-              <span className="text-lg">⬇️</span>
+              <MolsanIcon name="download" size={16} tone="inherit" />
               Descargar Excel
             </button>
 
