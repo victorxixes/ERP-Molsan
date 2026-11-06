@@ -2106,7 +2106,7 @@ export default function EntidadesBancarias() {
                   >
                     <button type="button" onClick={() => ordenarPor("codigo_europeo")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Código Europeo">
                       Código Europeo
-                      <span aria-hidden="true">{ordenColumna === "codigo_europeo" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                      <span aria-hidden="true">{ordenColumna === "codigo_europeo" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
                   </th>
 
@@ -2126,7 +2126,7 @@ export default function EntidadesBancarias() {
                   >
                     <button type="button" onClick={() => ordenarPor("lei")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por LEI">
                       LEI
-                      <span aria-hidden="true">{ordenColumna === "lei" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                      <span aria-hidden="true">{ordenColumna === "lei" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
                   </th>
 
@@ -2146,7 +2146,7 @@ export default function EntidadesBancarias() {
                   >
                     <button type="button" onClick={() => ordenarPor("nombre")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Nombre">
                       Nombre
-                      <span aria-hidden="true">{ordenColumna === "nombre" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                      <span aria-hidden="true">{ordenColumna === "nombre" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
                   </th>
 
@@ -2166,7 +2166,7 @@ export default function EntidadesBancarias() {
                   >
                     <button type="button" onClick={() => ordenarPor("categoria")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Categoría">
                       Categoría
-                      <span aria-hidden="true">{ordenColumna === "categoria" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                      <span aria-hidden="true">{ordenColumna === "categoria" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
                   </th>
 
@@ -2186,7 +2186,7 @@ export default function EntidadesBancarias() {
                   >
                     <button type="button" onClick={() => ordenarPor("entidad_actual")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Entidad actual">
                       Entidad actual
-                      <span aria-hidden="true">{ordenColumna === "entidad_actual" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                      <span aria-hidden="true">{ordenColumna === "entidad_actual" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
                   </th>
 
@@ -2205,7 +2205,7 @@ export default function EntidadesBancarias() {
                   >
                     <button type="button" onClick={() => ordenarPor("direccion")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Dirección">
                       Dirección
-                      <span aria-hidden="true">{ordenColumna === "direccion" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                      <span aria-hidden="true">{ordenColumna === "direccion" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
                   </th>
 
