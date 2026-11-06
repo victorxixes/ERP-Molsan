@@ -126,10 +126,15 @@ export default function AltaExpediente() {
   }
 
   return <main className="molsan-page-stack min-h-full bg-[var(--molsan-surface-soft)]">
-    <header className="molsan-page-header relative overflow-hidden rounded-[28px] border border-[var(--molsan-border)] bg-[var(--molsan-surface)] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.09)] backdrop-blur-xl sm:p-8">
-      <div className="absolute inset-x-0 top-0 h-1 bg-[var(--molsan-primary)]" />
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--molsan-primary)]">MOLSAN ERP · PREMIUM 2027</p><h1 className="mt-2 text-2xl font-bold tracking-tight text-[var(--molsan-text)] sm:text-3xl">Alta de expediente</h1><p className="mt-2 max-w-3xl text-sm text-[var(--molsan-text-muted)]">Crea un expediente manual con facturación, contrato, múltiples fincas, hipotecas y notaría CTN.</p></div>
+    <header className="molsan-page-header">
+      <div className="molsan-page-header__identity">
+        <div className="min-w-0">
+          <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+          <h1 className="molsan-page-header__title">Alta de expediente</h1>
+          <p className="molsan-page-header__description">Crea un expediente manual con facturación, contrato, múltiples fincas, hipotecas y notaría CTN.</p>
+        </div>
+      </div>
+      <div className="molsan-page-header__actions">
         <button type="button" onClick={() => navigate("/herramientas/utilidades")} className={botonSecundario}>← Volver a Utilidades</button>
       </div>
     </header>
