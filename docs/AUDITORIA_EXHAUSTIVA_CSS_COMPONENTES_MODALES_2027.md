@@ -2,7 +2,7 @@
 
 **Rama de trabajo:** `fix/molsan-css-selector-audit-round1`  
 **PR:** #409 (Draft)  
-**Último commit de código desplegado:** `5ca6804988c9fa787d4a58237c82f37840ab1f40`  
+**Último commit desplegado en Preview:** `ff7b1fdc599e7c36a8982f7685a9f98b47a01ba8` (incluye los cambios funcionales hasta `f9a8e2a9c7f5f51788b343566a83b8b9a5bebef8`)  
 **Alcance de esta revisión:** frontend `frontend-app/src`; sin cambios en backend, API, Supabase, datos ni producción.
 
 ## 1. Inventario real del frontend
@@ -1020,4 +1020,4 @@ Validación de build y despliegue: Render Preview `dep-dbn1qbc9v7es73a0h380`, as
 - Las flechas de ordenación en Entidades Bancarias y Expedientes, la acción Procesar de Lectura de Copias y las acciones de descarga/enlace externo también pasan a SVG corporativo.
 - Se mantienen los handlers, la ordenación múltiple y sus índices de prioridad, los filtros, la descarga de archivos y los destinos de navegación.
 - No se eliminan botones de actualización que forman parte del cuerpo operativo; la petición de retirar «Actualizar» se limita a los controles que estaban duplicados en cabeceras globales, no a acciones de recarga necesarias para consultar datos.
-- Render Preview debe reconstruirse con el HEAD posterior a estos commits; el último LIVE confirmado anteriormente era `e8b2fc2`, previo a esta última tanda.
+- Render Preview `dep-dbn1r9d9fdbs73fhg85g` se ha reconstruido desde el HEAD `ff7b1fd` y finalizó `LIVE` el 6 de noviembre de 2026. Los logs confirman `✓ built in 6.00s` y `Your site is live`. La compilación incluye las modificaciones de código hasta `f9a8e2a`; el último commit es documentación de auditoría.
