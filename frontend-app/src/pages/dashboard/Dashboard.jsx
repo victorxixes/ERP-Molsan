@@ -115,7 +115,7 @@ function KpiCard({ icono, titulo, valor, descripcion }) {
           )}
         </div>
         <div className="dashboard-kpi__icon flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg" style={{ background: "var(--erp-primary-soft)", color: "var(--erp-primary)" }}>
-          {icono}
+          <MolsanIcon name={icono} size={21} />
         </div>
       </div>
     </div>
@@ -126,7 +126,7 @@ function ActividadCard({ actividad, total, porcentajeValor }) {
   return (
     <div className="flex items-center gap-3 border-b px-4 py-3.5 last:border-b-0 transition-colors duration-150 hover:bg-[var(--erp-surface-soft)]" style={{ borderColor: "var(--erp-border)" }}>
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg" style={{ background: "var(--erp-primary-soft)" }}>
-        {actividad.icono}
+        <MolsanIcon name={actividad.icono} size={21} />
       </div>
       <div className="min-w-0 flex-1">
         <div className="text-sm font-semibold" style={{ color: "var(--erp-text)" }}>
@@ -158,7 +158,7 @@ function FirmaCard({ icono, titulo, total, porcentajeValor }) {
     <div className="erp-card p-5">
       <div className="flex items-center gap-4">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl" style={{ background: "var(--erp-primary-soft)" }}>
-          {icono}
+          <MolsanIcon name={icono} size={21} />
         </div>
         <div className="min-w-0 flex-1">
           <div className="text-sm font-semibold" style={{ color: "var(--erp-text)" }}>
@@ -392,7 +392,7 @@ export default function Dashboard() {
         </div>
         <div className="dashboard-firmas-grid grid grid-cols-1 gap-3 sm:grid-cols-3">
           <KpiCard icono="signature" titulo="Total firmas" valor={numero(totalFirmas)} descripcion="Firmas realizadas" />
-          <FirmaCard icono="🏛️" titulo="Presencial" total={firmasPresenciales} porcentajeValor={porcentajePresencial} />
+          <FirmaCard icono="building" titulo="Presencial" total={firmasPresenciales} porcentajeValor={porcentajePresencial} />
           <FirmaCard icono="monitor" titulo="Videoconferencia" total={firmasVideoconferencia} porcentajeValor={porcentajeVideoconferencia} />
         </div>
       </section>
