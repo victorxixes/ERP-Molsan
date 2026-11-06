@@ -586,12 +586,12 @@ export default function TiposCargaHipotecaria() {
           CABECERA
       ==================================================== */}
 
-      <header className="molsan-page-header catalogos-subpage-header">
+      <header className="molsan-page-header">
 
-        <div className="catalogos-subpage-header__layout">
+        <div className="flex w-full min-w-0 flex-wrap items-center justify-between gap-4">
 
-          <div className="catalogos-subpage-header__identity-wrap">
-            <div className="molsan-page-header__identity catalogos-subpage-header__identity">
+          <div className="min-w-0 flex-1">
+            <div className="molsan-page-header__identity molsan-page-header__identity">
 
               <div
                 className="
@@ -642,7 +642,7 @@ export default function TiposCargaHipotecaria() {
           <button
             type="button"
             onClick={abrirNuevo}
-            className="catalogos-subpage-header__action
+            className="molsan-btn molsan-btn--primary
               inline-flex
               items-center
               justify-center
