@@ -2,6 +2,7 @@ import React from "react";
 
 const paths = {
   user: <><circle cx="12" cy="8" r="3.2" /><path d="M5 20v-1.4a4.6 4.6 0 0 1 4.6-4.6h4.8a4.6 4.6 0 0 1 4.6 4.6V20" /></>,
+  users: <><circle cx="9" cy="8" r="3" /><path d="M3 20v-1a6 6 0 0 1 12 0v1M16 5.5a3 3 0 0 1 0 5.8M18 14a4 4 0 0 1 3 4v2" /></>,
   clipboard: <><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V2.8h6V4M8.5 9h7M8.5 13h7M8.5 17h4" /></>,
   building: <><path d="M4 20V5l8-3 8 3v15" /><path d="M8 20v-5h8v5M8 8h.01M12 8h.01M16 8h.01M8 11h.01M12 11h.01M16 11h.01" /></>,
   chart: <><path d="M4 20V4M4 20h17" /><rect x="7" y="11" width="3" height="6" rx=".6" /><rect x="12" y="7" width="3" height="10" rx=".6" /><rect x="17" y="4" width="3" height="13" rx=".6" /></>,
