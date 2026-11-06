@@ -94,16 +94,8 @@
    ============================================================ */
 
 .card-sj {
-  background: var(--erp-surface);
-  border: 1px solid var(--erp-border);
-  border-radius: var(--molsan-radius-card, 14px);
+  /* El padding sigue siendo estructural; el aspecto visual lo aporta CanonicalVisual. */
   padding: 24px;
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
-  transition: box-shadow var(--molsan-transition-fast, 150ms ease), border-color var(--molsan-transition-fast, 150ms ease);
-}
-
-.card-sj:hover {
-  border-color: var(--molsan-border-strong, #c4d0df);
 }
 
 
