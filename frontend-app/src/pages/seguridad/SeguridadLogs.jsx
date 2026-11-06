@@ -928,7 +928,7 @@ export default function SeguridadLogs() {
 
   return (
 
-    <div className="seguridad-logs-premium seguridad-subpagina-premium space-y-6 animate-fade-in">
+    <div className="seguridad-logs-premium seguridad-subpagina-premium space-y-6 ">
 
 
       <MolsanPageHeader
