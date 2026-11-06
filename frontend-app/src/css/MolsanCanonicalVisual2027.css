@@ -6,9 +6,9 @@
    - márgenes idénticos en páginas y subpáginas
 */
 :root {
-  --molsan-canon-header-start: #DCEBF4;
-  --molsan-canon-header-mid: #CFE3EF;
-  --molsan-canon-header-end: #E5F0F6;
+  --molsan-canon-header-start: #CFE3EF;
+  --molsan-canon-header-mid: #BED9E8;
+  --molsan-canon-header-end: #D8E9F2;
   --molsan-canon-header-text: #064675;
   --molsan-canon-header-muted: #496B82;
   --molsan-canon-gutter: 28px;
@@ -248,4 +248,34 @@
   .molsan-premium-card__icon { transition:none !important; }
   .molsan-premium-card:hover,
   .molsan-premium-card:hover .molsan-premium-card__icon { transform:none !important; }
+}
+
+
+/* Ajuste solicitado: cabecera algo más presente y marca/icono nítido. */
+:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(.molsan-page-header__mark,.molsan-page-header__icon,.erp-page-header__icon) {
+  color: #064675 !important;
+  opacity: 1 !important;
+  background: linear-gradient(145deg,#FFFFFF 0%,#E2F0F7 100%) !important;
+  border-color: #AFCFDF !important;
+}
+:where(.molsan-page-header__mark,.molsan-page-header__icon,.erp-page-header__icon) svg {
+  width: 22px !important;
+  height: 22px !important;
+  color: #064675 !important;
+  opacity: 1 !important;
+  stroke: currentColor !important;
+  fill: none !important;
+}
+:where(.molsan-page-header__mark,.molsan-page-header__icon,.erp-page-header__icon) svg :where(path,line,polyline,polygon,circle,rect) {
+  stroke: currentColor !important;
+  opacity: 1 !important;
+}
+
+/* La línea exterior superior es el único acento de la tarjeta.
+   Se elimina la segunda línea interior generada por ::before. */
+.molsan-premium-card::before {
+  content: none !important;
+  display: none !important;
 }
