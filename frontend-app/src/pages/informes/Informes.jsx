@@ -3403,7 +3403,7 @@ function InformeFacturacion() {
           <InformeKpi titulo="Impuestos" valor={loadingTarjetas ? "…" : euros(r.total_impuesto)} subtitulo="Importe total de impuesto" icono="euro" />
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <MolsanStatCard title="Cobrado" value={loadingTarjetas ? "…" : euros(r.total_cobrado)} description={numeroInforme(r.cobrado) + " registros"} icon="checkCircle" tone="emerald" />
+          <MolsanStatCard title="Cobrado" value={loadingTarjetas ? "…" : euros(r.total_cobrado)} description={numeroInforme(r.cobrado) + " registros"} icon="check" tone="emerald" />
           <MolsanStatCard title="Pendiente de cobro" value={loadingTarjetas ? "…" : euros(r.total_pendiente_cobro)} description={numeroInforme(r.pendiente_cobro) + " registros"} icon="clock" tone="amber" />
           <MolsanStatCard title="Pendiente de factura" value={loadingTarjetas ? "…" : euros(r.total_pendiente_factura)} description={numeroInforme(r.pendiente_factura) + " registros"} icon="file" tone="slate" />
           <MolsanStatCard title="Importe con incidencias" value={loadingTarjetas ? "…" : euros(r.total_incidencias)} description={numeroInforme(r.incidencias) + " registros"} icon="alert" tone="rose" />
