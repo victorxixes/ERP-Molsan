@@ -13,16 +13,8 @@
 /* Refinamiento Dashboard · jerarquía compacta, tokens compartidos y accesibilidad */
 .dashboard-cancelagest {
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
-  color: var(--molsan-text, var(--molsan-text, #17243a));
-}.dashboard-cancelagest .dashboard-kpi {
-  position: relative;
-  
-  
-  
-  
-}
-
-.dashboard-cancelagest .dashboard-kpi__value {
+  color: var(--molsan-text, #17243a);
+}.dashboard-cancelagest .dashboard-kpi__value {
   font-variant-numeric: tabular-nums;
   letter-spacing: -.045em;
 }
@@ -38,11 +30,6 @@
 
 .dashboard-cancelagest table tbody tr:hover {
   background: var(--molsan-surface-soft, #f6f8fc);
-}
-
-@media (max-width: 640px) {.dashboard-cancelagest .dashboard-kpi {
-    
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
