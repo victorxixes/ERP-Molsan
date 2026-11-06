@@ -1,236 +1,12 @@
 /* MOLSAN ERP PREMIUM 2027 · GLASS LUXE
-   Capa final de identidad compartida para páginas, subpáginas y portales.
-   Las cabeceras usan vidrio azul hielo translúcido; las acciones conservan
-   su semántica (principal, secundaria o destructiva). */
+   Responsabilidad de esta hoja:
+   - compatibilidad visual de botones heredados mientras se migran a MolsanButton;
+   - patrón de tarjeta maestro exclusivo de Espacios de trabajo.
+   Las cabeceras y tarjetas funcionales del ERP se gobiernan en
+   MolsanCanonicalVisual2027.css para evitar dos fuentes de presentación.
+*/
 
-/* Cabecera común: fondo Glass Luxe suave y blur real del contenido tras ella. */
-:where(
-  .molsan-page-header,
-  .molsan-page-header--legacy,
-  .ng-admin-notarias .ng-hero,
-  .erp-page-header
-) {
-  position: relative !important;
-  isolation: isolate !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  flex-wrap: wrap !important;
-  gap: 16px !important;
-  box-sizing: border-box !important;
-  width: 100% !important;
-  min-width: 0 !important;
-  min-height: 82px !important;
-  margin: 0 0 20px !important;
-  padding: 14px 20px !important;
-  overflow: hidden !important;
-  color: #064675 !important;
-  border: 1px solid var(--molsan-glass-border) !important;
-  border-radius: 18px !important;
-  background:
-    radial-gradient(ellipse at 88% 8%, rgba(255,255,255,.96), transparent 46%),
-    linear-gradient(112deg, rgba(234,244,250,.96) 0%, rgba(226,239,247,.94) 58%, rgba(241,247,251,.96) 100%) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(116%) !important;
-  backdrop-filter: blur(24px) saturate(128%) !important;
-  box-shadow: var(--molsan-glass-shadow) !important;
-  animation: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-}
-:where(
-  .molsan-page-header,
-  .molsan-page-header--legacy,
-  .ng-admin-notarias .ng-hero,
-  .erp-page-header
-)::before {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  content: "";
-  pointer-events: none;
-  background: linear-gradient(125deg, rgba(255,255,255,.48), transparent 44%, rgba(108,197,217,.12));
-}
-:where(
-  .molsan-page-header,
-  .molsan-page-header--legacy,
-  .ng-admin-notarias .ng-hero,
-  .erp-page-header
-) :where(h1,h2,.molsan-page-header__title,.erp-page-title) {
-  color: #064675 !important;
-}
-:where(
-  .molsan-page-header,
-  .molsan-page-header--legacy,
-  .ng-admin-notarias .ng-hero,
-  .erp-page-header
-) :where(p,.molsan-page-header__description,.erp-page-description) {
-  color: #617789 !important;
-}
-:where(.molsan-page-header__identity) {
-  display: flex !important;
-  align-items: center !important;
-  flex: 1 1 320px !important;
-  gap: 12px !important;
-  min-width: 0 !important;
-}
-:where(.molsan-page-header__actions) {
-  position: relative !important;
-  z-index: 1 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-end !important;
-  flex: 0 1 auto !important;
-  flex-wrap: wrap !important;
-  gap: 8px !important;
-  min-width: 0 !important;
-  margin-left: auto !important;
-}
-:where(.molsan-page-header__actions) > :where(button,a) {
-  min-height: 36px !important;
-  border-radius: 10px !important;
-}
-:where(.molsan-page-header__mark) {
-  flex-shrink: 0 !important;
-  color: #064675 !important;
-  border: 1px solid rgba(6,70,117,.12) !important;
-  background: rgba(255,255,255,.72) !important;
-  box-shadow: 0 3px 10px rgba(6,70,117,.06) !important;
-}
-:where(.molsan-page-header__eyebrow,.erp-page-header .erp-eyebrow) {
-  color: #617789 !important;
-}
-:where(.erp-page-header) > :first-child {
-  flex: 1 1 320px !important;
-  min-width: 0 !important;
-}
-:where(.erp-page-header-status) {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-end !important;
-  flex-wrap: wrap !important;
-  gap: 8px !important;
-  margin-left: auto !important;
-}
-:where(.molsan-page-header__actions) > :where(button,a) {
-  color: #064675 !important;
-  border: 1px solid rgba(6,70,117,.16) !important;
-  background: rgba(255,255,255,.76) !important;
-}
-:where(.molsan-page-header__actions) > :where(button,a):hover {
-  color: #043B60 !important;
-  border-color: rgba(6,70,117,.28) !important;
-  background: #fff !important;
-}
-
-/* Tarjetas semánticas de módulos y portales: misma elevación y acento. */
-:where(
-  .erp-card,.card-sj,.dashboard-kpi,
-  .apoderagest .molsan-stat-card,
-  .encargagest .eg-kpi,
-  .notargest.ng-content .ng-dashboard-grafico,
-  .notargest.ng-content .ng-dashboard-kpis article,
-  .ng-admin-notarias .ng-admin-kpi-button,
-  .ng-admin-notarias .ng-admin-notaria-card
-) {
-  position: relative !important;
-  min-width: 0 !important;
-  border: 1px solid var(--molsan-card-border) !important;
-  border-top: 1px solid var(--molsan-card-border) !important;
-  border-radius: 18px !important;
-  background: linear-gradient(150deg,#fff 0%,#fff 62%,#F2F7FB 100%) !important;
-  box-shadow: var(--molsan-card-shadow) !important;
-  transition: border-color .2s ease,box-shadow .2s ease,transform .2s ease !important;
-}
-:where(
-  .erp-card,.card-sj,.dashboard-kpi,
-  .apoderagest .molsan-stat-card,
-  .encargagest .eg-kpi,
-  .notargest.ng-content .ng-dashboard-grafico,
-  .notargest.ng-content .ng-dashboard-kpis article,
-  .ng-admin-notarias .ng-admin-kpi-button,
-  .ng-admin-notarias .ng-admin-notaria-card
-):hover {
-  border-color: #B9D7E6 !important;
-  box-shadow: var(--molsan-card-shadow-hover) !important;
-  transform: translateY(-2px) !important;
-}
-:where(
-  .apoderagest button.molsan-stat-card,
-  .encargagest button.eg-kpi,
-  .ng-admin-notarias button.ng-admin-kpi-button
-) {
-  cursor: pointer !important;
-  text-align: left !important;
-}
-:where(
-  .erp-card,.card-sj,.dashboard-kpi,.molsan-stat-card,.eg-kpi,
-  .ng-dashboard-grafico,.ng-admin-kpi-button,.ng-admin-notaria-card
-):focus-visible {
-  outline: 3px solid rgba(6,70,117,.22) !important;
-  outline-offset: 2px !important;
-}
-
-/* Cápsulas de iconos corporativos en los KPI de los portales. */
-:where(
-  .apoderagest .ag-kpi-icono,
-  .encargagest .eg-kpi-icono,
-  .notargest.ng-content .ng-admin-notaria-icono,
-  .notargest.ng-content .ng-admin-circuito-icono,
-  .erp-card .molsan-icon-wrap,
-  .card-sj .molsan-icon-wrap
-) {
-  display: grid !important;
-  place-items: center !important;
-  flex: 0 0 40px !important;
-  width: 40px !important;
-  height: 40px !important;
-  color: #064675 !important;
-  border: 1px solid #D8E4EC !important;
-  border-radius: 12px !important;
-  background: #F2F7FB !important;
-}
-:where(.ag-kpi-icono,.eg-kpi-icono,.ng-admin-notaria-icono,.ng-admin-circuito-icono) .molsan-icon-3d {
-  max-width: 30px !important;
-  max-height: 30px !important;
-}
-
-@media (max-width:760px) {
-  :where(.molsan-page-header,.molsan-page-header--legacy,.ng-admin-notarias .ng-hero,.erp-page-header) {
-    min-height: 74px !important;
-    padding: 12px 14px !important;
-    gap: 10px !important;
-  }
-  :where(.molsan-page-header__identity) { flex-basis: 100% !important; }
-  :where(.molsan-page-header__actions) {
-    width: 100% !important;
-    justify-content: flex-start !important;
-    margin-left: 0 !important;
-  }
-}
-@media (max-width:520px) {
-  :where(
-    .erp-card,.card-sj,.dashboard-kpi,.apoderagest .molsan-stat-card,
-    .encargagest .eg-kpi,.notargest.ng-content .ng-dashboard-grafico,
-    .notargest.ng-content .ng-dashboard-kpis article,
-    .ng-admin-notarias .ng-admin-kpi-button,
-    .ng-admin-notarias .ng-admin-notaria-card
-  ) { border-radius: 15px !important; }
-}
-@media (prefers-reduced-motion:reduce) {
-  :where(
-    .erp-card,.card-sj,.dashboard-kpi,.molsan-stat-card,.eg-kpi,
-    .ng-dashboard-grafico,.ng-admin-kpi-button,.ng-admin-notaria-card
-  ) { transition:none !important; }
-  :where(
-    .erp-card,.card-sj,.dashboard-kpi,.molsan-stat-card,.eg-kpi,
-    .ng-dashboard-grafico,.ng-admin-kpi-button,.ng-admin-notaria-card
-  ):hover { transform:none !important; }
-}
-
-
-/* Compatibilidad de botones heredados: conserva la acción, unifica geometría
-   y variantes visuales mientras las pantallas se migran a MolsanButton. */
+/* Compatibilidad de botones heredados: conserva la acción y sus variantes. */
 :where(.erp-route-content,.apoderagest,.encargagest,.notargest,.ng-admin-notarias)
 button:not(.workspace-app-card):not([role="tab"]):not([aria-pressed]) {
   font-family: Inter, "Segoe UI", sans-serif;
@@ -292,130 +68,47 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
-
-/* =========================================================
-   ESPACIOS DE TRABAJO · patrón maestro de tarjetas
-   Se replica la composición premium (sin franja horizontal
-   superior): acento integrado, icono protagonista y hover
-   elevado con movimiento suave.
-========================================================= */
-:where(
-  .workspace-app-card,
-  .erp-card,.card-sj,.dashboard-kpi,
-  .apoderagest .molsan-stat-card,
-  .encargagest .eg-kpi,
-  .notargest.ng-content .ng-dashboard-grafico,
-  .notargest.ng-content .ng-dashboard-kpis article,
-  .ng-admin-notarias .ng-admin-kpi-button,
-  .ng-admin-notarias .ng-admin-notaria-card
-) {
-  overflow: hidden !important;
-  border: 1px solid #D8E4EC !important;
-  border-top: 1px solid #D8E4EC !important;
-  border-radius: 20px !important;
-  background: linear-gradient(145deg,#FFFFFF 0%,#FFFFFF 58%,#F2F7FB 100%) !important;
-  box-shadow: 0 7px 20px rgba(6,70,117,.065) !important;
-  transition: transform .24s cubic-bezier(.2,.75,.25,1), box-shadow .24s ease, border-color .24s ease, background .24s ease !important;
+/* Tarjeta maestra de Espacios de trabajo: franja exterior y hover cromático. */
+.workspace-app-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #D8E4EC;
+  border-top: 4px solid #6CC5D9;
+  border-radius: 20px;
+  background: linear-gradient(145deg,#FFFFFF 0%,#FFFFFF 58%,#F2F7FB 100%);
+  box-shadow: 0 7px 20px rgba(6,70,117,.065);
+  transition: transform .24s cubic-bezier(.2,.75,.25,1),box-shadow .24s ease,
+    border-color .24s ease,background .24s ease,color .24s ease;
 }
-:where(
-  .workspace-app-card,
-  .erp-card,.card-sj,.dashboard-kpi,
-  .apoderagest .molsan-stat-card,
-  .encargagest .eg-kpi,
-  .notargest.ng-content .ng-dashboard-grafico,
-  .notargest.ng-content .ng-dashboard-kpis article,
-  .ng-admin-notarias .ng-admin-kpi-button,
-  .ng-admin-notarias .ng-admin-notaria-card
-):hover {
-  transform: translateY(-4px) !important;
-  border-color: #B9D7E6 !important;
-  box-shadow: 0 16px 34px rgba(6,70,117,.13) !important;
+.workspace-app-card:hover {
+  transform: translateY(-4px);
+  border-color: #9BCBDD;
+  border-top-color: #064675;
+  background: linear-gradient(145deg,#EAF7FB 0%,#F5FAFD 58%,#EAF2F8 100%);
+  box-shadow: 0 16px 34px rgba(6,70,117,.16);
 }
-
-.workspace-app-card::before {
-  position: absolute !important;
-  z-index: -1 !important;
-  inset: 0 !important;
-  content: "" !important;
-  pointer-events: none !important;
-  opacity: .75 !important;
-  background: radial-gradient(circle at 92% 8%,rgba(108,197,217,.16),transparent 38%) !important;
-}
-
 .workspace-app-card:hover .workspace-card-accent {
-  width: 5px !important;
-  opacity: 1 !important;
+  width: 5px;
+  opacity: 1;
 }
-
-
-
-
-
-
-
-
-
-.workspace-tone-cyan .workspace-card-accent { background: linear-gradient(180deg,#75D4E2,#279BBE) !important; }
-.workspace-tone-ocean .workspace-card-accent { background: linear-gradient(180deg,#7CB5D7,#064675) !important; }
-.workspace-tone-cyan .workspace-app-icon { color: #168EAE !important; }
-.workspace-tone-ocean .workspace-app-icon { color: #064675 !important; }
-@media (prefers-reduced-motion: reduce) {
-  .workspace-app-card,.workspace-app-icon,.workspace-card-open,.workspace-card-accent { transition:none !important; }
-  .workspace-app-card:hover,.workspace-app-card:hover .workspace-app-icon,.workspace-app-card:hover .workspace-card-open { transform:none !important; }
-}
-
-
-/* Corrección de fidelidad visual · Espacios de trabajo es la referencia maestra.
-   Se conservan la línea superior de color y el cambio cromático al hover.
-   El mismo comportamiento se replica en las tarjetas equivalentes del ERP. */
-:where(
-  .workspace-app-card,
-  .erp-card,.card-sj,.dashboard-kpi,
-  .apoderagest .molsan-stat-card,
-  .encargagest .eg-kpi,
-  .notargest.ng-content .ng-dashboard-grafico,
-  .notargest.ng-content .ng-dashboard-kpis article,
-  .ng-admin-notarias .ng-admin-kpi-button,
-  .ng-admin-notarias .ng-admin-notaria-card
-) {
-  border-top: 4px solid #6CC5D9 !important;
-  transition:
-    transform .24s cubic-bezier(.2,.75,.25,1),
-    box-shadow .24s ease,
-    border-color .24s ease,
-    background .24s ease,
-    color .24s ease !important;
-}
-:where(
-  .workspace-app-card,
-  .erp-card,.card-sj,.dashboard-kpi,
-  .apoderagest .molsan-stat-card,
-  .encargagest .eg-kpi,
-  .notargest.ng-content .ng-dashboard-grafico,
-  .notargest.ng-content .ng-dashboard-kpis article,
-  .ng-admin-notarias .ng-admin-kpi-button,
-  .ng-admin-notarias .ng-admin-notaria-card
-):hover {
-  border-top-color: #064675 !important;
-  border-color: #9BCBDD !important;
-  background: linear-gradient(145deg,#EAF7FB 0%,#F5FAFD 58%,#EAF2F8 100%) !important;
-  box-shadow: 0 16px 34px rgba(6,70,117,.16) !important;
-}
-
 .workspace-app-card:hover .workspace-app-title,
 .workspace-app-card:hover .workspace-card-footer,
 .workspace-app-card:hover .workspace-app-icon {
-  color: #043B60 !important;
+  color: #043B60;
 }
+.workspace-tone-cyan { border-top-color: #75D4E2; }
+.workspace-tone-ocean { border-top-color: #7CB5D7; }
+.workspace-tone-cyan:hover { border-top-color: #168EAE; }
+.workspace-tone-ocean:hover { border-top-color: #1477A5; }
+.workspace-tone-cyan .workspace-app-icon { color: #168EAE; }
+.workspace-tone-ocean .workspace-app-icon { color: #064675; }
 
-
-
-
-.workspace-tone-cyan:hover { border-top-color: #168EAE !important; }
-.workspace-tone-ocean:hover { border-top-color: #1477A5 !important; }
 @media (prefers-reduced-motion: reduce) {
-  :where(.workspace-app-card,.erp-card,.card-sj,.dashboard-kpi,.molsan-stat-card,.eg-kpi,
-    .ng-dashboard-grafico,.ng-admin-kpi-button,.ng-admin-notaria-card) {
+  .workspace-app-card,.workspace-app-icon,.workspace-card-open,.workspace-card-accent {
     transition: none !important;
+  }
+  .workspace-app-card:hover,.workspace-app-card:hover .workspace-app-icon,
+  .workspace-app-card:hover .workspace-card-open {
+    transform: none !important;
   }
 }
