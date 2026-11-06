@@ -18,7 +18,7 @@ import {
  * ============================================================
  */
 
-export default function AuditoriaAvanzada() {
+export default function AuditoriaAvanzada({ embedded = false } = {}) {
   const [registros, setRegistros] = useState([]);
   const [metricas, setMetricas] = useState(null);
   const [busqueda, setBusqueda] = useState("");
@@ -89,12 +89,12 @@ export default function AuditoriaAvanzada() {
   return (
     <div className="auditoria-avanzada-premium panel-tecnico-submodulo-premium space-y-6 animate-fade-in">
 
-      <MolsanPageHeader
+      {!embedded && <MolsanPageHeader
         mark="AU"
         title="Auditoría Avanzada"
         description="Control y trazabilidad de la actividad del sistema"
         actions={<span className="molsan-status molsan-status--info">{filtrados.length} registros</span>}
-      />
+      />}
 
       {/* ======================================================
           MÉTRICAS
