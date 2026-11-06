@@ -219,7 +219,7 @@ body :where(
   .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
   .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
   .agenda-premium-page, .fusiones-page
-) :where(section.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), article.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), div.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal)) {
+) :where(section.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), article.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), div.rounded-2xl.border:not([role="dialog"]):not([class*="modal"])) {
   position: relative;
   min-width: 0;
   border: 1.5px solid #C5D8E5 !important;
@@ -238,7 +238,7 @@ body :where(
   .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
   .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
   .agenda-premium-page, .fusiones-page
-) :where(section.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), article.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), div.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal)):hover {
+) :where(section.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), article.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), div.rounded-2xl.border:not([role="dialog"]):not([class*="modal"])):hover {
   transform: translateY(-2px);
   border-color: #9FBFD2 !important;
   border-top-color: #064675 !important;
@@ -253,7 +253,7 @@ body :where(
   .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
   .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
   .agenda-premium-page
-) :where(section.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), article.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal), div.rounded-2xl.border:not([role="dialog"]):not(.modal):not(.erp-modal)) > :where(.border-b,header.border-b) {
+) :where(section.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), article.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), div.rounded-2xl.border:not([role="dialog"]):not([class*="modal"])) > :where(.border-b,header.border-b) {
   border-bottom: 0 !important;
   background: transparent !important;
 }
