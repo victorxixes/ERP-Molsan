@@ -2,8 +2,6 @@ import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useState, useCallback, useMemo } from "react";
 import { useUtilidades } from "../../hooks/useUtilidades";
 
-import "../../css/ComponentesOperativosPremium.css";
-
 /**
  * CREAR NOTICIA — MOLSAN ERP PREMIUM 2027
  */
