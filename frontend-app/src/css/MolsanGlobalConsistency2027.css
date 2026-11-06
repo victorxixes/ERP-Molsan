@@ -1,27 +1,27 @@
 /* MOLSAN ERP PREMIUM 2027 · GLOBAL CONSISTENCY
-   Última capa compartida de geometría y componentes.
-   No modifica lógica, permisos, rutas ni datos.
-   Sustituye progresivamente las excepciones heredadas por tokens comunes. */
+   Responsabilidad: geometría del contenido, espaciado de rutas,
+   controles nativos, tablas heredadas y accesibilidad transversal.
+   Las cabeceras y tarjetas visuales se gobiernan en CanonicalVisual.
+   Las excepciones funcionales de cada módulo permanecen en sus hojas propias.
+*/
 
-/* Catálogos y Utilidades ya reciben el gutter del Layout: eliminar el padding
-   Tailwind duplicado que desplazaba sus cabeceras y provocaba márgenes desiguales. */
+/* Catálogos y Utilidades: el Layout ya aporta el gutter exterior. */
 .erp-route-content :where(.catalogos-premium-page, .utilidades-premium-page) {
-  padding: 0 !important;
-  animation: none !important;
+  padding: 0;
+  animation: none;
 }
 .erp-route-content :where(.catalogos-premium-page, .utilidades-premium-page) > :not([hidden]) ~ :not([hidden]) {
-  margin-top: 20px !important;
+  margin-top: 20px;
 }
 
-/* Evita el parpadeo de entrada en las páginas que adoptan la cabecera compartida. */
+/* Evita animaciones de entrada que hacían parpadear las cabeceras heredadas. */
 .erp-route-content :where(.catalogos-premium-page, .utilidades-premium-page) .molsan-page-header {
-  animation: none !important;
-  opacity: 1 !important;
-  transform: none !important;
+  animation: none;
+  opacity: 1;
+  transform: none;
 }
 
-/* Una sola caja de contenido para todas las rutas del ERP principal.
-   El sidebar conserva su propio ancho y comportamiento. */
+/* Una sola caja de contenido para las rutas del ERP principal. */
 .erp-main-content,
 .erp-main-inner,
 .erp-route-content {
@@ -30,17 +30,13 @@
   width: 100%;
   max-width: none;
 }
-
 .erp-main-inner {
   margin-inline: auto;
   padding: 24px var(--molsan-content-gutter) var(--molsan-content-bottom);
 }
+.erp-route-content { display: flow-root; }
 
-.erp-route-content {
-  display: flow-root;
-}
-
-/* Márgenes uniformes en los módulos y sus subpáginas. */
+/* Los módulos reciben el gutter del Layout, sin un segundo margen interior. */
 .erp-route-content > :where(
   .cg-page, .cg-unified-workspace, .expedientes-listado-premium,
   .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
@@ -54,16 +50,15 @@
   .provisiones-fondos-premium, .provisiones-fondos-page,
   .herramientas-home-premium, .herramientas-subpagina-premium
 ) {
+  box-sizing: border-box;
   min-width: 0;
   width: 100%;
   max-width: none;
   margin-inline: 0;
-  padding: 0 !important;
+  padding: 0;
 }
 
-/* Las cabeceras y sus acciones se definen en GlassLuxeUnified y CanonicalVisual. */
-
-/* Botón Volver insertado por Layout: secundario, sin crear una segunda cabecera. */
+/* Botón Volver insertado por Layout: secundario, sin crear otra cabecera. */
 .erp-route-content .molsan-page-back-button {
   display: inline-flex;
   align-items: center;
@@ -73,53 +68,92 @@
   padding: 0 12px;
   color: var(--molsan-primary, #064675);
   border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: 10px;
+  border-radius: var(--molsan-radius-control, 10px);
   background: #fff;
   font-size: 12px;
   font-weight: 700;
 }
 
-/* Controles comunes sin interferir con botones de acción destructiva/semántica. */
-.erp-route-content :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+/* Controles nativos: no sobrescribe controles con clases de módulo. */
+.erp-route-content :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  select, textarea
+) {
   max-width: 100%;
   min-width: 0;
   border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-control, 10px);
 }
-
-.erp-route-content :where(button, [role="button"]) {
-  touch-action: manipulation;
-}
-
+.erp-route-content :where(button, [role="button"]) { touch-action: manipulation; }
 .erp-route-content :where(button:not(.erp-card):not([class*="icon"]), .molsan-page-back-button) {
-  border-radius: 10px;
+  border-radius: var(--molsan-radius-control, 10px);
 }
-
 .erp-route-content :where(button, a, input, select, textarea, [role="button"]):focus-visible {
   outline: 2px solid var(--molsan-primary, #064675);
   outline-offset: 2px;
 }
 
-/* Superficies y tablas utilizan siempre los tokens corporativos. */
-.erp-route-content :where(.molsan-table-wrap, .table-responsive, .tabla-responsive) {
-  min-width: 0;
-  max-width: 100%;
-  border-color: var(--molsan-border, #D8E4EC);
+/* Tablas heredadas. MolsanDataTable mantiene su componente y ordenación propios. */
+.erp-main-content table:not(.molsan-table):not(.molsan-data-table) {
+  border-collapse: separate;
+  border-spacing: 0;
+  color: #173247;
+  font-variant-numeric: tabular-nums;
 }
-
-.erp-route-content :where(table) {
-  border-color: var(--molsan-border, #D8E4EC);
-}
-
-.erp-route-content :where(thead th) {
+.erp-main-content table:not(.molsan-table):not(.molsan-data-table) thead th {
+  color: var(--molsan-primary, #064675);
   background: var(--molsan-table-head, #EAF2F8);
+  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: normal;
+  text-transform: none;
+  vertical-align: middle;
 }
+.erp-main-content table:not(.molsan-table):not(.molsan-data-table) tbody td {
+  border-bottom: 1px solid #E8EFF4;
+  vertical-align: middle;
+}
+.erp-main-content table:not(.molsan-table):not(.molsan-data-table) tbody tr:last-child td {
+  border-bottom-color: transparent;
+}
+.erp-main-content table:not(.molsan-table):not(.molsan-data-table) tbody tr:hover {
+  background-color: var(--molsan-surface-soft, #F2F7FB);
+}
+.erp-main-content table:not(.molsan-table):not(.molsan-data-table) :is(th, td) { line-height: 1.45; }
 
-.erp-route-content :where(.erp-card, .card-sj, .dashboard-kpi) {
+/* Inputs sin clase: los controles propios de módulo conservan sus dimensiones. */
+.erp-main-content :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="hidden"]):not([class]),
+  select:not([class]), textarea:not([class])
+) {
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
+  min-height: 38px;
+  padding: 8px 10px;
+  color: #173247;
+  background: #FFFFFF;
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: var(--molsan-radius-control, 11px);
+  font: inherit;
+}
+.erp-main-content :where(textarea:not([class])) { min-height: 96px; resize: vertical; }
+.erp-main-content :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="hidden"]):focus-visible,
+  select:focus-visible, textarea:focus-visible
+) {
+  outline: 3px solid rgba(6, 70, 117, .18);
+  outline-offset: 1px;
+  border-color: var(--molsan-primary, #064675);
+}
+.erp-main-content :where(input:disabled, select:disabled, textarea:disabled) {
+  color: #718696;
+  background: #F2F7FB;
+  cursor: not-allowed;
 }
 
-/* Portales independientes: mismo lenguaje de contenido y sin márgenes heredados. */
+/* Portales independientes: mismo ancho exterior, sin márgenes heredados. */
 .erp-page.molsan-professional-shell,
 .ng-admin-notarias {
   box-sizing: border-box;
@@ -130,45 +164,34 @@
 }
 
 @media (max-width: 1024px) {
-  .erp-main-inner {
-    padding-inline: var(--molsan-content-gutter-tablet);
-  }
+  .erp-main-inner { padding-inline: var(--molsan-content-gutter-tablet); }
 }
-
 @media (max-width: 720px) {
-  .erp-main-inner {
-    padding: 16px var(--molsan-content-gutter-mobile) 24px;
-  }
-
+  .erp-main-inner { padding: 16px var(--molsan-content-gutter-mobile) 24px; }
   .erp-route-content .molsan-page-header,
   .erp-page.molsan-professional-shell > .molsan-page-header {
     align-items: flex-start;
     flex-direction: column;
     gap: 12px;
-    min-height: 0;
-    padding: 14px;
-    margin-bottom: 16px;
   }
-
   .erp-route-content .molsan-page-header__identity,
   .erp-page.molsan-professional-shell .molsan-page-header__identity {
     flex-basis: auto;
     width: 100%;
   }
-
   .erp-route-content .molsan-page-header__actions,
   .erp-page.molsan-professional-shell .molsan-page-header__actions {
     justify-content: flex-start;
     width: 100%;
     margin-left: 0;
   }
-
   .erp-route-content .molsan-page-header__actions > :where(button, a),
   .erp-page.molsan-professional-shell .molsan-page-header__actions > :where(button, a) {
     flex: 0 1 auto;
   }
 }
 
+/* Accesibilidad global: no forzar movimiento ni animaciones. */
 @media (prefers-reduced-motion: reduce) {
   .erp-route-content *,
   .erp-route-content *::before,
@@ -180,8 +203,5 @@
   }
 }
 
-/* Los botones Volver heredados se sustituyen por el único control común
-   situado en la cabecera de la subpágina. */
-.erp-route-content .molsan-page-back-legacy-hidden {
-  display: none !important;
-}
+/* Los botones Volver heredados se sustituyen por el único control del Layout. */
+.erp-route-content .molsan-page-back-legacy-hidden { display: none !important; }
