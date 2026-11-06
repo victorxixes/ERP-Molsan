@@ -94,8 +94,7 @@
   box-shadow: var(--molsan-shadow-card);
 }
 
-@media (max-width: 760px) {
-}
+
 
 @media (prefers-reduced-motion: reduce) {
   .erp-app-shell,
