@@ -1292,3 +1292,12 @@ Se ha repetido el cruce de clases CSS con sus consumidores JSX sobre el HEAD de 
 - Se evita una regresión de impresión al conservar las clases globales activadas por ApoderaGest.
 - La migración pendiente de NotarGest es estructural (sacar fecha/actualización del área de cabecera/sidebar), no un borrado indiscriminado de CSS.
 - Esta revisión es estática. No sustituye la navegación autenticada ni la prueba visual responsive en Preview.
+
+
+## 26. Corrección de alcance del hover Glass Luxe en paneles de contenido — 6 de noviembre de 2026
+
+La inspección de `MolsanCanonicalVisual2027.css` detectó que la lista global de tarjetas incluía clases de panel/contenedor de contenido (`.ag-panel`, `.cg-panel`, `.eg-panel`, `.ng-panel`, `.ng-detalle-bloque` y `.ng-admin-global-resumen`). Esas clases describen paneles de trabajo, secciones y bloques de detalle, no necesariamente tarjetas de acceso/KPI. Al incluirlas en las reglas globales se les imponía franja superior cian, elevación y hover de tarjeta; esto contradecía el comentario de la propia hoja canónica que excluye paneles de contenido y podía crear líneas/animaciones internas no deseadas.
+
+**Cambio aplicado:** se retiraron esas seis clases de las siete listas repetidas de selectores que gobiernan la superficie, hover, animación de icono y foco de las tarjetas globales. Se mantienen los selectores de tarjetas identificables (`.ag-grupo-apoderado`, `.ag-grupo-notario`, `.ag-carpeta-apoderado`, `.ng-admin-individual-panel`, etc.) y los paneles conservan sus reglas de módulo para estructura, bordes y espaciado. No se han borrado hojas CSS ni estilos funcionales específicos.
+
+**Validación estática:** las siete listas objetivo se sustituyeron de forma exacta; no se tocó ningún otro bloque. Falta ejecutar build/lint y revisar visualmente Preview en Dashboard, ficha/detalle y modales de los tres portales, con especial atención a tarjetas KPI frente a paneles de contenido.
