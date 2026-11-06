@@ -289,21 +289,6 @@ function TablaEncargos({ encargos, onFirmado }) {
 
   const grupos = useMemo(() => agruparEncargosPorApoderado(encargos), [encargos]);
 
-  useEffect(() => {
-    const clavesAbiertas = grupos.filter((grupo) => abiertos[grupo.clave]).map((grupo) => grupo.clave);
-    if (!clavesAbiertas.length) return undefined;
-    const cerrarConEscape = (event) => {
-      if (event.key !== "Escape") return;
-      setAbiertos((actual) => {
-        const siguiente = { ...actual };
-        clavesAbiertas.forEach((clave) => { siguiente[clave] = false; });
-        return siguiente;
-      });
-    };
-    window.addEventListener("keydown", cerrarConEscape);
-    return () => window.removeEventListener("keydown", cerrarConEscape);
-  }, [abiertos, grupos]);
-
   function cambiarDatoAceptacion(encargo, campo, valor) {
     const id = String(encargo.id_expediente || encargo.id);
     setDatosAceptacion((actual) => ({
