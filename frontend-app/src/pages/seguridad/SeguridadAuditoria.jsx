@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
@@ -33,18 +34,8 @@ import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
  * ============================================================
  */
 
-const Icono = ({
-  name,
-  className = "w-5 h-5",
-}) => (
-  <svg
-    className={`${className} flex-shrink-0`}
-    aria-hidden="true"
-  >
-    <use
-      href={`/icons/icons.svg#${name}`}
-    />
-  </svg>
+const Icono = ({ name, className = "w-5 h-5" }) => (
+  <MolsanIcon name={name} size={20} className={className} />
 );
 
 
