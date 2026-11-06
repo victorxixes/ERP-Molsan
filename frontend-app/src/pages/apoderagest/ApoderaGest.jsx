@@ -893,7 +893,7 @@ export default function ApoderaGest() {
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest">
-      <MolsanPageHeader mark="AG" title="ApoderaGest" description="Centro de gestión de encargos, firmas y actividad del apoderado." actions={<><div className="molsan-premium-header__date"><span aria-hidden="true" />{fechaActual}</div><button type="button" onClick={() => navigate("/modulos")} className="molsan-premium-header__secondary-action">Ir a módulos</button><button type="button" onClick={cargarDatos} disabled={cargando} className="molsan-premium-header__primary-action">{cargando ? "Actualizando…" : "Actualizar datos"}</button></>} />
+      <MolsanPageHeader mark="AG" title="ApoderaGest" description="Centro de gestión de encargos, firmas y actividad del apoderado." />
 
       {error ? (
         <div className="ag-alerta-error" role="alert">
