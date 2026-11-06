@@ -6,7 +6,6 @@ import {
 
 import { useSeguridad } from "../../hooks/useSeguridad";
 import MODULOS_ERP from "../../config/modulos";
-import "./SeguridadSubpaginasPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 
