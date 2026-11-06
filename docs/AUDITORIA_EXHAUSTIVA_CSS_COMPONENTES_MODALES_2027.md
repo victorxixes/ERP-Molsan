@@ -1475,15 +1475,15 @@ Los cambios están escritos en la rama de trabajo y comprobados mediante lectura
 
 ### Reconciliación de los 57 ficheros JavaScript
 
-El árbol documentado contiene 57 ficheros `.js`. La búsqueda de código de esta rama ha localizado 53 y se han leído los 53. Ninguno contiene JSX ni devuelve componentes visuales; por su ubicación y exportaciones se clasifican como capa de datos, hooks, estado o configuración. Quedan 4 ficheros `.js` sin localizar individualmente mediante el índice de búsqueda, por lo que no se afirma cobertura de los 57.
+El árbol documentado contiene 57 ficheros `.js`. La lectura del árbol Git recursivo ha localizado los 57 y se han leído los 57. Ninguno contiene JSX ni devuelve componentes visuales; por su ubicación y exportaciones se clasifican como capa de datos, hooks, estado o configuración. Los cuatro ficheros que no aparecían en el índice de búsqueda se localizaron directamente en el árbol Git y también se leyeron.
 
 **API (21 localizados):** `api/ctn.js`, `api/auth.js`, `api/logs.js`, `api/axios.js`, `api/config.js`, `api/agenda.js`, `api/intranet.js`, `api/maestros.js`, `api/mensajes.js`, `api/notarios.js`, `api/empleados.js`, `api/dashboard.js`, `api/auditoria.js`, `api/seguridad.js`, `api/fetchAuth.js`, `api/encargagest.js`, `api/expedientes.js`, `api/herramientas.js`, `api/monitorRealtime.js`, `api/expedienteDefectos.js`, `api/expedienteAcciones.js`.
 
-**Hooks (17 localizados):** `hooks/useCtn.js`, `hooks/useLogs.js`, `hooks/useAgenda.js`, `hooks/useAgendaWS.js`, `hooks/useIntranet.js`, `hooks/useNotarios.js`, `hooks/useDashboard.js`, `hooks/useEmpleados.js`, `hooks/useSeguridad.js`, `hooks/useAgendaData.js`, `hooks/useIntranetWS.js`, `hooks/useMensajesWS.js`, `hooks/useUtilidades.js`, `hooks/useEmpleadosWS.js`, `hooks/useHerramientas.js`, `hooks/useRealtimeGlobal.js`, `hooks/useNotificacionesWS.js`.
+**Hooks (19 localizados):** `hooks/useCtn.js`, `hooks/useLogs.js`, `hooks/useAgenda.js`, `hooks/useAgendaWS.js`, `hooks/useIntranet.js`, `hooks/useNotarios.js`, `hooks/useDashboard.js`, `hooks/useEmpleados.js`, `hooks/useSeguridad.js`, `hooks/useAgendaData.js`, `hooks/useIntranetWS.js`, `hooks/useMensajesWS.js`, `hooks/useUtilidades.js`, `hooks/useEmpleadosWS.js`, `hooks/useHerramientas.js`, `hooks/useRealtimeGlobal.js`, `hooks/useNotificacionesWS.js`, `components/ui/useAccessibleDialog.js`, `hooks/useSortableData.js`.
 
 **Stores (12 localizados):** `store/ctnStore.js`, `store/logsStore.js`, `store/authStore.js`, `store/agendaStore.js`, `store/mensajesStore.js`, `store/intranetStore.js`, `store/notariasStore.js`, `store/dashboardStore.js`, `store/empleadosStore.js`, `store/seguridadStore.js`, `store/herramientasStore.js`, `store/notificacionesStore.js`.
 
-**Utilidades/configuración/realtime (3 localizados):** `utils/permisos.js`, `config/modulos.js`, `realtime/realtimeClient.js`.
+**Utilidades/configuración/realtime (5 localizados):** `utils/permisos.js`, `config/modulos.js`, `realtime/realtimeClient.js`, `utils/formatters.js`, `utils/sortRows.js`.
 
 ### Build y CI
 
@@ -1491,7 +1491,7 @@ Se ha comprobado `frontend-app/package.json`: el comando de compilación disponi
 
 Para el commit `0cdde89adb6c1cc8a4901c5afa4f20c5a45515a3`, GitHub devuelve cero ejecuciones asociadas y cero status checks. No se ha podido ejecutar `npm run build` desde esta sesión ni se declara build correcto. La compilación sigue siendo una condición pendiente, no un resultado supuesto.
 
-**Cobertura restante:** 98 JSX continúan sin trazabilidad individual inequívoca en la sección 28; 4 JS no han podido localizarse mediante el índice; quedan pendientes consumidores de componentes compartidos, modales, estados responsive y navegación visual autenticada en Preview.
+**Cobertura restante:** 98 JSX continúan sin trazabilidad individual inequívoca en la sección 28; 0 JS pendientes de localizar; quedan pendientes consumidores de componentes compartidos, modales, estados responsive y navegación visual autenticada en Preview.
 
 
 ## 31. Tercera pasada de componentes compartidos y expedientes — 6 de noviembre de 2026
@@ -1535,3 +1535,12 @@ La lectura cruzada de `molsan-design-system.css` y los componentes detectó clas
 - `SelectSJ.jsx` → `select-sj-premium`
 
 Estas clases activan reglas compartidas de ancho mínimo, foco visible, tablas, listas de opciones, overflow táctil y reducción de movimiento donde corresponde. No se cambian sus handlers, store, autenticación ni navegación. Se ha comprobado que los siete nombres de clase están presentes en los ficheros guardados. Sigue pendiente la comprobación visual de cada estado y viewport.
+
+
+## 34. Cierre de reconciliación JavaScript — 6 de noviembre de 2026
+
+La consulta del árbol Git recursivo de la rama ha permitido localizar los cuatro ficheros que faltaban en el índice de búsqueda: `components/ui/useAccessibleDialog.js`, `hooks/useSortableData.js`, `utils/formatters.js` y `utils/sortRows.js`. Se han leído los cuatro.
+
+La cobertura JavaScript queda reconciliada: **57 de 57** ficheros leídos, clasificados como API (21), hooks (19), stores (12) y utilidades/configuración/realtime (5). Ninguno contiene JSX ni implementa una superficie visual; `useAccessibleDialog` sí gestiona foco/teclado de los modales y se conserva como comportamiento transversal de accesibilidad.
+
+La reconciliación JavaScript queda cerrada. La cobertura JSX y la validación de build/visual siguen abiertas.
