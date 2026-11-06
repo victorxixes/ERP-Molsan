@@ -1,3 +1,5 @@
+import MolsanIcon from "./MolsanIcon";
+
 export default function MolsanSortableTh({
   label,
   sortKey,
@@ -9,10 +11,7 @@ export default function MolsanSortableTh({
   const direction = active ? sortConfig.direction : null;
 
   return (
-    <th
-      className={className}
-      aria-sort={active ? (direction === "asc" ? "ascending" : "descending") : undefined}
-    >
+    <th className={className} aria-sort={active ? (direction === "asc" ? "ascending" : "descending") : undefined}>
       <button
         type="button"
         data-sortable="true"
@@ -20,7 +19,11 @@ export default function MolsanSortableTh({
         className="inline-flex min-h-7 items-center gap-1 text-left"
       >
         <span>{label}</span>
-        <span aria-hidden="true">{active ? (direction === "asc" ? "↑" : "↓") : "↕"}</span>
+        <MolsanIcon
+          name={active ? (direction === "asc" ? "arrowUp" : "arrowDown") : "arrowUpDown"}
+          size={13}
+          bare
+        />
       </button>
     </th>
   );
