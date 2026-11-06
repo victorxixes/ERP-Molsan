@@ -670,3 +670,10 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - Corregida la cascada: la regla base final anulaba las alturas responsive declaradas antes. Se restablecen 138 px hasta 760 px y 126 px hasta 480 px, con la regla estrecha aplicada después de la general.
 - Verificación estática posterior: 281 llaves de apertura y 281 de cierre; las declaraciones estructurales de KPI permanecen y no se alteran selectores de impresión, formularios ni modales.
 - Pendiente: build/CI y comprobación visual autenticada en Preview, especialmente en 760 px y 480 px.
+
+## 28. FichaExpediente — cierre de Gestión económica (6 de noviembre de 2026)
+
+- Corregido un cierre JSX prematuro que aparecía antes del bloque «Movimientos de la provisión».
+- Los movimientos, avisos y controles de gasto vuelven a quedar dentro de la condición y de la sección de la actividad «Gestión económica».
+- Se conserva el cierre original de la sección y de la condición en su ubicación final; no se modifica el cálculo del saldo ni la confirmación de pagos.
+- La compilación anterior había emitido un aviso de esbuild en esta línea. Se comprobará su desaparición en el siguiente build de Preview.
