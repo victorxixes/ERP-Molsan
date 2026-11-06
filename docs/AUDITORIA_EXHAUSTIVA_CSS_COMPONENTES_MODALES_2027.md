@@ -799,3 +799,11 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - `FichaExpediente.jsx`: cuatro diálogos, todos con `role=dialog`, `aria-modal=true` y gestión mediante el hook compartido; se mantienen las restricciones de cierre durante guardados.
 - `CtnDetallePage.jsx`: un diálogo de firmas, con ARIA y `useAccessibleDialog`.
 - Resultado estático de esta ronda: ocho diálogos adicionales con marcado y hook verificados. No se han modificado operaciones, formularios ni persistencia. La prueba manual con teclado, lector de pantalla y tamaños reales continúa pendiente.
+
+## 44. Dashboard CancelaGest — limpieza de reglas CSS inertes (6 de noviembre de 2026)
+
+- Retirada una media query móvil que contenía una regla `.dashboard-kpi` vacía y sin efecto.
+- Eliminados los bloques declarativos vacíos de la tarjeta KPI y normalizado el fallback duplicado de `--molsan-text`.
+- Se conservan los tamaños efectivos de KPI (132 px escritorio, 112 px hasta 760 px y el ajuste de la zona de firmas en móvil), la jerarquía de títulos, los colores corporativos, las tablas y el soporte de movimiento reducido.
+- No se modifica el JSX ni la lógica de métricas; el Dashboard ya utiliza `MolsanPremiumCard` y `MolsanPageHeader`.
+- Verificación estática de la hoja: 34/34 llaves y cero media queries vacías. Build de Preview pendiente para este último bloque.
