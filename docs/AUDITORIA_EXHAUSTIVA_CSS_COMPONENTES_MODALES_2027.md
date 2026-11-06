@@ -1183,3 +1183,8 @@ Commits: df2d3fd, 57328dd, 1337ba9, 237ebe0, 73f9e36, b7c9c4c, 8f2153e, da17b82,
 - Se conservan overlays/backdrops oscuros, tamaños, scroll, columnas, estados de carga y acciones funcionales.
 
 Commits: 2c6826d, d5ffc26, fcc42a3, 1c0ffa7, 07f4ba3. Pendiente comprobación en navegador de modales de alta/edición/perfil de EncargaGest y los modales de pagos/resumen de NotarGest.
+
+
+### 26.1. Cabeceras y pies de diálogos accesibles
+
+La última capa canónica unifica también los encabezados y pies de los diálogos con `role=dialog` (excluyendo la capa fixed/inset que actúa como backdrop y los diálogos exentos). Se neutralizan fondos de banda, líneas inferiores/superiores y blur; los títulos usan azul corporativo y la descripción texto secundario. Commit: 108f140.
