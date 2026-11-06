@@ -710,7 +710,7 @@ export default function TiposConceptoGastos() {
         <header className="molsan-page-header mb-6">
 
           <div className="min-w-0 flex-1">
-            <div className="molsan-page-header__identity molsan-page-header__identity">
+            <div className="molsan-page-header__identity">
               <div className="molsan-page-header__mark">
 
                 <MolsanIcon name="receipt" size={22} tone="ocean" />
