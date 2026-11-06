@@ -802,15 +802,6 @@ export default function ApoderaGest() {
     if (tieneAccesoApoderagest) cargarDatos();
   }, [cargarDatos, tieneAccesoApoderagest]);
 
-  useEffect(() => {
-    if (!modalResumen) return undefined;
-    const cerrarConEscape = (event) => {
-      if (event.key === "Escape") setModalResumen(null);
-    };
-    window.addEventListener("keydown", cerrarConEscape);
-    return () => window.removeEventListener("keydown", cerrarConEscape);
-  }, [modalResumen]);
-
   const esEncargoFirmado = (encargo) => Boolean(encargo?.fecha_firma && String(encargo?.protocolo || "").trim());
   const normalizarModalidad = (valor) => String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
   const encargosDelResumen = useMemo(() => {
