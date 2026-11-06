@@ -1365,7 +1365,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 }
 .apoderagest .ag-resumen-modal-cerrar:hover{background:var(--molsan-primary-soft, #EAF2F8)}
 .apoderagest .ag-resumen-modal-cuerpo{min-height:120px;overflow:auto;padding:18px 22px 22px}
-.apoderagest .ag-resumen-tabla-wrap{width:100%;overflow:auto;border:1px solid #e1e8f1;border-radius:13px;background:#fff}
+.apoderagest .ag-resumen-tabla-wrap{width:100%;overflow:auto;border:1px solid var(--molsan-border,#D8E4EC);border-radius:13px;background:#fff}
 .apoderagest .ag-resumen-tabla{width:100%;min-width:1120px;border-collapse:separate;border-spacing:0;font-size:12px}
 .apoderagest .ag-resumen-tabla th{position:sticky;top:0;z-index:1;padding:12px 13px;background:#f1f5fa;color:#61718a;text-align:left;font-size:10px;font-weight:850;white-space:nowrap}
 .apoderagest .ag-resumen-tabla td{padding:12px 13px;border-top:1px solid #edf1f6;color:#34445c;vertical-align:middle}
@@ -1581,8 +1581,8 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   border-color:var(--molsan-border-strong,#B8CBD9);
 }
 .apoderagest .ag-print-tools .ag-print-action-secundario{
-  color:var(--molsan-text-secondary,#617789);
-  background:var(--molsan-surface-soft,#F2F7FB);
+  color:var(--molsan-primary,#064675);
+  background:#EAF2F8;
 }
 .apoderagest .ag-notario-grupo-icono{
   display:grid;flex:0 0 40px;width:40px;height:40px;place-items:center;
@@ -1685,9 +1685,9 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   line-height:1.45;
 }
 .apoderagest .ag-kpi-ver-expedientes{
-  display:flex;
+  display:inline-flex;
   align-items:center;
-  gap:6px;
+  gap:5px;
   margin-top:auto;
   padding-top:12px;
   color:var(--molsan-primary,#064675);
