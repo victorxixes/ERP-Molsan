@@ -623,3 +623,11 @@
   .molsan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 }
 
+
+/* MOLSAN ERP · shell común de diálogos */
+.molsan-modal-overlay{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;overflow-y:auto;overscroll-behavior:contain;padding:24px;background:rgba(16,35,52,.48);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.molsan-modal{display:flex;flex-direction:column;width:min(100%,900px);min-width:0;max-height:min(88vh,calc(100dvh - 32px));overflow:hidden;border:1px solid #d8e4ec;border-radius:18px;background:#fff;box-shadow:0 22px 60px rgba(6,38,63,.2)}
+.molsan-modal>header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px;border-bottom:1px solid #e6eef3;background:#f8fbfd}
+.molsan-modal>header h2{margin:0;color:#064675;font-size:18px;font-weight:800}
+.molsan-modal>header p{margin:5px 0 0;color:#617789;font-size:12px;line-height:1.5}
+@media(max-width:640px){.molsan-modal-overlay{align-items:flex-start;padding:max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom))}.molsan-modal{width:100%;max-height:calc(100dvh - 16px);border-radius:14px}.molsan-modal>header{padding:16px}}
