@@ -757,9 +757,11 @@ export default function SeguridadPermisos() {
         </div>
 
 
-        <Chip tone="primary">
-          {porcentajeAsignado}% cobertura
-        </Chip>
+        <div className="molsan-page-header__actions">
+          <Chip tone="primary">
+            {porcentajeAsignado}% cobertura
+          </Chip>
+        </div>
 
       </div>
 
