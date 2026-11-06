@@ -1210,3 +1210,11 @@ MolsanStatCard deja de usar fondos degradados, borde fino y microanimaciones de 
 Se detectó que `molsan-design-system.css` contenía una segunda copia completa de la hoja concatenada al final (casi 1.000 líneas adicionales), con estilos anteriores de tarjetas KPI y microanimaciones de icono que ya se habían sustituido en la primera copia. Se conservó la primera versión actualizada, se eliminó la copia antigua y se cerró explícitamente la regla `prefers-reduced-motion` de la sección KPI. La hoja pasa de 2.017 a 1.020 líneas, conserva un único encabezado de Design System y mantiene balance de llaves CSS.
 
 Commits: 4da325c y 790e76f. Es una eliminación real de duplicado, no un override adicional.
+
+
+### 28.1. Validación automatizada del duplicado eliminado
+
+Para el commit de código 790e76f:
+- Workflow Frontend dependency security audit #481: success.
+- Workflow Validar Fichaje Molsan #3626: build del frontend success y sintaxis del backend de fichajes success.
+- Workflow MOLSAN frontend premium build #1181: cancelado por concurrencia durante la fase de build; no se interpreta como fallo. La compilación del frontend sí quedó confirmada en el job de build del workflow Validar Fichaje.
