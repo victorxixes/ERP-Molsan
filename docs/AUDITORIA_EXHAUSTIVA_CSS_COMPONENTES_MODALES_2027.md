@@ -749,4 +749,4 @@ La comprobación estática no sustituye el build ni la inspección visual autent
 - Se mantienen los mismos datos, formatos y textos; no se añaden acciones ni cambios de navegación. Cada indicador utiliza un icono Molsan y un tono semántico.
 - `Cancelagest.css` conserva la cuadrícula `.cg-kpis` y sus breakpoints, pero elimina tipografía, padding y superficies locales de la tarjeta que ahora pertenecen al componente compartido.
 - Retirado `.cg-kpi` de las reglas canónicas de tarjeta, hover, iconografía y movimiento reducido; `.cg-module-card` y los paneles/gráficos propios permanecen intactos.
-- Verificación estática: cero referencias a `.cg-kpi` en JSX/CSS de CancelaGest y 40/40 llaves equilibradas en CanonicalVisual. Build de Preview pendiente para este commit.
+- Verificación estática: cero referencias a `.cg-kpi` en JSX/CSS de CancelaGest y 40/40 llaves equilibradas en CanonicalVisual. Render Preview construyó correctamente los 299 módulos y el despliegue del commit `e72f284` está `LIVE`; permanece el aviso no bloqueante de importación doble de Notificaciones.
