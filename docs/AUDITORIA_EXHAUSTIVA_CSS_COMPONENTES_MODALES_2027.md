@@ -426,3 +426,46 @@ El commit de código `cdd387b` (consolidación de la capa canónica de tarjetas 
 Render confirma el deploy `dep-dbmvkg6gekts73ej1ktg` en estado `live`, con el commit `cdd387b`. El HEAD del PR es `7a7c71a`, un commit posterior únicamente documental; por tanto, el código desplegado corresponde al último commit funcional de esta ronda. No se ha desplegado Producción ni la API.
 
 La URL de Preview responde como servicio desplegado según Render, pero la lectura web automatizada no puede acceder a la aplicación para una inspección visual autenticada. La validación visual de páginas, subpáginas, estados y modales sigue siendo manual y no se declara completada.
+
+## 20. Barrido de cabeceras legacy y diálogos embebidos — 6 de noviembre de 2026
+
+### Cabeceras de Catálogos
+
+Se ha buscado `catalogos-subpage-header` en los **98 archivos de página** y los **37 componentes JSX/TSX** inventariados. No hay consumidores. Se retiró el bloque legacy completo de `MolsanCardsPremium2027.css` (83 líneas), conservando las reglas activas de `catalogos-premium-page .molsan-page-header` y su responsive.
+
+Commit: `1c32921`.
+
+### Diálogos y foco
+
+La pasada de los 98 archivos de página y 37 componentes detectó overlays con apertura/cierre propios que no tenían ciclo de foco ni Escape. Se han incorporado refs y `useAccessibleDialog` en 31 instancias de diálogo repartidas entre:
+- FichaExpediente (modal base, orden de pago, PPAD y gasto).
+- CTN, Provisiones e Informes.
+- Selector de módulos, Control de Apoderados, Catálogo ABSIS (dos), Tipos de expediente y Mensajería (dos).
+- Empleados, Acciones de expediente (dos), Control de Fichajes, Tipos de carga hipotecaria, Tipos de concepto de gastos y Auditoría de Seguridad.
+- Entidades bancarias (dos), Municipios (dos), Registros de la Propiedad (dos) y Oficinas Liquidadoras (dos).
+- ExpedientesListado (filtros y ayuda de plazos, migración previa de la rama).
+
+Los componentes de diálogo compartidos de Agenda, CTN, Empleados y Expedientes que ya utilizaban el hook se han mantenido. Se han añadido nombres accesibles a los diálogos que no tenían `aria-label` o `aria-labelledby`. No se han modificado las operaciones de negocio ni las llamadas de API.
+
+### Consolidación de capas visuales
+
+- `MolsanIcon`: la base, hover, sombra SVG y variante `prefers-reduced-motion` se concentran en `MolsanPremium2027.css`; se elimina la definición duplicada de `molsan-design-system.css`.
+- `MolsanPremiumCard`: se retiran sus overrides de `MolsanCanonicalVisual2027.css`; el componente vuelve a gobernarse por su bloque único en Design System (franja superior de 4 px, icono, título y hover).
+- `EncargaGest.css`: se consolidó la estructura base del modal y se mantuvieron expresamente los breakpoints de 1100 y 650 px, incluido el padding del overlay y el alto disponible en tablet.
+- `NotarGest.css`: se consolidaron las reglas KPI y la superficie base de modales, conservando la variante oscura específica del portal profesional.
+- `MolsanCardsPremium2027.css`: se consolidaron las reglas de cabecera de Catálogos y se retiró el bloque legacy sin consumidores.
+
+### Build y Preview
+
+- Rama: `fix/molsan-css-selector-audit-round1`.
+- Head comprobado: `cdd387be`.
+- `MOLSAN frontend premium build`: success.
+- `Frontend dependency security audit`: success.
+- `Validar Fichaje Molsan`: success.
+- Render Preview `molsan-premium-2027-candidate-preview`: deploy live en el mismo commit `cdd387be`; auto-deploy permanece desactivado.
+
+Producción, API y base de datos principal no forman parte de estos cambios. El workflow separado `supabase-schema-audit` sigue apareciendo como fallo; se ha limitado su paso de commit de migración a la rama `release/molsan-premium-2027-candidate`, por lo que esta rama de auditoría no puede escribir una migración Supabase.
+
+### Validación todavía pendiente
+
+El build y el deploy no sustituyen la comprobación visual y funcional. Falta probar en navegador: foco inicial, Tab/Shift+Tab, Escape, restauración del foco, backdrop, scroll, responsive y estados de carga/error/guardado de cada modal; además de revisar permisos 401/403/200 y completar la matriz de todas las subpáginas. No se declara finalizada la auditoría completa.
