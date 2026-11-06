@@ -363,7 +363,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="px-5 py-10 text-center">
-                <div className="mb-2 text-3xl">📊</div>
+                <div className="mb-2 flex justify-center text-[#064675]"><MolsanIcon name="chart" size={28} /></div>
                 <div className="text-sm font-medium" style={{ color: "var(--erp-text)" }}>
                   Todavía no hay datos de firmas por tipo de operación.
                 </div>
