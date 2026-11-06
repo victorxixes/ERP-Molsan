@@ -5,6 +5,7 @@
 
 import { useDashboard } from "../../hooks/useDashboard";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import "../../css/DashboardCancelagest.css";
 
 // ============================================================
@@ -16,49 +17,49 @@ const ACTIVIDADES = [
     key: "documentacion_previa",
     nombre: "Documentación previa",
     descripcion: "Preparación y revisión inicial del expediente",
-    icono: "📄",
+    icono: "file",
   },
   {
     key: "sede_notarial",
     nombre: "Sede notarial",
     descripcion: "Expedientes enviados al notario pendientes de firma",
-    icono: "🏛️",
+    icono: "building",
   },
   {
     key: "sede_notarial_con_protocolo",
     nombre: "Sede notarial con protocolo",
     descripcion: "Expedientes firmados con protocolo asignado",
-    icono: "✍️",
+    icono: "signature",
   },
   {
     key: "gestion_economica",
     nombre: "Gestión económica",
     descripcion: "Revisión y gestión de los datos económicos del expediente",
-    icono: "💼",
+    icono: "clipboard",
   },
   {
     key: "liquidacion_impuestos",
     nombre: "Liquidación de impuestos",
     descripcion: "Presentación y liquidación tributaria",
-    icono: "💶",
+    icono: "euro",
   },
   {
     key: "tramitacion_inscripcion",
     nombre: "Tramitación inscripción",
     descripcion: "Presentación y seguimiento registral",
-    icono: "📚",
+    icono: "database",
   },
   {
     key: "defectos_registrales",
     nombre: "Defectos registrales",
     descripcion: "Gestión de defectos y subsanaciones",
-    icono: "⚠️",
+    icono: "alert",
   },
   {
     key: "facturacion_cierre",
     nombre: "Facturación y cierre",
     descripcion: "Facturación, cierre y archivo del expediente",
-    icono: "✅",
+    icono: "check",
   },
 ];
 
@@ -283,10 +284,10 @@ export default function Dashboard() {
 
       {/* KPIs PRINCIPALES */}
       <div className="dashboard-kpis mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard icono="📁" titulo="Total expedientes" valor={numero(totalExpedientes)} descripcion="Expedientes registrados" />
-        <KpiCard icono="🔄" titulo="Actividades" valor="7" descripcion="Etapas del circuito" />
-        <KpiCard icono="📊" titulo="En circuito" valor={numero(enCircuito)} descripcion="Expedientes por actividad" />
-        <KpiCard icono="⏱️" titulo="Media hasta firma" valor={mediaGeneral == null ? "—" : `${decimal(mediaGeneral, 1)} días`} descripcion="Desde envío hasta firma" />
+        <KpiCard icono="file" titulo="Total expedientes" valor={numero(totalExpedientes)} descripcion="Expedientes registrados" />
+        <KpiCard icono="refresh" titulo="Actividades" valor="7" descripcion="Etapas del circuito" />
+        <KpiCard icono="chart" titulo="En circuito" valor={numero(enCircuito)} descripcion="Expedientes por actividad" />
+        <KpiCard icono="clock" titulo="Media hasta firma" valor={mediaGeneral == null ? "—" : `${decimal(mediaGeneral, 1)} días`} descripcion="Desde envío hasta firma" />
       </div>
 
       {/* ACTIVIDADES + TIEMPO MEDIO HASTA FIRMA */}
@@ -390,9 +391,9 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="dashboard-firmas-grid grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <KpiCard icono="✍️" titulo="Total firmas" valor={numero(totalFirmas)} descripcion="Firmas realizadas" />
+          <KpiCard icono="signature" titulo="Total firmas" valor={numero(totalFirmas)} descripcion="Firmas realizadas" />
           <FirmaCard icono="🏛️" titulo="Presencial" total={firmasPresenciales} porcentajeValor={porcentajePresencial} />
-          <FirmaCard icono="💻" titulo="Videoconferencia" total={firmasVideoconferencia} porcentajeValor={porcentajeVideoconferencia} />
+          <FirmaCard icono="monitor" titulo="Videoconferencia" total={firmasVideoconferencia} porcentajeValor={porcentajeVideoconferencia} />
         </div>
       </section>
 
