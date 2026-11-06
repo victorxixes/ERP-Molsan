@@ -216,24 +216,13 @@
   transition: transform .24s cubic-bezier(.2,.75,.25,1),
     box-shadow .24s ease,border-color .24s ease,background .24s ease,color .24s ease !important;
 }
-.molsan-premium-card:hover {
-  transform: translateY(-4px) !important;
-  border-color: #9BCBDD !important;
-  border-top-color: #064675 !important;
-  background: linear-gradient(145deg,#EAF7FB 0%,#F5FAFD 58%,#EAF2F8 100%) !important;
-  box-shadow: 0 16px 34px rgba(6,70,117,.16) !important;
-}
+
 .molsan-premium-card:hover .molsan-premium-card__title,
 .molsan-premium-card:hover .molsan-premium-card__description {
   transition: color .24s ease;
 }
 .molsan-premium-card:hover .molsan-premium-card__title { color:#043B60 !important; }
-.molsan-premium-card:hover .molsan-premium-card__icon {
-  transform: translateY(-2px) scale(1.045);
-  color:#043B60;
-  background:#FFFFFF;
-  border-color:#B9D7E6;
-}
+
 
 /* No convertir paneles genéricos con utilidades Tailwind en tarjetas.
    Las tarjetas deben estar identificadas por su componente/clase semántica. */
