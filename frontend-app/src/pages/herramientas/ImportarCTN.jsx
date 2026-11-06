@@ -27,49 +27,15 @@ export default function ImportarCTN() {
           CABECERA
       ===================================================== */}
 
-      <header
-        className=" molsan-page-header "
-      >
-
-        <div
-          className="
-            absolute inset-x-0 top-0 h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/60
-            to-transparent
-          "
-        />
-
-        <div className="flex items-center gap-4">
-
-          <div
-            className="
-              flex h-12 w-12
-              items-center justify-center
-              rounded-2xl
-              bg-blue-50
-              border border-blue-100
-              text-2xl
-            "
-          >
-            <MolsanIcon name="download" size={20} />
+      <header className="molsan-page-header">
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="download" size={22} tone="ocean" /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+            <h1 className="molsan-page-header__title">Importar CTN</h1>
+            <p className="molsan-page-header__description">Importa información desde un fichero Excel.</p>
           </div>
-
-          <div>
-
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
-              Importar CTN
-            </h1>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Importa información desde un fichero Excel.
-            </p>
-
-          </div>
-
         </div>
-
       </header>
 
 
