@@ -71,17 +71,16 @@ export default function ReglasActividadesExpediente() {
   return (
     <main className="molsan-page-stack utilidades-premium-page min-h-full animate-fadeIn">
       <header className="molsan-page-header">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="relative flex flex-wrap items-start justify-between gap-4">
-          <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface)] text-[var(--molsan-primary)]"><MolsanIcon name="settings" size={26} /></div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Configuración del expediente</p>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Reglas de actividades expediente</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Define los documentos, campos y validaciones de cada fase, y deja identificadas las integraciones y reglas que requieren revisión técnica.</p>
-            </div>
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark" aria-hidden="true"><MolsanIcon name="settings" size={22} tone="ocean" /></div>
+          <div className="min-w-0">
+            <p className="molsan-page-header__eyebrow">Configuración del expediente</p>
+            <h1 className="molsan-page-header__title">Reglas de actividades expediente</h1>
+            <p className="molsan-page-header__description">Define los documentos, campos y validaciones de cada fase, y deja identificadas las integraciones y reglas que requieren revisión técnica.</p>
           </div>
-          <Link to="/herramientas/utilidades" className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>
+        </div>
+        <div className="molsan-page-header__actions">
+          <Link to="/herramientas/utilidades" className="molsan-btn molsan-btn--secondary">← Volver a Utilidades</Link>
         </div>
       </header>
 
