@@ -469,3 +469,19 @@ Producción, API y base de datos principal no forman parte de estos cambios. El 
 ### Validación todavía pendiente
 
 El build y el deploy no sustituyen la comprobación visual y funcional. Falta probar en navegador: foco inicial, Tab/Shift+Tab, Escape, restauración del foco, backdrop, scroll, responsive y estados de carga/error/guardado de cada modal; además de revisar permisos 401/403/200 y completar la matriz de todas las subpáginas. No se declara finalizada la auditoría completa.
+
+
+## 22. Corrección funcional del diálogo de grupo en ApoderaGest — 6 de noviembre de 2026
+
+La revisión conjunta de JSX, estado y modal encontró un desacoplamiento real: `abierto` se calculaba desde `grupoEncargosAbierto`, pero el botón escribía en `abiertos[grupo.clave]`. Por ello el estado que controlaba el render del portal no cambiaba y el diálogo de grupo no podía abrirse correctamente.
+
+Corrección aplicada en `ApoderaGest.jsx`:
+- El botón del grupo ahora establece `grupoEncargosAbierto` con la clave seleccionada o `null` al alternar.
+- El cierre por backdrop y el botón Cerrar usan el mismo estado.
+- `useAccessibleDialog` queda como propietario único de Escape, trampa de foco y restauración del foco.
+- Se eliminan dos listeners manuales de Escape que duplicaban o intentaban limpiar claves de grupo que ya no controlan el diálogo.
+- `abiertos` se mantiene separado para las filas de detalle expandidas dentro del diálogo.
+
+Commits: `986b079`, `3559730` y `4dcd32b`.
+
+**Validación pendiente:** build del HEAD actual y prueba real de abrir/cerrar grupo, backdrop, Escape, ciclo Tab/Shift+Tab, restauración del foco y apertura de resumen. El commit desplegado anteriormente en Preview (`cdd387b`) todavía no incluye esta corrección; requiere nuevo despliegue de Preview.
