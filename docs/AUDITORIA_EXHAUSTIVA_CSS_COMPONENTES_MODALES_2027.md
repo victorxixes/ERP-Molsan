@@ -643,6 +643,7 @@ En `MolsanCardsPremium2027.css` se ha reducido la responsabilidad local de la ca
 
 La referencia visual de tarjetas queda en el componente `MolsanPremiumCard` y su definición estructural en `molsan-design-system.css`: una sola franja superior, icono corporativo integrado, título y descripción dentro de la tarjeta, contenido separado y hover cromático sutil. No se ha añadido otra capa global ni se han inferido tarjetas a partir de utilidades Tailwind.
 
-- Commit: `7b822fc`.
+- Commit: `7b822fc` (cabecera) y `ea2d59a` (tarjetas).
+- Se retiraron también dos overrides locales de `.erp-card`: el radio de 20 px repetía exactamente `--molsan-canon-card-radius: 20px`, y el hover duplicaba un `transform` ya impuesto por la capa canónica con prioridad. Catálogos hereda ahora ambas propiedades del mismo sistema que el resto del ERP.
 - Alcance: CSS de presentación; sin cambios JSX, datos, permisos, API, Supabase ni producción.
 - Pendiente: comprobar Catálogos en Preview en escritorio/tablet/móvil y validar visualmente que las acciones no se desbordan; la compilación y la revisión de cascada de esta modificación aún no se han ejecutado.
