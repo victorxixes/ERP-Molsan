@@ -3,7 +3,7 @@
 **Fecha:** 6 de noviembre de 2026  
 **Rama auditada:** `fix/molsan-css-selector-audit-round1`  
 **Último commit funcional desplegado:** `6b98941dd2dc9df924c6e1d93b8d2c59f3ed11cd`  
-**Último commit de documentación de auditoría:** `c50114f457459750acb66b411bf746965420cd52`  
+**Último commit de documentación de auditoría:** `2550a23dfc6d3425de3342cfbf7a1b22890326c3`  
 **Último commit funcional desplegado y compilado por Render:** `6b98941dd2dc9df924c6e1d93b8d2c59f3ed11cd` (deploy `dep-dbn0sj5g1s2s73c4m650`)  
 **PR:** [#409](https://github.com/victorxixes/ERP-Molsan/pull/409)  
 **Alcance de seguridad:** solo frontend y documentación en la rama de Preview. No se han modificado producción, API, base de datos ni datos de expedientes.
