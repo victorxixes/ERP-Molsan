@@ -157,7 +157,7 @@ const GRUPOS = [
 
 export default function Catalogos() {
   return (
-    <main className="catalogos-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8 animate-fadeIn">
+    <main className="catalogos-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8 ">
       <MolsanPageHeader
         mark="CAT"
         title="Catálogos"
