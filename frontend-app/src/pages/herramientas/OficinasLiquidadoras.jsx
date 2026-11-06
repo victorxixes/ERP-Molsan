@@ -2,10 +2,12 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 
 // ============================================================
@@ -301,6 +303,11 @@ export default function OficinasLiquidadoras() {
     importando,
     setImportando,
   ] = useState(false);
+
+  const oficinaDialogRef = useRef(null);
+  const importarOficinasDialogRef = useRef(null);
+  useAccessibleDialog({ open: mostrarModal, onClose: cerrarModal, dialogRef: oficinaDialogRef });
+  useAccessibleDialog({ open: mostrarImportar, onClose: cerrarImportacion, dialogRef: importarOficinasDialogRef });
 
 
   const [
@@ -2445,6 +2452,11 @@ export default function OficinasLiquidadoras() {
         >
 
           <div
+            ref={oficinaDialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Formulario de oficina liquidadora"
             className="
               w-full
               max-w-4xl
@@ -2812,6 +2824,11 @@ export default function OficinasLiquidadoras() {
         >
 
           <div
+            ref={importarOficinasDialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Importar oficinas liquidadoras"
             className="
               w-full
               max-w-xl
