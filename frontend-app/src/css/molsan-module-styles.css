@@ -21,6 +21,8 @@
 @import "./ModalesOperativosPremium.css";
 
 /* Módulos */
+@import "./Fusiones.css";
+@import "./ImportacionesDatos.css";
 @import "./ApoderaGest.css";
 @import "./Cancelagest.css";
 @import "./CancelagestUnified.css";
