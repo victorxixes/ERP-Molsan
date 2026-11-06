@@ -157,7 +157,7 @@ const GRUPOS = [
 export default function Catalogos() {
   return (
     <main className="molsan-page-stack catalogos-premium-page min-h-full ">
-      <header className="molsan-page-header">
+      <header className="molsan-page-header molsan-page-header--dashboard-width">
         <div className="molsan-page-header__identity">
           <div className="molsan-page-header__mark"><MolsanIcon name="book" size={22} tone="ocean" /></div>
           <div className="min-w-0">

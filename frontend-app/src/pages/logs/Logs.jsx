@@ -222,7 +222,7 @@ export default function Logs() {
       ===================================================== */}
 
       <section
-        className="molsan-page-header"
+        className="molsan-page-header molsan-page-header--dashboard-width"
       >
 
         <div
