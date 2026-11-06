@@ -3609,17 +3609,19 @@ export default function Informes() {
   return (
     <div className="erp-page w-full molsan-page molsan-page-stack informes-premium-page herramientas-subpagina-premium">
       <header className="molsan-page-header">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="molsan-page-header__identity flex items-center gap-3">
-            <div className="molsan-page-header__mark"><MolsanIcon name="chart" size={22} tone="ocean" /></div>
-            <div>
-              <div className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-              <h1 className="molsan-page-header__title">{apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}</h1>
-              <p className="molsan-page-header__description">{apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}</p>
-              {claveApartado && <button type="button" onClick={() => navigate("/informes")} className="molsan-btn molsan-btn--secondary mt-3">← Volver a Informes</button>}
-            </div>
+        <div className="molsan-page-header__identity">
+          <div className="molsan-page-header__mark"><MolsanIcon name="chart" size={22} tone="ocean" /></div>
+          <div className="min-w-0">
+            <div className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+            <h1 className="molsan-page-header__title">{apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}</h1>
+            <p className="molsan-page-header__description">{apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}</p>
           </div>
         </div>
+        {claveApartado && (
+          <div className="molsan-page-header__actions">
+            <button type="button" onClick={() => navigate("/informes")} className="molsan-btn molsan-btn--secondary">← Volver a Informes</button>
+          </div>
+        )}
       </header>
 
       {!claveApartado ? (
