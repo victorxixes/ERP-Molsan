@@ -69,7 +69,7 @@ export default function Fusiones() {
     ["Facturadas", contar("Facturadas"), "Con factura o pre-factura indicada", "violet", "Facturadas"]
   ];
 
-  return <main className="erp-page min-h-full space-y-6 p-4 text-[var(--erp-text)] sm:p-6 lg:p-8">
+  return <main className="erp-page fusiones-page min-h-full space-y-6 p-4 text-[var(--erp-text)] sm:p-6 lg:p-8">
     <MolsanPageHeader
       mark="FUS"
       title="Gestión de fusiones"
