@@ -4,7 +4,6 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
-import "./SeguridadSubpaginasPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 
