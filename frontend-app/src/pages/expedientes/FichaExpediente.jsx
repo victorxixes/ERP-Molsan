@@ -5511,7 +5511,7 @@ const cuantiaFincasParaEnvio =
           ACTIVIDADES DEL EXPEDIENTE
       ====================================================== */}
 
-      <section id="ficha-actividades" className="mb-4 w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+      <section id="ficha-actividades" className="erp-card mb-4 w-full min-w-0 p-3 sm:p-4">
         <div
           className="
             flex min-w-0 flex-col gap-3
