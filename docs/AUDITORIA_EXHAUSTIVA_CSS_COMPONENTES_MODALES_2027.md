@@ -864,3 +864,14 @@ La validación visual autenticada y las pruebas manuales en desktop/tablet/móvi
 ### Estado de revisión
 
 La ruta → componente está inventariada. La asociación componente → hoja CSS se establece a través del agregador central y de las clases consumidas, no mediante imports locales en los JSX revisados. La inspección de clases, subpáginas y modales continúa siendo una tarea separada; no se marca como completada por inferencia.
+
+
+## 50. Reconciliación de tres hallazgos de colisión CSS — 6 de noviembre de 2026
+
+Al volver a abrir los bloques completos de las hojas, se ha detectado que la heurística de la sección 11 atribuyó incorrectamente algunos solapamientos entre capas. Se corrige aquí el registro para que no se utilice como base de una eliminación:
+
+- **`.mol-sidebar-premium`:** `molsan-design-system.css` define aislamiento, posicionamiento, z-index y estructura de navegación. `MolsanRedesign2027.css` define borde inferior, sombra, tipografía y estados activos. No se ha confirmado duplicación de `position` ni `z-index` entre ambas.
+- **`.erp-app-shell`:** `MolsanRedesign2027.css` define la altura mínima del shell; `MolsanPremium2027.css` añade fondo y color. No se confirma la duplicación de `background` descrita en la pasada heurística.
+- **`.molsan-icon-3d`:** el bloque base localizado está en `MolsanPremium2027.css`; no se ha localizado un bloque base homónimo en `molsan-design-system.css`. La atribución anterior de una base duplicada entre ambas hojas no queda confirmada.
+
+La conclusión correcta es que estas capas tienen responsabilidades complementarias y selectores ancestro amplios, pero los tres ejemplos anteriores **no justifican por sí solos borrar declaraciones**. Se mantiene la decisión de no reordenar ni retirar capas sin evidencia de declaraciones computadas y validación en Preview.
