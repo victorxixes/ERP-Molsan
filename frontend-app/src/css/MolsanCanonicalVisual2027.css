@@ -279,3 +279,18 @@
   content: none !important;
   display: none !important;
 }
+
+
+/* Títulos de cabecera: siempre azul corporativo, nunca blanco. */
+:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(h1,h2,.molsan-page-header__title,.erp-page-title,[class*="title"]) {
+  color: #064675 !important;
+  -webkit-text-fill-color: #064675 !important;
+}
+:where(.erp-route-content,.erp-page.molsan-professional-shell,.ng-admin-notarias)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(h1,h2,.molsan-page-header__title,.erp-page-title,[class*="title"]) :where(span,strong,em) {
+  color: #064675 !important;
+  -webkit-text-fill-color: #064675 !important;
+}
