@@ -856,13 +856,6 @@ export default function ApoderaGest() {
   }, [encargos, busquedaEncargos]);
 
 
-  const fechaActual = new Intl.DateTimeFormat("es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
-
   if (!tieneAccesoApoderagest) {
     return (
       <div className="min-h-screen bg-[var(--erp-bg)] px-4 py-10 text-[var(--erp-text)]">
@@ -916,10 +909,6 @@ export default function ApoderaGest() {
           </div>
         </div>
         <div className="ag-hero-acciones molsan-page-header__actions">
-          <div className="ag-fecha-actual">
-            <span className="ag-punto-vivo" />
-            <span>{fechaActual}</span>
-          </div>
           <button
             type="button"
             onClick={() => navigate("/modulos")}
