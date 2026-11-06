@@ -707,10 +707,10 @@ export default function TiposConceptoGastos() {
             CABECERA
         ================================================== */}
 
-        <header className="molsan-page-header catalogos-subpage-header mb-6">
+        <header className="molsan-page-header mb-6">
 
-          <div className="catalogos-subpage-header__identity-wrap">
-            <div className="molsan-page-header__identity catalogos-subpage-header__identity">
+          <div className="min-w-0 flex-1">
+            <div className="molsan-page-header__identity molsan-page-header__identity">
               <div className="molsan-page-header__mark">
 
                 <MolsanIcon name="receipt" size={22} tone="ocean" />
