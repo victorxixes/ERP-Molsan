@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { Link, useParams } from "react-router-dom";
@@ -13,6 +13,7 @@ import TraspasoSaldoPanel from "../../components/expedientes/TraspasoSaldoPanel"
 import { useAuthStore } from "../../store/authStore";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
 
@@ -1168,6 +1169,9 @@ function Modal({
   footer,
   ancho = "max-w-3xl",
 }) {
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open: Boolean(open), onClose, dialogRef });
+
   if (!open) {
     return null;
   }
@@ -1195,6 +1199,11 @@ function Modal({
       }}
     >
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={titulo || "Diálogo del expediente"}
+        tabIndex={-1}
         className={`
           relative
           flex
