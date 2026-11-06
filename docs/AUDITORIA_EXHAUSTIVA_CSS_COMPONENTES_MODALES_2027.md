@@ -611,3 +611,27 @@ Para el commit funcional `7e7a9db` (limpieza de EncargaGest/NotarGest y retirada
 El workflow `.github/workflows/supabase-schema-audit.yml` registró un fallo en este push, aunque no se ha cambiado ningún fichero de Supabase, esquema, API ni datos en esta pasada. No se atribuye a la limpieza CSS ni se presenta como validación satisfactoria; queda fuera de alcance y requiere diagnóstico separado si persiste.
 
 La validación automatizada no sustituye la comprobación visual autenticada de Catálogos, EncargaGest y NotarGest en Preview (incluidos submódulos, fichas, estados de modal y breakpoints).
+
+## 24. Segunda depuración de selectores sin consumidores — 6 de noviembre de 2026
+
+Se ha contrastado el uso de las siguientes clases en los 98 archivos de página y 37 componentes JSX/TSX. No hay referencias en los consumidores activos:
+
+- `.ag-card`, `.eg-card`, `.eg-directorio-card`
+- `.expediente-card`, `.dashboard-card`
+- `.ng-contador`, `.ng-tarea`, `.ng-acceso`, `.ng-contadores`
+
+Se han retirado de las listas de superficie de `MolsanCanonicalVisual2027.css` y `MolsanRedesign2027.css`. Se mantienen las clases activas `.ag-kpi`, `.eg-kpi`, `.ng-admin-kpi-button`, `.ng-admin-notaria-card`, `.ctn-modal-resumen-firmas`, `.ctn-detalle-stat`, `.stat-card`, `.kpi-card`, `.agenda-upcoming-card`, `.ctn-portal-card`, `.ctn-portal-field-card` y `.seguridad-acceso`, contrastadas con sus consumidores.
+
+La limpieza anterior dejó una coma doble en las listas de Canonical; se detectó antes de cerrar y se corrigió. Se ha repetido una comprobación estática de balance de llaves, comas dobles y comas finales en las cinco hojas modificadas principales (`MolsanCanonicalVisual2027.css`, `MolsanRedesign2027.css`, `EncargaGest.css`, `MolsanCardsPremium2027.css` y `NotarGest.css`): sin anomalías detectadas.
+
+Commits de esta pasada: `f813d0b`, `3bdc64a`, `813ea20`, `f239d47`, `cb0bbb3` y `ac9dfd0`.
+
+### Validación
+
+- Head de código comprobado: `337d5a4`.
+- `MOLSAN frontend premium build`: success.
+- `Frontend dependency security audit`: success.
+- `Validar Fichaje Molsan`: success (sintaxis backend y build frontend).
+- Preview sigue live en `0884cf2`; la rama tiene cambios CSS posteriores todavía no publicados en Preview. No se ha activado producción ni se ha cambiado la base de datos.
+
+La comprobación visual autenticada y la regresión de teclado/responsive de los modales siguen pendientes; por tanto, esta limpieza está validada por build y análisis estático, no por inspección visual completa.
