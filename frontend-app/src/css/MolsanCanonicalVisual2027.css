@@ -173,18 +173,6 @@
 }
 
 
-/* Fidelidad del componente canónico: misma línea superior y hover cromático
-   que Espacios de trabajo. Solo afecta a tarjetas MolsanPremiumCard reales. */
-.molsan-premium-card {
-  border-top: 4px solid #6CC5D9 !important;
-  background: linear-gradient(145deg,#FFFFFF 0%,#FFFFFF 58%,#F2F7FB 100%) !important;
-  box-shadow: 0 7px 20px rgba(6,70,117,.065) !important;
-  transition: transform .24s cubic-bezier(.2,.75,.25,1),
-    box-shadow .24s ease,border-color .24s ease,background .24s ease,color .24s ease !important;
-}
-
-
-
 /* No convertir paneles genéricos con utilidades Tailwind en tarjetas.
    Las tarjetas deben estar identificadas por su componente/clase semántica. */
 @media (prefers-reduced-motion: reduce) {
@@ -215,13 +203,6 @@
 :where(.molsan-page-header__mark,.molsan-page-header__icon,.erp-page-header__icon) svg :where(path,line,polyline,polygon,circle,rect) {
   stroke: currentColor !important;
   opacity: 1 !important;
-}
-
-/* La línea exterior superior es el único acento de la tarjeta.
-   Se elimina la segunda línea interior generada por ::before. */
-.molsan-premium-card::before {
-  content: none !important;
-  display: none !important;
 }
 
 
