@@ -145,19 +145,6 @@
   .apoderagest .ag-resumen-modal-cuerpo{padding:14px!important}
 }
 
-/* Responsive: misma jerarquía sin cabeceras comprimidas ni tarjetas desiguales. */
-@media(max-width:760px){
-  :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias)>header.molsan-page-header{
-    min-height:88px;height:auto;max-height:none;
-    flex-wrap:wrap;gap:8px 12px;padding:8px 12px;
-  }
-  :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__description{
-    display:none;
-  }
-  :is(.apoderagest,.encargagest,.notargest.ng-content,.ng-admin-notarias) .molsan-page-header__actions{
-    width:auto;margin-left:auto;justify-content:flex-end;
-  }
-}
 @media(max-width:760px){
   .apoderagest .ag-kpi,.encargagest .eg-kpi,.encargagest .eg-main .ag-kpi,
   .ng-admin-notarias .ng-admin-kpi-button{min-height:116px!important;padding:14px!important}
