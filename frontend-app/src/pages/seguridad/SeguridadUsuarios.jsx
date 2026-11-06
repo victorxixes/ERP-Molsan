@@ -7,7 +7,6 @@ import { editarEmpleado } from "../../api/empleados";
 import ModalEmpleado from "../../components/empleados/ModalEmpleado.jsx";
 import SeguridadModulos from "./SeguridadModulos.jsx";
 import SeguridadPermisos from "./SeguridadPermisos.jsx";
-import "./SeguridadSubpaginasPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 export default function SeguridadUsuarios() {
