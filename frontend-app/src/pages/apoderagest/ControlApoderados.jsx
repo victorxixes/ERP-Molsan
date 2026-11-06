@@ -1,6 +1,6 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
 
 const mesActual = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
@@ -11,7 +11,6 @@ const estado = (v) => ({ pendiente: "Pendiente de validar", validada: "Relación
 
 export default function ControlApoderados({ modo = "colaborador" }) {
   const admin = modo === "admin";
-  const navigate = useNavigate();
   const [periodo, setPeriodo] = useState(mesActual());
   const [item, setItem] = useState(null);
   const [items, setItems] = useState([]);
@@ -222,7 +221,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
       </section>
       {firmasAbiertas && <div className="fixed inset-0 z-[12000] flex items-center justify-center bg-slate-950/50 p-4" role="dialog" aria-modal="true" aria-label="Listado de firmas">
         <section className="max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl">
-          <header className="flex items-start justify-between gap-4 border-b border-slate-200 p-5"><div><p className="text-xs font-bold uppercase tracking-widest text-indigo-600">Control Apoderados · {periodo}</p><h2 className="mt-1 text-xl font-bold text-slate-900">Firmas de {firmasAbiertas.colaborador}</h2><p className="mt-1 text-sm text-slate-500">{firmasAbiertas.protocolos_firmados ?? firmasAbiertas.expedientes?.length ?? 0} protocolos únicos · {firmasAbiertas.expedientes?.length || 0} expedientes</p></div><button type="button" onClick={() => setFirmasAbiertas(null)} className="rounded-xl border px-3 py-2 font-semibold">Cerrar ✕</button></header>
+          <header className="flex items-start justify-between gap-4 border-b border-slate-200 p-5"><div><p className="text-xs font-bold uppercase tracking-widest text-indigo-600">Control Apoderados · {periodo}</p><h2 className="mt-1 text-xl font-bold text-slate-900">Firmas de {firmasAbiertas.colaborador}</h2><p className="mt-1 text-sm text-slate-500">{firmasAbiertas.protocolos_firmados ?? firmasAbiertas.expedientes?.length ?? 0} protocolos únicos · {firmasAbiertas.expedientes?.length || 0} expedientes</p></div><button type="button" onClick={() => setFirmasAbiertas(null)} className="rounded-xl border px-3 py-2 font-semibold">Cerrar <MolsanIcon name="x" size={15} tone="ocean" bare /></button></header>
           <div className="max-h-[65vh] overflow-auto p-5">{(firmasAbiertas.expedientes || []).length ? <table className="w-full text-left text-sm"><thead><tr className="border-b text-slate-500"><th className="p-3">Expediente</th><th className="p-3">Fecha firma</th><th className="p-3">Notario</th><th className="p-3">Protocolo</th><th className="p-3">Operación</th></tr></thead><tbody>{firmasAbiertas.expedientes.map((e) => <tr key={e.expediente_id} className="border-b last:border-0"><td className="p-3 font-semibold">{e.id_expediente}</td><td className="p-3">{fecha(e.fecha_firma)}</td><td className="p-3">{e.notario || "—"}</td><td className="p-3">{e.protocolo || "Sin protocolo"}</td><td className="p-3">{e.tipo_operacion || "—"}</td></tr>)}</tbody></table> : <p className="rounded-xl bg-slate-50 p-5 text-sm text-slate-500">No hay firmas registradas en este periodo.</p>}</div>
         </section>
       </div>}
@@ -258,6 +257,5 @@ export default function ControlApoderados({ modo = "colaborador" }) {
         {historial.length ? <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b text-slate-500"><th className="p-3">Periodo</th><th className="p-3">Firmas</th><th className="p-3">Relación</th><th className="p-3">Factura</th><th className="p-3">Consulta</th></tr></thead><tbody>{historial.map((h) => <tr key={h.id} className="border-b last:border-0"><td className="p-3 font-semibold">{h.periodo}</td><td className="p-3">{h.protocolos_firmados ?? h.expedientes?.length ?? 0}</td><td className="p-3">{estado(h.estado_relacion)}</td><td className="p-3">{estado(h.estado_factura)}</td><td className="p-3"><button onClick={() => setPeriodo(h.periodo)} className="font-semibold text-indigo-700 hover:underline">Abrir mes</button></td></tr>)}</tbody></table></div> : <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">Todavía no hay otros periodos registrados.</p>}
       </section>
     </> : !cargando && <section className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">No se ha podido cargar la relación mensual. Si eres colaborador, solicita que habiliten tu ficha desde Utilidades → Control Apoderados.</section>}
-    <div><button onClick={() => navigate(admin ? "/herramientas/utilidades" : "/apoderagest")} className="text-sm font-semibold text-indigo-700 hover:underline">← Volver</button></div>
   </div>;
 }

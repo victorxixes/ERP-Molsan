@@ -6,6 +6,7 @@ import React, {
   useState,
 } from "react";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 
 // ============================================================
@@ -1987,7 +1988,7 @@ export default function AccionesExpediente() {
                             "
                             title="Editar"
                           >
-                            ✎
+                            <MolsanIcon name="pen" size={15} tone="ocean" bare />
                           </button>
 
 

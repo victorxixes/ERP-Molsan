@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 /**
  * ============================================================
@@ -1490,7 +1491,7 @@ export default function Municipios() {
               title="Cargar códigos postales desde datos abiertos derivados del INE"
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 shadow-sm transition-all hover:border-violet-300 hover:bg-violet-100 disabled:cursor-wait disabled:opacity-60"
             >
-              <span className="text-lg">{importandoCodigosNacionales ? "⏳" : "📮"}</span>
+              <span className="text-lg">{importandoCodigosNacionales ? <MolsanIcon name="clock" size={18} tone="ocean" bare /> : <MolsanIcon name="mail" size={18} tone="ocean" bare />}</span>
               {importandoCodigosNacionales ? "Cargando códigos…" : "Cargar códigos postales de España"}
             </button>
 
@@ -1523,7 +1524,7 @@ export default function Municipios() {
             >
 
               <span className="text-lg">
-                📊
+                <MolsanIcon name="chart" size={18} tone="ocean" bare />
               </span>
 
               Importar Excel
@@ -1673,7 +1674,7 @@ export default function Municipios() {
                   text-slate-400
                 "
               >
-                🔎
+                <MolsanIcon name="search" size={18} tone="ocean" bare />
               </span>
 
 
@@ -2025,7 +2026,7 @@ export default function Municipios() {
                 text-2xl
               "
             >
-              🔎
+              <MolsanIcon name="search" size={18} tone="ocean" bare />
             </div>
 
 
@@ -2249,7 +2250,7 @@ export default function Municipios() {
                               hover:text-blue-600
                             "
                           >
-                            ✏️
+                            <MolsanIcon name="pen" size={15} tone="ocean" bare />
                           </button>
 
 
@@ -2278,7 +2279,7 @@ export default function Municipios() {
                               hover:text-red-600
                             "
                           >
-                            🗑️
+                            <MolsanIcon name="trash" size={15} tone="ocean" bare />
                           </button>
 
                         </div>
@@ -2587,7 +2588,7 @@ function ModalImportarExcel({
                   border-emerald-100
                 "
               >
-                📊
+                <MolsanIcon name="chart" size={18} tone="ocean" bare />
               </div>
 
 
@@ -2642,7 +2643,7 @@ function ModalImportarExcel({
                 disabled:opacity-40
               "
             >
-              ✕
+              <MolsanIcon name="x" size={16} tone="ocean" bare />
             </button>
 
           </div>
@@ -2795,7 +2796,7 @@ function ModalImportarExcel({
                   shadow-sm
                 "
               >
-                📁
+                <MolsanIcon name="folder" size={20} tone="ocean" bare />
               </div>
 
 
@@ -2869,7 +2870,7 @@ function ModalImportarExcel({
                     shadow-sm
                   "
                 >
-                  📄
+                  <MolsanIcon name="file" size={20} tone="ocean" bare />
                 </div>
 
 
@@ -3238,7 +3239,7 @@ function ModalMunicipio({
                 hover:text-slate-700
               "
             >
-              ✕
+              <MolsanIcon name="x" size={16} tone="ocean" bare />
             </button>
 
           </div>

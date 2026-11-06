@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { Link } from "react-router-dom";
 
@@ -7,7 +8,7 @@ export default function LecturaCancelaI() {
       <MolsanPageHeader mark="CI" title="Lectura Cancela I" description="Pantalla inicial del módulo para la lectura de información procedente de Cancela I." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>}/>
       <section className="rounded-3xl border border-amber-200 bg-amber-50/50 p-6 sm:p-8">
         <div className="flex items-start gap-4">
-          <span className="text-3xl" aria-hidden="true">🚧</span>
+          <span aria-hidden="true"><MolsanIcon name="tools" size={32} tone="ocean" /></span>
           <div>
             <h2 className="text-lg font-extrabold text-slate-900">Integración pendiente</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">El acceso ya está habilitado, pero todavía no se ha implementado la lectura real de Cancela I. Queda pendiente definir y conectar el origen de los datos, el procesamiento y la presentación de resultados. Esta pantalla no consulta ni modifica datos reales.</p>

@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import {
   useEffect,
   useState,
@@ -284,7 +285,7 @@ export default function SeguridadResumen({ empleadoId }) {
             <div className="erp-empty-state">
 
               <div className="erp-empty-state-icon">
-                🔐
+                <MolsanIcon name="lock" size={28} tone="ocean" />
               </div>
 
               <div>
