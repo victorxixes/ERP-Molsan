@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import Sidebar from "../../components/Sidebar";
-import "../../css/EncargaGest.css";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios, { configurarSesionEncargaGest, limpiarSesionEncargaGest } from "../../api/encargagest";
