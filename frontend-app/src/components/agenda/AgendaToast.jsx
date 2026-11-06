@@ -55,7 +55,7 @@ export default function AgendaToast() {
 
   return (
     <div
-      className="agenda-toast 
+      className="agenda-toast-premium agenda-toast 
  fixed
  bottom-6
  right-6
