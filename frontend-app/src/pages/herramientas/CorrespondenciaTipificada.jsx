@@ -281,7 +281,7 @@ export default function CorrespondenciaTipificada() {
           ) : (
             <div className="overflow-x-auto"><table className="w-full min-w-[820px] border-collapse text-left text-sm">
               <thead className="bg-[var(--molsan-surface-soft)] text-xs uppercase tracking-wide text-[var(--molsan-text-secondary)]"><tr><th className="px-5 py-3 font-bold">Nombre de la plantilla</th><th className="px-5 py-3 font-bold">Tipología / proceso</th><th className="px-5 py-3 font-bold">Asunto</th><th className="px-5 py-3 font-bold">Estado</th><th className="px-5 py-3 text-right font-bold">Acciones</th></tr></thead>
-              <tbody className="divide-y divide-slate-100">{plantillasFiltradas.map((item) => <tr key={item.id} className="transition hover:bg-[var(--molsan-primary-soft)]/40">
+              <tbody className="divide-y divide-[var(--molsan-border-light)]">{plantillasFiltradas.map((item) => <tr key={item.id} className="transition hover:bg-[var(--molsan-primary-soft)]">
                 <td className="px-5 py-4"><span className="block font-bold text-[var(--molsan-primary)]">{item.nombre || "Sin nombre"}</span><span className="mt-1 block text-xs text-[var(--molsan-text-muted)]">Modelo de correo reutilizable</span></td>
                 <td className="px-5 py-4 text-[var(--molsan-text-secondary)]">{item.categoria || "General"}</td>
                 <td className="max-w-[280px] px-5 py-4 text-[var(--molsan-text-secondary)]"><span className="block truncate" title={item.asunto || ""}>{item.asunto || "Sin asunto"}</span></td>
