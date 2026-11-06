@@ -366,3 +366,12 @@ La inspección de `EncargaGest.css` confirmó dos definiciones base de `.eg-moda
 Commits: `19bff3d` (consolidación) y `e8e734b` (revisión de preservación del espaciado de tablet).
 
 No se ha tocado JSX, handlers, permisos, envío ni guardado del modal. **Validación pendiente:** build posterior a estos commits y prueba real de alta/edición, scroll, teclado, foco y móvil/tablet en EncargaGest.
+
+
+## 18. Consolidación de tarjetas KPI de administración en NotarGest — 6 de noviembre de 2026
+
+En `NotarGest.css` se encontraron dos reglas base para `.ng-admin-kpi-button` y declaraciones repetidas para sus elementos `span`, `strong` y `small`. La segunda regla base cambiaba altura, padding, gap, radio, fondo y sombra. Se trasladó el conjunto final efectivo a la regla base inicial y se eliminaron las redefiniciones repetidas, manteniendo cursor/transición y los estilos del icono Molsan. No se ha cambiado el JSX ni la acción de los KPI.
+
+Commit: `e3ae11a`.
+
+**Validación pendiente:** build posterior al commit y comprobación visual del panel global y las fichas individuales por notaría, incluyendo hover, foco y móvil. Las reglas de los modales NotarGest que aparecen repetidas en distintos breakpoints se conservan hasta validar cada estado; no se han eliminado por coincidencia de selector.
