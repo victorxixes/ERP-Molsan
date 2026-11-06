@@ -123,7 +123,7 @@
 .ng-barra-mes strong { color: var(--ng-primary); font-size: 11px; font-variant-numeric: tabular-nums; }
 .ng-barra-pista { display: flex; align-items: flex-end; width: min(100%,34px); height: 94px; overflow: hidden; border-radius: 7px; background: var(--ng-table-head); }
 .ng-barra-pista span { display: block; width: 100%; min-height: 0; border-radius: 7px 7px 0 0; background: linear-gradient(180deg,#0D638C,#064675); }
-.ng-pagos-resumen { display: flex; flex-direction: column; gap: 12px; padding: 14px; border: 1px solid var(--ng-border); border-radius: 12px; background: #F8FBFD; }
+.ng-pagos-resumen { display: flex; flex-direction: column; gap: 12px; padding: 14px 0; border: 0; border-radius: 0; background: transparent; }
 .ng-pagos-resumen p { margin: 0; color: var(--ng-muted); font-size: 11px; }
 .ng-barras-pagos,.ng-barras-medias { display: flex; flex-direction: column; gap: 11px; }
 .ng-media-row { display: grid; grid-template-columns: minmax(120px,.8fr) minmax(0,1.2fr); align-items: center; gap: 12px; }
@@ -171,11 +171,11 @@
 }
 .ng-admin-notaria-titulo { min-width: 0; color: var(--ng-primary); font-size: 13px; font-weight: 800; overflow-wrap: anywhere; }
 .ng-admin-metricas { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
-.ng-admin-metricas > div { padding: 9px; border: 1px solid var(--ng-border); border-radius: 10px; background: #F8FBFD; }
+.ng-admin-metricas > div { min-width: 0; padding: 8px 0; border: 0; border-radius: 0; background: transparent; }
 .ng-admin-metricas strong { display: block; color: var(--ng-primary); font-size: 18px; font-weight: 850; }
 .ng-admin-metricas small { color: var(--ng-muted); font-size: 10px; }
 .ng-admin-circuitos { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
-.ng-admin-circuito { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 12px; border: 1px solid var(--ng-border); border-radius: 12px; background: #fff; }
+.ng-admin-circuito { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 10px 0; border: 0; border-radius: 0; background: transparent; }
 .ng-admin-circuito-icono { display: grid; flex: 0 0 34px; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: var(--ng-soft); color: var(--ng-primary); }
 .ng-admin-circuito-icono-fiscal { background: #FDF6E8; color: #986515; }
 .ng-admin-circuito-titulo { color: var(--ng-text); font-size: 11px; font-weight: 750; }
