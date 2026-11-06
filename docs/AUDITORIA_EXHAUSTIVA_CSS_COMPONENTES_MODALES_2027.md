@@ -2,7 +2,7 @@
 
 **Rama de trabajo:** `fix/molsan-css-selector-audit-round1`  
 **PR:** #409 (Draft)  
-**Último commit de código:** `8d64f9867ab1c9d140c375c9e17db19b253caec0`  
+**Último commit de código:** `cfd2b4c41dfcd7f84c74a34365a65eac123f84b3`  
 **Alcance de esta revisión:** frontend `frontend-app/src`; sin cambios en backend, API, Supabase, datos ni producción.
 
 ## 1. Inventario real del frontend
@@ -249,6 +249,7 @@ Se han revisado además los modales explícitos de CTN, Provisiones e Informes, 
 - `ProvisionesFondosPage.jsx`: el diálogo de envío de provisión por email incorpora ref y cierre por Escape, manteniendo la misma limpieza de borrador e identificador que el botón Cerrar.
 - `Informes.jsx`: el diálogo de detalle de facturación incorpora ref y gestión de foco/Escape.
 - `ExpedientesListado.jsx`: la rama contiene también la migración de los diálogos de filtros y ayuda de control de plazos a refs y `useAccessibleDialog` (commit `9c2ad626`).
+- `AccionesExpediente.jsx`: los dos diálogos de acciones ahora tienen refs y `useAccessibleDialog` (foco inicial, ciclo de teclado y Escape); el componente declara 2 `role=dialog`, 2 `aria-modal` y 2 hooks.
 
 ### Componentes revisados que ya disponían del hook compartido
 
@@ -263,7 +264,7 @@ Se han revisado además los modales explícitos de CTN, Provisiones e Informes, 
 
 ### CI
 
-La última revisión de CI corresponde al head de rama `741029f`:
+La última revisión de CI corresponde al head de rama `cfd2b4c`:
 - `MOLSAN frontend premium build`: success (job Vite production build).
 - `Frontend dependency security audit`: success.
 - `Validar Fichaje Molsan`: success.
@@ -272,4 +273,4 @@ La compilación confirma que las nuevas referencias y hooks compilan en conjunto
 
 ### Alcance todavía abierto
 
-Quedan por cerrar el inventario completo de modales embebidos que no declaran `role="dialog"`, las subpáginas restantes y la matriz de validación funcional. La rama está desplegada en Render Preview; la inspección visual interactiva y la regresión funcional siguen pendientes.
+Quedan por cerrar el inventario completo de modales embebidos que no declaran `role="dialog"`, las subpáginas restantes y la matriz de validación funcional. La rama está desplegada en Render Preview con commit `cfd2b4c`; la inspección visual interactiva y la regresión funcional siguen pendientes.
