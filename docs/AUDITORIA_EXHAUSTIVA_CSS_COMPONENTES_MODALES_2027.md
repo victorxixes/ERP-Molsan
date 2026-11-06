@@ -1172,3 +1172,14 @@ Commits: 9c2d0bc y 2834229.
 - Fusiones se incorpora a la superficie de página blanca y al patrón de tarjeta heredada para su panel de solicitudes.
 
 Commits: df2d3fd, 57328dd, 1337ba9, 237ebe0, 73f9e36, b7c9c4c, 8f2153e, da17b82, 7a0dbac, 299feb3, 28a7ec3, 1aff1d5, 414c719, 04525e4, 9934185, 3724ed6, 6361f4b.
+
+
+## 26. Normalización visual de modales de portales
+
+- El panel modal accesible genérico adopta borde #C5D8E5, radio de 22 px y sombra reforzada; en móvil mantiene 18 px.
+- Se centraliza la superficie de los modales de EncargaGest y NotarGest (fondo blanco, borde reforzado, radio y sombra comunes).
+- Los encabezados de modal dejan de usar gradientes oscuros/azul hielo y separadores inferiores: fondo blanco, título azul corporativo y descripción secundaria.
+- El pie de EncargaGest deja de dibujar línea superior, fondo translúcido y blur; la marca del modal pasa a icono azul sobre fondo azul hielo.
+- Se conservan overlays/backdrops oscuros, tamaños, scroll, columnas, estados de carga y acciones funcionales.
+
+Commits: 2c6826d, d5ffc26, fcc42a3, 1c0ffa7, 07f4ba3. Pendiente comprobación en navegador de modales de alta/edición/perfil de EncargaGest y los modales de pagos/resumen de NotarGest.
