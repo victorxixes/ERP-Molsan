@@ -2418,10 +2418,8 @@ function ThOrden({
         >
 
           {activo
-            ? orden.asc
-              ? "▲"
-              : "▼"
-            : "↕"}
+            ? <MolsanIcon name={orden.asc ? "arrowUp" : "arrowDown"} size={13} tone="inherit" />
+            : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}
 
         </span>
 
