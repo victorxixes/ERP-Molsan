@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import "./CtnDetallePage.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   listarNotarias,
@@ -154,13 +155,7 @@ export default function CtnDetallePage() {
 
   return (
     <div className="ctn-detalle-page ctn-detalle-page--content">
-      <div className="ctn-detalle-header">
-        <div>
-          <h1 className="ctn-detalle-title">{nombreNotario(notaria)}</h1>
-          <div className="ctn-detalle-meta">Ficha CTN · NIF: {valor(notaria.nif)} · Código: {valor(notaria.codigo)}</div>
-        </div>
-        <button type="button" onClick={() => navigate(-1)}>Volver al listado</button>
-      </div>
+      <MolsanPageHeader mark="CTN" title={nombreNotario(notaria)} description={`Ficha CTN · NIF: ${valor(notaria.nif)} · Código: ${valor(notaria.codigo)}`} actions={<button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate(-1)}>Volver al listado</button>} />
 
       {error && <div role="alert" className="ctn-detalle-alert">{error}</div>}
 
