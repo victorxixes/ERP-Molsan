@@ -682,7 +682,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             </header>
             {cargandoSelectorNotaria && <p className="ng-mensaje">Calculando pendientes de las notarías…</p>}
             {!cargandoSelectorNotaria && notariasSeleccionables.length === 0 && <div className="ng-admin-vacio"><strong>No hay notarías habilitadas</strong><p>Activa el acceso NotarGest desde la ficha CTN de cada notaría.</p></div>}
-            <section className="ng-admin-global-resumen" aria-label="Resumen global de todas las notarías">
+            <section className="erp-card ng-admin-global-resumen" aria-label="Resumen global de todas las notarías">
               <div className="ng-admin-global-titulo">
                 <div><span className="ng-admin-global-eyebrow">RESUMEN CONSOLIDADO</span><h3>Visión global · todas las notarías</h3><p>Contadores acumulados de las {notariasSeleccionables.length} notarías habilitadas.</p></div>
                 <span className="ng-admin-global-total">{notariasSeleccionables.length} habilitadas</span>
@@ -795,7 +795,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
     {vista === "inicio" && <section className="ng-dashboard-analitica">
       <div className="ng-dashboard-graficos ng-dashboard-graficos-tres-columnas">
-        <section className="ng-dashboard-grafico ng-dashboard-actividad"><div className="ng-bloque-heading"><div><span className="ng-kicker">ACTIVIDAD</span><h3>Firmas realizadas por mes</h3></div></div>
+        <section className="erp-card ng-dashboard-grafico ng-dashboard-actividad"><div className="ng-bloque-heading"><div><span className="ng-kicker">ACTIVIDAD</span><h3>Firmas realizadas por mes</h3></div></div>
           {(() => {
             const meses = [];
             const ahora = new Date();
@@ -805,7 +805,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             return <div className="ng-barras-meses">{meses.map(m=><div className="ng-barra-mes" key={m.key}><strong>{m.valor}</strong><div className="ng-barra-pista"><span style={{height:`${Math.max(m.valor?6:0,m.valor/max*100)}%`}} /></div><small>{m.label}</small></div>)}</div>;
           })()}
         </section>
-        <section className="ng-dashboard-grafico ng-dashboard-pagos ng-dashboard-economica">
+        <section className="erp-card ng-dashboard-grafico ng-dashboard-pagos ng-dashboard-economica">
           <div className="ng-bloque-heading">
             <div className="flex items-center gap-3"><MolsanIcon name="wallet" size={36} tone="ocean" /><div><span className="ng-kicker">GESTIÓN ECONÓMICA</span><h3>Pagos</h3></div></div>
             <button type="button" className="ng-abrir" onClick={abrirPagos}><MolsanIcon name="wallet" size={20} tone="ocean" /> Ver pagos</button>
@@ -835,7 +835,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             </div>;
           })()}
         </section>
-        <section className="ng-dashboard-grafico ng-dashboard-etapas ng-dashboard-hitos"><div className="ng-bloque-heading"><div><span className="ng-kicker">SEGUIMIENTO DE HITOS</span><h3>Ciclo registral</h3></div></div>
+        <section className="erp-card ng-dashboard-grafico ng-dashboard-etapas ng-dashboard-hitos"><div className="ng-bloque-heading"><div><span className="ng-kicker">SEGUIMIENTO DE HITOS</span><h3>Ciclo registral</h3></div></div>
           {(() => {
             const etapas=[
               {label:"Fecha envío a fecha firma",desde:["fecha_envio_notario","fecha_envio"],hasta:["fecha_firma"]},
@@ -927,7 +927,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       <div className="ng-panel-titulo ng-ficha-cabecera"><div><h2>{titulo}</h2><small>Ficha operativa del expediente · NotarGest</small></div><button className="ng-volver" onClick={() => setVista(vistaOrigenFicha.current || "inicio")}><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> Volver a la bandeja anterior</button></div>
       {detalle.bloqueado && <div className="ng-alerta ng-bloqueo-expediente" role="alert"><span className="ng-alerta-icono" aria-hidden="true"><MolsanIcon name="alert" size={18} tone="amber" /></span><div><strong>EXPEDIENTE BLOQUEADO EN CANCELAGEST</strong><p>{texto(detalle.motivo_bloqueo_efectivo || detalle.motivo_bloqueo || "Este expediente está bloqueado. Consulta con gestión antes de continuar.")}</p></div></div>}
       <div className="ng-ficha-cuerpo ng-ficha-premium">
-        <details className="ng-detalle-bloque ng-workflow ng-bloque-estado ng-acordeon-ficha">
+        <details className="erp-card ng-detalle-bloque ng-workflow ng-bloque-estado ng-acordeon-ficha">
           <summary className="ng-bloque-heading"><div><span className="ng-kicker">FLUJO DE TRABAJO</span><h3>Gestión del estado</h3></div><span className={`ng-estado-pill ng-estado-${detalle.notargest_estado || "pendiente"}`}>{texto(bandejas.find(x => x.id === detalle.notargest_estado)?.titulo || detalle.notargest_estado)}</span><span className="ng-acordeon-flecha" aria-hidden="true"><MolsanIcon name="chevronDown" size={18} tone="ocean" /></span></summary>
           {detalle.notargest_estado === "recepcion" && <button className="ng-login-submit" disabled={cargando} onClick={() => cambiarEstado("firma")}>Recepción encargo · Pasar a pendientes de firma</button>}
           {detalle.notargest_estado === "firma" && <div className="ng-workflow-form ng-firma-form"><label>Fecha de firma<input type="date" value={firmaFecha} disabled={cargando || Boolean(detalle.fecha_firma)} onChange={e => setFirmaFecha(e.target.value)} /></label><label>Protocolo<input value={protocolo} disabled={cargando || Boolean(detalle.protocolo)} onChange={e => setProtocolo(e.target.value)} placeholder="Número de protocolo" /></label><button className="ng-login-submit" disabled={cargando || !firmaFecha || !protocolo.trim()} onClick={() => cambiarEstado("factura")}>Guardar firma y pasar a pendientes de factura notaría</button><p className="ng-ayuda-campo">Esta acción solo está disponible mientras el expediente está en <strong>Pendientes de firma</strong>.</p></div>}
@@ -940,7 +940,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         </details>
 
         <div className="ng-datos-superiores">
-          <details open className="ng-detalle-bloque ng-tipo-documento-bloque ng-acordeon-ficha">
+          <details open className="erp-card ng-detalle-bloque ng-tipo-documento-bloque ng-acordeon-ficha">
             <summary className="ng-bloque-heading"><div><span className="ng-kicker">04 · DOCUMENTO</span><h3>Tipo de documento</h3><p className="ng-descripcion">Datos del documento remitidos desde el modal Enviar a notario.</p></div><span className="ng-acordeon-flecha" aria-hidden="true"><MolsanIcon name="chevronDown" size={18} tone="ocean" /></span></summary>
             <div className="ng-datos-grid">{[
              ["Formato de escritura", detalle.formato_escritura], ["Tipo de trámite", detalle.tipo_tramite]
@@ -951,7 +951,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             {detalle.fincas?.length ? <div className="ng-fincas-lista">{detalle.fincas.map((f,i) => <article className="ng-finca-card" key={f.id || i}><strong>Finca {texto(f.finca)}</strong><span>{[f.poblacion,f.registro,f.provincia].filter(Boolean).join(" · ") || "—"}</span><div><small>CRU/IDUFIR</small><b>{texto(f.cru_idufir)}</b></div><div><small>Cuantía</small><b>{euros(f.cuantia)}</b></div><div><small>Inscripción</small><b>{texto(f.inscripcion)}</b></div><div><small>Contrato</small><b>{texto(f.contrato || detalle.contrato)}</b></div></article>)}</div> : <p className="ng-mensaje">No hay fincas registradas en este expediente.</p>}
           </details>
 
-          <details open className="ng-detalle-bloque ng-datos-envio ng-acordeon-ficha">
+          <details open className="erp-card ng-detalle-bloque ng-datos-envio ng-acordeon-ficha">
             <summary className="ng-bloque-heading"><div><span className="ng-kicker">01 · ENVÍO</span><h3>Datos de envío y firma prevista</h3></div><span className="ng-acordeon-flecha" aria-hidden="true"><MolsanIcon name="chevronDown" size={18} tone="ocean" /></span></summary>
             <div className="ng-datos-grid ng-datos-operacion">{[
               ["Fecha de envío", esFecha(detalle.fecha_envio_notario || detalle.fecha_envio)], ["Fecha solicitud PNC", esFecha(detalle.fecha_solicitud_pnc)],
@@ -960,7 +960,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
               ["Tipo de operación", detalle.tipo_operacion], ["Subtipo de operación", detalle.subtipo_operacion], ["Importe", euros(detalle.importe)]
             ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
           </details>
-          <details open className="ng-detalle-bloque ng-datos-facturacion-bloque ng-acordeon-ficha">
+          <details open className="erp-card ng-detalle-bloque ng-datos-facturacion-bloque ng-acordeon-ficha">
             <summary className="ng-bloque-heading"><div><span className="ng-kicker">02 · FACTURACIÓN</span><h3>Datos de facturación</h3></div><span className="ng-acordeon-flecha" aria-hidden="true"><MolsanIcon name="chevronDown" size={18} tone="ocean" /></span></summary>
             <div className="ng-datos-grid ng-datos-facturacion">{[
               ["Nombre", detalle.facturacion_nombre ?? detalle.nombre_facturacion ?? detalle.nombre_cliente_facturacion], ["Apellidos", detalle.facturacion_apellidos ?? detalle.apellidos_facturacion ?? detalle.apellidos_cliente_facturacion], ["DNI / NIF", detalle.facturacion_dni_nif ?? detalle.dni_facturacion ?? detalle.nif_facturacion],
@@ -970,7 +970,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           </details>
         </div>
         <div className="ng-documentacion-layout">
-        <details open className="ng-detalle-bloque ng-comentarios-gestor ng-acordeon-ficha">
+        <details open className="erp-card ng-detalle-bloque ng-comentarios-gestor ng-acordeon-ficha">
           <summary className="ng-bloque-heading"><div><span className="ng-kicker">05 · COMUNICACIÓN</span><h3>Observaciones y comentarios</h3><p className="ng-descripcion">Envía un comentario directamente al gestor responsable del expediente.</p></div><span className="ng-acordeon-flecha" aria-hidden="true"><MolsanIcon name="chevronDown" size={18} tone="ocean" /></span></summary>
           <div className="ng-comentario-form">
             <label>Comentario<textarea rows={3} value={comentarioGestor} onChange={e => setComentarioGestor(e.target.value)} placeholder="Escribe aquí el comentario para el gestor…" maxLength={2000} /></label>
@@ -983,7 +983,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
           </div>
         </details>
 
-          <details open className="ng-detalle-bloque ng-carpeta-premium ng-acordeon-ficha">
+          <details open className="erp-card ng-detalle-bloque ng-carpeta-premium ng-acordeon-ficha">
             <summary className="ng-bloque-heading"><div><span className="ng-kicker">03 · ARCHIVO</span><h3>Carpeta digital</h3><p className="ng-descripcion">Documentación del expediente, organizada por categoría, con visor PDF integrado.</p></div><span className="ng-acordeon-flecha" aria-hidden="true"><MolsanIcon name="chevronDown" size={18} tone="ocean" /></span></summary>
             <div className="ng-carpeta-layout">
               <div className="ng-carpeta-categorias">
