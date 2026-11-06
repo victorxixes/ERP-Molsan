@@ -1437,3 +1437,27 @@ Se ha contrastado el árbol completo de `frontend-app/src` de esta rama con el c
 4. La revisión visual autenticada de todas las rutas no está certificada por la auditoría estática. No se marca como terminada por extrapolación desde un build anterior.
 
 **Conclusión de cobertura:** el inventario de rutas y el barrido estático de las 41 hojas CSS están documentados; la revisión individual de todos los JSX no puede darse por cerrada con la evidencia documental actual. Esta sección deja identificados los 98 ficheros cuya revisión necesita trazabilidad explícita, sin afirmar que el trabajo previo sobre ellos no haya existido.
+
+
+## 29. Primera pasada de componentes compartidos pendientes — 6 de noviembre de 2026
+
+Se ha iniciado la revisión individual de los componentes compartidos señalados en la sección 28. Esta pasada incorpora cambios concretos y acotados:
+
+- `components/layout/NotificacionesBadge.jsx`: eliminado el uso de `material-icons` para el icono de campana. Ahora utiliza `MolsanIcon`, conserva el contador reactivo del store y limita visualmente el valor mostrado a `99+` sin alterar el total real.
+- `components/ui/MolsanSortableTh.jsx`: sustituidos los caracteres Unicode de ordenación por los pictogramas corporativos `MolsanIcon` (`arrowUp`, `arrowDown`, `arrowUpDown`). Se mantienen `aria-sort`, el callback y la semántica del botón.
+- `components/PortalLogin.jsx`: corregida la clase raíz de `portal-login` a `portal-login-premium`, que es la clase realmente gobernada por `LayoutPortalesPremium.css`. Así el login profesional recibe los tokens de fondo, tipografía, superficie de formulario y foco visible definidos en la capa compartida.
+
+### Componentes inspeccionados sin modificación
+
+- `components/Sidebar.jsx`: iconografía principal ya centralizada en `MolsanIcon`; navegación y permisos conservados. Requiere aún revisión completa de todos los estados responsive y menús superpuestos.
+- `components/ui/MolsanStatCard.jsx`: componente común basado en clases `molsan-stat-card*`; no se ha reescrito porque la apariencia depende de sus reglas CSS compartidas y de las variantes consumidas por los portales.
+- `components/ui/MolsanDetailField.jsx`: estructura de campo de detalle con blanco/azul hielo, borde corporativo y jerarquía tipográfica coherente. No se modifica.
+- `components/ui/SelectSJ.jsx`: conserva gestión de foco, Escape, selección y cierre al hacer clic fuera. Pendiente contrastar todas sus variantes con el sistema de formularios y los consumidores.
+- `components/AuthenticatedPhoto.jsx`: mantiene descarga autenticada de fotografías protegidas mediante Bearer y URL Blob temporal, con revocación en cleanup. No se altera el origen/API ni la autenticación.
+- `components/SidebarPerfilModal.jsx`: delega el modal al componente compartido `ModalEmpleado`; no introduce una capa visual propia.
+- `components/ui/useAccessibleDialog.js`: implementa foco inicial, trampa de Tab, Escape, soporte de diálogos apilados y restauración del foco.
+- `components/auth/RequireAuth.jsx` y `RequireModule.jsx`: son guards funcionales, no superficies visuales de módulo; se preservan sin cambios de autorización.
+
+### Límite de validación
+
+Los cambios están escritos en la rama de trabajo y comprobados mediante lectura posterior del contenido guardado. Esta comprobación no equivale a ejecutar el build, pruebas automatizadas ni navegación visual autenticada. La revisión de Sidebar, StatCard, SelectSJ y los componentes de notificaciones no se considera globalmente cerrada hasta completar sus consumidores y variantes.
