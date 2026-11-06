@@ -1037,3 +1037,19 @@ Se ha aplicado una nueva pasada sobre la capa visual final y el componente compa
 Commits de código: d60cdf9, 70a0a49, 45a0a40, 21da073.
 
 **Validación:** cambios escritos en la rama fix/molsan-css-selector-audit-round1. La ejecución CI para el nuevo HEAD aún no aparece en GitHub Actions en el momento de esta actualización. No se afirma validación visual: siguen pendientes la inspección autenticada de Preview, la comprobación de cada ruta/subpágina/modal y la regresión responsive. La capa canónica centraliza la apariencia, pero quedan reglas funcionales y estructurales propias de módulos que no deben eliminarse sin confirmar sus consumidores y comportamiento.
+
+## 62. Herramientas — tarjetas migradas al patrón Espacios de trabajo (6 de noviembre de 2026)
+
+- La página principal `Herramientas.jsx` deja de construir tarjetas con Tailwind local, línea superior de 1 px y flecha Unicode.
+- Sus cinco accesos (Importar CTN, Crear noticia, Subir documento, Informes e Importador ABSIS) utilizan ahora `workspace-app-card`, `workspace-card-accent`, `workspace-app-icon`, `workspace-app-title`, `workspace-app-description` y `workspace-card-footer`.
+- Los pictogramas se renderizan con MolsanIcon; se conservan rutas, títulos, descripciones y la distinción visual del acceso destacado.
+- Catálogos y Herramientas comparten ya el mismo patrón de tarjetas que el selector de módulos/Espacios de trabajo. Utilidades ya utilizaba ese patrón; Informes mantiene `MolsanPremiumCard`, con franja, icono, título y hover común.
+- No se han cambiado datos, permisos, rutas ni lógica de negocio.
+
+## 63. Estado de Preview tras la última consolidación visual
+
+- Render Preview `molsan-premium-2027-candidate-preview`, deploy `dep-dbn1t6l6e07s73f9a8g0`, commit `45a0a40d3a362a345671bf1f85f9907e055aad37`: `LIVE`.
+- Los logs de build confirman `✓ built in 5.73s`.
+- El deploy contiene las modificaciones de iconografía y tarjetas realizadas en esta tanda, además de los últimos ajustes de superficie canónica presentes en el HEAD de la rama en ese momento.
+- El despliegue es únicamente de Preview. Producción, API, Supabase y datos siguen sin modificarse.
+- Continúan pendientes la inspección visual autenticada de todas las rutas, las pruebas responsive y la interacción real de cada modal. La compilación correcta no equivale a certificación visual.
