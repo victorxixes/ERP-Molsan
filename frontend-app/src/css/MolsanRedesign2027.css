@@ -2558,7 +2558,7 @@ table :is(th, td) {
 :where(.empleados-listado-premium, .seguridad-usuarios-premium, .ctn-listado-page, .ctn-detalle-page)
   tbody tr:hover {
   background-color: var(--molsan-primary-soft, #EAF2F8);
-}:where(.notargest, .apoderagest, .encargagest) :is(.ng-panel, .ag-panel, .ag-kpi, .eg-panel, .eg-kpi, .eg-modal-section) {
+}:where(.notargest, .apoderagest, .encargagest) :is(.ng-panel, .ag-panel, .eg-panel, .eg-modal-section) {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
