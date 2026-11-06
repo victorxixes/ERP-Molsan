@@ -567,44 +567,7 @@
   gap:12px;
 }
 
-.notargest.ng-content>header.ng-hero.molsan-page-header {
-
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:nowrap;
-  gap:12px;
-  width:100%;
-  max-width:none;
-  min-width:0;
-  min-height:74px;
-  height:auto;
-  max-height:none;
-  margin:0 0 16px;
-  padding:10px 18px;
-  overflow:hidden;
-  color:#fff;
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:18px;
-  background:radial-gradient(circle at 86% 18%,rgba(116,199,219,.18),transparent 27%),linear-gradient(116deg,#032D4B 0%,#064675 54%,#0D638C 100%);
-  box-shadow:0 12px 28px rgba(4,55,91,.16);
-  animation:none;
-  transition:none;
-  opacity:1;
-  transform:none;
-  filter:none;
-  will-change:auto;
-}
-
-.notargest.ng-content>header.ng-hero::after {
-
-  content:"";
-  position:absolute;
-  right:0;bottom:0;left:0;height:3px;
-  background:linear-gradient(90deg,#6CC5D9 0%,#8CB8D8 38%,rgba(255,255,255,.08) 100%);
-  pointer-events:none;
-}
+/* Cabecera unificada: estructura y aspecto definidos por MolsanPageHeader. */
 
 .notargest.ng-content .ng-dashboard-kpi,
 .notargest.ng-content .ng-kpi-card {
@@ -751,44 +714,7 @@ box-sizing:border-box}
   color:var(--molsan-prof-text);
 }
 
-.ng-admin-notarias>header.ng-hero.molsan-page-header {
-
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:nowrap;
-  gap:12px;
-  width:100%;
-  max-width:none;
-  min-width:0;
-  min-height:74px;
-  height:auto;
-  max-height:none;
-  margin:0 0 16px;
-  padding:10px 18px;
-  overflow:hidden;
-  color:#fff;
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:18px;
-  background:radial-gradient(circle at 86% 18%,rgba(116,199,219,.18),transparent 27%),linear-gradient(116deg,#032D4B 0%,#064675 54%,#0D638C 100%);
-  box-shadow:0 12px 28px rgba(4,55,91,.16);
-  animation:none;
-  transition:none;
-  opacity:1;
-  transform:none;
-  filter:none;
-  will-change:auto;
-}
-
-.ng-admin-notarias>header.ng-hero::after {
-
-  content:"";
-  position:absolute;
-  right:0;bottom:0;left:0;height:3px;
-  background:linear-gradient(90deg,#6CC5D9 0%,#8CB8D8 38%,rgba(255,255,255,.08) 100%);
-  pointer-events:none;
-}
+/* Cabecera administrativa: misma autoridad visual compartida. */
 
 .ng-admin-notarias .ng-admin-kpi-button {
 
