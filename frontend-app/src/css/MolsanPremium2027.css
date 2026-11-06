@@ -1294,10 +1294,7 @@ button:not(.molsan-table-sort):focus-visible {
   .workspace-app-icon svg {
     transition: none !important;
   }
-  .workspace-app-card:hover .workspace-app-icon,
-  .workspace-app-card:hover .workspace-app-icon svg {
-    transform: none !important;
-  }
+  
 }
 
 
