@@ -2,7 +2,8 @@
 
 **Fecha:** 6 de noviembre de 2026  
 **Rama auditada:** `fix/molsan-css-selector-audit-round1`  
-**Commit de referencia antes de este informe:** `6facf31bc108632018683345111cc684c9f77b3f`  
+**Último commit de limpieza App/main:** `f024f3c61bb3a99ff48ca5ec814120d95127266a`  
+**Último commit con build Vite confirmado:** `6facf31bc108632018683345111cc684c9f77b3f`  
 **PR:** [#409](https://github.com/victorxixes/ERP-Molsan/pull/409)  
 **Alcance de seguridad:** solo frontend y documentación en la rama de Preview. No se han modificado producción, API, base de datos ni datos de expedientes.
 
@@ -15,7 +16,9 @@ Esta auditoría distingue expresamente entre inspección estática, compilación
 - Se inspeccionaron los puntos de entrada de estilos en `main.jsx`, además de las capas globales CanonicalVisual, GlobalConsistency, GlassLuxeUnified, Premium2027 y Redesign2027.
 - Se inspeccionaron los componentes principales de Expedientes, Agenda, CTN, Fusiones, Provisiones, Mensajería, Informes, Catálogos, Seguridad y Panel Técnico.
 - El workflow de compilación Vite asociado al commit de referencia terminó correctamente. Esto verifica compilación, no comportamiento funcional ni apariencia en Render.
-- No se ha realizado una comprobación visual real en Preview de escritorio, tablet y móvil en esta ronda. Por tanto, no se declara completado el punto de validación visual ni la ausencia total de regresiones.
+- Se consultó Render con autorización del usuario: el servicio `molsan-premium-2027-candidate-preview` está activo y su último deploy figura `live`, pero sirve el commit `fb0c71eb4fb908af3868a247802752972af7a8df` desde `integration/erp-molsan-supabase-ready`. El auto-deploy está desactivado; no se ha desplegado la rama PR #409.
+- La apertura de la URL del Preview desde el lector web no ha sido posible; no se declara una inspección visual real de escritorio, tablet o móvil.
+- Tras las modificaciones posteriores en `App.jsx` y `main.jsx`, todavía no hay un nuevo build asociado al commit final. Por tanto, no se declara completado el punto de validación visual ni la ausencia total de regresiones.
 
 ## 1. Portales profesionales
 
@@ -71,7 +74,9 @@ La revisión de un modal debe comprobar apertura, cierre, foco, Escape, validaci
 - Traslado de la responsabilidad de ancho de cabecera al CSS canónico.
 - Eliminación de bloques de Utilidades e Informes que no correspondían al marcado actual y de selectores de portal direct-child que no podían alcanzar el hero anidado.
 - Conservación de excepciones específicas de Catálogos y reglas de tarjetas que sí tienen uso.
-- Build Vite correcto en el workflow asociado al commit de referencia.
+- Build Vite correcto en el workflow asociado al commit de referencia `6facf31` (antes de los cambios recientes en `App.jsx` y `main.jsx`).
+- En `App.jsx`, retirada de la importación lazy `ModuloPendiente`, que no tenía ninguna referencia de uso; traslado de `RealtimeGlobal` al grupo de imports estáticos; corrección del diagnóstico copiado para usar saltos de línea reales y espera/captura de errores de Clipboard API.
+- En `main.jsx`, aclaración de la identidad Molsan ERP PREMIUM 2027 y del orden intencional de carga: las dependencias de la shell se evalúan antes de las capas globales finales. No se alteró la inicialización de sesión ni el orden efectivo de CSS.
 
 ## 6. Estado de los siete puntos solicitados
 
@@ -96,3 +101,13 @@ El trabajo solo puede declararse cerrado cuando:
 6. Se confirme que producción y la base de datos principal no han recibido cambios.
 
 **Conclusión:** PR #409 contiene limpieza estática real y compila, pero esta auditoría no certifica todavía el cierre integral de los siete puntos. La diferencia queda documentada para evitar presentar como terminado algo que aún no se ha probado en Preview.
+
+## 8. Revisión de App, main y Preview (actualización)
+
+- `App.jsx`: se mantiene la estructura de rutas y los wrappers de autenticación/permisos. No se han cambiado paths, módulos protegidos ni accesos externos. Se ha retirado una importación lazy sin uso (`ModuloPendiente`).
+- `main.jsx`: el orden de importaciones CSS se conserva deliberadamente. `App` se evalúa antes de las últimas capas globales para que el CSS de la shell quede debajo de la normalización/capa canónica final. No se ha eliminado `index.css` ni hojas heredadas sin verificar sus clases en uso.
+- Preview Render: `molsan-premium-2027-candidate-preview` está `not_suspended` y su deploy actual `live`. Sirve `fb0c71e`, no la rama de esta PR. Su auto-deploy está `off`. Se ha consultado el estado; no se ha disparado ningún deploy ni cambiado la infraestructura.
+- La URL del Preview no pudo abrirse desde el lector web. El estado `live` del deploy confirma que Render lo publicó, no que la interfaz se haya inspeccionado visualmente.
+- El commit final `f024f3c` no tiene todavía un workflow de build asociado visible en la consulta de GitHub Actions. El build previo `6facf31` no certifica los cambios posteriores.
+
+**Siguiente control seguro:** ejecutar el build de la rama actual y, solo después de revisar el artefacto y acordar el despliegue, publicar esa rama en el servicio Preview (nunca en producción).
