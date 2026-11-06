@@ -179,7 +179,7 @@ export default function EmpleadoFicha({
           CABECERA
       =================================================== */}
 
-      <header className="molsan-page-header empleado-ficha-page-header max-w-[1700px] mx-auto">
+      <header className="molsan-page-header empleado-ficha-page-header">
 
         <div className="
           flex
