@@ -14,12 +14,12 @@ export default function MolsanDetailField({
   return (
     <div
       data-molsan-component="detail-field"
-      className={`min-w-0 rounded-xl border border-[#D8E4EC] bg-[#F2F7FB] px-3 py-2.5 ${className}`}
+      className={`min-w-0 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 ${className}`}
     >
-      <p className="text-[10px] font-bold uppercase tracking-[0.045em] text-[#617789]">
+      <p className="text-[10px] font-bold uppercase tracking-[0.045em] text-[var(--molsan-text-secondary)]">
         {label}
       </p>
-      <p className="mt-1 min-w-0 break-words text-xs font-semibold leading-relaxed text-[#064675]">
+      <p className="mt-1 min-w-0 break-words text-xs font-semibold leading-relaxed text-[var(--molsan-primary)]">
         {isEmpty ? emptyLabel : typeof value === "string" || typeof value === "number" ? value : String(value)}
       </p>
     </div>
