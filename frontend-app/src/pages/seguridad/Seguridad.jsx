@@ -1,13 +1,9 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanStatCard from "../../components/ui/MolsanStatCard";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useSeguridad } from "../../hooks/useSeguridad";
-const Icono = ({ name, className = "h-5 w-5" }) => (
-  <svg className={`${className} shrink-0`} aria-hidden="true">
-    <use href={`/icons/icons.svg#${name}`} />
-  </svg>
-);
-
 function listaSegura(value) {
   return Array.isArray(value) ? value.filter(Boolean) : [];
 }
@@ -18,21 +14,8 @@ function texto(value, fallback = "") {
   return result || fallback;
 }
 
-function Indicador({ icon, label, value, detail }) {
-  return (
-    <div className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--erp-text-soft)]">{label}</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-[var(--erp-text)]">{value}</p>
-          <p className="mt-1 text-xs text-[var(--erp-text-soft)]">{detail}</p>
-        </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]">
-          <Icono name={icon} />
-        </span>
-      </div>
-    </div>
-  );
+function Indicador({ icon, label, value, detail, tone = "ocean" }) {
+  return <MolsanStatCard title={label} value={value} description={detail} icon={icon} tone={tone} />;
 }
 
 function Acceso({ to, icon, title, description }) {
@@ -42,7 +25,7 @@ function Acceso({ to, icon, title, description }) {
       className="seguridad-acceso group"
     >
       <span className="seguridad-acceso-icon">
-        <Icono name={icon} className="h-5 w-5" />
+        <MolsanIcon name={icon} size={21} />
       </span>
       <span className="seguridad-acceso-body">
         <span className="seguridad-acceso-title">
@@ -111,11 +94,11 @@ export default function Seguridad() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-            <Indicador icon="user-group" label="Empleados" value={empleadosList.length} detail="Registros disponibles" />
-            <Indicador icon="user-group" label="Activos" value={empleadosActivos} detail="Empleados marcados como activos" />
-            <Indicador icon="shield" label="Roles" value={rolesList.length} detail="Roles registrados" />
-            <Indicador icon="shield" label="Permisos" value={permisosList.length} detail="Permisos registrados" />
-            <Indicador icon="clipboard-list" label="Auditoría" value={auditoriaList.length} detail="Eventos disponibles" />
+            <Indicador icon="users" label="Empleados" value={empleadosList.length} detail="Registros disponibles" tone="ocean" />
+            <Indicador icon="userCheck" label="Activos" value={empleadosActivos} detail="Empleados marcados como activos" tone="emerald" />
+            <Indicador icon="shield" label="Roles" value={rolesList.length} detail="Roles registrados" tone="cyan" />
+            <Indicador icon="key" label="Permisos" value={permisosList.length} detail="Permisos registrados" tone="violet" />
+            <Indicador icon="clipboard" label="Auditoría" value={auditoriaList.length} detail="Eventos disponibles" tone="amber" />
           </div>
         )}
       </section>
@@ -153,7 +136,7 @@ export default function Seguridad() {
               return (
                 <li key={item?.id ?? `auditoria-${index}`} className="flex items-start gap-3 px-5 py-3.5">
                   <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]">
-                    <Icono name="clipboard" className="h-4 w-4" />
+                    <MolsanIcon name="clipboard" size={17} />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-medium text-[var(--erp-text)]">{usuario} · {accion}</span>
@@ -169,7 +152,7 @@ export default function Seguridad() {
 
       <section className="flex flex-col gap-3 rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-bg)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
-          <Icono name="shield" className="mt-0.5 h-5 w-5 text-[var(--erp-primary)]" />
+          <MolsanIcon name="shield" size={21} tone="ocean" />
           <div>
             <p className="text-sm font-medium text-[var(--erp-text)]">Supervisión técnica</p>
             <p className="mt-0.5 text-xs text-[var(--erp-text-soft)]">{logsList.length} registros técnicos cargados. Consulta los logs para revisar errores y advertencias.</p>
