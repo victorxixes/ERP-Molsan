@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useMemo, useState } from "react";
 import axios from "../../api/axios";
@@ -266,7 +267,7 @@ export default function MantenimientoTecnico() {
     return (
       <div className="mantenimiento-tecnico-premium p-6">
         <div className="mx-auto max-w-3xl rounded-2xl border border-rose-200 bg-white p-6 shadow-sm">
-          <div className="text-2xl">🔒 Acceso restringido</div>
+          <div className="text-2xl"><MolsanIcon name="lock" size={22} tone="ocean" bare /> Acceso restringido</div>
           <p className="mt-2 text-sm text-slate-600">
             Tu usuario no tiene habilitado el módulo Utilidades. Si necesitas
             acceder, solicita que se active desde la ficha del empleado.
@@ -302,7 +303,7 @@ export default function MantenimientoTecnico() {
       <section className="grid grid-cols-1 gap-5 xl:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-xl">🔎</div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-xl"><MolsanIcon name="search" size={22} tone="ocean" /></div>
             <div>
               <h2 className="text-lg font-bold text-slate-900">Diagnóstico rápido</h2>
               <p className="mt-1 text-sm text-slate-500">
@@ -333,7 +334,7 @@ export default function MantenimientoTecnico() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-xl">🧱</div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-xl"><MolsanIcon name="archive" size={22} tone="ocean" /></div>
             <div>
               <h2 className="text-lg font-bold text-slate-900">Inspección de tablas</h2>
               <p className="mt-1 text-sm text-slate-500">
@@ -451,7 +452,7 @@ export default function MantenimientoTecnico() {
 
       <section className="rounded-2xl border border-amber-200 bg-amber-50/60 p-5 sm:p-6">
         <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-xl">⚠️</div>
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-xl"><MolsanIcon name="alert" size={22} tone="amber" /></div>
           <div>
             <h2 className="text-lg font-bold text-slate-900">Migraciones y mantenimiento</h2>
             <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">

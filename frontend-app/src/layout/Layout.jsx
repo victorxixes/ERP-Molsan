@@ -34,6 +34,45 @@ export default function Layout() {
   // Seguridad, auditoría y panel técnico conservan su presentación especializada.
   const rutaCancelaGest = !/^\/(paneltecnico|seguridad|auditoria)(\/|$)/i.test(pathname);
 
+  // Aplica la cabecera Glass Luxe también a las páginas principales que aún
+  // conservan un <header> heredado. Solo inspecciona cabeceras estructurales
+  // de primer nivel; nunca modifica cabeceras de tarjetas ni diálogos.
+  useLayoutEffect(() => {
+    const contenedor = document.querySelector(".erp-route-content");
+    if (!contenedor) return undefined;
+    let observador = null;
+    let finalizado = false;
+    const aplicar = () => {
+      if (finalizado) return true;
+      if (contenedor.querySelector(".molsan-page-header:not(.molsan-page-back-fallback)")) return true;
+      const encontrada = contenedor.querySelector([
+        ":scope > header",
+        ":scope > main > header",
+        ":scope > div > header",
+        ":scope > section > header",
+        ":scope > div > main > header",
+        ":scope > main > div > header",
+        ".herramienta-operativa-premium > header",
+        ".herramientas-subpagina-premium > header",
+      ].join(", "));
+      if (!encontrada || encontrada.closest('[role="dialog"], [aria-modal="true"], .molsan-modal, .ng-modal')) return false;
+      encontrada.classList.add("molsan-page-header", "molsan-page-header--legacy");
+      return true;
+    };
+    if (!aplicar()) {
+      observador = new MutationObserver(() => {
+        if (aplicar()) observador?.disconnect();
+      });
+      observador.observe(contenedor, { childList: true, subtree: true });
+      aplicar();
+    }
+    return () => {
+      finalizado = true;
+      observador?.disconnect();
+    };
+  }, [pathname]);
+
+
   useLayoutEffect(() => {
     setCabeceraSubpagina(null);
     setTieneVolverPropio(false);

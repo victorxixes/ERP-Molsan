@@ -7,6 +7,7 @@ import { useAuthStore } from "../../store/authStore";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
 import "./ExpedientesListado.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import {
   Link,
@@ -738,7 +739,7 @@ function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir 
         title={`Abrir carpeta y ver ${cantidad} archivo(s)`}
         aria-label={`Abrir ${cantidad} documento(s)`}
       >
-        <span aria-hidden="true">📄</span>
+        <MolsanIcon name="file" size={15} tone="ocean" bare />
         <span>{cantidad > 1 ? cantidad : "PDF"}</span>
       </button>
       {hover && (
@@ -752,7 +753,7 @@ function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir 
               <div className="max-h-56 space-y-1 overflow-auto">
                 {documentos.map((doc) => (
                   <button key={doc.id} type="button" onMouseEnter={() => previsualizar(doc)} onFocus={() => previsualizar(doc)} onClick={() => previsualizar(doc)} className="block w-full rounded-lg px-2 py-2 text-left text-xs hover:bg-[var(--erp-primary-soft)]" title={doc.nombre_original || "Ver documento"}>
-                    <span className="mr-1" aria-hidden="true">📄</span>{doc.nombre_original || "Documento"}
+                    <MolsanIcon name="file" size={14} tone="ocean" bare />{doc.nombre_original || "Documento"}
                     {doc.fecha_subida && <span className="mt-1 block text-[10px]" style={{ color: "var(--erp-text-soft)" }}>{new Date(doc.fecha_subida).toLocaleDateString("es-ES")}</span>}
                   </button>
                 ))}
@@ -804,14 +805,14 @@ const ACTIVIDADES_ABSIS = [
 // ============================================================
 
 const ACTIVIDADES_EXPEDIENTES = [
-  { key: "documentacion-previa", label: "Documentación previa", icono: "📄", aliases: ["Documentación previa"] },
-  { key: "sede-notarial", label: "Sede notarial", icono: "🏛️", aliases: ["Sede notarial", "Sede Notarial"] },
-  { key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "📜", aliases: ["Sede notarial con protocolo", "Sede Notarial con protocolo"] },
-  { key: "gestion-economica", label: "Gestión económica", icono: "💼", aliases: ["Gestión económica", "Gestion economica"] },
-  { key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "💶", aliases: ["Liquidación de impuestos", "Liquidación impuestos", "Liquidacion de impuestos", "Liquidacion impuestos"] },
-  { key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "🏢", aliases: ["Tramitación inscripción", "Tramitacion inscripcion"] },
-  { key: "defectos-registrales", label: "Defectos registrales", icono: "⚠️", aliases: ["Defectos registrales", "Defectos Registrales"] },
-  { key: "facturacion-cierre", label: "Facturación y cierre", icono: "🧾", aliases: ["Facturación y cierre", "Facturacion y cierre"] },
+  { key: "documentacion-previa", label: "Documentación previa", icono: "file", aliases: ["Documentación previa"] },
+  { key: "sede-notarial", label: "Sede notarial", icono: "courthouse", aliases: ["Sede notarial", "Sede Notarial"] },
+  { key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "scroll", aliases: ["Sede notarial con protocolo", "Sede Notarial con protocolo"] },
+  { key: "gestion-economica", label: "Gestión económica", icono: "briefcase", aliases: ["Gestión económica", "Gestion economica"] },
+  { key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "euro", aliases: ["Liquidación de impuestos", "Liquidación impuestos", "Liquidacion de impuestos", "Liquidacion impuestos"] },
+  { key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "building", aliases: ["Tramitación inscripción", "Tramitacion inscripcion"] },
+  { key: "defectos-registrales", label: "Defectos registrales", icono: "alert", aliases: ["Defectos registrales", "Defectos Registrales"] },
+  { key: "facturacion-cierre", label: "Facturación y cierre", icono: "receipt", aliases: ["Facturación y cierre", "Facturacion y cierre"] },
 ];
 
 // ============================================================
@@ -2437,7 +2438,7 @@ export default function ExpedientesListado() {
           title="Expedientes"
           description="Consulta, seguimiento y control de la tramitación de expedientes."
           className="expedientes-page__header"
-          actions={<span className="expedientes-page__header-note">Gestión y seguimiento</span>}
+          actions={<><span className="expedientes-page__header-note">Gestión y seguimiento</span><Link to="/expedientes-demo-glass-luxe" className="molsan-btn molsan-btn--secondary">Ver ficha de demostración</Link></>}
         />
 
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-12">
@@ -2455,7 +2456,7 @@ export default function ExpedientesListado() {
               titulo: "Circuito CaixaBank",
               descripcion: "Propia entidad · Vinculada propia entidad",
               plazo: "40 días",
-              icono: "🏦",
+              icono: "bank",
               borde: "#2563eb",
               fondo: "rgba(37, 99, 235, 0.07)",
             },
@@ -2464,7 +2465,7 @@ export default function ExpedientesListado() {
               titulo: "Circuito otra entidad",
               descripcion: "Vinculada otra entidad · Otra entidad",
               plazo: "70 días",
-              icono: "🏢",
+              icono: "building",
               borde: "#b7791f",
               fondo: "rgba(183, 121, 31, 0.08)",
             },
@@ -2495,7 +2496,7 @@ export default function ExpedientesListado() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: circuito.fondo }}>{circuito.icono}</span>
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: circuito.fondo }}><MolsanIcon name={circuito.icono} size={28} tone="ocean" /></span>
                     <div className="min-w-0">
                       <div className="font-bold text-[var(--erp-text)]">{circuito.titulo}</div>
                       <div className="mt-1 text-xs text-[var(--erp-text-soft)]">{circuito.descripcion}</div>
@@ -2511,7 +2512,7 @@ export default function ExpedientesListado() {
                     <div className="text-xs text-[var(--erp-text-soft)]">expedientes fuera de plazo</div>
                   </div>
                   <div className="text-sm font-semibold" style={{ color: circuito.borde }}>
-                    {activa ? "Circuito seleccionado ✓" : "Ver expedientes →"}
+                    {activa ? <>Circuito seleccionado <MolsanIcon name="check" size={13} tone="emerald" bare /></> : <>Ver expedientes <MolsanIcon name="arrowRight" size={13} tone="ocean" bare /></>}
                   </div>
                 </div>
               </button>
@@ -2529,8 +2530,8 @@ export default function ExpedientesListado() {
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[
-            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "🔎", borde: "#2563eb", fondo: "rgba(37, 99, 235, 0.08)" },
-            { codigo: "RST", titulo: "Retención", icono: "⏸️", borde: "#7e22ce", fondo: "rgba(126, 34, 206, 0.08)" },
+            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "search", borde: "#2563eb", fondo: "rgba(37, 99, 235, 0.08)" },
+            { codigo: "RST", titulo: "Retención", icono: "pause", borde: "#7e22ce", fondo: "rgba(126, 34, 206, 0.08)" },
           ].map((estado) => {
             const activa = filtrosAplicados.estadoExpediente.trim().toLocaleUpperCase("es-ES") === estado.codigo;
             return (
@@ -2552,7 +2553,7 @@ export default function ExpedientesListado() {
                 style={{ background: activa ? estado.fondo : "var(--erp-surface)", borderColor: activa ? estado.borde : "var(--erp-border)", boxShadow: activa ? `0 0 0 1px ${estado.borde}` : undefined }}
               >
                 <div className="flex items-start justify-between gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: estado.fondo }}>{estado.icono}</span>
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: estado.fondo }}><MolsanIcon name={estado.icono} size={26} tone="ocean" /></span>
                   <span className="text-3xl font-extrabold tabular-nums" style={{ color: estado.borde }}>{loading ? "…" : formatearNumero(totalesEstadosDiferenciales[estado.codigo])}</span>
                 </div>
                 <div className="mt-3 font-bold text-[var(--erp-text)]">{estado.titulo}</div>
@@ -2565,15 +2566,15 @@ export default function ExpedientesListado() {
       </section>
       {/* Acciones principales: agrupadas justo debajo de los bloques de tarjetas */}
       <section className="w-full flex flex-wrap items-center justify-start gap-2 -mt-2" aria-label="Acciones de expedientes">
-        <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}>📊 Exportar Excel</button>
-        <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>🔎 Filtros avanzados</button>
+        <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}><MolsanIcon name="chart" size={17} tone="inherit" /> Exportar Excel</button>
+        <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}><MolsanIcon name="search" size={17} tone="ocean" /> Filtros avanzados</button>
         <button
           type="button"
           onClick={() => setMostrarAyudaControlPlazos(true)}
           className="inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
           style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface)", color: "var(--erp-primary)" }}
         >
-          📌 Ver Control de plazos
+          <MolsanIcon name="calendar" size={17} tone="ocean" /> Ver Control de plazos
         </button>
       </section>
         </div>
@@ -2609,14 +2610,14 @@ export default function ExpedientesListado() {
               }}
               className="min-h-[148px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
               style={{ background: activa ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: activa ? "var(--erp-primary)" : "var(--erp-border)", boxShadow: activa ? "0 0 0 1px var(--erp-primary)" : undefined }}>
-              <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: activa ? "rgba(59,130,246,.14)" : "var(--erp-surface-soft)" }}>{actividad.icono}</span><span className="text-3xl font-extrabold tabular-nums" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text)" }}>{loadingActividades ? "…" : formatearNumero(total)}</span></div>
+              <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: activa ? "rgba(59,130,246,.14)" : "var(--erp-surface-soft)" }}><MolsanIcon name={actividad.icono} size={28} tone="ocean" /></span><span className="text-3xl font-extrabold tabular-nums" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text)" }}>{loadingActividades ? "…" : formatearNumero(total)}</span></div>
               <div className="mt-3 text-sm font-bold leading-snug text-[var(--erp-text)]">{actividad.label}</div>
               <div className="mt-3">
                 {loadingAlertasControl ? (
                   <span className="inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)" }}>Calculando plazos…</span>
                 ) : reglaPlazo ? (
                   <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold ${cantidadPlazo > 0 ? "border-amber-300 bg-amber-50 text-amber-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>
-                    {cantidadPlazo > 0 ? "⚠ " : "✓ "}{reglaPlazo.etiqueta(formatearNumero(cantidadPlazo))}
+                    {cantidadPlazo > 0 ? <MolsanIcon name="alert" size={13} tone="amber" bare /> : <MolsanIcon name="check" size={13} tone="emerald" bare />}{reglaPlazo.etiqueta(formatearNumero(cantidadPlazo))}
                   </span>
                 ) : (
                   actividad.key !== "documentacion-previa" ? (
@@ -2650,7 +2651,7 @@ export default function ExpedientesListado() {
           }}
         >
           <div className="relative min-w-0 flex-1">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg" aria-hidden="true">🔎</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2"><MolsanIcon name="search" size={18} tone="ocean" bare /></span>
             <input
               type="search"
               value={busquedaRapida}
@@ -2926,7 +2927,7 @@ export default function ExpedientesListado() {
                               />
                             ) : columna.key === "carpeta_digital" ? (
                               Number.parseInt(String(expediente[columna.key] || "").match(/\d+/)?.[0] || "0", 10) > 0 ? (
-                                <button type="button" onClick={() => setCarpetaDigitalSeleccionada({ expedienteId: expediente.id_expediente || expediente.id, actividadId: actividadSeleccionada })} className="rounded-lg border px-2 py-1 text-xs font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)" }}>📂 {expediente[columna.key]}</button>
+                                <button type="button" onClick={() => setCarpetaDigitalSeleccionada({ expedienteId: expediente.id_expediente || expediente.id, actividadId: actividadSeleccionada })} className="rounded-lg border px-2 py-1 text-xs font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)" }}><MolsanIcon name="folderOpen" size={16} tone="ocean" bare /> {expediente[columna.key]}</button>
                               ) : null
                             ) : columna.key === "id_expediente" ? (
                               <Link to={`/expedientes/${encodeURIComponent(expediente.id_expediente || expediente.id || "")}`} className="font-extrabold text-[var(--erp-primary)] underline-offset-2 hover:underline" title={`Abrir ficha del expediente ${expediente.id_expediente || expediente.id || ""}`}>
@@ -3322,9 +3323,9 @@ export default function ExpedientesListado() {
             <header className="flex items-start justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
               <div>
                 <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Expedientes</p>
-                <h2 id="titulo-control-plazos" className="mt-1 text-lg font-extrabold text-slate-900">📌 Control de plazos</h2>
+                <h2 id="titulo-control-plazos" className="mt-1 text-lg font-extrabold text-slate-900"><MolsanIcon name="calendar" size={18} tone="ocean" bare /> Control de plazos</h2>
               </div>
-              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} aria-label="Cerrar" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">✕</button>
+              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} aria-label="Cerrar" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100"><MolsanIcon name="x" size={15} tone="ocean" bare /></button>
             </header>
             <div className="space-y-3 px-5 py-5 text-sm leading-6 text-slate-700">
               <p>Los recuentos por actividad son independientes del SLA global:</p>

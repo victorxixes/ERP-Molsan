@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import React, { useMemo, useCallback } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
 import "../../css/ComponentesCompartidosPremium.css";
@@ -233,7 +234,7 @@ export default function VistaSemana({
                         <div className="font-semibold truncate pl-1">
                           {c.tipo_cita} — {c.hora_inicio}
                         </div>
-                        {String(c.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(c.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(c.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-bold ${realizada ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>{realizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</div>; })() : null}
+                        {String(c.tipo_cita || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es").includes("firma") ? (() => { const realizada = Boolean(c.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(String(c.observaciones || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()); return <div className={`mt-1 inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-bold ${realizada ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>{realizada ? <><MolsanIcon name="check" size={13} tone="emerald" bare /> Firma realizada</> : <><MolsanIcon name="clock" size={13} tone="amber" bare /> Pendiente de firma</>}</div>; })() : null}
 
                         <div className="truncate text-[var(--erp-text-soft)] pl-1">
                           Notario: {c.notario_nombre || "—"}

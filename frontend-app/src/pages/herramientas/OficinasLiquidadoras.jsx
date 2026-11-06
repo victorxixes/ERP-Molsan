@@ -7,6 +7,7 @@ import React, {
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 
 // ============================================================
@@ -2218,7 +2219,7 @@ export default function OficinasLiquidadoras() {
                               transition
                             "
                           >
-                            ✎
+                            <MolsanIcon name="pen" size={15} tone="ocean" bare />
                           </button>
 
 

@@ -1,3 +1,5 @@
+import MolsanIcon from "../components/ui/MolsanIcon";
+
 import { useState, useCallback } from "react";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
@@ -528,7 +530,7 @@ export default function LoginPage() {
                   "
                   aria-hidden="true"
                 >
-                  👤
+                  <MolsanIcon name="person" size={18} tone="ocean" bare />
                 </span>
 
 
@@ -640,7 +642,7 @@ export default function LoginPage() {
                   "
                   aria-hidden="true"
                 >
-                  🔒
+                  <MolsanIcon name="lock" size={18} tone="ocean" bare />
                 </span>
 
 
@@ -756,8 +758,8 @@ export default function LoginPage() {
                   "
                 >
                   {mostrarPass
-                    ? "🙈"
-                    : "👁️"}
+                    ? <MolsanIcon name="eyeOff" size={18} tone="ocean" bare />
+                    : <MolsanIcon name="eye" size={18} tone="ocean" bare />}
                 </button>
 
               </div>

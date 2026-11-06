@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useEffect,
@@ -1243,7 +1244,7 @@ export default function EmpleadosListado({
             mb-3
             text-4xl
           ">
-            👤
+            <MolsanIcon name="person" size={38} tone="ocean" />
           </div>
 
           <div className="
@@ -1427,7 +1428,7 @@ export default function EmpleadosListado({
                       bg-blue-50
                       text-blue-600
                     ">
-                      👤
+                      <MolsanIcon name="person" size={22} tone="ocean" />
                     </div>
 
                     <div>
