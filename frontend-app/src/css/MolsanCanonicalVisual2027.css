@@ -182,6 +182,33 @@
   backdrop-filter: none !important;
 }
 
+/* Cabeceras y pies de diálogos accesibles: sin bandas ni separadores interiores. */
+body :where(
+  [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0)
+) > header {
+  color: #064675 !important;
+  border: 0 !important;
+  border-bottom: 0 !important;
+  background: #FFFFFF !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body :where(
+  [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0)
+) > header :is(h1,h2,h3) { color: #064675 !important; }
+body :where(
+  [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0)
+) > header :is(p,small) { color: #617789 !important; }
+body :where(
+  [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0)
+) > footer {
+  border-top: 0 !important;
+  background: #FFFFFF !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
 /* Tarjetas Tailwind heredadas en subpáginas: migración controlada al patrón Espacios de trabajo. */
 :where(
   .seguridad-premium-page, .seguridad-subpagina-premium,
