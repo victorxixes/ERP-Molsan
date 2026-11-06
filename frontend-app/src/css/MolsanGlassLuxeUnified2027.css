@@ -11,7 +11,7 @@
 }
 
 /* Cabecera única: Dashboard, páginas, subpáginas y portales. */
-:where(.molsan-page-header, .ng-admin-notarias .ng-hero) {
+:where(.molsan-page-header, .ng-admin-notarias .ng-hero, .erp-page-header) {
   position: relative !important;
   isolation: isolate !important;
   display: flex !important;
@@ -41,7 +41,7 @@
   filter: none !important;
   transition: none !important;
 }
-:where(.molsan-page-header, .ng-admin-notarias .ng-hero)::before {
+:where(.molsan-page-header, .ng-admin-notarias .ng-hero, .erp-page-header)::before {
   position: absolute;
   z-index: -1;
   inset: 0;
@@ -49,10 +49,10 @@
   pointer-events: none;
   background: linear-gradient(125deg, rgba(255,255,255,.11), transparent 42%, rgba(108,197,217,.09));
 }
-:where(.molsan-page-header, .ng-admin-notarias .ng-hero) :where(h1, .molsan-page-header__title) {
+:where(.molsan-page-header, .ng-admin-notarias .ng-hero, .erp-page-header) :where(h1, .molsan-page-header__title, .erp-page-title) {
   color: #fff !important;
 }
-:where(.molsan-page-header, .ng-admin-notarias .ng-hero) :where(p, .molsan-page-header__description) {
+:where(.molsan-page-header, .ng-admin-notarias .ng-hero, .erp-page-header) :where(p, .molsan-page-header__description, .erp-page-description) {
   color: #D1E4EE !important;
 }
 :where(.molsan-page-header__identity) {
@@ -79,7 +79,9 @@
   border-radius: 10px !important;
 }
 :where(.molsan-page-header__mark) { flex-shrink: 0 !important; }
-:where(.molsan-page-header__eyebrow) { color: #C6DFEC !important; }
+:where(.molsan-page-header__eyebrow, .erp-page-header .erp-eyebrow) { color: #C6DFEC !important; }
+:where(.erp-page-header) > :first-child { flex: 1 1 320px !important; min-width: 0 !important; }
+:where(.erp-page-header-status) { display: flex !important; align-items: center !important; justify-content: flex-end !important; flex-wrap: wrap !important; gap: 8px !important; margin-left: auto !important; }
 
 /* Tarjetas reales: ERP, ApoderaGest, EncargaGest y NotarGest. */
 :where(
