@@ -1111,3 +1111,14 @@ Commits de esta tanda: c4ca98f, a2fa2d7, f102d44, 290b243, 657cf18, b4f4c7d.
 ### 20.1. Conservación de estado activo en NotarGest
 
 Al retirar la piel local de las tarjetas de notaría, se ha trasladado explícitamente el estado `.ng-admin-notaria-activa` al canon visual para que la selección siga siendo visible sobre el nuevo fondo blanco. Commit: 393ef92.
+
+
+## 21. Migración de superficies de Seguridad y tokens comunes — 6 de noviembre de 2026
+
+- Seguridad: los paneles «Actividad reciente» y «Supervisión técnica» se han migrado a MolsanPremiumCard. El título, icono y descripción quedan dentro de la tarjeta; se retira la cabecera interna con línea inferior y las líneas divisorias de la lista de actividad.
+- Se retiran clases de entrada `animate-fade-in` en varias páginas/vistas y en el contenedor global App; se conservan las transiciones de interacción y animaciones de carga/diálogo que cumplen una función concreta.
+- Tokens globales de tarjeta actualizados a borde #C5D8E5 y sombras más definidas, coherentes con el acabado canónico.
+
+Commits: a49b218, c4ca98f, a2fa2d7, f102d44, 290b243, 657cf18, b4f4c7d, 7f4a250.
+
+**Validación pendiente de esta tanda:** ejecutar/confirmar build tras las migraciones JSX y los tokens; revisar Seguridad y las páginas afectadas en Preview, además de los tres portales.
