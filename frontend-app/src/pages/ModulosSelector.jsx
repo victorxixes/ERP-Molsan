@@ -4,6 +4,7 @@ import { useAuthStore } from "../store/authStore";
 import { API_BASE } from "../api/config";
 import { configurarSesionEncargaGest } from "../api/encargagest";
 import MolsanPageHeader from "../components/ui/MolsanPageHeader";
+import MolsanIcon from "../components/ui/MolsanIcon";
 import "../css/ModalesHerramientasPremium.css";
 
 const MODULOS = {
@@ -55,6 +56,42 @@ const MODULOS = {
     categoria: "CONTROL HORARIO DE EMPLEADOS",
     estilo: "fi",
   },
+};
+
+const ICONO_MODULO = {
+  expedientes: "file",
+  "provisiones-fondos": "euro",
+  dashboard: "chart",
+  agenda: "calendar",
+  empleados: "user",
+  fichajes: "clock",
+  "control-fichajes": "clock",
+  ctn: "building",
+  intranet: "message",
+  noticias: "file",
+  mensajes: "message",
+  mensajeria: "clipboard",
+  "mensajeria-gestion": "clipboard",
+  informes: "chart",
+  fusiones: "chart",
+  auditoria: "shield",
+  catalogos: "database",
+  herramientas: "settings",
+  utilidades: "settings",
+  seguridad: "shield",
+  logs: "file",
+  maestros: "database",
+  "panel-tecnico": "monitor",
+  realtime: "monitor",
+  notarios: "building",
+  documentos: "file",
+  apoderagest: "user",
+  cancelagest: "file",
+  notargest: "building",
+  encargagest: "clipboard",
+  notargestweb: "building",
+  encargagestweb: "clipboard",
+  fichajes: "clock",
 };
 
 function normalizar(valor) {
@@ -297,7 +334,7 @@ export default function ModulosSelector() {
                             : "border-violet-100 bg-gradient-to-br from-violet-50 to-fuchsia-100 text-violet-800"
                     }`}
                   >
-                    {modulo.siglas}
+                    <MolsanIcon name={ICONO_MODULO[modulo.clave] || "file"} size={28} />
                   </div>
                   <span className="mt-1 grid h-8 w-8 place-items-center rounded-full border border-slate-100 text-lg text-slate-400 transition group-hover:border-blue-100 group-hover:bg-blue-50 group-hover:text-blue-700">
                     ↗
