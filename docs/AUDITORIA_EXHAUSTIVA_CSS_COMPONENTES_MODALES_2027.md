@@ -1277,7 +1277,7 @@ Pendiente en esta sección: build final del commit más reciente y comprobación
 URL del Preview: https://molsan-premium-2027-candidate-preview.onrender.com
 
 
-## 25. Cruce focalizado JSX ↔ CSS de NotarGest y EncargaGest — 6 de noviembre de 2026, 21:xx
+## 25. Cruce focalizado JSX ↔ CSS de NotarGest y EncargaGest — 6 de noviembre de 2026, 21:31
 
 Se ha repetido el cruce de clases CSS con sus consumidores JSX sobre el HEAD de `molsan-premium-deep-cleanup-continuation`, sin inferir que una clase esté muerta por no aparecer literalmente en el componente principal.
 
