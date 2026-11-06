@@ -183,3 +183,12 @@ Commits de corrección:
 - Probar especialmente anidamiento de vista previa de cierre y visor documental sobre sus diálogos padre.
 - Verificar estados de carga, validación, error, guardado y bloqueo de cierre durante operaciones.
 - No se declara completada la auditoría de modales de todos los módulos: esta pasada cubre los componentes indicados y no sustituye la matriz completa de rutas/subpáginas.
+
+### Resultado de CI de las correcciones incrementales
+
+El commit de código `315f84c` ha terminado con resultado correcto en los tres workflows asociados:
+- `MOLSAN frontend premium build`: success.
+- `Frontend dependency security audit`: success.
+- `Validar Fichaje Molsan`: success.
+
+La actualización posterior `6ca454c` solo añade esta documentación. CI correcto confirma compilación y controles automatizados disponibles; no sustituye las pruebas interactivas en navegador ni el despliegue de Preview.
