@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import "../../css/HerramientasPremium.css";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 /**
- * CENTRAL DE CATÁLOGOS — MOLSAN ERP PREMIUM 2027 · GLASS LUXE
+ * CENTRAL DE CATÁLOGOS — MOLSAN ERP
  * Reúne las pantallas de mantenimiento de datos maestros existentes.
  * Cada tarjeta conserva la ruta y el origen de datos de su catálogo.
  */
@@ -155,20 +155,10 @@ const GRUPOS = [
 
 export default function Catalogos() {
   return (
-    <main className="catalogos-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8 animate-fadeIn">
-      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="relative flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl shadow-sm">▦</div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">MOLSAN ERP PREMIUM 2027</p>
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Catálogos</h1>
-            <p className="mt-1 text-sm text-slate-500">Centraliza los datos maestros que utilizan los módulos y procesos de la gestoría.</p>
-          </div>
-        </div>
-      </header>
+    <main className="erp-page min-h-full space-y-7">
+      <MolsanPageHeader mark="CA" title="Catálogos" description="Centraliza los datos maestros que utilizan los módulos y procesos de la gestoría." />
 
-      <div className="rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 text-sm text-blue-900">
+      <div className="px-4 py-3">
         Los catálogos conservan sus datos y pantallas actuales. Esta sección los reúne en un único acceso para facilitar su mantenimiento.
       </div>
 
@@ -176,33 +166,33 @@ export default function Catalogos() {
         const items = CATALOGOS.filter((item) => item.grupo === grupo);
         return (
           <section key={grupo} className="space-y-3">
-            <h2 className="text-lg font-bold tracking-tight text-slate-800">{grupo}</h2>
+            <h2>{grupo}</h2>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {items.map((item) => (
                 <Link
                   key={item.ruta}
                   to={item.ruta}
-                  className={`group relative overflow-hidden rounded-[22px] border p-5 shadow-[0_12px_35px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)] active:scale-[0.98] ${item.destacado ? "border-blue-200/80 bg-blue-50/70" : "border-slate-200/80 bg-white/85"}`}
+                  className={`group relative overflow-hidden p-5 ${item.destacado ? "" : ""}`}
                 >
                   <div className="flex items-start gap-4">
-                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl ${item.destacado ? "border-blue-200 bg-blue-100" : "border-slate-200 bg-slate-50"}`}>
+                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center ${item.destacado ? "" : ""}`}>
                       {item.icon}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-base font-semibold text-slate-800">{item.titulo}</h3>
-                      <p className="mt-1.5 text-sm leading-5 text-slate-500">{item.descripcion}</p>
+                      <h3>{item.titulo}</h3>
+                      <p className="mt-1.5">{item.descripcion}</p>
                       {item.avisoConstruccion && (
                         <div className="mt-3 flex flex-wrap items-center gap-2">
-                          <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-amber-800">
+                          <span className="inline-flex items-center px-2.5 py-1 uppercase">
                             En construcción
                           </span>
-                          <span className="text-xs font-medium text-slate-500">
+                          <span>
                             Acceso disponible
                           </span>
                         </div>
                       )}
                     </div>
-                    <span className="text-slate-300 transition-all group-hover:translate-x-1 group-hover:text-blue-500">→</span>
+                    <span>→</span>
                   </div>
                 </Link>
               ))}

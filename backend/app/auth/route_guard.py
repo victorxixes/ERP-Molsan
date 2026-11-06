@@ -50,7 +50,7 @@ _PREFIJOS_MODULO = (
     ("/api/asignar-password", "seguridad"),
     ("/api/permisos-repair", "seguridad"),
     ("/api/permisos", "seguridad"),
-    ("/api/catalogos-absis", "maestros"),
+    ("/api/catalogos-absis", "catalogos"),
     ("/api/oficinas-catalogo", "catalogos"),
     ("/api/tipos-impositivos", "maestros"),
     ("/api/acciones-expediente", "expedientes"),
@@ -91,10 +91,9 @@ _PREFIJOS_MODULO = (
     ("/api/noticias", "noticias"),
     ("/api/realtime", "realtime"),
     ("/api/dashboard", "dashboard"),
-    # El catálogo de permisos no define un módulo "informes" independiente.
-    # Los informes y exportaciones generales se gestionan dentro de utilidades.
-    ("/api/informes-sla", "utilidades"),
-    ("/api/informes", "utilidades"),
+    # Informes es un módulo propio en la navegación y en la matriz de permisos.
+    ("/api/informes-sla", "informes"),
+    ("/api/informes", "informes"),
     ("/api/utilidades", "utilidades"),
     ("/api/absis", "utilidades"),
     ("/api/importador-absis", "utilidades"),
@@ -115,6 +114,16 @@ _RUTAS_CON_AUTORIZACION_INTERNA = {
     # Estas rutas aplican autorización dinámica por portal (NotarGestWeb o
     # EncargaGestWeb); no deben exigir además el permiso genérico ctn.
     "/api/ctn/accesos-portales/resumen": "ctn",
+    # El selector de notarios se comparte con Agenda: la ruta aplica CTN:ver
+    # o Agenda:ver y oculta los IBAN a quien solo tiene acceso a Agenda.
+    "/api/ctn/notarias": "ctn",
+    "/api/ctn/notarias/{notaria_id}": "ctn",
+    # Entidades bancarias se consume desde Utilidades y Provisiones/Catálogos;
+    # sus endpoints aplican permisos alternativos según lectura o edición.
+    "/api/entidades-bancarias": "maestros",
+    "/api/entidades-bancarias/auditoria-sucesiones": "maestros",
+    "/api/entidades-bancarias/importar-excel": "maestros",
+    "/api/entidades-bancarias/{entidad_id}": "maestros",
     "/api/ctn/notarias/{notaria_id}/accesos-portales": "ctn",
     "/api/ctn/notarias/{notaria_id}/accesos-portales/{portal}/password": "ctn",
     "/api/ctn/notarias/{notaria_id}/accesos-portales/{portal}/habilitado": "ctn",

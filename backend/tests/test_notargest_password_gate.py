@@ -7,15 +7,39 @@ from backend.app.notargest.router import (
     _requiere_cambio_password_notargest,
     _ruta_permitida_durante_cambio_password,
     _es_administrador_notargest,
+    _registrar_password_inicial_notargest,
+    _validar_password_login_notargest,
+    hash_password,
+    normalizar_nif,
+    verificar_password,
 )
 
 
 class NotarGestPasswordGateTests(unittest.TestCase):
-    def test_provisional_password_requires_change(self):
+    def test_initial_nif_password_requires_a_password_change(self):
         notaria = SimpleNamespace(
             notargest_cambiar_password=True,
             notargest_password_provisional=True,
+            notargest_password_hash=None,
         )
+        nif = "12345678Z"
+        _registrar_password_inicial_notargest(notaria, nif)
+        self.assertTrue(_requiere_cambio_password_notargest(notaria))
+        self.assertTrue(verificar_password(nif, notaria.notargest_password_hash))
+        self.assertTrue(notaria.notargest_password_provisional)
+
+    def test_nif_normalization_accepts_uppercase_letter_and_separators(self):
+        self.assertEqual(normalizar_nif(" 12345678z "), "12345678Z")
+        self.assertEqual(normalizar_nif("12-345-678-Z"), "12345678Z")
+
+    def test_reset_to_nif_keeps_the_forced_password_change(self):
+        nif = "12345678Z"
+        notaria = SimpleNamespace(
+            notargest_cambiar_password=True,
+            notargest_password_provisional=True,
+            notargest_password_hash=hash_password(nif),
+        )
+        self.assertTrue(_validar_password_login_notargest(notaria, nif, nif))
         self.assertTrue(_requiere_cambio_password_notargest(notaria))
 
     def test_changed_password_does_not_require_change(self):
@@ -33,7 +57,10 @@ class NotarGestPasswordGateTests(unittest.TestCase):
 
     def test_admin_only_guard_recognizes_admin_roles(self):
         self.assertTrue(_es_administrador_notargest(SimpleNamespace(usuario="admin", rol=None)))
+        self.assertTrue(_es_administrador_notargest(SimpleNamespace(usuario="cuenta-tecnica", rol_id=0)))
         self.assertTrue(_es_administrador_notargest(SimpleNamespace(usuario="operador", rol=SimpleNamespace(nombre="Administrador"))))
+        self.assertTrue(_es_administrador_notargest(SimpleNamespace(usuario="operador", rol=SimpleNamespace(nombre="Superadministrador"))))
+        self.assertTrue(_es_administrador_notargest(SimpleNamespace(usuario="operador", rol=SimpleNamespace(nombre="Administrador del sistema"))))
         self.assertFalse(_es_administrador_notargest(SimpleNamespace(usuario="operador", rol=SimpleNamespace(nombre="Gestor"))))
 
     def test_internal_notargest_writes_require_correct_permission(self):

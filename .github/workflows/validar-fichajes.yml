@@ -23,6 +23,9 @@ jobs:
   build-frontend:
     name: Build del frontend
     runs-on: ubuntu-latest
+    env:
+      VITE_API_URL: https://molsan-glass-luxe-preview-api.onrender.com/api
+      VITE_WS_URL: wss://molsan-glass-luxe-preview-api.onrender.com
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
@@ -33,7 +36,7 @@ jobs:
       - name: Instalar dependencias y compilar
         working-directory: frontend-app
         run: |
-          npm install
+          npm install --include=optional
           npm run build
 
   syntax-backend:

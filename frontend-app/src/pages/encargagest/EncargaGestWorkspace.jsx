@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import "../../css/EncargaGestWorkspace.css";
 import Sidebar from "../../components/Sidebar";
 import EncargaGest from "./EncargaGest";
 import Ctn from "../ctn/Ctn";
@@ -29,7 +28,7 @@ export default function EncargaGestWorkspace({ page }) {
   };
 
   return (
-    <div className="encargagest-workspace-premium apoderagest encargagest min-h-screen">
+    <div className="min-h-screen">
       <Sidebar
         brandName="EncargaGest"
         navigationItems={items}
@@ -46,7 +45,7 @@ export default function EncargaGestWorkspace({ page }) {
         {page === "mensajes" && (
           empleado?.id
             ? <Mensajes usuarioId={empleado.id} />
-            : <div className="p-6 text-white/70">Cargando módulo de mensajes…</div>
+            : <div className="p-6">Cargando módulo de mensajes…</div>
         )}
       </main>
     </div>

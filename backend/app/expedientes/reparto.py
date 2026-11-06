@@ -189,16 +189,37 @@ def asignar_gestor_automaticamente(db: Session, expediente: Expediente, activida
 
 
 def usuario_admin_expedientes(usuario):
-    """Reconoce únicamente administradores globales para no saltarse el ámbito de reparto."""
+    """Reconoce admin global por rol técnico 0, flags, cuenta/rol normalizado o permiso explícito de seguridad."""
     import unicodedata
 
     def norm(valor):
         texto = unicodedata.normalize("NFD", str(valor or "").strip().casefold())
-        return "".join(c for c in texto if unicodedata.category(c) != "Mn")
+        texto = "".join(c for c in texto if unicodedata.category(c) != "Mn")
+        return " ".join(texto.replace("_", " ").replace("-", " ").split())
+
+    if not usuario:
+        return False
 
     rol = getattr(usuario, "rol", None)
-    nombre_rol = norm(getattr(rol, "nombre", ""))
-    if nombre_rol in {"admin", "administrador", "superadmin", "super administrador"}:
+    nombre_rol = norm(getattr(rol, "nombre", rol))
+    usuario_nombre = norm(getattr(usuario, "usuario", ""))
+    rol_id = getattr(usuario, "rol_id", getattr(rol, "id", None))
+    rol_id_admin = (
+        (isinstance(rol_id, int) and not isinstance(rol_id, bool) and rol_id == 0)
+        or (isinstance(rol_id, str) and rol_id.strip() == "0")
+    )
+
+    if (
+        getattr(usuario, "es_admin", False) is True
+        or getattr(usuario, "is_admin", False) is True
+        or rol_id_admin
+        or usuario_nombre == "admin"
+        or nombre_rol in {
+            "admin", "administrador", "administradora", "superadmin",
+            "super administrador", "super administradora", "superusuario",
+            "super usuario", "superuser", "root", "administrador general",
+        }
+    ):
         return True
 
     for origen in (

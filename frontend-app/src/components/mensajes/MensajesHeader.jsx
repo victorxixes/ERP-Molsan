@@ -1,14 +1,12 @@
 import { useMemo } from "react";
-import "../../css/ComponentesCompartidosPremium.css";
 
 /**
- * MENSAJES HEADER — MOLSAN ERP SAAS PREMIUM 2027
+ * MENSAJES HEADER
  *
  * Cabecera de conversación:
  * - Avatar
  * - Estado online
  * - Nombre completo
- * - Glass Luxe claro
  */
 
 export default function MensajesHeader({
@@ -29,72 +27,54 @@ export default function MensajesHeader({
 
   return (
     <div
-      className="
-        mb-4
-        flex
-        items-center
-        justify-between
-        gap-3
-        rounded-2xl
-        border
-        border-slate-200/80
-        bg-white/80
-        px-4
-        py-3
-        shadow-sm
-        animate-fadeIn
-      "
+      className="molsan-chat-header erp-card mb-4
+ flex
+ items-center
+ justify-between
+ gap-3
+ 
+ 
+ 
+ 
+ px-4
+ py-3"
     >
       {/* =====================================================
           USUARIO
       ===================================================== */}
 
       <div
-        className="
-          flex
-          min-w-0
-          items-center
-          gap-3
-        "
+        className="flex
+ min-w-0
+ items-center
+ gap-3"
       >
         {/* Avatar */}
 
         <div
-          className="
-            relative
-            h-12
-            w-12
-            shrink-0
-          "
+          className="relative
+ h-12
+ w-12
+ shrink-0"
         >
           <img
             src={fotoUrl}
             alt=""
-            className="
-              h-12
-              w-12
-              rounded-full
-              border
-              border-slate-200
-              object-cover
-              shadow-sm
-            "
+            className="h-12
+ w-12
+ 
+ 
+ 
+ object-cover"
           />
 
           {usuario && (
             <span
-              className="
-                absolute
-                bottom-0
-                right-0
-                h-3.5
-                w-3.5
-                rounded-full
-                border-2
-                border-white
-                bg-emerald-500
-                animate-pulse
-              "
+              className="absolute
+ bottom-0
+ right-0
+ h-3.5
+ w-3.5"
             />
           )}
         </div>
@@ -103,45 +83,30 @@ export default function MensajesHeader({
 
         <div className="min-w-0">
           <div
-            className="
-              truncate
-              text-base
-              font-bold
-              tracking-tight
-              text-slate-700
-            "
+            className="molsan-chat-header__name truncate"
           >
             {usuario?.nombre}{" "}
             {usuario?.apellidos}
           </div>
 
           <div
-            className="
-              mt-0.5
-              flex
-              items-center
-              gap-1.5
-              text-xs
-            "
+            className="mt-0.5
+ flex
+ items-center
+ gap-1.5"
           >
             <span
-              className={`
-                h-1.5
-                w-1.5
-                rounded-full
-                ${
-                  usuario
-                    ? "bg-emerald-500"
-                    : "bg-slate-300"
-                }
-              `}
+              className={`molsan-chat-header__presence h-1.5
+ w-1.5
+ 
+ ${usuario ? "is-online" : "is-offline"}`}
             />
 
             <span
               className={
                 usuario
-                  ? "text-emerald-600"
-                  : "text-slate-400"
+                  ? ""
+                  : ""
               }
             >
               {usuario
@@ -157,20 +122,15 @@ export default function MensajesHeader({
       ===================================================== */}
 
       <div
-        className="
-          hidden
-          sm:flex
-          items-center
-          rounded-full
-          border
-          border-blue-100
-          bg-blue-50
-          px-3
-          py-1.5
-          text-[11px]
-          font-medium
-          text-blue-500
-        "
+        className="molsan-chat-header__tag hidden
+ sm:flex
+ items-center
+ 
+ 
+ 
+ 
+ px-3
+ py-1.5"
       >
         Mensajería interna
       </div>

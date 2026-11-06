@@ -41,6 +41,9 @@ jobs:
 
   frontend-build:
     runs-on: ubuntu-latest
+    env:
+      VITE_API_URL: https://molsan-glass-luxe-preview-api.onrender.com/api
+      VITE_WS_URL: wss://molsan-glass-luxe-preview-api.onrender.com
     defaults:
       run:
         working-directory: frontend-app
@@ -50,6 +53,6 @@ jobs:
         with:
           node-version: "20"
       - name: Instalar dependencias
-        run: npm install
+        run: npm install --include=optional
       - name: Construir frontend
         run: npm run build

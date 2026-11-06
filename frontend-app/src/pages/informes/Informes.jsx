@@ -1,10 +1,13 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
 import Chart from "chart.js/auto";
 import SelectSJ from "../../components/ui/SelectSJ";
-import "../../css/ModalesHerramientasPremium.css";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 const MESES = [
   { value: 1, label: "Enero" },
@@ -23,8 +26,8 @@ const MESES = [
 
 
 /* ============================================================
-   INFORMES — MOLSAN ERP PREMIUM 2027
-   ESTILO GLASS LUXE CLARO
+   INFORMES
+   
 ============================================================ */
 
 function InformeCitasApoderados() {
@@ -345,10 +348,10 @@ function InformeCitasApoderados() {
               padding: 40px;
 
               background:
-                #f3f7fc;
+                #ffffff;
 
               color:
-                #24344d;
+                #18364b;
             }
 
 
@@ -364,7 +367,7 @@ function InformeCitasApoderados() {
                 18px;
 
               border:
-                1px solid #dbe7f4;
+                1px solid #d8e4ec;
 
               box-shadow:
                 0 10px 30px
@@ -381,7 +384,7 @@ function InformeCitasApoderados() {
                 5px;
 
               color:
-                #183b66;
+                #064675;
             }
 
 
@@ -394,7 +397,7 @@ function InformeCitasApoderados() {
                 0;
 
               color:
-                #6f86a3;
+                #617789;
             }
 
 
@@ -417,19 +420,19 @@ function InformeCitasApoderados() {
             th {
 
               background:
-                #edf4fc;
+                #eaf2f8;
 
               padding:
                 11px;
 
               border-bottom:
-                2px solid #d4e2f1;
+                2px solid #d8e4ec;
 
               text-align:
                 left;
 
               color:
-                #31577f;
+                #064675;
             }
 
 
@@ -439,14 +442,14 @@ function InformeCitasApoderados() {
                 9px;
 
               border-bottom:
-                1px solid #e4edf6;
+                1px solid #d8e4ec;
             }
 
 
             tr:nth-child(even) {
 
               background:
-                #f8fbfe;
+                #f2f7fb;
             }
 
 
@@ -462,7 +465,7 @@ function InformeCitasApoderados() {
                 600;
 
               color:
-                #31577f;
+                #064675;
             }
 
 
@@ -629,10 +632,10 @@ function InformeCitasApoderados() {
 
 
     const colorTexto =
-      "#7186a3";
+      "#617789";
 
     const colorGrid =
-      "rgba(102, 135, 170, 0.13)";
+      "rgba(97, 119, 137, 0.13)";
 
 
     /* --------------------------------------------------------
@@ -666,10 +669,10 @@ function InformeCitasApoderados() {
                 ),
 
               backgroundColor:
-                "rgba(96, 165, 250, 0.78)",
+                "rgba(6, 70, 117, 0.78)",
 
               borderColor:
-                "#60a5fa",
+                "#064675",
 
               borderWidth:
                 1,
@@ -742,7 +745,7 @@ function InformeCitasApoderados() {
 
               border: {
                 color:
-                  "#dbe7f4",
+                  "#d8e4ec",
               },
 
             },
@@ -771,7 +774,7 @@ function InformeCitasApoderados() {
 
               border: {
                 color:
-                  "#dbe7f4",
+                  "#d8e4ec",
               },
 
             },
@@ -815,10 +818,10 @@ function InformeCitasApoderados() {
                 ),
 
               backgroundColor:
-                "rgba(52, 211, 153, 0.78)",
+                "rgba(6, 70, 117, 0.78)",
 
               borderColor:
-                "#34d399",
+                "#064675",
 
               borderWidth:
                 1,
@@ -891,7 +894,7 @@ function InformeCitasApoderados() {
 
               border: {
                 color:
-                  "#dbe7f4",
+                  "#d8e4ec",
               },
 
             },
@@ -920,7 +923,7 @@ function InformeCitasApoderados() {
 
               border: {
                 color:
-                  "#dbe7f4",
+                  "#d8e4ec",
               },
 
             },
@@ -964,7 +967,7 @@ function InformeCitasApoderados() {
                 ),
 
               borderColor:
-                "#f43f5e",
+                "#064675",
 
               backgroundColor:
                 "rgba(244, 63, 94, 0.10)",
@@ -985,7 +988,7 @@ function InformeCitasApoderados() {
                 6,
 
               pointBackgroundColor:
-                "#f43f5e",
+                "#064675",
 
               pointBorderColor:
                 "#ffffff",
@@ -1055,7 +1058,7 @@ function InformeCitasApoderados() {
 
               border: {
                 color:
-                  "#dbe7f4",
+                  "#d8e4ec",
               },
 
             },
@@ -1084,7 +1087,7 @@ function InformeCitasApoderados() {
 
               border: {
                 color:
-                  "#dbe7f4",
+                  "#d8e4ec",
               },
 
             },
@@ -1184,18 +1187,16 @@ function InformeCitasApoderados() {
   return (
 
     <div
-      className="
-        informes-premium-page
-        min-h-screen
-        bg-gradient-to-br
-        from-[#eef5fb]
-        via-[#f7faff]
-        to-[#eaf2fb]
-        text-slate-700
-        p-4
-        md:p-6
-        space-y-6
-      "
+      className="informes-premium-page
+ min-h-screen
+ 
+ 
+ 
+ 
+ 
+ p-4
+ md:p-6
+ space-y-6"
     >
 
       {/* ======================================================
@@ -1203,82 +1204,67 @@ function InformeCitasApoderados() {
       ====================================================== */}
 
       <div
-        className="
-          relative
-          overflow-hidden
-          bg-white/70
-          backdrop-blur-xl
-          border border-white/80
-          rounded-2xl
-          p-6
-          shadow-[0_10px_35px_rgba(55,85,120,0.10)]
-        "
+        className="relative
+ overflow-hidden
+ 
+ 
+ 
+ 
+ p-6"
       >
 
         <div
-          className="
-            absolute
-            -top-24
-            -right-24
-            w-64
-            h-64
-            bg-blue-300/20
-            rounded-full
-            blur-3xl
-            pointer-events-none
-          "
+          className="absolute
+ -top-24
+ -right-24
+ w-64
+ h-64
+ 
+ 
+ 
+ pointer-events-none"
         />
 
         <div
-          className="
-            absolute
-            -bottom-24
-            -left-24
-            w-64
-            h-64
-            bg-purple-300/15
-            rounded-full
-            blur-3xl
-            pointer-events-none
-          "
+          className="absolute
+ -bottom-24
+ -left-24
+ w-64
+ h-64
+ 
+ 
+ 
+ pointer-events-none"
         />
 
 
         <div
-          className="
-            relative
-            flex
-            flex-col
-            md:flex-row
-            md:items-center
-            md:justify-between
-            gap-5
-          "
+          className="relative
+ flex
+ flex-col
+ md:flex-row
+ md:items-center
+ md:justify-between
+ gap-5"
         >
 
           <div>
 
             <div
-              className="
-                flex
-                items-center
-                gap-3
-              "
+              className="flex
+ items-center
+ gap-3"
             >
 
               <div
-                className="
-                  w-12
-                  h-12
-                  rounded-xl
-                  bg-blue-100
-                  border border-blue-200
-                  flex
-                  items-center
-                  justify-center
-                  text-xl
-                  shadow-sm
-                "
+                className="w-12
+ h-12
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
               >
                 📊
               </div>
@@ -1287,23 +1273,14 @@ function InformeCitasApoderados() {
               <div>
 
                 <h1
-                  className="
-                    text-2xl
-                    md:text-3xl
-                    font-bold
-                    text-slate-800
-                  "
+                 
                 >
                   Informes de Apoderados
                 </h1>
 
 
                 <p
-                  className="
-                    text-sm
-                    text-slate-500
-                    mt-1
-                  "
+                  className="mt-1"
                 >
                   Estadísticas de actividad,
                   presencialidad y desplazamientos.
@@ -1315,37 +1292,23 @@ function InformeCitasApoderados() {
 
 
             <div
-              className="
-                mt-4
-                inline-flex
-                items-center
-                gap-2
-                px-3
-                py-1.5
-                rounded-full
-                bg-white/80
-                border border-slate-200
-                text-slate-500
-                text-xs
-                shadow-sm
-              "
+              className="mt-4
+ inline-flex
+ items-center
+ gap-2
+ px-3
+ py-1.5"
             >
 
               <span
-                className="
-                  w-2
-                  h-2
-                  rounded-full
-                  bg-blue-400
-                "
+                className="w-2
+ h-2"
               />
 
               Periodo:
 
               <strong
-                className="
-                  text-slate-700
-                "
+               
               >
                 {mesActual} {año}
               </strong>
@@ -1364,37 +1327,25 @@ function InformeCitasApoderados() {
       ====================================================== */}
 
       <div
-        className="
-          bg-white/70
-          backdrop-blur-xl
-          border border-white/80
-          rounded-2xl
-          p-6
-          shadow-[0_10px_35px_rgba(55,85,120,0.09)]
-        "
+        className="p-6"
       >
 
         <div
-          className="
-            flex
-            items-center
-            gap-3
-            mb-5
-          "
+          className="flex
+ items-center
+ gap-3
+ mb-5"
         >
 
           <div
-            className="
-              w-9
-              h-9
-              rounded-lg
-              bg-blue-50
-              border border-blue-100
-              flex
-              items-center
-              justify-center
-              text-blue-500
-            "
+            className="w-9
+ h-9
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
           >
             ⚙
           </div>
@@ -1403,20 +1354,13 @@ function InformeCitasApoderados() {
           <div>
 
             <h2
-              className="
-                text-lg
-                font-semibold
-                text-slate-800
-              "
+             
             >
               Filtros del informe
             </h2>
 
             <p
-              className="
-                text-xs
-                text-slate-400
-              "
+             
             >
               Selecciona el periodo y filtra los resultados.
             </p>
@@ -1427,46 +1371,32 @@ function InformeCitasApoderados() {
 
 
         <div
-          className="
-            grid
-            grid-cols-1
-            md:grid-cols-12
-            gap-5
-            items-end
-          "
+          className="grid
+ grid-cols-1
+ md:grid-cols-12
+ gap-5
+ items-end"
         >
 
           {/* MES */}
 
           <div
-            className="
-              md:col-span-3
-              flex
-              flex-col
-            "
+            className="md:col-span-3
+ flex
+ flex-col"
           >
 
             <label
-              className="
-                text-slate-500
-                text-xs
-                font-semibold
-                uppercase
-                tracking-wide
-                mb-2
-              "
+              className="uppercase
+ 
+ mb-2"
             >
               Mes
             </label>
 
 
             <div
-              className="
-                rounded-xl
-                bg-white
-                border border-slate-200
-                shadow-sm
-              "
+             
             >
 
               <SelectSJ
@@ -1488,22 +1418,15 @@ function InformeCitasApoderados() {
           {/* AÑO */}
 
           <div
-            className="
-              md:col-span-2
-              flex
-              flex-col
-            "
+            className="md:col-span-2
+ flex
+ flex-col"
           >
 
             <label
-              className="
-                text-slate-500
-                text-xs
-                font-semibold
-                uppercase
-                tracking-wide
-                mb-2
-              "
+              className="uppercase
+ 
+ mb-2"
             >
               Año
             </label>
@@ -1511,21 +1434,12 @@ function InformeCitasApoderados() {
 
             <input
               type="number"
-              className="
-                w-full
-                bg-white
-                border border-slate-200
-                rounded-xl
-                px-3
-                py-2.5
-                text-slate-700
-                outline-none
-                transition
-                shadow-sm
-                focus:border-blue-400
-                focus:ring-2
-                focus:ring-blue-100
-              "
+              className="w-full
+ 
+ 
+ 
+ px-3
+ py-2.5"
               value={año}
               onChange={(e) =>
                 setAño(
@@ -1542,41 +1456,28 @@ function InformeCitasApoderados() {
           {/* BUSCADOR */}
 
           <div
-            className="
-              md:col-span-7
-              flex
-              flex-col
-            "
+            className="md:col-span-7
+ flex
+ flex-col"
           >
 
             <label
-              className="
-                text-slate-500
-                text-xs
-                font-semibold
-                uppercase
-                tracking-wide
-                mb-2
-              "
+              className="uppercase
+ 
+ mb-2"
             >
               Buscar apoderado
             </label>
 
 
             <div
-              className="
-                relative
-              "
+              className="relative"
             >
 
               <span
-                className="
-                  absolute
-                  left-3
-                  top-1/2
-                  -translate-y-1/2
-                  text-slate-400
-                "
+                className="absolute
+ left-3
+ top-1/2"
               >
                 🔎
               </span>
@@ -1584,23 +1485,15 @@ function InformeCitasApoderados() {
 
               <input
                 type="text"
-                className="
-                  w-full
-                  bg-white
-                  border border-slate-200
-                  rounded-xl
-                  pl-10
-                  pr-4
-                  py-2.5
-                  text-slate-700
-                  placeholder-slate-400
-                  outline-none
-                  transition
-                  shadow-sm
-                  focus:border-blue-400
-                  focus:ring-2
-                  focus:ring-blue-100
-                "
+                className="w-full
+ 
+ 
+ 
+ pl-10
+ pr-4
+ py-2.5
+ 
+ placeholder-slate-400"
                 placeholder="Buscar por nombre..."
                 value={filtroNombre}
                 onChange={(e) =>
@@ -1624,13 +1517,11 @@ function InformeCitasApoderados() {
       ====================================================== */}
 
       <div
-        className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          lg:grid-cols-5
-          gap-4
-        "
+        className="grid
+ grid-cols-1
+ sm:grid-cols-2
+ lg:grid-cols-5
+ gap-4"
       >
 
         <KpiCard
@@ -1685,41 +1576,30 @@ function InformeCitasApoderados() {
       ====================================================== */}
 
       <div
-        className="
-          flex
-          flex-col
-          sm:flex-row
-          sm:items-center
-          justify-between
-          gap-4
-          bg-white/65
-          backdrop-blur-xl
-          border border-white/80
-          rounded-2xl
-          p-4
-          shadow-[0_8px_25px_rgba(55,85,120,0.07)]
-        "
+        className="flex
+ flex-col
+ sm:flex-row
+ sm:items-center
+ justify-between
+ gap-4
+ 
+ 
+ 
+ 
+ p-4"
       >
 
         <div>
 
           <div
-            className="
-              text-slate-700
-              font-semibold
-              text-sm
-            "
+           
           >
             Exportar informe
           </div>
 
 
           <div
-            className="
-              text-slate-400
-              text-xs
-              mt-1
-            "
+            className="mt-1"
           >
             Descarga los datos del periodo seleccionado.
           </div>
@@ -1728,57 +1608,37 @@ function InformeCitasApoderados() {
 
 
         <div
-          className="
-            flex
-            gap-3
-            flex-wrap
-          "
+          className="flex
+ gap-3
+ flex-wrap"
         >
 
-          <button
+          <button type="button"
             onClick={exportarExcel}
-            className="
-              px-4
-              py-2.5
-              rounded-xl
-              bg-emerald-500
-              hover:bg-emerald-600
-              border border-emerald-400
-              text-white
-              text-sm
-              font-semibold
-              shadow-[0_6px_18px_rgba(16,185,129,0.22)]
-              transition
-              active:scale-[0.97]
-              flex
-              items-center
-              gap-2
-            "
+           
           >
-            <span>📗</span>
-            Exportar Excel
+            <span className="molsan-export-excel__icon" aria-hidden="true">📗</span>
+            Exportar a Excel
           </button>
 
 
-          <button
+          <button type="button"
             onClick={exportarPDF}
-            className="
-              px-4
-              py-2.5
-              rounded-xl
-              bg-rose-500
-              hover:bg-rose-600
-              border border-rose-400
-              text-white
-              text-sm
-              font-semibold
-              shadow-[0_6px_18px_rgba(244,63,94,0.20)]
-              transition
-              active:scale-[0.97]
-              flex
-              items-center
-              gap-2
-            "
+            className="px-4
+ py-2.5
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ gap-2"
           >
             <span>📄</span>
             Exportar PDF
@@ -1794,47 +1654,30 @@ function InformeCitasApoderados() {
       ====================================================== */}
 
       <div
-        className="
-          bg-white/72
-          backdrop-blur-xl
-          border border-white/80
-          rounded-2xl
-          shadow-[0_10px_35px_rgba(55,85,120,0.09)]
-          overflow-hidden
-        "
+        className="overflow-hidden"
       >
 
         <div
-          className="
-            px-6
-            py-5
-            border-b border-slate-200/80
-            flex
-            items-center
-            justify-between
-            gap-4
-          "
+          className="px-6
+ py-5
+ 
+ flex
+ items-center
+ justify-between
+ gap-4"
         >
 
           <div>
 
             <h2
-              className="
-                text-xl
-                font-bold
-                text-slate-800
-              "
+             
             >
               Detalle por apoderado
             </h2>
 
 
             <p
-              className="
-                text-xs
-                text-slate-400
-                mt-1
-              "
+              className="mt-1"
             >
               {filtrada.length} registros encontrados
             </p>
@@ -1843,16 +1686,8 @@ function InformeCitasApoderados() {
 
 
           <div
-            className="
-              px-3
-              py-1.5
-              rounded-lg
-              bg-blue-50
-              border border-blue-100
-              text-xs
-              text-blue-600
-              font-medium
-            "
+            className="px-3
+ py-1.5"
           >
             {mesActual} {año}
           </div>
@@ -1861,24 +1696,15 @@ function InformeCitasApoderados() {
 
 
         <div
-          className="
-            overflow-x-auto
-          "
+          className="overflow-x-auto"
         >
 
           <table
-            className="
-              w-full
-              text-slate-700
-              text-sm
-            "
+            className="w-full"
           >
 
             <thead
-              className="
-                bg-blue-50/70
-                border-b border-blue-100
-              "
+             
             >
 
               <tr>
@@ -1931,28 +1757,18 @@ function InformeCitasApoderados() {
 
                   <td
                     colSpan={4}
-                    className="
-                      py-12
-                      text-center
-                      text-slate-400
-                    "
+                    className="py-12"
                   >
 
                     <div
-                      className="
-                        text-3xl
-                        mb-2
-                      "
+                      className="mb-2"
                     >
                       📭
                     </div>
 
 
                     <div
-                      className="
-                        text-sm
-                        text-slate-500
-                      "
+                     
                     >
                       No hay datos para los filtros seleccionados.
                     </div>
@@ -1971,59 +1787,38 @@ function InformeCitasApoderados() {
                         row.apoderado_id ??
                         `${row.nombre}-${index}`
                       }
-                      className="
-                        border-b
-                        border-slate-100
-                        hover:bg-blue-50/45
-                        transition
-                        group
-                      "
+                      className="group"
                     >
 
                       {/* APODERADO */}
 
                       <td
-                        className="
-                          py-3.5
-                          px-6
-                          text-left
-                        "
+                        className="py-3.5
+ px-6"
                       >
 
                         <div
-                          className="
-                            flex
-                            items-center
-                            gap-3
-                          "
+                          className="flex
+ items-center
+ gap-3"
                         >
 
                           <div
-                            className="
-                              w-8
-                              h-8
-                              rounded-lg
-                              bg-blue-50
-                              border border-blue-100
-                              flex
-                              items-center
-                              justify-center
-                              text-xs
-                              text-blue-600
-                              font-semibold
-                              group-hover:bg-blue-100
-                              transition
-                            "
+                            className="w-8
+ h-8
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
                           >
                             {index + 1}
                           </div>
 
 
                           <span
-                            className="
-                              font-semibold
-                              text-slate-700
-                            "
+                           
                           >
                             {row.nombre ||
                               "Sin nombre"}
@@ -2037,26 +1832,16 @@ function InformeCitasApoderados() {
                       {/* VC */}
 
                       <td
-                        className="
-                          py-3.5
-                          px-6
-                          text-center
-                        "
+                        className="py-3.5
+ px-6"
                       >
 
                         <span
-                          className="
-                            inline-flex
-                            min-w-[42px]
-                            justify-center
-                            px-2.5
-                            py-1
-                            rounded-lg
-                            bg-blue-50
-                            border border-blue-200
-                            text-blue-700
-                            font-semibold
-                          "
+                          className="inline-flex
+ min-w-[42px]
+ justify-center
+ px-2.5
+ py-1"
                         >
                           {row.vc}
                         </span>
@@ -2067,26 +1852,16 @@ function InformeCitasApoderados() {
                       {/* PRESENCIAL */}
 
                       <td
-                        className="
-                          py-3.5
-                          px-6
-                          text-center
-                        "
+                        className="py-3.5
+ px-6"
                       >
 
                         <span
-                          className="
-                            inline-flex
-                            min-w-[42px]
-                            justify-center
-                            px-2.5
-                            py-1
-                            rounded-lg
-                            bg-emerald-50
-                            border border-emerald-200
-                            text-emerald-700
-                            font-semibold
-                          "
+                          className="inline-flex
+ min-w-[42px]
+ justify-center
+ px-2.5
+ py-1"
                         >
                           {row.presencial}
                         </span>
@@ -2097,26 +1872,16 @@ function InformeCitasApoderados() {
                       {/* KM */}
 
                       <td
-                        className="
-                          py-3.5
-                          px-6
-                          text-center
-                        "
+                        className="py-3.5
+ px-6"
                       >
 
                         <span
-                          className="
-                            inline-flex
-                            min-w-[60px]
-                            justify-center
-                            px-2.5
-                            py-1
-                            rounded-lg
-                            bg-rose-50
-                            border border-rose-200
-                            text-rose-600
-                            font-semibold
-                          "
+                          className="inline-flex
+ min-w-[60px]
+ justify-center
+ px-2.5
+ py-1"
                         >
                           {row.km
                             ? row.km.toFixed(1)
@@ -2148,26 +1913,21 @@ function InformeCitasApoderados() {
       <div>
 
         <div
-          className="
-            mb-4
-            flex
-            items-center
-            gap-3
-          "
+          className="mb-4
+ flex
+ items-center
+ gap-3"
         >
 
           <div
-            className="
-              w-10
-              h-10
-              rounded-xl
-              bg-blue-50
-              border border-blue-100
-              flex
-              items-center
-              justify-center
-              text-blue-500
-            "
+            className="w-10
+ h-10
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
           >
             📊
           </div>
@@ -2176,22 +1936,14 @@ function InformeCitasApoderados() {
           <div>
 
             <h2
-              className="
-                text-xl
-                font-bold
-                text-slate-800
-              "
+             
             >
               Análisis gráfico
             </h2>
 
 
             <p
-              className="
-                text-sm
-                text-slate-400
-                mt-1
-              "
+              className="mt-1"
             >
               Comparativa visual de la actividad del periodo.
             </p>
@@ -2202,12 +1954,10 @@ function InformeCitasApoderados() {
 
 
         <div
-          className="
-            grid
-            grid-cols-1
-            lg:grid-cols-3
-            gap-5
-          "
+          className="grid
+ grid-cols-1
+ lg:grid-cols-3
+ gap-5"
         >
 
           <GraficoCard
@@ -2271,105 +2021,52 @@ function KpiCard({
   clase,
 }) {
 
-  const fondos = {
-
-    blue:
-      "bg-blue-50/80 border-blue-200",
-
-    green:
-      "bg-emerald-50/80 border-emerald-200",
-
-    red:
-      "bg-rose-50/80 border-rose-200",
-
-    purple:
-      "bg-purple-50/80 border-purple-200",
-
-    orange:
-      "bg-orange-50/80 border-orange-200",
-
-  };
-
-
-  const colores = {
-
-    blue:
-      "text-blue-700",
-
-    green:
-      "text-emerald-700",
-
-    red:
-      "text-rose-700",
-
-    purple:
-      "text-purple-700",
-
-    orange:
-      "text-orange-700",
-
-  };
+  const fondoCorporativo = "bg-[var(--molsan-panel)] border-[var(--molsan-border)]";
+  const colorCorporativo = "text-[var(--molsan-blue)]";
+  const fondos = Object.fromEntries(["blue", "green", "red", "purple", "orange"].map((key) => [key, fondoCorporativo]));
+  const colores = Object.fromEntries(["blue", "green", "red", "purple", "orange"].map((key) => [key, colorCorporativo]));
 
 
   return (
 
     <div
-      className={`
-        relative
-        overflow-hidden
-        rounded-2xl
-        border
-        p-5
-        shadow-[0_8px_25px_rgba(55,85,120,0.08)]
-        transition
-        hover:-translate-y-0.5
-        hover:shadow-[0_12px_30px_rgba(55,85,120,0.12)]
-        ${fondos[clase]}
-      `}
+      className={`relative
+ overflow-hidden
+ 
+ 
+ p-5
+ 
+ 
+ 
+ 
+ ${fondos[clase]}`}
     >
 
       <div
-        className="
-          flex
-          items-center
-          justify-between
-          gap-3
-        "
+        className="flex
+ items-center
+ justify-between
+ gap-3"
       >
 
         <div>
 
           <p
-            className="
-              text-xs
-              uppercase
-              tracking-wide
-              text-slate-500
-              font-semibold
-            "
+            className="uppercase"
           >
             {titulo}
           </p>
 
 
           <div
-            className="
-              text-3xl
-              font-bold
-              text-slate-800
-              mt-2
-            "
+            className="mt-2"
           >
             {valor}
           </div>
 
 
           <p
-            className="
-              text-xs
-              text-slate-400
-              mt-1
-            "
+            className="mt-1"
           >
             {subtitulo}
           </p>
@@ -2378,20 +2075,18 @@ function KpiCard({
 
 
         <div
-          className={`
-            w-11
-            h-11
-            rounded-xl
-            bg-white/70
-            border
-            border-white
-            flex
-            items-center
-            justify-center
-            text-xl
-            shadow-sm
-            ${colores[clase]}
-          `}
+          className={`w-11
+ h-11
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center
+ 
+ 
+ ${colores[clase]}`}
         >
           {icon}
         </div>
@@ -2424,47 +2119,39 @@ function ThOrden({
   return (
 
     <th
-      className={`
-        py-3.5
-        px-6
-        font-semibold
-        text-blue-800/80
-        cursor-pointer
-        select-none
-        hover:text-blue-900
-        transition
-        ${
-          align === "center"
-            ? "text-center"
-            : "text-left"
-        }
-      `}
+      className={`py-3.5
+ px-6
+ 
+ 
+ 
+ 
+ 
+ 
+ ${
+ align === "center"
+ ? ""
+ : ""
+ }`}
       onClick={() =>
         ordenar(campo)
       }
     >
 
       <span
-        className="
-          inline-flex
-          items-center
-          gap-2
-        "
+        className="inline-flex
+ items-center
+ gap-2"
       >
 
         {titulo}
 
 
         <span
-          className={`
-            text-[10px]
-            transition
-            ${
-              activo
-                ? "text-blue-500"
-                : "text-blue-300"
-            }
-          `}
+          className={`${
+ activo
+ ? ""
+ : ""
+ }`}
         >
 
           {activo
@@ -2498,43 +2185,29 @@ function GraficoCard({
   return (
 
     <div
-      className="
-        bg-white/70
-        backdrop-blur-xl
-        border border-white/80
-        rounded-2xl
-        shadow-[0_10px_35px_rgba(55,85,120,0.09)]
-        overflow-hidden
-      "
+      className="overflow-hidden"
     >
 
       <div
-        className="
-          px-5
-          py-4
-          border-b border-slate-200/80
-        "
+        className="px-5
+ py-4"
       >
 
         <div
-          className="
-            flex
-            items-center
-            gap-3
-          "
+          className="flex
+ items-center
+ gap-3"
         >
 
           <div
-            className="
-              w-9
-              h-9
-              rounded-lg
-              bg-blue-50
-              border border-blue-100
-              flex
-              items-center
-              justify-center
-            "
+            className="w-9
+ h-9
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
           >
             {icono}
           </div>
@@ -2543,22 +2216,14 @@ function GraficoCard({
           <div>
 
             <h3
-              className="
-                text-sm
-                font-semibold
-                text-slate-700
-              "
+             
             >
               {titulo}
             </h3>
 
 
             <p
-              className="
-                text-xs
-                text-slate-400
-                mt-0.5
-              "
+              className="mt-0.5"
             >
               {descripcion}
             </p>
@@ -2571,10 +2236,8 @@ function GraficoCard({
 
 
       <div
-        className="
-          h-[300px]
-          p-5
-        "
+        className="h-[300px]
+ p-5"
       >
 
         {children}
@@ -2682,7 +2345,7 @@ function imprimirInforme(titulo, periodo, columnas, filas) {
   const th = columnas.map((c) => `<th>${escaparHTMLInforme(c.label)}</th>`).join("");
   const trs = filas.map((fila) => `<tr>${columnas.map((c) => `<td>${escaparHTMLInforme(c.render ? c.render(fila) : fila[c.key])}</td>`).join("")}</tr>`).join("");
   ventana.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"/><title>${escaparHTMLInforme(titulo)}</title><style>
-    @page{size:landscape;margin:12mm}body{font-family:Arial,sans-serif;color:#24344d;padding:12px}h1{color:#183b66;margin:0 0 4px}p{color:#7186a3;margin:0 0 18px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:9px}th{background:#edf4fc;color:#31577f;text-align:left}th,td{border:1px solid #dbe7f4;padding:6px;vertical-align:top}tr:nth-child(even){background:#f8fbfe}
+    @page{size:landscape;margin:12mm}body{font-family:Arial,sans-serif;color:#18364b;padding:12px}h1{color:#064675;margin:0 0 4px}p{color:#617789;margin:0 0 18px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:9px}th{background:#eaf2f8;color:#064675;text-align:left}th,td{border:1px solid #d8e4ec;padding:6px;vertical-align:top}tr:nth-child(even){background:#f2f7fb}
     </style></head><body><h1>${escaparHTMLInforme(titulo)}</h1><p>Periodo: ${escaparHTMLInforme(periodo)} · Registros: ${filas.length}</p><table><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table><script>window.onload=()=>window.print();</script></body></html>`);
   ventana.document.close();
 }
@@ -2701,8 +2364,8 @@ function descargarBlobInforme(blob, nombre) {
 function CampoFiltroInforme({ label, value, onChange, type = "text", placeholder = "" }) {
   return (
     <label className="block min-w-0">
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</span>
-      <input type={type} value={value ?? ""} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+      <span className="mb-1.5 block uppercase">{label}</span>
+      <input type={type} value={value ?? ""} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} className="w-full px-3 py-2.5" />
     </label>
   );
 }
@@ -2710,22 +2373,22 @@ function CampoFiltroInforme({ label, value, onChange, type = "text", placeholder
 function SelectFiltroInforme({ label, value, onChange, children }) {
   return (
     <label className="block min-w-0">
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</span>
-      <select value={value ?? ""} onChange={(e) => onChange(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">{children}</select>
+      <span className="mb-1.5 block uppercase">{label}</span>
+      <select value={value ?? ""} onChange={(e) => onChange(e.target.value)} className="w-full px-3 py-2.5">{children}</select>
     </label>
   );
 }
 
 function InformeKpi({ titulo, valor, subtitulo, icono }) {
   return (
-    <div className="rounded-2xl border border-white/80 bg-white/75 p-4 shadow-[0_8px_25px_rgba(55,85,120,0.07)] backdrop-blur-xl">
+    <div className="p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{titulo}</div>
-          <div className="mt-2 text-2xl font-bold tracking-tight text-slate-800">{valor}</div>
-          {subtitulo && <div className="mt-1 text-xs text-slate-400">{subtitulo}</div>}
+          <div className="uppercase">{titulo}</div>
+          <div className="mt-2">{valor}</div>
+          {subtitulo && <div className="mt-1">{subtitulo}</div>}
         </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-lg">{icono}</span>
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center">{icono}</span>
       </div>
     </div>
   );
@@ -2749,12 +2412,12 @@ function mensajeErrorInforme(error) {
 function AvisoInforme({ error }) {
   const mensaje = mensajeErrorInforme(error);
   if (!mensaje) return null;
-  return <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{mensaje}</div>;
+  return <div role="alert" className="px-4 py-3">{mensaje}</div>;
 }
 
 function PanelEstadoInforme({ loading, vacio, textoVacio = "No hay registros para los filtros seleccionados." }) {
-  if (loading) return <div className="px-5 py-12 text-center text-sm text-slate-500">Consultando datos reales del ERP…</div>;
-  if (vacio) return <div className="px-5 py-12 text-center text-sm text-slate-500"><div className="mb-2 text-3xl">📭</div>{textoVacio}</div>;
+  if (loading) return <div className="px-5 py-12">Consultando datos reales del ERP…</div>;
+  if (vacio) return <div className="px-5 py-12"><div className="mb-2">📭</div>{textoVacio}</div>;
   return null;
 }
 
@@ -2818,6 +2481,8 @@ function InformeFirmas() {
   const periodo = `${fechaInformeVisible(aplicados.fecha_desde)} – ${fechaInformeVisible(aplicados.fecha_hasta)}`;
   const resumen = datos.resumen || {};
   const filas = datos.items || [];
+  const ordenTiposOperacion = useSortableData(datos.por_tipo_operacion);
+  const ordenFilasFirmas = useSortableData(filas);
   const firmasSinClasificar = Number(resumen.sin_clasificar || 0);
   const firmasSinTiempo = Math.max(
     0,
@@ -2883,12 +2548,12 @@ function InformeFirmas() {
 
   return (
     <section className="space-y-5">
-      <header className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
-        <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">✍️</span><div><h2 className="text-xl font-bold text-slate-800">Informe de firmas</h2><p className="mt-1 text-sm text-slate-500">Histórico de firmas reales a partir de expedientes con fecha de firma registrada. Las citas de Agenda no se consideran firmas realizadas.</p></div></div>
+      <header className="p-5 md:p-6">
+        <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center">✍️</span><div><h2>Informe de firmas</h2><p className="mt-1">Histórico de firmas reales a partir de expedientes con fecha de firma registrada. Las citas de Agenda no se consideran firmas realizadas.</p></div></div>
       </header>
 
-      <form onSubmit={aplicar} className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl md:p-6">
-        <div className="mb-4 flex items-center justify-between gap-3"><div><h3 className="font-bold text-slate-800">Filtros del informe</h3><p className="mt-1 text-xs text-slate-500">El periodo se aplica a la fecha real de firma.</p></div><button type="button" onClick={limpiar} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Restablecer</button></div>
+      <form onSubmit={aplicar} className="p-5 md:p-6">
+        <div className="mb-4 flex items-center justify-between gap-3"><div><h3>Filtros del informe</h3><p className="mt-1">El periodo se aplica a la fecha real de firma.</p></div><button type="button" onClick={limpiar} className="px-3 py-2">Restablecer</button></div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <CampoFiltroInforme label="Fecha firma desde" type="date" value={filtros.fecha_desde} onChange={(v) => cambiar("fecha_desde", v)} />
           <CampoFiltroInforme label="Fecha firma hasta" type="date" value={filtros.fecha_hasta} onChange={(v) => cambiar("fecha_hasta", v)} />
@@ -2898,14 +2563,14 @@ function InformeFirmas() {
           <CampoFiltroInforme label="Apoderado" value={filtros.apoderado} onChange={(v) => cambiar("apoderado", v)} placeholder="Nombre del apoderado" />
           <div className="sm:col-span-2"><CampoFiltroInforme label="Buscar expediente, titular, solicitante o protocolo" value={filtros.q} onChange={(v) => cambiar("q", v)} placeholder="N.º expediente, NIF, titular…" /></div>
         </div>
-        <div className="mt-4 flex flex-wrap justify-end gap-3"><button type="submit" className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">Aplicar filtros</button></div>
+        <div className="mt-4 flex flex-wrap justify-end gap-3"><button type="submit" className="px-5 py-2.5">Aplicar filtros</button></div>
       </form>
 
       <AvisoInforme error={error} />
-      {mensajeEdicionFirma && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{mensajeEdicionFirma}</div>}
+      {mensajeEdicionFirma && <div role="status" className="px-4 py-3">{mensajeEdicionFirma}</div>}
       {(firmasSinClasificar > 0 || firmasSinTiempo > 0) && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          <p className="font-bold">Hay datos históricos pendientes de completar</p>
+        <div className="px-4 py-3">
+          <p>Hay datos históricos pendientes de completar</p>
           <p className="mt-1">
             {firmasSinClasificar > 0 ? `${numeroInforme(firmasSinClasificar)} firma(s) sin modalidad confirmada. ` : ""}
             {firmasSinTiempo > 0 ? `${numeroInforme(firmasSinTiempo)} firma(s) sin fecha de envío válida. ` : ""}
@@ -2921,34 +2586,34 @@ function InformeFirmas() {
         <InformeKpi icono="⏱️" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
       </div>
 
-      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Resumen por tipo de operación</h3><p className="mt-1 text-xs text-slate-500">Conteo de firmas reales y días medios cuando existen fecha de envío y de firma.</p></div><span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{periodo}</span></div>
-        {loading ? <PanelEstadoInforme loading /> : datos.por_tipo_operacion.length === 0 ? <PanelEstadoInforme vacio /> : <div className="overflow-x-auto"><table className="w-full min-w-[650px] text-sm"><thead className="bg-blue-50/70 text-xs uppercase tracking-wide text-blue-800/80"><tr><th className="px-5 py-3 text-left">Tipo de operación</th><th className="px-5 py-3 text-right">Firmas</th><th className="px-5 py-3 text-right">VC</th><th className="px-5 py-3 text-right">Presencial</th><th className="px-5 py-3 text-right">Media días</th></tr></thead><tbody>{datos.por_tipo_operacion.map((f, i) => <tr key={`${f.tipo_operacion}-${i}`} className="border-t border-slate-100 hover:bg-blue-50/40"><td className="px-5 py-3 font-medium text-slate-700">{f.tipo_operacion}</td><td className="px-5 py-3 text-right font-semibold">{numeroInforme(f.total_firmas)}</td><td className="px-5 py-3 text-right">{numeroInforme(f.vc)}</td><td className="px-5 py-3 text-right">{numeroInforme(f.presencial)}</td><td className="px-5 py-3 text-right text-blue-700">{f.media_dias == null ? "—" : `${numeroInforme(f.media_dias, 1)} días`}</td></tr>)}</tbody></table></div>}
+      <section className="overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"><div><h3>Resumen por tipo de operación</h3><p className="mt-1">Conteo de firmas reales y días medios cuando existen fecha de envío y de firma.</p></div><span className="px-3 py-1.5">{periodo}</span></div>
+        {loading ? <PanelEstadoInforme loading /> : datos.por_tipo_operacion.length === 0 ? <PanelEstadoInforme vacio /> : <div className="overflow-x-auto"><table className="w-full min-w-[650px]"><thead className="uppercase"><tr><MolsanSortableTh label="Tipo de operación" sortKey="tipo_operacion" sortConfig={ordenTiposOperacion.sortConfig} onSort={ordenTiposOperacion.requestSort} className="px-5 py-3" /><MolsanSortableTh label="Firmas" sortKey="total_firmas" sortConfig={ordenTiposOperacion.sortConfig} onSort={ordenTiposOperacion.requestSort} className="px-5 py-3" /><MolsanSortableTh label="VC" sortKey="vc" sortConfig={ordenTiposOperacion.sortConfig} onSort={ordenTiposOperacion.requestSort} className="px-5 py-3" /><MolsanSortableTh label="Presencial" sortKey="presencial" sortConfig={ordenTiposOperacion.sortConfig} onSort={ordenTiposOperacion.requestSort} className="px-5 py-3" /><MolsanSortableTh label="Media días" sortKey="media_dias" sortConfig={ordenTiposOperacion.sortConfig} onSort={ordenTiposOperacion.requestSort} className="px-5 py-3" /></tr></thead><tbody>{ordenTiposOperacion.items.map((f, i) => <tr key={`${f.tipo_operacion}-${i}`}><td className="px-5 py-3">{f.tipo_operacion}</td><td className="px-5 py-3">{numeroInforme(f.total_firmas)}</td><td className="px-5 py-3">{numeroInforme(f.vc)}</td><td className="px-5 py-3">{numeroInforme(f.presencial)}</td><td className="px-5 py-3">{f.media_dias == null ? "—" : `${numeroInforme(f.media_dias, 1)} días`}</td></tr>)}</tbody></table></div>}
       </section>
 
-      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Detalle de firmas</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(filas.length)} registros recibidos del backend. Puedes completar modalidad y fecha de envío desde la columna de acciones.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : "📗 Exportar Excel"}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">📄 Exportar PDF</button></div></div>
-        {loading ? <PanelEstadoInforme loading /> : filas.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales para el periodo y los filtros seleccionados." /> : <div className="max-h-[700px] overflow-auto"><table className="w-full min-w-[1420px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{columnasPDF.map((c) => <th key={c.key} className="whitespace-nowrap px-4 py-3">{c.label}</th>)}<th className="whitespace-nowrap px-4 py-3">Acciones</th></tr></thead><tbody>{filas.map((f, i) => <Fragment key={f.id ?? `${f.id_expediente}-${i}`}>
-          <tr className="border-t border-slate-100 hover:bg-blue-50/40">
+      <section className="overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"><div><h3>Detalle de firmas</h3><p className="mt-1">{numeroInforme(filas.length)} registros recibidos del backend. Puedes completar modalidad y fecha de envío desde la columna de acciones.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="molsan-export-excel">{exportando ? "Exportando…" : "📗 Exportar Excel"}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="px-3 py-2">📄 Exportar PDF</button></div></div>
+        {loading ? <PanelEstadoInforme loading /> : filas.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales para el periodo y los filtros seleccionados." /> : <div className="max-h-[700px] overflow-auto"><table className="w-full min-w-[1420px]"><thead className="sticky top-0 z-10 uppercase"><tr>{columnasPDF.map((c) => <MolsanSortableTh key={c.key} label={c.label} sortKey={c.key} sortConfig={ordenFilasFirmas.sortConfig} onSort={ordenFilasFirmas.requestSort} className="whitespace-nowrap px-4 py-3" />)}<th className="whitespace-nowrap px-4 py-3">Acciones</th></tr></thead><tbody>{ordenFilasFirmas.items.map((f, i) => <Fragment key={f.id ?? `${f.id_expediente}-${i}`}>
+          <tr>
             <td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td>
-            <td className="px-4 py-3 font-semibold text-blue-700">{f.id_expediente || "—"}</td>
+            <td className="px-4 py-3">{f.id_expediente || "—"}</td>
             <td className="max-w-[240px] px-4 py-3">{f.nombre_titular || "—"}</td>
             <td className="px-4 py-3">{f.tipo_operacion || "—"}</td>
-            <td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span className="font-semibold text-amber-700">Sin clasificar</span>}</td>
+            <td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span>Sin clasificar</span>}</td>
             <td className="px-4 py-3">{f.nombre_notario || "—"}</td>
             <td className="px-4 py-3">{f.apoderado || "—"}</td>
             <td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td>
-            <td className="px-4 py-3 text-right">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td>
+            <td className="px-4 py-3">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td>
             <td className="px-4 py-3">{f.protocolo || "—"}</td>
-            <td className="whitespace-nowrap px-4 py-3"><button type="button" onClick={() => String(editandoId) === String(f.id_expediente) ? setEditandoId("") : iniciarEdicionFirma(f)} className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">{String(editandoId) === String(f.id_expediente) ? "Cancelar" : (f.modalidad === "SIN_CLASIFICAR" || !f.fecha_envio ? "Completar datos" : "Editar datos")}</button></td>
+            <td className="whitespace-nowrap px-4 py-3"><button type="button" onClick={() => String(editandoId) === String(f.id_expediente) ? setEditandoId("") : iniciarEdicionFirma(f)} className="px-3 py-2">{String(editandoId) === String(f.id_expediente) ? "Cancelar" : (f.modalidad === "SIN_CLASIFICAR" || !f.fecha_envio ? "Completar datos" : "Editar datos")}</button></td>
           </tr>
           {String(editandoId) === String(f.id_expediente) && (
-            <tr key={`${f.id_expediente}-editar`} className="border-t border-blue-100 bg-blue-50/60">
+            <tr key={`${f.id_expediente}-editar`}>
               <td colSpan={11} className="px-4 py-4">
-                <div className="grid grid-cols-1 items-end gap-3 rounded-xl border border-blue-100 bg-white p-4 md:grid-cols-[minmax(220px,1fr)_minmax(220px,1fr)_auto]">
-                  <label className="block min-w-0"><span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Fecha real de envío al notario</span><input type="date" max={String(f.fecha_firma || "").slice(0, 10)} value={edicionFirma.fecha_envio} disabled={guardandoDatosFirma} onChange={(e) => setEdicionFirma((actual) => ({ ...actual, fecha_envio: e.target.value }))} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" /></label>
-                  <label className="block min-w-0"><span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Modalidad real de firma</span><select value={edicionFirma.modalidad} disabled={guardandoDatosFirma} onChange={(e) => setEdicionFirma((actual) => ({ ...actual, modalidad: e.target.value }))} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"><option value="SIN_CLASIFICAR">Sin clasificar</option><option value="VC">Videoconferencia</option><option value="PRESENCIAL">Presencial</option></select><span className="mt-1 block text-[11px] text-slate-400">Selecciona solo la modalidad confirmada para esta firma.</span></label>
-                  <div className="flex flex-wrap gap-2"><button type="button" disabled={guardandoDatosFirma} onClick={() => guardarDatosFirma(f)} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{guardandoDatosFirma ? "Guardando…" : "Guardar datos"}</button><button type="button" disabled={guardandoDatosFirma} onClick={() => setEditandoId("")} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50">Cancelar</button></div>
+                <div className="grid grid-cols-1 items-end gap-3 p-4 md:grid-cols-[minmax(220px,1fr)_minmax(220px,1fr)_auto]">
+                  <label className="block min-w-0"><span className="mb-1.5 block uppercase">Fecha real de envío al notario</span><input type="date" max={String(f.fecha_firma || "").slice(0, 10)} value={edicionFirma.fecha_envio} disabled={guardandoDatosFirma} onChange={(e) => setEdicionFirma((actual) => ({ ...actual, fecha_envio: e.target.value }))} className="w-full px-3 py-2.5" /></label>
+                  <label className="block min-w-0"><span className="mb-1.5 block uppercase">Modalidad real de firma</span><select value={edicionFirma.modalidad} disabled={guardandoDatosFirma} onChange={(e) => setEdicionFirma((actual) => ({ ...actual, modalidad: e.target.value }))} className="w-full px-3 py-2.5"><option value="SIN_CLASIFICAR">Sin clasificar</option><option value="VC">Videoconferencia</option><option value="PRESENCIAL">Presencial</option></select><span className="mt-1 block">Selecciona solo la modalidad confirmada para esta firma.</span></label>
+                  <div className="flex flex-wrap gap-2"><button type="button" disabled={guardandoDatosFirma} onClick={() => guardarDatosFirma(f)} className="px-4 py-2.5">{guardandoDatosFirma ? "Guardando…" : "Guardar datos"}</button><button type="button" disabled={guardandoDatosFirma} onClick={() => setEditandoId("")} className="px-4 py-2.5">Cancelar</button></div>
                 </div>
               </td>
             </tr>
@@ -3026,6 +2691,8 @@ function InformeNotarios() {
   const detalle = claveNotarioSeleccionado
     ? items.filter((f) => f.clave_notario === claveNotarioSeleccionado)
     : items;
+  const ordenResumenNotarios = useSortableData(porNotario);
+  const ordenDetalleNotarios = useSortableData(detalle);
 
   const columnasResumen = [
     { key: "nombre_notario", label: "Notario" },
@@ -3092,20 +2759,20 @@ function InformeNotarios() {
 
   return (
     <section className="space-y-5">
-      <header className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
+      <header className="p-5 md:p-6">
         <div className="flex items-start gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">🏛️</span>
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center">🏛️</span>
           <div>
-            <h2 className="text-xl font-bold text-slate-800">Informes de notarios</h2>
-            <p className="mt-1 text-sm text-slate-500">Actividad notarial medida por expedientes con fecha de firma real. Se distinguen las firmas por videoconferencia, presenciales y las pendientes de clasificar.</p>
+            <h2>Informes de notarios</h2>
+            <p className="mt-1">Actividad notarial medida por expedientes con fecha de firma real. Se distinguen las firmas por videoconferencia, presenciales y las pendientes de clasificar.</p>
           </div>
         </div>
       </header>
 
-      <form onSubmit={aplicar} className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl md:p-6">
+      <form onSubmit={aplicar} className="p-5 md:p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div><h3 className="font-bold text-slate-800">Filtros del informe</h3><p className="mt-1 text-xs text-slate-500">Las fechas se aplican a la firma realizada, no a las citas previstas de Agenda.</p></div>
-          <button type="button" onClick={limpiar} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Restablecer</button>
+          <div><h3>Filtros del informe</h3><p className="mt-1">Las fechas se aplican a la firma realizada, no a las citas previstas de Agenda.</p></div>
+          <button type="button" onClick={limpiar} className="px-3 py-2">Restablecer</button>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <CampoFiltroInforme label="Fecha firma desde" type="date" value={filtros.fecha_desde} onChange={(v) => cambiar("fecha_desde", v)} />
@@ -3116,7 +2783,7 @@ function InformeNotarios() {
           <CampoFiltroInforme label="Apoderado" value={filtros.apoderado} onChange={(v) => cambiar("apoderado", v)} placeholder="Nombre del apoderado" />
           <div className="sm:col-span-2"><CampoFiltroInforme label="Búsqueda general" value={filtros.q} onChange={(v) => cambiar("q", v)} placeholder="Expediente, titular, solicitante, protocolo u oficina" /></div>
         </div>
-        <div className="mt-4 flex flex-wrap justify-end gap-3"><button type="submit" className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">Aplicar filtros</button></div>
+        <div className="mt-4 flex flex-wrap justify-end gap-3"><button type="submit" className="px-5 py-2.5">Aplicar filtros</button></div>
       </form>
 
       <AvisoInforme error={error} />
@@ -3131,8 +2798,8 @@ function InformeNotarios() {
       </div>
 
       {(Number(resumen.sin_clasificar || 0) > 0 || Number(resumen.sin_notario_identificado || 0) > 0 || (Number(resumen.total_firmas || 0) > Number(resumen.firmas_con_tiempo_calculable || 0))) && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          <p className="font-bold">Calidad de los datos del histórico</p>
+        <div className="px-4 py-3">
+          <p>Calidad de los datos del histórico</p>
           <p className="mt-1">
             {Number(resumen.sin_clasificar || 0) > 0 ? `${numeroInforme(resumen.sin_clasificar)} firma(s) sin modalidad confirmada. ` : ""}
             {Number(resumen.sin_notario_identificado || 0) > 0 ? `${numeroInforme(resumen.sin_notario_identificado)} grupo(s) sin notario identificado. ` : ""}
@@ -3141,51 +2808,51 @@ function InformeNotarios() {
         </div>
       )}
 
-      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4">
-          <div><h3 className="font-bold text-slate-800">Ranking de actividad por notario</h3><p className="mt-1 text-xs text-slate-500">Los primeros puestos se ordenan por número de expedientes firmados en el periodo.</p></div>
-          <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{periodo}</span>
+      <section className="overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+          <div><h3>Ranking de actividad por notario</h3><p className="mt-1">Los primeros puestos se ordenan por número de expedientes firmados en el periodo.</p></div>
+          <span className="px-3 py-1.5">{periodo}</span>
         </div>
         {loading ? <PanelEstadoInforme loading /> : topNotarios.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas de notarios para este periodo y filtros." /> : (
           <div className="space-y-4 p-5">
             {topNotarios.map((fila, indice) => (
-              <button key={fila.clave_notario} type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === fila.clave_notario ? "" : fila.clave_notario)} className={`w-full rounded-xl border p-3 text-left transition hover:border-blue-200 hover:bg-blue-50/40 ${claveNotarioSeleccionado === fila.clave_notario ? "border-blue-300 bg-blue-50" : "border-slate-100 bg-white"}`}>
+              <button key={fila.clave_notario} type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === fila.clave_notario ? "" : fila.clave_notario)} className={`w-full p-3 ${claveNotarioSeleccionado === fila.clave_notario ? "" : ""}`}>
                 <div className="mb-2 flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-blue-700">{indice + 1}</span><span className="min-w-0"><span className="block truncate text-sm font-semibold text-slate-800">{fila.nombre_notario}</span><span className="block text-xs text-slate-400">{fila.nif_notario || "NIF no informado"}</span></span></div>
-                  <span className="shrink-0 text-lg font-bold text-slate-800">{numeroInforme(fila.total_firmas)}</span>
+                  <div className="flex min-w-0 items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center">{indice + 1}</span><span className="min-w-0"><span className="block truncate">{fila.nombre_notario}</span><span className="block">{fila.nif_notario || "NIF no informado"}</span></span></div>
+                  <span className="shrink-0">{numeroInforme(fila.total_firmas)}</span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-blue-500 transition-all" style={{ width: `${Math.min(100, Math.max(0, (Number(fila.total_firmas || 0) / maxFirmasNotario) * 100))}%` }} /></div>
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-500"><span>VC: <strong className="text-slate-700">{numeroInforme(fila.vc)}</strong></span><span>Presencial: <strong className="text-slate-700">{numeroInforme(fila.presencial)}</strong></span><span>Sin clasificar: <strong className="text-slate-700">{numeroInforme(fila.sin_clasificar)}</strong></span><span>Última firma: <strong className="text-slate-700">{fechaInformeVisible(fila.ultima_firma)}</strong></span></div>
+                <div className="h-2 overflow-hidden"><div className="h-full" style={{ width: `${Math.min(100, Math.max(0, (Number(fila.total_firmas || 0) / maxFirmasNotario) * 100))}%` }} /></div>
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1"><span>VC: <strong>{numeroInforme(fila.vc)}</strong></span><span>Presencial: <strong>{numeroInforme(fila.presencial)}</strong></span><span>Sin clasificar: <strong>{numeroInforme(fila.sin_clasificar)}</strong></span><span>Última firma: <strong>{fechaInformeVisible(fila.ultima_firma)}</strong></span></div>
               </button>
             ))}
           </div>
         )}
       </section>
 
-      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4">
-          <div><h3 className="font-bold text-slate-800">Resumen por notario</h3><p className="mt-1 text-xs text-slate-500">Incluye firmas por modalidad, media entre envío y firma, protocolo y tipos de operación.</p></div>
+      <section className="overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+          <div><h3>Resumen por notario</h3><p className="mt-1">Incluye firmas por modalidad, media entre envío y firma, protocolo y tipos de operación.</p></div>
           <div className="flex flex-wrap gap-2">
-            <button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : "📗 Excel resumen"}</button>
-            <button type="button" disabled={loading || porNotario.length === 0} onClick={exportarResumenPDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">📄 PDF resumen</button>
+            <button type="button" disabled={loading || exportando} onClick={exportarExcel} className="molsan-export-excel">{exportando ? "Exportando…" : "📗 Excel resumen"}</button>
+            <button type="button" disabled={loading || porNotario.length === 0} onClick={exportarResumenPDF} className="px-3 py-2">📄 PDF resumen</button>
           </div>
         </div>
         {loading ? <PanelEstadoInforme loading /> : porNotario.length === 0 ? <PanelEstadoInforme vacio /> : (
-          <div className="max-h-[620px] overflow-auto"><table className="w-full min-w-[1400px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr><th className="whitespace-nowrap px-4 py-3">Notario</th><th className="whitespace-nowrap px-4 py-3">NIF</th><th className="whitespace-nowrap px-4 py-3 text-right">Firmados</th><th className="whitespace-nowrap px-4 py-3 text-right">VC</th><th className="whitespace-nowrap px-4 py-3 text-right">Presencial</th><th className="whitespace-nowrap px-4 py-3 text-right">Sin clasificar</th><th className="whitespace-nowrap px-4 py-3 text-right">Con protocolo</th><th className="whitespace-nowrap px-4 py-3 text-right">Media días</th><th className="whitespace-nowrap px-4 py-3">Última firma</th><th className="whitespace-nowrap px-4 py-3">Operaciones</th><th className="whitespace-nowrap px-4 py-3">Detalle</th></tr></thead><tbody>{porNotario.map((f) => <tr key={f.clave_notario} className={`border-t border-slate-100 hover:bg-blue-50/40 ${claveNotarioSeleccionado === f.clave_notario ? "bg-blue-50/70" : ""}`}><td className="px-4 py-3 font-semibold text-slate-800">{f.nombre_notario}</td><td className="whitespace-nowrap px-4 py-3 text-slate-500">{f.nif_notario || "—"}</td><td className="px-4 py-3 text-right font-bold">{numeroInforme(f.total_firmas)}</td><td className="px-4 py-3 text-right text-blue-700">{numeroInforme(f.vc)}</td><td className="px-4 py-3 text-right text-emerald-700">{numeroInforme(f.presencial)}</td><td className="px-4 py-3 text-right text-amber-700">{numeroInforme(f.sin_clasificar)}</td><td className="px-4 py-3 text-right">{numeroInforme(f.con_protocolo)}</td><td className="px-4 py-3 text-right">{f.media_dias_envio_firma == null ? "—" : numeroInforme(f.media_dias_envio_firma, 1)}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.ultima_firma)}</td><td className="px-4 py-3" title={(f.tipos_operacion || []).join(", ")}>{numeroInforme(f.numero_tipos_operacion)}</td><td className="px-4 py-3"><button type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === f.clave_notario ? "" : f.clave_notario)} className="whitespace-nowrap rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">{claveNotarioSeleccionado === f.clave_notario ? "Ocultar" : "Ver firmas"}</button></td></tr>)}</tbody></table></div>
+          <div className="max-h-[620px] overflow-auto"><table className="w-full min-w-[1400px]"><thead className="sticky top-0 z-10 uppercase"><tr><MolsanSortableTh label="Notario" sortKey="nombre_notario" sortConfig={ordenResumenNotarios.sortConfig} onSort={ordenResumenNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="NIF" sortKey="nif_notario" sortConfig={ordenResumenNotarios.sortConfig} onSort={ordenResumenNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Firmados" sortKey="total_firmas" sortConfig={ordenResumenNotarios.sortConfig} onSort={ordenResumenNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="VC" sortKey="vc" sortConfig={ordenResumenNotarios.sortConfig} onSort={ordenResumenNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Presencial" sortKey="presencial" sortConfig={ordenResumenNotarios.sortConfig} onSort={ordenResumenNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Sin clasificar" sortKey="sin_clasificar" sortConfig={ordenResumenNotarios.sortConfig} onSort={ordenResumenNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Con protocolo" sortKey="con_protocolo" sortConfig={ordenResumenNotarios.sortConfig} onSort={ordenResumenNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Media días" sortKey="media_dias_envio_firma" sortConfig={ordenResumenNotarios.sortConfig} onSort={ordenResumenNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Última firma" sortKey="ultima_firma" sortConfig={ordenResumenNotarios.sortConfig} onSort={ordenResumenNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Operaciones" sortKey="numero_tipos_operacion" sortConfig={ordenResumenNotarios.sortConfig} onSort={ordenResumenNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><th className="whitespace-nowrap px-4 py-3">Detalle</th></tr></thead><tbody>{ordenResumenNotarios.items.map((f) => <tr key={f.clave_notario} className={`${claveNotarioSeleccionado === f.clave_notario ? "" : ""}`}><td className="px-4 py-3">{f.nombre_notario}</td><td className="whitespace-nowrap px-4 py-3">{f.nif_notario || "—"}</td><td className="px-4 py-3">{numeroInforme(f.total_firmas)}</td><td className="px-4 py-3">{numeroInforme(f.vc)}</td><td className="px-4 py-3">{numeroInforme(f.presencial)}</td><td className="px-4 py-3">{numeroInforme(f.sin_clasificar)}</td><td className="px-4 py-3">{numeroInforme(f.con_protocolo)}</td><td className="px-4 py-3">{f.media_dias_envio_firma == null ? "—" : numeroInforme(f.media_dias_envio_firma, 1)}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.ultima_firma)}</td><td className="px-4 py-3" title={(f.tipos_operacion || []).join(", ")}>{numeroInforme(f.numero_tipos_operacion)}</td><td className="px-4 py-3"><button type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === f.clave_notario ? "" : f.clave_notario)} className="whitespace-nowrap px-3 py-2">{claveNotarioSeleccionado === f.clave_notario ? "Ocultar" : "Ver firmas"}</button></td></tr>)}</tbody></table></div>
         )}
       </section>
 
-      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4">
-          <div><h3 className="font-bold text-slate-800">{grupoSeleccionado ? `Firmas de ${grupoSeleccionado.nombre_notario}` : "Detalle de firmas por notario"}</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(detalle.length)} expediente(s) con fecha de firma real. {grupoSeleccionado ? "Se ha filtrado el detalle por el notario seleccionado." : "Puedes seleccionar un notario en el ranking o en el resumen para acotar la lista."}</p></div>
+      <section className="overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+          <div><h3>{grupoSeleccionado ? `Firmas de ${grupoSeleccionado.nombre_notario}` : "Detalle de firmas por notario"}</h3><p className="mt-1">{numeroInforme(detalle.length)} expediente(s) con fecha de firma real. {grupoSeleccionado ? "Se ha filtrado el detalle por el notario seleccionado." : "Puedes seleccionar un notario en el ranking o en el resumen para acotar la lista."}</p></div>
           <div className="flex flex-wrap gap-2">
-            {claveNotarioSeleccionado && <button type="button" onClick={() => setClaveNotarioSeleccionado("")} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Ver todos</button>}
-            <button type="button" disabled={loading || exportandoDetalle} onClick={exportarDetalleExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportandoDetalle ? "Exportando…" : "📗 Excel detalle"}</button>
-            <button type="button" disabled={loading || detalle.length === 0} onClick={exportarDetallePDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">📄 PDF detalle</button>
+            {claveNotarioSeleccionado && <button type="button" onClick={() => setClaveNotarioSeleccionado("")} className="px-3 py-2">Ver todos</button>}
+            <button type="button" disabled={loading || exportandoDetalle} onClick={exportarDetalleExcel} className="molsan-export-excel">{exportandoDetalle ? "Exportando…" : "📗 Excel detalle"}</button>
+            <button type="button" disabled={loading || detalle.length === 0} onClick={exportarDetallePDF} className="px-3 py-2">📄 PDF detalle</button>
           </div>
         </div>
         {loading ? <PanelEstadoInforme loading /> : detalle.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales con los filtros seleccionados." /> : (
-          <div className="max-h-[650px] overflow-auto"><table className="w-full min-w-[1250px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr><th className="whitespace-nowrap px-4 py-3">Fecha firma</th><th className="whitespace-nowrap px-4 py-3">N.º expediente</th><th className="whitespace-nowrap px-4 py-3">Titular</th><th className="whitespace-nowrap px-4 py-3">Tipo operación</th><th className="whitespace-nowrap px-4 py-3">Modalidad</th><th className="whitespace-nowrap px-4 py-3">Notario</th><th className="whitespace-nowrap px-4 py-3">Apoderado</th><th className="whitespace-nowrap px-4 py-3">Fecha envío</th><th className="whitespace-nowrap px-4 py-3 text-right">Días envío-firma</th><th className="whitespace-nowrap px-4 py-3">Protocolo</th><th className="whitespace-nowrap px-4 py-3">Oficina</th></tr></thead><tbody>{detalle.map((f, i) => <tr key={f.id ?? `${f.id_expediente}-${i}`} className="border-t border-slate-100 hover:bg-blue-50/40"><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td><td className="px-4 py-3 font-semibold text-blue-700">{f.id_expediente || "—"}</td><td className="px-4 py-3">{f.nombre_titular || "—"}</td><td className="px-4 py-3">{f.tipo_operacion || "—"}</td><td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span className="font-semibold text-amber-700">Sin clasificar</span>}</td><td className="px-4 py-3">{f.nombre_notario || "—"}</td><td className="px-4 py-3">{f.apoderado || "—"}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td><td className="px-4 py-3 text-right">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td><td className="px-4 py-3">{f.protocolo || "—"}</td><td className="px-4 py-3">{f.oficina || "—"}</td></tr>)}</tbody></table></div>
+          <div className="max-h-[650px] overflow-auto"><table className="w-full min-w-[1250px]"><thead className="sticky top-0 z-10 uppercase"><tr><MolsanSortableTh label="Fecha firma" sortKey="fecha_firma" sortConfig={ordenDetalleNotarios.sortConfig} onSort={ordenDetalleNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="N.º expediente" sortKey="id_expediente" sortConfig={ordenDetalleNotarios.sortConfig} onSort={ordenDetalleNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Titular" sortKey="nombre_titular" sortConfig={ordenDetalleNotarios.sortConfig} onSort={ordenDetalleNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Tipo operación" sortKey="tipo_operacion" sortConfig={ordenDetalleNotarios.sortConfig} onSort={ordenDetalleNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Modalidad" sortKey="modalidad" sortConfig={ordenDetalleNotarios.sortConfig} onSort={ordenDetalleNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Notario" sortKey="nombre_notario" sortConfig={ordenDetalleNotarios.sortConfig} onSort={ordenDetalleNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Apoderado" sortKey="apoderado" sortConfig={ordenDetalleNotarios.sortConfig} onSort={ordenDetalleNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Fecha envío" sortKey="fecha_envio" sortConfig={ordenDetalleNotarios.sortConfig} onSort={ordenDetalleNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Días envío-firma" sortKey="dias_envio_firma" sortConfig={ordenDetalleNotarios.sortConfig} onSort={ordenDetalleNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Protocolo" sortKey="protocolo" sortConfig={ordenDetalleNotarios.sortConfig} onSort={ordenDetalleNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Oficina" sortKey="oficina" sortConfig={ordenDetalleNotarios.sortConfig} onSort={ordenDetalleNotarios.requestSort} className="whitespace-nowrap px-4 py-3" /></tr></thead><tbody>{ordenDetalleNotarios.items.map((f, i) => <tr key={f.id ?? `${f.id_expediente}-${i}`}><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td><td className="px-4 py-3">{f.id_expediente || "—"}</td><td className="px-4 py-3">{f.nombre_titular || "—"}</td><td className="px-4 py-3">{f.tipo_operacion || "—"}</td><td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span>Sin clasificar</span>}</td><td className="px-4 py-3">{f.nombre_notario || "—"}</td><td className="px-4 py-3">{f.apoderado || "—"}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td><td className="px-4 py-3">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td><td className="px-4 py-3">{f.protocolo || "—"}</td><td className="px-4 py-3">{f.oficina || "—"}</td></tr>)}</tbody></table></div>
         )}
       </section>
     </section>
@@ -3237,6 +2904,9 @@ function InformeSLA() {
     return { ...actividad, total: filas.length, medidas: medidas.length, media: medidas.length ? medidas.reduce((s, a) => s + Number(a.dias), 0) / medidas.length : null, cumplen, incumplen };
   });
 
+  const ordenItemsSLA = useSortableData(items);
+  const ordenResumenSLA = useSortableData(resumenActividades);
+
   const exportar = () => {
     const encabezados = ["Expediente","Titular","Grupo","Entidad","Actividad","Inicio","Fin","Días","Objetivo SLA","Estado"];
     const filas = actividadesPlanas.map((a) => [a.id_expediente,a.titular,a.grupo,a.entidad,a.actividad,a.fecha_inicio,a.fecha_fin,a.dias,a.objetivo_dias,a.estado]);
@@ -3246,10 +2916,10 @@ function InformeSLA() {
 
   return (
     <section className="space-y-5">
-      <header className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
+      <header className="p-5 md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">⏱️</span><div><h2 className="text-xl font-bold text-slate-800">Informe SLA’s</h2><p className="mt-1 text-sm text-slate-500">Control de duración y cumplimiento por actividad, grupo de cancelación y entidad.</p></div></div>
-          <button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">↻ Actualizar datos</button>
+          <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center">⏱️</span><div><h2>Informe SLA’s</h2><p className="mt-1">Control de duración y cumplimiento por actividad, grupo de cancelación y entidad.</p></div></div>
+          <button type="button" onClick={() => setRecarga((v) => v + 1)} className="px-3 py-2">↻ Actualizar datos</button>
         </div>
       </header>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -3257,25 +2927,51 @@ function InformeSLA() {
         <InformeKpi icono="⏱️" titulo="Duración global media" valor={mediaGlobal == null ? "—" : `${numeroInforme(mediaGlobal, 1)} días`} subtitulo={`${numeroInforme(globalesDentro)} dentro de plazo de ${numeroInforme(globalesEvaluables.length)} evaluables`} />
         <InformeKpi icono="⚠️" titulo="Actividades fuera de plazo" valor={numeroInforme(fuera)} subtitulo={cumplimiento == null ? "Sin datos suficientes para calcular cumplimiento" : `${cumplimiento}% de cumplimiento en actividades con objetivo`} />
       </div>
-      <section className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl">
+      <section className="p-5">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.5fr)]">
           <CampoFiltroInforme label="¿Qué expediente necesitas?" value={busqueda} onChange={setBusqueda} placeholder="Número de expediente, titular, operación o producto GTG" />
           <SelectFiltroInforme label="Grupo de cancelación" value={grupo} onChange={setGrupo}>
             <option value="todos">Todos los grupos</option><option value="con-provision">Cancelaciones con provisión</option><option value="sin-provision">Cancelaciones sin provisión</option>
           </SelectFiltroInforme>
         </div>
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="text-xs text-slate-500">{numeroInforme(items.length)} expedientes · días naturales. Los expedientes Hipotecario y Crédito Stock quedan excluidos del SLA global.</p><button type="button" onClick={exportar} disabled={actividadesPlanas.length === 0} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">📊 Exportar Excel (CSV)</button></div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p>{numeroInforme(items.length)} expedientes · días naturales. Los expedientes Hipotecario y Crédito Stock quedan excluidos del SLA global.</p><button type="button" onClick={exportar} disabled={actividadesPlanas.length === 0} className="px-4 py-2.5">📊 Exportar Excel (CSV)</button></div>
       </section>
       <AvisoInforme error={error} />
-      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
-        <div className="border-b border-slate-200/80 px-5 py-4"><h3 className="font-bold text-slate-800">SLA global por circuito</h3><p className="mt-1 text-xs text-slate-500">Desde el inicio registrado de la primera actividad hasta el fin de Cierre del expediente. Gestión económica utiliza el objetivo global como referencia propia.</p></div>
-        {loading ? <PanelEstadoInforme loading /> : items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay expedientes que coincidan con los filtros." /> : <div className="max-h-[520px] overflow-auto"><table className="w-full min-w-[1050px] text-sm"><thead className="sticky top-0 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{["Expediente","Titular","Grupo","Entidad","Días globales","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{items.map((item) => <Fragment key={item.id}><tr className="border-t border-slate-100 hover:bg-blue-50/40"><td className="px-4 py-3 font-semibold text-blue-700">{item.id_expediente || "—"}</td><td className="px-4 py-3">{item.titular || "—"}</td><td className="px-4 py-3">{item.grupo}</td><td className="px-4 py-3">{item.entidad}</td><td className="px-4 py-3 text-right">{item.dias_global == null ? "—" : numeroInforme(item.dias_global)}</td><td className="px-4 py-3 text-right">{item.excluido_global ? "Excluido" : `${item.objetivo_global} días`}</td><td className="px-4 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${item.estado_global === "Dentro de plazo" ? "bg-emerald-50 text-emerald-700" : item.estado_global === "Fuera de plazo" ? "bg-rose-50 text-rose-700" : item.estado_global === "Excluido" ? "bg-slate-100 text-slate-500" : "bg-amber-50 text-amber-700"}`}>{item.estado_global}</span><button type="button" onClick={() => setExpandido((v) => v === String(item.id) ? "" : String(item.id))} className="ml-3 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700">{expandido === String(item.id) ? "Ocultar actividades" : "Ver actividades"}</button></td></tr>{expandido === String(item.id) && <tr><td colSpan={7} className="bg-slate-50/70 px-4 py-4"><div className="overflow-x-auto rounded-xl border border-slate-200 bg-white"><table className="w-full min-w-[950px] text-xs"><thead className="bg-slate-50 text-left text-slate-600"><tr>{["Actividad","Inicio","Fin","Duración","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-3 py-2.5">{x}</th>)}</tr></thead><tbody>{item.actividades.map((a) => <tr key={a.actividad_key} className="border-t border-slate-100"><td className="px-3 py-2.5 font-semibold">{a.actividad}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_inicio)}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_fin)}</td><td className="px-3 py-2.5">{a.dias == null ? "—" : `${a.dias} días`}</td><td className="px-3 py-2.5">{a.objetivo_dias == null ? "Sin objetivo" : `${a.objetivo_dias} días`}</td><td className="px-3 py-2.5">{a.estado}</td></tr>)}</tbody></table></div></td></tr>}</Fragment>)}</tbody></table></div>}
+      <section className="overflow-hidden">
+        <div className="px-5 py-4"><h3>SLA global por circuito</h3><p className="mt-1">Desde el inicio registrado de la primera actividad hasta el fin de Cierre del expediente. Gestión económica utiliza el objetivo global como referencia propia.</p></div>
+        {loading ? <PanelEstadoInforme loading /> : items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay expedientes que coincidan con los filtros." /> : <div className="max-h-[520px] overflow-auto"><table className="w-full min-w-[1050px]"><thead className="sticky top-0 uppercase"><tr><MolsanSortableTh label="Expediente" sortKey="id_expediente" sortConfig={ordenItemsSLA.sortConfig} onSort={ordenItemsSLA.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Titular" sortKey="titular" sortConfig={ordenItemsSLA.sortConfig} onSort={ordenItemsSLA.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Grupo" sortKey="grupo" sortConfig={ordenItemsSLA.sortConfig} onSort={ordenItemsSLA.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Entidad" sortKey="entidad" sortConfig={ordenItemsSLA.sortConfig} onSort={ordenItemsSLA.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Días globales" sortKey="dias_global" sortConfig={ordenItemsSLA.sortConfig} onSort={ordenItemsSLA.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Objetivo" sortKey="objetivo_global" sortConfig={ordenItemsSLA.sortConfig} onSort={ordenItemsSLA.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Estado" sortKey="estado_global" sortConfig={ordenItemsSLA.sortConfig} onSort={ordenItemsSLA.requestSort} className="whitespace-nowrap px-4 py-3" /></tr></thead><tbody>{ordenItemsSLA.items.map((item) => <Fragment key={item.id}><tr><td className="px-4 py-3">{item.id_expediente || "—"}</td><td className="px-4 py-3">{item.titular || "—"}</td><td className="px-4 py-3">{item.grupo}</td><td className="px-4 py-3">{item.entidad}</td><td className="px-4 py-3">{item.dias_global == null ? "—" : numeroInforme(item.dias_global)}</td><td className="px-4 py-3">{item.excluido_global ? "Excluido" : `${item.objetivo_global} días`}</td><td className="px-4 py-3"><span className={`px-2.5 py-1 ${item.estado_global === "Dentro de plazo" ? "" : item.estado_global === "Fuera de plazo" ? "" : item.estado_global === "Excluido" ? "" : ""}`}>{item.estado_global}</span><button type="button" onClick={() => setExpandido((v) => v === String(item.id) ? "" : String(item.id))} className="ml-3 px-2.5 py-1.5">{expandido === String(item.id) ? "Ocultar actividades" : "Ver actividades"}</button></td></tr>{expandido === String(item.id) && <tr><td colSpan={7} className="px-4 py-4"><TablaActividadesSLA actividades={item.actividades || []} /></td></tr>}</Fragment>)}</tbody></table></div>}
       </section>
-      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
-        <div className="border-b border-slate-200/80 px-5 py-4"><h3 className="font-bold text-slate-800">Expedientes por actividad</h3><p className="mt-1 text-xs text-slate-500">Medias, objetivos y número de incumplimientos por actividad para los expedientes filtrados.</p></div>
-        {loading ? <PanelEstadoInforme loading /> : <div className="overflow-x-auto"><table className="w-full min-w-[800px] text-sm"><thead className="bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{["Actividad","Objetivo","Con fechas","Duración media","Dentro de plazo","Fuera de plazo"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{resumenActividades.map((a) => <tr key={a.key} className="border-t border-slate-100"><td className="px-4 py-3 font-semibold">{a.label}</td><td className="px-4 py-3">{a.objetivo === "global" ? "40 / 70 días según grupo" : a.objetivo == null ? "Sin objetivo SLA" : `${a.objetivo} días`}</td><td className="px-4 py-3 text-right">{numeroInforme(a.medidas)}</td><td className="px-4 py-3 text-right">{a.media == null ? "—" : `${numeroInforme(a.media, 1)} días`}</td><td className="px-4 py-3 text-right text-emerald-700">{numeroInforme(a.cumplen)}</td><td className="px-4 py-3 text-right text-rose-700">{numeroInforme(a.incumplen)}</td></tr>)}</tbody></table></div>}
+      <section className="overflow-hidden">
+        <div className="px-5 py-4"><h3>Expedientes por actividad</h3><p className="mt-1">Medias, objetivos y número de incumplimientos por actividad para los expedientes filtrados.</p></div>
+        {loading ? <PanelEstadoInforme loading /> : <div className="overflow-x-auto"><table className="w-full min-w-[800px]"><thead className="uppercase"><tr><MolsanSortableTh label="Actividad" sortKey="label" sortConfig={ordenResumenSLA.sortConfig} onSort={ordenResumenSLA.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Objetivo" sortKey="objetivo" sortConfig={ordenResumenSLA.sortConfig} onSort={ordenResumenSLA.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Con fechas" sortKey="medidas" sortConfig={ordenResumenSLA.sortConfig} onSort={ordenResumenSLA.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Duración media" sortKey="media" sortConfig={ordenResumenSLA.sortConfig} onSort={ordenResumenSLA.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Dentro de plazo" sortKey="cumplen" sortConfig={ordenResumenSLA.sortConfig} onSort={ordenResumenSLA.requestSort} className="whitespace-nowrap px-4 py-3" /><MolsanSortableTh label="Fuera de plazo" sortKey="incumplen" sortConfig={ordenResumenSLA.sortConfig} onSort={ordenResumenSLA.requestSort} className="whitespace-nowrap px-4 py-3" /></tr></thead><tbody>{ordenResumenSLA.items.map((a) => <tr key={a.key}><td className="px-4 py-3">{a.label}</td><td className="px-4 py-3">{a.objetivo === "global" ? "40 / 70 días según grupo" : a.objetivo == null ? "Sin objetivo SLA" : `${a.objetivo} días`}</td><td className="px-4 py-3">{numeroInforme(a.medidas)}</td><td className="px-4 py-3">{a.media == null ? "—" : `${numeroInforme(a.media, 1)} días`}</td><td className="px-4 py-3">{numeroInforme(a.cumplen)}</td><td className="px-4 py-3">{numeroInforme(a.incumplen)}</td></tr>)}</tbody></table></div>}
       </section>
     </section>
+  );
+}
+
+function TablaActividadesSLA({ actividades = [] }) {
+  const orden = useSortableData(actividades);
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[950px]">
+        <thead><tr>
+          <MolsanSortableTh label="Actividad" sortKey="actividad" sortConfig={orden.sortConfig} onSort={orden.requestSort} className="whitespace-nowrap px-3 py-2.5" />
+          <MolsanSortableTh label="Inicio" sortKey="fecha_inicio" sortConfig={orden.sortConfig} onSort={orden.requestSort} className="whitespace-nowrap px-3 py-2.5" />
+          <MolsanSortableTh label="Fin" sortKey="fecha_fin" sortConfig={orden.sortConfig} onSort={orden.requestSort} className="whitespace-nowrap px-3 py-2.5" />
+          <MolsanSortableTh label="Duración" sortKey="dias" sortConfig={orden.sortConfig} onSort={orden.requestSort} className="whitespace-nowrap px-3 py-2.5" />
+          <MolsanSortableTh label="Objetivo" sortKey="objetivo_dias" sortConfig={orden.sortConfig} onSort={orden.requestSort} className="whitespace-nowrap px-3 py-2.5" />
+          <MolsanSortableTh label="Estado" sortKey="estado" sortConfig={orden.sortConfig} onSort={orden.requestSort} className="whitespace-nowrap px-3 py-2.5" />
+        </tr></thead>
+        <tbody>{orden.items.map((a) => <tr key={a.actividad_key}>
+          <td className="px-3 py-2.5">{a.actividad}</td>
+          <td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_inicio)}</td>
+          <td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_fin)}</td>
+          <td className="px-3 py-2.5">{a.dias == null ? "—" : `${a.dias} días`}</td>
+          <td className="px-3 py-2.5">{a.objetivo_dias == null ? "Sin objetivo" : `${a.objetivo_dias} días`}</td>
+          <td className="px-3 py-2.5">{a.estado}</td>
+        </tr>)}</tbody>
+      </table>
+    </div>
   );
 }
 
@@ -3394,6 +3090,8 @@ function InformeFacturacion() {
   const [exportando, setExportando] = useState(false);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [recarga, setRecarga] = useState(0);
+  const modalFacturacionRef = useRef(null);
+  useAccessibleDialog({ open: modalAbierto, onClose: () => setModalAbierto(false), dialogRef: modalFacturacionRef });
 
   useEffect(() => {
     let activo = true;
@@ -3449,7 +3147,19 @@ function InformeFacturacion() {
 
   const resumen = (modalidad) => resumenFacturacionPorTipo(datosTarjetas.filter((fila) => fila.tipo_cancelacion === modalidad));
   const euros = (v) => Number(v || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
-  const campo = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
+  const campo = "block w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-text)] outline-none focus:border-[var(--molsan-blue)] focus:ring-2 focus:ring-[var(--molsan-blue-soft)]";
+  const estadosAgrupados = datosTarjetas.reduce((acumulado, fila) => {
+    const estado = String(fila.estado ?? "").trim() || "(vacío)";
+    if (!acumulado[estado]) acumulado[estado] = { filas: 0, importe: 0 };
+    acumulado[estado].filas += 1;
+    acumulado[estado].importe += Number(fila.imp_gasto || 0);
+    return acumulado;
+  }, {});
+  const listaEstados = Object.entries(estadosAgrupados)
+    .map(([estado, dato]) => ({ estado, ...dato }))
+    .sort((a, b) => a.estado === "(vacío)" ? 1 : b.estado === "(vacío)" ? -1 : a.estado.localeCompare(b.estado, "es"));
+  const ordenEstados = useSortableData(listaEstados);
+
   const grupos = [
     { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "🏦", acento: "emerald" },
     { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "📄", acento: "amber" },
@@ -3458,11 +3168,11 @@ function InformeFacturacion() {
   const renderTarjetas = (grupo) => {
     const r = resumen(grupo.key);
     return (
-    <section key={grupo.key} className="space-y-4 rounded-2xl border border-white/80 bg-white/55 p-4 shadow-sm backdrop-blur-xl sm:p-5">
+    <section key={grupo.key} className="space-y-4 p-4 sm:p-5">
         <div className="flex flex-wrap items-center gap-3">
-          <span className={"flex h-12 w-12 items-center justify-center rounded-xl text-2xl " + (grupo.acento === "emerald" ? "bg-emerald-50" : "bg-amber-50")}>{grupo.icono}</span>
-          <div><h3 className="text-lg font-bold text-slate-800">{grupo.titulo}</h3><p className="text-xs text-slate-500">{grupo.descripcion}</p></div>
-          <div className="ml-auto text-right"><div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Registros del periodo</div><div className="text-2xl font-extrabold text-slate-800">{loadingTarjetas ? "…" : numeroInforme(r.registros)}</div></div>
+          <span className={"flex h-12 w-12 items-center justify-center" + (grupo.acento === "emerald" ? "" : "")}>{grupo.icono}</span>
+          <div><h3>{grupo.titulo}</h3><p>{grupo.descripcion}</p></div>
+          <div className="ml-auto"><div className="uppercase">Registros del periodo</div><div>{loadingTarjetas ? "…" : numeroInforme(r.registros)}</div></div>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <InformeKpi titulo="Gastos Post Firma" valor={loadingTarjetas ? "…" : euros(r.total_gasto)} subtitulo={numeroInforme(r.registros) + " registros"} icono="🧾" />
@@ -3471,12 +3181,12 @@ function InformeFacturacion() {
           <InformeKpi titulo="Impuestos" valor={loadingTarjetas ? "…" : euros(r.total_impuesto)} subtitulo="Importe total de impuesto" icono="💶" />
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-emerald-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Cobrado</div><div className="mt-1 text-xl font-bold text-emerald-700">{loadingTarjetas ? "…" : euros(r.total_cobrado)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.cobrado)} registros</div></div>
-          <div className="rounded-2xl border border-amber-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Pendiente de cobro</div><div className="mt-1 text-xl font-bold text-amber-700">{loadingTarjetas ? "…" : euros(r.total_pendiente_cobro)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.pendiente_cobro)} registros</div></div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Pendiente de factura</div><div className="mt-1 text-xl font-bold text-slate-700">{loadingTarjetas ? "…" : euros(r.total_pendiente_factura)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.pendiente_factura)} registros</div></div>
-          <div className="rounded-2xl border border-rose-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Importe con incidencias</div><div className="mt-1 text-xl font-bold text-rose-700">{loadingTarjetas ? "…" : euros(r.total_incidencias)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.incidencias)} registros</div></div>
+          <div className="p-4"><div>Cobrado</div><div className="mt-1">{loadingTarjetas ? "…" : euros(r.total_cobrado)}</div><div className="mt-1">{numeroInforme(r.cobrado)} registros</div></div>
+          <div className="p-4"><div>Pendiente de cobro</div><div className="mt-1">{loadingTarjetas ? "…" : euros(r.total_pendiente_cobro)}</div><div className="mt-1">{numeroInforme(r.pendiente_cobro)} registros</div></div>
+          <div className="p-4"><div>Pendiente de factura</div><div className="mt-1">{loadingTarjetas ? "…" : euros(r.total_pendiente_factura)}</div><div className="mt-1">{numeroInforme(r.pendiente_factura)} registros</div></div>
+          <div className="p-4"><div>Importe con incidencias</div><div className="mt-1">{loadingTarjetas ? "…" : euros(r.total_incidencias)}</div><div className="mt-1">{numeroInforme(r.incidencias)} registros</div></div>
         </div>
-        <div className="flex justify-center border-t border-slate-100 pt-4">
+        <div className="flex justify-center pt-4">
           <button
             type="button"
             onClick={() => {
@@ -3485,7 +3195,7 @@ function InformeFacturacion() {
               setAplicados(siguiente);
               setModalAbierto(true);
             }}
-            className={"inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white shadow-sm transition " + (grupo.acento === "emerald" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-amber-600 hover:bg-amber-700")}
+            className={"inline-flex items-center gap-2 px-6 py-3" + (grupo.acento === "emerald" ? "" : "")}
           >
             📊 Ver detalle y descargar Excel: {grupo.titulo}
           </button>
@@ -3497,20 +3207,20 @@ function InformeFacturacion() {
   return (
     <>
     <section className="space-y-5">
-      <div role="note" className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900">
-        <span aria-hidden="true" className="text-lg">ℹ️</span>
+      <div role="note" className="flex items-start gap-3 px-4 py-3">
+        <span aria-hidden="true">ℹ️</span>
         <p><strong>Importante:</strong> para que cada gasto quede correctamente asociado a su expediente en el ERP, debe relacionarse el <strong>IDGASTO</strong> del Excel ABSIS con el expediente correspondiente. Los gastos sin esa relación deben revisarse; este informe no crea el vínculo automáticamente.</p>
       </div>
-      <div className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl">
+      <div className="p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div><h2 className="text-xl font-bold text-slate-800">Informes de facturación</h2><p className="mt-1 text-sm text-slate-500">Indicadores de Post Firma por tipo de operación y por estado original de ABSIS. El periodo se filtra por FPAGO.</p></div>
-          <button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">↻ Actualizar</button>
+          <div><h2>Informes de facturación</h2><p className="mt-1">Indicadores de Post Firma por tipo de operación y por estado original de ABSIS. El periodo se filtra por FPAGO.</p></div>
+          <button type="button" onClick={() => setRecarga((v) => v + 1)} className="px-4 py-2">↻ Actualizar</button>
         </div>
         <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
-          <label className="text-xs font-semibold text-slate-600">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
+          <label>Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
+          <label>Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
         </div>
-        <p className="mt-2 text-xs text-slate-500">Por defecto se muestran todos los registros Post Firma importados. Puedes limitar el informe a un periodo seleccionando las fechas; las tarjetas se actualizarán automáticamente.</p>
+        <p className="mt-2">Por defecto se muestran todos los registros Post Firma importados. Puedes limitar el informe a un periodo seleccionando las fechas; las tarjetas se actualizarán automáticamente.</p>
       </div>
 
       <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
@@ -3518,112 +3228,99 @@ function InformeFacturacion() {
         {renderTarjetas(grupos[1])}
       </div>
 
-      <section className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl">
+      <section className="p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h3 className="text-lg font-bold text-slate-800">Seguimiento por estado ABSIS</h3>
-            <p className="mt-1 text-sm text-slate-500">Desglose de las filas Post Firma que cumplen el concepto y beneficiario seleccionados, agrupadas por el ESTADO original del Excel.</p>
+            <h3>Seguimiento por estado ABSIS</h3>
+            <p className="mt-1">Desglose de las filas Post Firma que cumplen el concepto y beneficiario seleccionados, agrupadas por el ESTADO original del Excel.</p>
           </div>
-          <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{loadingTarjetas ? "Actualizando…" : numeroInforme(datosTarjetas.length) + " registros analizados"}</span>
+          <span className="px-3 py-1.5">{loadingTarjetas ? "Actualizando…" : numeroInforme(datosTarjetas.length) + " registros analizados"}</span>
         </div>
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {ESTADOS_ABSIS_INFORME.map((estadoInfo) => {
             const filasEstado = datosTarjetas.filter((fila) => String(fila.estado ?? "").trim().toUpperCase().replace(/\s+/g, " ") === estadoInfo.codigo);
             const importeEstado = filasEstado.reduce((total, fila) => total + (Number(fila.imp_gasto) || 0), 0);
-            const acento = estadoInfo.color === "emerald" ? "border-emerald-200 bg-emerald-50/70 text-emerald-800"
-              : estadoInfo.color === "rose" ? "border-rose-200 bg-rose-50/70 text-rose-800"
-              : estadoInfo.color === "amber" ? "border-amber-200 bg-amber-50/70 text-amber-800"
-              : estadoInfo.color === "blue" ? "border-blue-200 bg-blue-50/70 text-blue-800"
-              : "border-slate-200 bg-slate-50 text-slate-800";
+            const acento = "border-[var(--molsan-border)] bg-[var(--molsan-panel)] text-[var(--molsan-blue)]";
             return (
               <button key={estadoInfo.codigo} type="button" disabled={loadingTarjetas} onClick={() => {
                 const siguiente = { ...filtros, modalidad: "todas", estado: estadoInfo.codigo };
                 setFiltros(siguiente);
                 setAplicados(siguiente);
                 setModalAbierto(true);
-              }} className={"rounded-xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:opacity-60 " + acento}>
-                <div className="text-xs font-bold uppercase tracking-wide">{estadoInfo.etiqueta}</div>
-                <div className="mt-2 text-2xl font-extrabold tabular-nums">{loadingTarjetas ? "…" : numeroInforme(filasEstado.length)}</div>
-                <div className="mt-1 text-sm font-semibold tabular-nums">{loadingTarjetas ? "…" : euros(importeEstado)}</div>
-                <div className="mt-1 text-xs opacity-80">{estadoInfo.descripcion}</div>
-                <div className="mt-3 text-xs font-bold underline underline-offset-2">Ver registros</div>
+              }} className={"p-4" + acento}>
+                <div className="uppercase">{estadoInfo.etiqueta}</div>
+                <div className="mt-2 tabular-nums">{loadingTarjetas ? "…" : numeroInforme(filasEstado.length)}</div>
+                <div className="mt-1 tabular-nums">{loadingTarjetas ? "…" : euros(importeEstado)}</div>
+                <div className="mt-1">{estadoInfo.descripcion}</div>
+                <div className="mt-3 underline-offset-2">Ver registros</div>
               </button>
             );
           })}
         </div>
-        {(() => {
-          const estados = datosTarjetas.reduce((acumulado, fila) => {
-            const estado = String(fila.estado ?? "").trim() || "(vacío)";
-            if (!acumulado[estado]) acumulado[estado] = { filas: 0, importe: 0 };
-            acumulado[estado].filas += 1;
-            acumulado[estado].importe += Number(fila.imp_gasto || 0);
-            return acumulado;
-          }, {});
-          const listaEstados = Object.entries(estados).sort((a, b) => {
-            if (a[0] === "(vacío)") return 1;
-            if (b[0] === "(vacío)") return -1;
-            return a[0].localeCompare(b[0], "es");
-          });
-          return loadingTarjetas ? (
-            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-500">Cargando estados ABSIS…</div>
-          ) : listaEstados.length === 0 ? (
-            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-500">No hay registros para el periodo seleccionado.</div>
-          ) : (
-            <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200">
-              <table className="w-full min-w-[640px] text-left text-sm">
-                <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-4 py-3">ESTADO (Excel ABSIS)</th><th className="px-4 py-3 text-right">Registros</th><th className="px-4 py-3 text-right">Importe IMPGASTO</th><th className="px-4 py-3 text-right">Consulta</th></tr></thead>
-                <tbody className="divide-y divide-slate-100">
-                  {listaEstados.map(([estado, dato]) => (
-                    <tr key={estado} className="hover:bg-blue-50/50">
-                      <td className="px-4 py-3 font-semibold text-slate-700">{estado}</td>
-                      <td className="px-4 py-3 text-right tabular-nums">{numeroInforme(dato.filas)}</td>
-                      <td className="px-4 py-3 text-right tabular-nums">{euros(dato.importe)}</td>
-                      <td className="px-4 py-3 text-right">{estado === "(vacío)" ? <span className="text-xs text-slate-400">Sin código</span> : <button type="button" onClick={() => {
-                        const siguiente = { ...filtros, modalidad: "todas", estado };
-                        setFiltros(siguiente);
-                        setAplicados(siguiente);
-                        setModalAbierto(true);
-                      }} className="rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-50">Ver registros</button>}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          );
-        })()}
-        <p className="mt-3 text-xs leading-5 text-slate-500">Las tarjetas muestran los ocho códigos acordados de ESTADO. Los códigos originales se conservan; los valores vacíos o desconocidos siguen apareciendo en el desglose inferior. PAG_RETRO no se contabiliza como cobro efectivo. La consulta no modifica datos.</p>
+        {loadingTarjetas ? (
+          <div className="mt-4 p-4">Cargando estados ABSIS…</div>
+        ) : ordenEstados.items.length === 0 ? (
+          <div className="mt-4 p-4">No hay registros para el periodo seleccionado.</div>
+        ) : (
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[640px]">
+              <thead className="uppercase"><tr>
+                <MolsanSortableTh label="ESTADO (Excel ABSIS)" sortKey="estado" sortConfig={ordenEstados.sortConfig} onSort={ordenEstados.requestSort} className="px-4 py-3" />
+                <MolsanSortableTh label="Registros" sortKey="filas" sortConfig={ordenEstados.sortConfig} onSort={ordenEstados.requestSort} className="px-4 py-3" />
+                <MolsanSortableTh label="Importe IMPGASTO" sortKey="importe" sortConfig={ordenEstados.sortConfig} onSort={ordenEstados.requestSort} className="px-4 py-3" />
+                <th className="px-4 py-3">Consulta</th>
+              </tr></thead>
+              <tbody>
+                {ordenEstados.items.map(({ estado, filas, importe }) => (
+                  <tr key={estado}>
+                    <td className="px-4 py-3">{estado}</td>
+                    <td className="px-4 py-3 tabular-nums">{numeroInforme(filas)}</td>
+                    <td className="px-4 py-3 tabular-nums">{euros(importe)}</td>
+                    <td className="px-4 py-3">{estado === "(vacío)" ? <span>Sin código</span> : <button type="button" onClick={() => {
+                      const siguiente = { ...filtros, modalidad: "todas", estado };
+                      setFiltros(siguiente);
+                      setAplicados(siguiente);
+                      setModalAbierto(true);
+                    }} className="px-3 py-1.5">Ver registros</button>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <p className="mt-3">Las tarjetas muestran los ocho códigos acordados de ESTADO. Los códigos originales se conservan; los valores vacíos o desconocidos siguen apareciendo en el desglose inferior. PAG_RETRO no se contabiliza como cobro efectivo. La consulta no modifica datos.</p>
       </section>
 
       <AvisoInforme error={error} />
 
       {modalAbierto && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-5" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-white/70 bg-white shadow-2xl">
-            <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 px-5 py-4">
-              <div><h2 id="modal-facturacion-titulo" className="text-xl font-bold text-slate-800">Detalle de facturación</h2><p className="mt-1 text-sm text-slate-500">Tabla Excel con los registros que cumplen los filtros seleccionados.</p></div>
-              <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">✕ Cerrar</button>
+        <div className="panel-modal-premium fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-5" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
+          <section ref={modalFacturacionRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="molsan-modal__panel flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden">
+            <header className="molsan-modal__header flex flex-wrap items-start justify-between gap-3">
+              <div><h2 id="modal-facturacion-titulo">Detalle de facturación</h2><p className="mt-1">Tabla Excel con los registros que cumplen los filtros seleccionados.</p></div>
+              <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="px-3 py-2">✕ Cerrar</button>
             </header>
-            <form onSubmit={aplicar} className="grid grid-cols-1 gap-3 overflow-y-auto border-b border-slate-200 bg-slate-50/80 px-5 py-4 sm:grid-cols-2 xl:grid-cols-4">
-              <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
-              <label className="text-xs font-semibold text-slate-600">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
-              <label className="text-xs font-semibold text-slate-600">Clasificación<select className={campo} value={filtros.modalidad} onChange={(e) => cambiar("modalidad", e.target.value)}><option value="todas">Todas</option><option value="con_provision">Cancelación con provisión</option><option value="sin_provision">Cancelación sin provisión</option><option value="otros">Otros tipos de operación</option></select></label>
-              <label className="text-xs font-semibold text-slate-600">Tipo operación<input className={campo} value={filtros.tipo_operacion || ""} onChange={(e) => cambiar("tipo_operacion", e.target.value)} placeholder="Filtrar operación" /></label>
-              <label className="text-xs font-semibold text-slate-600">Estado ABSIS<input className={campo} value={filtros.estado || ""} onChange={(e) => cambiar("estado", e.target.value)} placeholder="Filtrar estado" /></label>
-              <label className="text-xs font-semibold text-slate-600">Estado justificante<input className={campo} value={filtros.estado_justificante || ""} onChange={(e) => cambiar("estado_justificante", e.target.value)} placeholder="Filtrar justificante" /></label>
-              <label className="text-xs font-semibold text-slate-600">Situación económica<select className={campo} value={filtros.situacion} onChange={(e) => cambiar("situacion", e.target.value)}><option value="">Todas</option><option value="cobrado">Cobrado (estado ABSIS)</option><option value="pendiente_cobro">Pendiente de cobro</option><option value="pendiente_factura">Pendiente de factura</option><option value="incidencia">Con incidencia</option></select></label>
-              <label className="text-xs font-semibold text-slate-600">Buscar expediente / factura<input className={campo} value={filtros.q || ""} onChange={(e) => cambiar("q", e.target.value)} placeholder="Nº expediente, IDGASTO o factura" /></label>
+            <form onSubmit={aplicar} className="grid grid-cols-1 gap-3 overflow-y-auto px-5 py-4 sm:grid-cols-2 xl:grid-cols-4">
+              <label>Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
+              <label>Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
+              <label>Clasificación<select className={campo} value={filtros.modalidad} onChange={(e) => cambiar("modalidad", e.target.value)}><option value="todas">Todas</option><option value="con_provision">Cancelación con provisión</option><option value="sin_provision">Cancelación sin provisión</option><option value="otros">Otros tipos de operación</option></select></label>
+              <label>Tipo operación<input className={campo} value={filtros.tipo_operacion || ""} onChange={(e) => cambiar("tipo_operacion", e.target.value)} placeholder="Filtrar operación" /></label>
+              <label>Estado ABSIS<input className={campo} value={filtros.estado || ""} onChange={(e) => cambiar("estado", e.target.value)} placeholder="Filtrar estado" /></label>
+              <label>Estado justificante<input className={campo} value={filtros.estado_justificante || ""} onChange={(e) => cambiar("estado_justificante", e.target.value)} placeholder="Filtrar justificante" /></label>
+              <label>Situación económica<select className={campo} value={filtros.situacion} onChange={(e) => cambiar("situacion", e.target.value)}><option value="">Todas</option><option value="cobrado">Cobrado (estado ABSIS)</option><option value="pendiente_cobro">Pendiente de cobro</option><option value="pendiente_factura">Pendiente de factura</option><option value="incidencia">Con incidencia</option></select></label>
+              <label>Buscar expediente / factura<input className={campo} value={filtros.q || ""} onChange={(e) => cambiar("q", e.target.value)} placeholder="Nº expediente, IDGASTO o factura" /></label>
               <div className="flex flex-wrap items-center gap-2 sm:col-span-2 xl:col-span-4">
-                <button type="submit" className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">Aplicar filtros</button>
-                <button type="button" onClick={exportar} disabled={exportando} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:opacity-50">{exportando ? "Exportando…" : "↓ Descargar Excel"}</button>
-                <span className="text-xs text-slate-500">La selección de fechas también actualiza las tarjetas del informe.</span>
+                <button type="submit" className="px-4 py-2.5">Aplicar filtros</button>
+                <button type="button" onClick={exportar} disabled={exportando} className="molsan-export-excel">{exportando ? "Exportando…" : "↓ Descargar Excel"}</button>
+                <span>La selección de fechas también actualiza las tarjetas del informe.</span>
               </div>
             </form>
             <div className="flex-1 overflow-auto">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3"><div className="text-sm font-semibold text-slate-700">{loading ? "Consultando registros…" : numeroInforme(datos.items.length) + " registros encontrados"}</div><div className="text-xs text-slate-500">Filtro del informe: CONCEPTOGASTO = HONORARIOS GESTORÍA y BENEFICIARIO = *MOLSAN. IDPAGO sigue desconectado.</div></div>
+              <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3"><div>{loading ? "Consultando registros…" : numeroInforme(datos.items.length) + " registros encontrados"}</div><div>Filtro del informe: CONCEPTOGASTO = HONORARIOS GESTORÍA y BENEFICIARIO = *MOLSAN. IDPAGO sigue desconectado.</div></div>
               {loading ? <PanelEstadoInforme loading /> : datos.items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay filas Post Firma para los filtros seleccionados." /> : (
-                <div className="max-h-[58vh] overflow-auto"><table className="min-w-[2600px] w-full text-left text-xs">
-                  <thead className="sticky top-0 z-10 bg-slate-100 text-slate-600"><tr>{COLUMNAS_POSTFIRMA.map((h, i) => <th key={h + "-" + i} className="whitespace-nowrap px-3 py-3 font-bold">{h}</th>)}</tr></thead>
-                  <tbody className="divide-y divide-slate-100">{datos.items.map((fila, i) => <tr key={(fila.id_gasto_absis || fila.id_expediente || "registro") + "-" + i} className="hover:bg-blue-50/50">{COLUMNAS_POSTFIRMA.map((h, j) => <td key={h + "-" + j} className="whitespace-nowrap px-3 py-3">{valorColumnaPostFirma(fila, h)}</td>)}</tr>)}</tbody>
+                <div className="max-h-[58vh] overflow-auto"><table className="min-w-[2600px] w-full">
+                  <thead className="sticky top-0 z-10"><tr>{COLUMNAS_POSTFIRMA.map((h, i) => <th key={h + "-" + i} className="whitespace-nowrap px-3 py-3">{h}</th>)}</tr></thead>
+                  <tbody>{datos.items.map((fila, i) => <tr key={(fila.id_gasto_absis || fila.id_expediente || "registro") + "-" + i}>{COLUMNAS_POSTFIRMA.map((h, j) => <td key={h + "-" + j} className="whitespace-nowrap px-3 py-3">{valorColumnaPostFirma(fila, h)}</td>)}</tr>)}</tbody>
                 </table></div>
               )}
             </div>
@@ -3674,13 +3371,13 @@ function InformeHistoricoPostFirma() {
     catch(err){setError(err?.response?.data?.detail||"No se pudo actualizar el histórico.");} finally{setCargandoCargas(false);}
   };
   return (
-    <section className="space-y-4 rounded-2xl border border-white/80 bg-white/70 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.08)]">
-      <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="text-xl font-bold text-slate-800">Histórico bruto Post Firma</h2><p className="mt-1 max-w-3xl text-sm text-slate-500">Consulta las filas originales por fichero y mes. No vincula expedientes, no modifica Gestión económica y no consolida movimientos.</p></div><button type="button" onClick={actualizar} disabled={cargandoCargas} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50">↻ Actualizar cargas</button></div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"><label className="text-xs font-semibold text-slate-600 sm:col-span-2">Fichero importado<select value={cargaSeleccionada} onChange={(e)=>{setCargaSeleccionada(e.target.value);setOffset(0);}} className="mt-1 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700" disabled={cargandoCargas||!cargas.length}>{!cargas.length&&<option value="">No hay cargas disponibles</option>}{cargas.map((c)=><option key={c.id} value={String(c.id)}>{c.nombre_archivo} · carga #{c.id} · {c.filas_guardadas} filas</option>)}</select></label><div className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs font-semibold text-slate-500">Filas Excel</p><p className="mt-1 text-xl font-bold text-slate-800">{cargaActual?.filas_excel??"—"}</p></div><div className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs font-semibold text-slate-500">Filas guardadas</p><p className="mt-1 text-xl font-bold text-slate-800">{cargaActual?.filas_guardadas??"—"}</p></div></div>
-      {cargaActual&&<p className="break-all text-xs text-slate-500">Fecha de carga: {cargaActual.fecha_carga||"—"} · SHA-256: {cargaActual.sha256||"—"}</p>}{error&&<p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white"><div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3"><div><h3 className="font-bold text-slate-800">Filas originales</h3><p className="text-xs text-slate-500">Columnas dinámicas del Excel, incluida TIPOCONCEPTO cuando exista.</p></div><span className="text-sm font-semibold text-slate-600">{total.toLocaleString("es-ES")} filas</span></div>
-      {cargandoCargas||cargandoFilas?<p className="p-8 text-center text-sm text-slate-500">Cargando histórico…</p>:!cargaSeleccionada?<p className="p-8 text-center text-sm text-slate-500">Todavía no hay ficheros Post Firma importados.</p>:<div className="max-h-[58vh] overflow-auto"><table className="min-w-max w-full text-left text-xs"><thead className="sticky top-0 z-10 bg-slate-100 text-slate-600"><tr><th className="whitespace-nowrap px-3 py-3 font-bold">Fila Excel</th>{columnas.map((c,i)=><th key={String(c)+"-"+i} className="whitespace-nowrap px-3 py-3 font-bold">{c||"(columna sin título)"}</th>)}</tr></thead><tbody className="divide-y divide-slate-100">{registros.map((fila)=><tr key={fila.id} className="hover:bg-blue-50/50"><td className="whitespace-nowrap px-3 py-2 text-slate-500">{fila.numero_fila}</td>{columnas.map((c,i)=><td key={String(c)+"-"+i} className="max-w-xs whitespace-nowrap px-3 py-2">{mostrarValor(fila.datos?.[c])}</td>)}</tr>)}{!registros.length&&<tr><td colSpan={Math.max(columnas.length+1,1)} className="px-4 py-8 text-center text-slate-500">Esta carga no contiene filas con datos.</td></tr>}</tbody></table></div>}
-      {cargaSeleccionada&&<div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-4 py-3"><p className="text-xs text-slate-500">Mostrando {total?offset+1:0}–{Math.min(offset+registros.length,total)} de {total.toLocaleString("es-ES")}</p><div className="flex gap-2"><button type="button" disabled={offset===0||cargandoFilas} onClick={()=>setOffset((v)=>Math.max(0,v-limite))} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold disabled:opacity-40">Anterior</button><button type="button" disabled={offset+limite>=total||cargandoFilas} onClick={()=>setOffset((v)=>v+limite)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold disabled:opacity-40">Siguiente</button></div></div>}
+    <section className="space-y-4 p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3"><div><h2>Histórico bruto Post Firma</h2><p className="mt-1 max-w-3xl">Consulta las filas originales por fichero y mes. No vincula expedientes, no modifica Gestión económica y no consolida movimientos.</p></div><button type="button" onClick={actualizar} disabled={cargandoCargas} className="px-4 py-2">↻ Actualizar cargas</button></div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"><label className="sm:col-span-2">Fichero importado<select value={cargaSeleccionada} onChange={(e)=>{setCargaSeleccionada(e.target.value);setOffset(0);}} className="mt-1 block w-full px-3 py-2.5" disabled={cargandoCargas||!cargas.length}>{!cargas.length&&<option value="">No hay cargas disponibles</option>}{cargas.map((c)=><option key={c.id} value={String(c.id)}>{c.nombre_archivo} · carga #{c.id} · {c.filas_guardadas} filas</option>)}</select></label><div className="p-3"><p>Filas Excel</p><p className="mt-1">{cargaActual?.filas_excel??"—"}</p></div><div className="p-3"><p>Filas guardadas</p><p className="mt-1">{cargaActual?.filas_guardadas??"—"}</p></div></div>
+      {cargaActual&&<p className="break-all">Fecha de carga: {cargaActual.fecha_carga||"—"} · SHA-256: {cargaActual.sha256||"—"}</p>}{error&&<p role="alert" className="p-3">{error}</p>}
+      <div className="overflow-hidden"><div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"><div><h3>Filas originales</h3><p>Columnas dinámicas del Excel, incluida TIPOCONCEPTO cuando exista.</p></div><span>{total.toLocaleString("es-ES")} filas</span></div>
+      {cargandoCargas||cargandoFilas?<p className="p-8">Cargando histórico…</p>:!cargaSeleccionada?<p className="p-8">Todavía no hay ficheros Post Firma importados.</p>:<div className="max-h-[58vh] overflow-auto"><table className="min-w-max w-full"><thead className="sticky top-0 z-10"><tr><th className="whitespace-nowrap px-3 py-3">Fila Excel</th>{columnas.map((c,i)=><th key={String(c)+"-"+i} className="whitespace-nowrap px-3 py-3">{c||"(columna sin título)"}</th>)}</tr></thead><tbody>{registros.map((fila)=><tr key={fila.id}><td className="whitespace-nowrap px-3 py-2">{fila.numero_fila}</td>{columnas.map((c,i)=><td key={String(c)+"-"+i} className="max-w-xs whitespace-nowrap px-3 py-2">{mostrarValor(fila.datos?.[c])}</td>)}</tr>)}{!registros.length&&<tr><td colSpan={Math.max(columnas.length+1,1)} className="px-4 py-8">Esta carga no contiene filas con datos.</td></tr>}</tbody></table></div>}
+      {cargaSeleccionada&&<div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"><p>Mostrando {total?offset+1:0}–{Math.min(offset+registros.length,total)} de {total.toLocaleString("es-ES")}</p><div className="flex gap-2"><button type="button" disabled={offset===0||cargandoFilas} onClick={()=>setOffset((v)=>Math.max(0,v-limite))} className="px-3 py-2">Anterior</button><button type="button" disabled={offset+limite>=total||cargandoFilas} onClick={()=>setOffset((v)=>v+limite)} className="px-3 py-2">Siguiente</button></div></div>}
       </div>
     </section>
   );
@@ -3721,29 +3418,29 @@ function ApartadoInformePendiente({ apartado }) {
   }[apartado.key];
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl">
-      <div className="border-b border-slate-200/80 px-6 py-5">
+    <section className="overflow-hidden">
+      <div className="px-6 py-5">
         <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center">
             {apartado.icono}
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-800">{detalle.encabezado}</h2>
-            <p className="mt-1 text-sm leading-relaxed text-slate-500">{detalle.descripcion}</p>
+            <h2>{detalle.encabezado}</h2>
+            <p className="mt-1">{detalle.descripcion}</p>
           </div>
         </div>
       </div>
 
       <div className="p-6">
-        <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <div className="mb-5 px-4 py-3">
           <strong>En preparación.</strong> Este apartado está creado en el menú. Falta definir sus filtros e indicadores y conectar el endpoint correspondiente; no se muestran cifras ficticias.
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {detalle.indicadores.map((indicador) => (
-            <div key={indicador.titulo} className="rounded-xl border border-slate-200 bg-white p-4">
-              <div className="text-sm font-bold text-slate-700">{indicador.titulo}</div>
-              <p className="mt-2 text-sm leading-relaxed text-slate-500">{indicador.texto}</p>
+            <div key={indicador.titulo} className="p-4">
+              <div>{indicador.titulo}</div>
+              <p className="mt-2">{indicador.texto}</p>
             </div>
           ))}
         </div>
@@ -3769,19 +3466,13 @@ export default function Informes() {
   };
 
   return (
-    <div className="informes-premium-page herramientas-subpagina-premium min-h-screen space-y-5 bg-gradient-to-br from-[#eef5fb] via-[#f7faff] to-[#eaf2fb] p-4 text-slate-700 md:p-6">
-      <header className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-blue-100 text-xl shadow-sm">📊</div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-800 md:text-3xl">{apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}</h1>
-              <p className="mt-1 text-sm text-slate-500">{apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}</p>
-            </div>
-          </div>
-          {claveApartado && <button type="button" onClick={() => navigate("/informes")} className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50">← Volver a Informes</button>}
-        </div>
-      </header>
+    <div className="erp-page utilidades-premium-page herramientas-subpagina-premium min-h-full min-w-0 space-y-5">
+      <MolsanPageHeader
+        mark="IF"
+        title={apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}
+        description={apartadoSeleccionado ? apartadoSeleccionado.descripcion : "Selecciona el tipo de informe que quieres consultar."}
+      />
+      {claveApartado && <div className="flex justify-end"><button type="button" onClick={() => navigate("/informes")} className="inline-flex items-center gap-2 px-4 py-2.5">← Volver a Informes</button></div>}
 
       {!claveApartado ? (
         <nav aria-label="Apartados de informes" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -3790,13 +3481,13 @@ export default function Informes() {
               key={apartado.key}
               type="button"
               onClick={() => navigate(`/informes/${apartado.key}`)}
-              className="group flex min-h-[150px] items-start gap-4 rounded-2xl border border-white/80 bg-white/75 p-5 text-left shadow-[0_8px_25px_rgba(55,85,120,0.07)] backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-blue-300 hover:shadow-[0_14px_35px_rgba(55,85,120,0.13)] focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="group flex min-h-[150px] items-start gap-4 p-5"
             >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-2xl transition group-hover:bg-blue-100">{apartado.icono}</span>
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center">{apartado.icono}</span>
               <span className="min-w-0 flex-1">
-                <span className="block text-base font-bold text-slate-800">{apartado.titulo}</span>
-                <span className="mt-2 block text-sm leading-relaxed text-slate-500">{apartado.descripcion}</span>
-                <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-blue-700">Abrir informe <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span></span>
+                <span className="block">{apartado.titulo}</span>
+                <span className="mt-2 block">{apartado.descripcion}</span>
+                <span className="mt-5 inline-flex items-center gap-2">Abrir informe <span aria-hidden="true">→</span></span>
               </span>
             </button>
           ))}
@@ -3804,11 +3495,11 @@ export default function Informes() {
       ) : apartadoSeleccionado ? (
         renderInforme()
       ) : (
-        <section className="rounded-2xl border border-white/80 bg-white/75 p-8 text-center shadow-sm">
-          <div className="text-3xl">📊</div>
-          <h2 className="mt-3 text-lg font-bold text-slate-800">Informe no encontrado</h2>
-          <p className="mt-1 text-sm text-slate-500">El apartado solicitado no existe.</p>
-          <button type="button" onClick={() => navigate("/informes")} className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Ver los cinco informes</button>
+        <section className="p-8">
+          <div>📊</div>
+          <h2 className="mt-3">Informe no encontrado</h2>
+          <p className="mt-1">El apartado solicitado no existe.</p>
+          <button type="button" onClick={() => navigate("/informes")} className="mt-4 px-4 py-2.5">Ver los cinco informes</button>
         </section>
       )}
     </div>

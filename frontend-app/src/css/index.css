@@ -1,34 +1,48 @@
-/* ============================================================
-   ERP SJ‑2026 — Importación de estilos
-   ============================================================ */
-
 @import "tailwindcss";
-@import "./variables.css";
-@import "./base.css";
-@import "./layout.css";
-@import "./cards.css";
-@import "./tables.css";
-@import "./forms.css";
-@import "./tabs.css";
-@import "./modals.css";
-@import "./animations.css";
-@import "./erp-theme.css";
-@config "../../tailwind.config.js";
 
-/* ============================================================
-   ERP SJ‑2026 — Componentes personalizados
-   ============================================================ */
-
-
-/* ============================================================
-   ERP SJ‑2026 — Animaciones corporativas
-   ============================================================ */
-
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.35s ease-out;
+/* Tailwind 4: utilidades corporativas respaldadas por los tokens centrales. */
+@theme inline {
+  --color-molsan-blue: var(--molsan-blue);
+  --color-molsan-blue-hover: var(--molsan-blue-hover);
+  --color-molsan-blue-active: var(--molsan-blue-active);
+  --color-molsan-blue-soft: var(--molsan-blue-soft);
+  --color-molsan-panel: var(--molsan-panel);
+  --color-molsan-white: var(--molsan-white);
+  --color-molsan-table-head: var(--molsan-table-head);
+  --color-molsan-text: var(--molsan-text);
+  --color-molsan-muted: var(--molsan-muted);
+  --color-molsan-border: var(--molsan-border);
+  --color-molsan-success: var(--molsan-success);
+  --color-molsan-warning: var(--molsan-warning);
+  --color-molsan-danger: var(--molsan-danger);
+  --color-molsan-success-soft: var(--molsan-success-soft);
+  --color-molsan-warning-soft: var(--molsan-warning-soft);
+  --color-molsan-danger-soft: var(--molsan-danger-soft);
+  --color-molsan-info-soft: var(--molsan-info-soft);
+  --font-sans: var(--molsan-font-family);
+  --text-molsan-xs: var(--molsan-font-size-xs);
+  --text-molsan-sm: var(--molsan-font-size-sm);
+  --text-molsan-md: var(--molsan-font-size-md);
+  --text-molsan-lg: var(--molsan-font-size-lg);
+  --text-molsan-xl: var(--molsan-font-size-xl);
+  --text-molsan-2xl: var(--molsan-font-size-2xl);
+  --radius-molsan-xs: var(--molsan-radius-xs);
+  --radius-molsan-sm: var(--molsan-radius-sm);
+  --radius-molsan-control: var(--molsan-radius-control);
+  --radius-molsan-card: var(--molsan-radius-card);
+  --radius-molsan-modal: var(--molsan-radius-modal);
+  --shadow-molsan-card: var(--molsan-shadow-card);
+  --shadow-molsan-popover: var(--molsan-shadow-popover);
+  --shadow-molsan-modal: var(--molsan-shadow-modal);
+  --spacing-molsan-1: var(--molsan-space-1);
+  --spacing-molsan-2: var(--molsan-space-2);
+  --spacing-molsan-3: var(--molsan-space-3);
+  --spacing-molsan-4: var(--molsan-space-4);
+  --spacing-molsan-5: var(--molsan-space-5);
+  --spacing-molsan-6: var(--molsan-space-6);
+  --spacing-molsan-8: var(--molsan-space-8);
+  --spacing-molsan-10: var(--molsan-space-10);
+  --spacing-molsan-12: var(--molsan-space-12);
+  --spacing-molsan-16: var(--molsan-space-16);
+  --spacing-molsan-20: var(--molsan-space-20);
 }

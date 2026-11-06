@@ -1,14 +1,15 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { getLogs } from "../../api/logs";
-import "./PanelTecnicoSubmodulos.css";
+import useSortableData from "../../hooks/useSortableData";
+import MolsanSortableTh from "../../components/ui/MolsanSortableTh";
 
 /**
  * ============================================================
- * LOGS TÉCNICOS — MOLSAN ERP PREMIUM 2027
+ * LOGS TÉCNICOS
  * ============================================================
  *
  * - Buscador
- * - Tabla técnica premium
  * - Diseño integrado con ERP
  * - Sin modificar la lógica de API
  * ============================================================
@@ -43,6 +44,7 @@ export default function LogsAvanzados() {
       return texto.includes(q);
     });
   }, [logs, busqueda]);
+  const ordenFiltrados = useSortableData(filtrados);
 
   // ============================================================
   // BUSCADOR
@@ -74,42 +76,34 @@ export default function LogsAvanzados() {
   // ============================================================
 
   return (
-    <div className="logs-avanzados-premium panel-tecnico-submodulo-premium space-y-6 animate-fade-in">
+    <div className="erp-page space-y-6">
 
       {/* ======================================================
           CABECERA
           ====================================================== */}
 
       <div
-        className="
-          flex flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-4
-        "
+        className="molsan-subpage-header flex flex-col
+ lg:flex-row
+ lg:items-center
+ lg:justify-between
+ gap-4"
       >
         <div>
           <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
+            className="flex
+ items-center
+ gap-3"
           >
             <div
-              className="
-                w-11
-                h-11
-                rounded-2xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-                border
-                border-[var(--erp-border)]
-              "
+              className="w-11
+ h-11
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center"
             >
               <svg className="w-5 h-5">
                 <use href="/icons/icons.svg#clipboard" />
@@ -118,21 +112,13 @@ export default function LogsAvanzados() {
 
             <div>
               <h1
-                className="
-                  text-2xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
+               
               >
                 Logs Técnicos
               </h1>
 
               <p
-                className="
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                  mt-0.5
-                "
+                className="mt-0.5"
               >
                 Registro de actividad técnica del sistema
               </p>
@@ -143,44 +129,31 @@ export default function LogsAvanzados() {
         {/* CONTADOR */}
 
         <div
-          className="
-            inline-flex
-            items-center
-            gap-2
-            px-4
-            py-2
-            rounded-xl
-            bg-[var(--erp-surface)]
-            border
-            border-[var(--erp-border)]
-            shadow-sm
-            w-fit
-          "
+          className="inline-flex
+ items-center
+ gap-2
+ px-4
+ py-2
+ 
+ 
+ 
+ 
+ 
+ w-fit"
         >
           <span
-            className="
-              w-2
-              h-2
-              rounded-full
-              bg-[var(--erp-primary)]
-            "
+            className="w-2
+ h-2"
           />
 
           <span
-            className="
-              text-sm
-              font-medium
-              text-[var(--erp-text)]
-            "
+           
           >
             {filtrados.length}
           </span>
 
           <span
-            className="
-              text-sm
-              text-[var(--erp-text-soft)]
-            "
+           
           >
             registros
           </span>
@@ -193,39 +166,24 @@ export default function LogsAvanzados() {
           ====================================================== */}
 
       <section
-        className="
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          p-4
-          shadow-sm
-        "
+        className="p-4"
       >
         <div
-          className="
-            flex
-            items-center
-            gap-3
-            bg-[var(--erp-surface-soft)]
-            border
-            border-[var(--erp-border)]
-            rounded-xl
-            px-4
-            h-11
-            focus-within:border-[var(--erp-primary)]
-            focus-within:ring-2
-            focus-within:ring-[var(--erp-primary-soft)]
-            transition
-          "
+          className="flex
+ items-center
+ gap-3
+ 
+ 
+ 
+ 
+ px-4
+ h-11"
         >
           <svg
-            className="
-              w-4
-              h-4
-              text-[var(--erp-text-soft)]
-              flex-shrink-0
-            "
+            className="w-4
+ h-4
+ 
+ flex-shrink-0"
           >
             <use href="/icons/icons.svg#search" />
           </svg>
@@ -233,15 +191,7 @@ export default function LogsAvanzados() {
           <input
             type="text"
             placeholder="Buscar por evento, detalle o dirección IP..."
-            className="
-              w-full
-              bg-transparent
-              outline-none
-              border-none
-              text-sm
-              text-[var(--erp-text)]
-              placeholder:text-[var(--erp-text-soft)]
-            "
+            className="w-full"
             value={busqueda}
             onChange={handleBusqueda}
           />
@@ -250,13 +200,7 @@ export default function LogsAvanzados() {
             <button
               type="button"
               onClick={() => setBusqueda("")}
-              className="
-                text-[var(--erp-text-soft)]
-                hover:text-[var(--erp-text)]
-                transition
-                text-lg
-                leading-none
-              "
+             
               title="Limpiar búsqueda"
             >
               ×
@@ -271,69 +215,44 @@ export default function LogsAvanzados() {
           ====================================================== */}
 
       <section
-        className="
-          bg-[var(--erp-surface)]
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          overflow-hidden
-        "
+        className="overflow-hidden"
       >
 
         {/* CABECERA TABLA */}
 
         <div
-          className="
-            px-5
-            py-4
-            border-b
-            border-[var(--erp-border)]
-            flex
-            items-center
-            justify-between
-            gap-4
-          "
+          className="px-5
+ py-4
+ 
+ 
+ flex
+ items-center
+ justify-between
+ gap-4"
         >
           <div>
             <h2
-              className="
-                text-base
-                font-semibold
-                text-[var(--erp-text)]
-              "
+             
             >
               Últimos registros
             </h2>
 
             <p
-              className="
-                text-xs
-                text-[var(--erp-text-soft)]
-                mt-1
-              "
+              className="mt-1"
             >
               Actividad técnica registrada en el sistema
             </p>
           </div>
 
           <div
-            className="
-              hidden
-              sm:flex
-              items-center
-              gap-2
-              text-xs
-              text-[var(--erp-text-soft)]
-            "
+            className="hidden
+ sm:flex
+ items-center
+ gap-2"
           >
             <span
-              className="
-                w-2
-                h-2
-                rounded-full
-                bg-green-500
-              "
+              className="w-2
+ h-2"
             />
 
             Sistema operativo
@@ -346,96 +265,30 @@ export default function LogsAvanzados() {
         <div className="overflow-x-auto">
 
           <table
-            className="
-              w-full
-              text-sm
-              text-left
-            "
+            className="w-full"
           >
 
             <thead>
-              <tr
-                className="
-                  bg-[var(--erp-surface-soft)]
-                  border-b
-                  border-[var(--erp-border)]
-                "
-              >
-                <th
-                  className="
-                    px-5
-                    py-3
-                    font-semibold
-                    text-[var(--erp-text-soft)]
-                    whitespace-nowrap
-                  "
-                >
-                  Fecha
-                </th>
-
-                <th
-                  className="
-                    px-5
-                    py-3
-                    font-semibold
-                    text-[var(--erp-text-soft)]
-                    whitespace-nowrap
-                  "
-                >
-                  Evento
-                </th>
-
-                <th
-                  className="
-                    px-5
-                    py-3
-                    font-semibold
-                    text-[var(--erp-text-soft)]
-                    min-w-[360px]
-                  "
-                >
-                  Detalle
-                </th>
-
-                <th
-                  className="
-                    px-5
-                    py-3
-                    font-semibold
-                    text-[var(--erp-text-soft)]
-                    whitespace-nowrap
-                  "
-                >
-                  Dirección IP
-                </th>
-              </tr>
+              <tr><MolsanSortableTh label="Fecha" sortKey="fecha" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-5 py-3 whitespace-nowrap" /><MolsanSortableTh label="Evento" sortKey="evento" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-5 py-3 whitespace-nowrap" /><MolsanSortableTh label="Detalle" sortKey="detalle" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-5 py-3 min-w-[360px]" /><MolsanSortableTh label="Dirección IP" sortKey="ip" sortConfig={ordenFiltrados.sortConfig} onSort={ordenFiltrados.requestSort} className="px-5 py-3 whitespace-nowrap" /></tr>
             </thead>
 
 
             <tbody>
 
-              {filtrados.map((l) => (
+              {ordenFiltrados.items.map((l) => (
 
                 <tr
                   key={l.id}
-                  className="
-                    border-b
-                    border-[var(--erp-border)]
-                    last:border-b-0
-                    hover:bg-[var(--erp-primary-soft)]
-                    transition-colors
-                  "
+                 
                 >
 
                   {/* FECHA */}
 
                   <td
-                    className="
-                      px-5
-                      py-3.5
-                      text-[var(--erp-text-soft)]
-                      whitespace-nowrap
-                    "
+                    className="px-5
+ py-3.5
+ 
+ whitespace-nowrap"
                   >
                     {formatearFecha(l.fecha)}
                   </td>
@@ -446,20 +299,18 @@ export default function LogsAvanzados() {
                   <td className="px-5 py-3.5">
 
                     <span
-                      className="
-                        inline-flex
-                        items-center
-                        px-2.5
-                        py-1
-                        rounded-lg
-                        bg-[var(--erp-primary-soft)]
-                        border
-                        border-[var(--erp-border)]
-                        text-xs
-                        font-semibold
-                        text-[var(--erp-primary)]
-                        whitespace-nowrap
-                      "
+                      className="inline-flex
+ items-center
+ px-2.5
+ py-1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ whitespace-nowrap"
                     >
                       {l.evento || "Sin evento"}
                     </span>
@@ -470,18 +321,14 @@ export default function LogsAvanzados() {
                   {/* DETALLE */}
 
                   <td
-                    className="
-                      px-5
-                      py-3.5
-                      text-[var(--erp-text)]
-                      max-w-[600px]
-                    "
+                    className="px-5
+ py-3.5
+ 
+ max-w-[600px]"
                   >
                     <div
-                      className="
-                        truncate
-                        max-w-[600px]
-                      "
+                      className="truncate
+ max-w-[600px]"
                       title={l.detalle || ""}
                     >
                       {l.detalle || "—"}
@@ -494,20 +341,18 @@ export default function LogsAvanzados() {
                   <td className="px-5 py-3.5">
 
                     <span
-                      className="
-                        inline-flex
-                        items-center
-                        px-2.5
-                        py-1
-                        rounded-lg
-                        bg-[var(--erp-surface-soft)]
-                        border
-                        border-[var(--erp-border)]
-                        text-xs
-                        font-mono
-                        text-[var(--erp-text-soft)]
-                        whitespace-nowrap
-                      "
+                      className="inline-flex
+ items-center
+ px-2.5
+ py-1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ whitespace-nowrap"
                     >
                       {l.ip || "—"}
                     </span>
@@ -530,55 +375,39 @@ export default function LogsAvanzados() {
         {filtrados.length === 0 && (
 
           <div
-            className="
-              px-6
-              py-14
-              text-center
-            "
+            className="px-6
+ py-14"
           >
 
             <div
-              className="
-                mx-auto
-                w-12
-                h-12
-                rounded-2xl
-                bg-[var(--erp-surface-soft)]
-                border
-                border-[var(--erp-border)]
-                flex
-                items-center
-                justify-center
-                mb-4
-              "
+              className="mx-auto
+ w-12
+ h-12
+ 
+ 
+ 
+ 
+ flex
+ items-center
+ justify-center
+ mb-4"
             >
               <svg
-                className="
-                  w-5
-                  h-5
-                  text-[var(--erp-text-soft)]
-                "
+                className="w-5
+ h-5"
               >
                 <use href="/icons/icons.svg#clipboard" />
               </svg>
             </div>
 
             <h3
-              className="
-                text-sm
-                font-semibold
-                text-[var(--erp-text)]
-              "
+             
             >
               No hay registros
             </h3>
 
             <p
-              className="
-                text-sm
-                text-[var(--erp-text-soft)]
-                mt-1
-              "
+              className="mt-1"
             >
               {busqueda
                 ? "No se encontraron logs que coincidan con la búsqueda."

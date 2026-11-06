@@ -56,35 +56,35 @@ export default function FichajesResumen({ recargar }) {
   };
 
   return <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-    <article className="rounded-2xl border border-blue-100 bg-blue-50/70 p-5">
-      <p className="text-sm font-semibold text-blue-800">Horas trabajadas · {horas?.anio || new Date().getFullYear()}</p>
-      <p className="mt-2 text-3xl font-extrabold text-slate-900">{horas?.horas_trabajadas ?? "—"} h</p>
-      <p className="mt-1 text-xs text-slate-500">Jornadas incompletas: {horas?.jornadas_incompletas ?? "—"}</p>
-      {horas?.aviso && <p className="mt-2 text-xs text-slate-600">{horas.aviso}</p>}
+    <article className="p-5">
+      <p>Horas trabajadas · {horas?.anio || new Date().getFullYear()}</p>
+      <p className="mt-2">{horas?.horas_trabajadas ?? "—"} h</p>
+      <p className="mt-1">Jornadas incompletas: {horas?.jornadas_incompletas ?? "—"}</p>
+      {horas?.aviso && <p className="mt-2">{horas.aviso}</p>}
     </article>
 
-    <article className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5">
-      <p className="text-sm font-semibold text-emerald-800">Vacaciones · {vacaciones?.anio || new Date().getFullYear()}</p>
-      <div className="mt-3 grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
-        <div><p className="text-xs text-slate-500">Asignados</p><p className="text-xl font-bold">{vacaciones?.dias_asignados ?? "—"}</p></div>
-        <div><p className="text-xs text-slate-500">Disfrutados</p><p className="text-xl font-bold">{vacaciones?.dias_disfrutados ?? 0}</p></div>
-        <div><p className="text-xs text-slate-500">Reservados</p><p className="text-xl font-bold">{vacaciones?.dias_reservados ?? 0}</p></div>
-        <div><p className="text-xs text-slate-500">Disponibles</p><p className="text-xl font-bold">{vacaciones?.dias_restantes ?? "Pendiente"}</p></div>
+    <article className="p-5">
+      <p>Vacaciones · {vacaciones?.anio || new Date().getFullYear()}</p>
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div><p>Asignados</p><p>{vacaciones?.dias_asignados ?? "—"}</p></div>
+        <div><p>Disfrutados</p><p>{vacaciones?.dias_disfrutados ?? 0}</p></div>
+        <div><p>Reservados</p><p>{vacaciones?.dias_reservados ?? 0}</p></div>
+        <div><p>Disponibles</p><p>{vacaciones?.dias_restantes ?? "Pendiente"}</p></div>
       </div>
-      {vacaciones?.aviso && <p className="mt-2 text-xs text-slate-600">{vacaciones.aviso}</p>}
-      {vacaciones?.registros?.length > 0 && <div className="mt-3 space-y-1 text-xs">{vacaciones.registros.map((v) => <p key={v.id} className="rounded-lg bg-white/70 p-2">{v.fecha_inicio} – {v.fecha_fin} · {v.dias} días · {v.estado}</p>)}</div>}
+      {vacaciones?.aviso && <p className="mt-2">{vacaciones.aviso}</p>}
+      {vacaciones?.registros?.length > 0 && <div className="mt-3 space-y-1">{vacaciones.registros.map((v) => <p key={v.id} className="p-2">{v.fecha_inicio} – {v.fecha_fin} · {v.dias} días · {v.estado}</p>)}</div>}
     </article>
 
-    <article className="rounded-2xl border border-violet-100 bg-violet-50/70 p-5">
-      <p className="text-sm font-semibold text-violet-800">Solicitar vacaciones</p>
+    <article className="p-5">
+      <p>Solicitar vacaciones</p>
       <form className="mt-3 space-y-2" onSubmit={solicitar}>
-        <label className="block text-xs">Desde<input required type="date" value={desde} onChange={(e) => setDesde(e.target.value)} className="mt-1 w-full rounded-lg border p-2 text-sm" /></label>
-        <label className="block text-xs">Hasta<input required type="date" min={desde} value={hasta} onChange={(e) => setHasta(e.target.value)} className="mt-1 w-full rounded-lg border p-2 text-sm" /></label>
-        <button disabled={guardando || cargando} className="w-full rounded-lg bg-violet-700 px-3 py-2 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Enviando…" : "Enviar solicitud"}</button>
+        <label className="block">Desde<input required type="date" value={desde} onChange={(e) => setDesde(e.target.value)} className="mt-1 w-full p-2" /></label>
+        <label className="block">Hasta<input required type="date" min={desde} value={hasta} onChange={(e) => setHasta(e.target.value)} className="mt-1 w-full p-2" /></label>
+        <button type="submit" disabled={guardando || cargando} className="w-full px-3 py-2">{guardando ? "Enviando…" : "Enviar solicitud"}</button>
       </form>
-      {cargando && <p className="mt-2 text-xs text-slate-500">Actualizando datos…</p>}
+      {cargando && <p className="mt-2">Actualizando datos…</p>}
     </article>
 
-    {(error || mensaje) && <div className={error ? "md:col-span-3 rounded-xl bg-rose-50 p-3 text-sm text-rose-800" : "md:col-span-3 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800"}>{error || mensaje}</div>}
+    {(error || mensaje) && <div className={error ? "md:col-span-3 p-3" : "md:col-span-3 p-3"}>{error || mensaje}</div>}
   </section>;
 }

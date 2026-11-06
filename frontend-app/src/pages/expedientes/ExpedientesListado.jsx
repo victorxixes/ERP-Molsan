@@ -1,23 +1,25 @@
 import {
   useEffect,
-  useState,
-} from "react";
+  useRef,
+  useState
+            } from "react";
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
-import "./ExpedientesListado.css";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 import {
-  Link,
-} from "react-router-dom";
+  Link
+            } from "react-router-dom";
 
 import {
   obtenerListadoExpedientes,
   exportarExcelExpedientes,
   obtenerResumenExpedientes,
   obtenerAlertasControlExpedientes,
-  obtenerCatalogosListadoExpedientes,
-} from "../../api/expedientes";
+  obtenerCatalogosListadoExpedientes
+            } from "../../api/expedientes";
 
 
 // ============================================================
@@ -33,26 +35,26 @@ const COLUMNAS = [
   {
     key: "id_expediente",
     label: "Nº Expediente",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "promocion",
     label: "Promoción",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "id",
     label: "ID",
-    tipo: "numero",
-  },
+    tipo: "numero"
+            },
 
   {
     key: "cliente_id",
     label: "ID Cliente",
-    tipo: "numero",
-  },
+    tipo: "numero"
+            },
 
 
   // ==========================================================
@@ -62,38 +64,38 @@ const COLUMNAS = [
   {
     key: "estado_expediente",
     label: "Estado expediente",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "estado_expediente_ancert",
     label: "Estado ANCERT",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "estado_actividad",
     label: "Estado actividad",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "facturacion_estado",
     label: "Estado facturación",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "estado_facturas",
     label: "Facturas · estado de pago",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "registral_estado",
     label: "Estado registral",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -103,86 +105,86 @@ const COLUMNAS = [
   {
     key: "fecha_alta",
     label: "Fecha alta",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_firma",
     label: "Fecha firma",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_inscripcion",
     label: "Fecha inscripción",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_entregado_cliente",
     label: "Fecha entregado cliente",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_prevista_firma",
     label: "Fecha prevista firma",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_vencimiento",
     label: "Fecha vencimiento",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_sol_cgn",
     label: "Fecha solicitud CGN",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_firma_prev_val",
     label: "Firma prev. validación",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_firma_prev_cli",
     label: "Firma prev. cliente",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_inicio_actividad",
     label: "Inicio actividad",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fecha_fin_actividad",
     label: "Fin actividad",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "fcierre_defecto",
     label: "Cierre defecto",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "facturacion_fecha",
     label: "Fecha facturación",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
   {
     key: "registral_fecha",
     label: "Fecha registral",
-    tipo: "fecha",
-  },
+    tipo: "fecha"
+            },
 
 
   // ==========================================================
@@ -192,8 +194,8 @@ const COLUMNAS = [
   {
     key: "actividad_actual",
     label: "Actividad actual",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -203,14 +205,14 @@ const COLUMNAS = [
   {
     key: "nombre_titular",
     label: "Nombre titular",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "nif_titular",
     label: "NIF titular",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -220,20 +222,20 @@ const COLUMNAS = [
   {
     key: "nombre_solicitante",
     label: "Nombre solicitante",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "nif_solicitante",
     label: "NIF solicitante",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "apoderado",
     label: "Apoderado",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -243,20 +245,20 @@ const COLUMNAS = [
   {
     key: "nombre_notario",
     label: "Nombre notario",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "nif_notario",
     label: "NIF notario",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "notario",
     label: "Notario",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -266,20 +268,20 @@ const COLUMNAS = [
   {
     key: "oficina",
     label: "Oficina",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "dan",
     label: "DAN",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "oficina_alta",
     label: "Oficina alta",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -289,26 +291,26 @@ const COLUMNAS = [
   {
     key: "capital",
     label: "Capital",
-    tipo: "numero",
-  },
+    tipo: "numero"
+            },
 
   {
     key: "importe",
     label: "Importe",
-    tipo: "numero",
-  },
+    tipo: "numero"
+            },
 
   {
     key: "saldo_real",
     label: "Saldo real",
-    tipo: "numero",
-  },
+    tipo: "numero"
+            },
 
   {
     key: "saldo_disponible",
     label: "Saldo disponible",
-    tipo: "numero",
-  },
+    tipo: "numero"
+            },
 
 
   // ==========================================================
@@ -318,14 +320,14 @@ const COLUMNAS = [
   {
     key: "id_provision",
     label: "ID provisión",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "tipo_provision",
     label: "Tipo provisión",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -335,38 +337,38 @@ const COLUMNAS = [
   {
     key: "contrato",
     label: "Contrato",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "num_solicitud_sia",
     label: "Nº solicitud SIA",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "tipo_operacion",
     label: "Tipo operación",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "subtipo_operacion",
     label: "Subtipo operación",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "vinccanc",
     label: "VincCanc",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "protocolo",
     label: "Protocolo",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -376,20 +378,20 @@ const COLUMNAS = [
   {
     key: "origen_bankia",
     label: "Origen Bankia",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "producto_gtg",
     label: "Producto GTG",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "dt",
     label: "DT",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -399,20 +401,20 @@ const COLUMNAS = [
   {
     key: "id_gestoria_tramite",
     label: "ID gestoría trámite",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "nombre_gestoria",
     label: "Nombre gestoría",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "gestoria",
     label: "Gestoría",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -422,8 +424,8 @@ const COLUMNAS = [
   {
     key: "finca",
     label: "Finca",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -433,26 +435,26 @@ const COLUMNAS = [
   {
     key: "tiene_defectos_abiertos",
     label: "Defectos abiertos",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "tipo_error",
     label: "Tipo error",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "descripcion_error",
     label: "Descripción error",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "falta_defecto",
     label: "Falta / defecto",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -462,8 +464,8 @@ const COLUMNAS = [
   {
     key: "id_expediente_cgn",
     label: "ID expediente CGN",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -473,8 +475,8 @@ const COLUMNAS = [
   {
     key: "tipo_acta",
     label: "Tipo acta",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -484,14 +486,14 @@ const COLUMNAS = [
   {
     key: "lucy",
     label: "Lucy",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   {
     key: "indicador_tt",
     label: "Indicador TT",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
 
   // ==========================================================
@@ -501,8 +503,8 @@ const COLUMNAS = [
   {
     key: "observaciones",
     label: "Observaciones",
-    tipo: "texto",
-  },
+    tipo: "texto"
+            },
 
   // Documentación de la carpeta digital y documentos necesarios para iniciar el trámite.
   // Repositorios de la carpeta digital (las claves adicionales permiten
@@ -671,8 +673,8 @@ const CATEGORIAS_POR_REPOSITORIO = {
   honorarios_gestoria_documentos: ["Honorarios gestoría", "Honorarios gestoria"],
   otra_documentacion: ["Otra documentación", "Otra documentacion"],
   emails_oficina: ["Mails de la Oficina", "Mails de la oficina", "Emails de oficina"],
-  otros_documentos: ["Otros", "Borradores escrituras y otros"],
-};
+  otros_documentos: ["Otros", "Borradores escrituras y otros"]
+            };
 
 function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir }) {
   const [hover, setHover] = useState(false);
@@ -732,40 +734,39 @@ function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir 
       <button
         type="button"
         onClick={onAbrir}
-        className="inline-flex items-center gap-1.5 rounded-lg border px-2 py-1.5 text-xs font-semibold transition-colors hover:shadow-sm"
-        style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)", background: "var(--erp-surface)" }}
-        title={`Abrir carpeta y ver ${cantidad} archivo(s)`}
+        className="inline-flex items-center gap-1.5 px-2 py-1.5"
+                title={`Abrir carpeta y ver ${cantidad} archivo(s)`}
         aria-label={`Abrir ${cantidad} documento(s)`}
       >
         <span aria-hidden="true">📄</span>
         <span>{cantidad > 1 ? cantidad : "PDF"}</span>
       </button>
       {hover && (
-        <div className="absolute z-50 left-0 top-full mt-2 w-[min(560px,80vw)] rounded-xl border p-3 shadow-2xl" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface)", color: "var(--erp-text)" }} onMouseEnter={() => setHover(true)}>
+        <div className="absolute z-50 left-0 top-full mt-2 w-[min(560px,80vw)] p-3" onMouseEnter={() => setHover(true)}>
           <div className="mb-2 flex items-center justify-between gap-2">
-            <strong className="text-xs">{REPOSITORIOS_CARPETA_DIGITAL.find((item) => item.key === repositorioKey)?.label || "Documentos"}</strong>
-            <span className="text-xs" style={{ color: "var(--erp-text-soft)" }}>{cantidad} archivo(s)</span>
+            <strong>{REPOSITORIOS_CARPETA_DIGITAL.find((item) => item.key === repositorioKey)?.label || "Documentos"}</strong>
+            <span>{cantidad} archivo(s)</span>
           </div>
-          {cargandoDocs ? <p className="text-xs">Cargando documentos…</p> : errorDocs ? <p className="text-xs text-red-600">{errorDocs}</p> : documentos.length === 0 ? <p className="text-xs" style={{ color: "var(--erp-text-soft)" }}>No se han podido localizar los archivos de esta categoría.</p> : (
+          {cargandoDocs ? <p>Cargando documentos…</p> : errorDocs ? <p>{errorDocs}</p> : documentos.length === 0 ? <p>No se han podido localizar los archivos de esta categoría.</p> : (
             <div className="grid gap-3 sm:grid-cols-[minmax(140px,0.8fr)_minmax(0,1.4fr)]">
               <div className="max-h-56 space-y-1 overflow-auto">
                 {documentos.map((doc) => (
-                  <button key={doc.id} type="button" onMouseEnter={() => previsualizar(doc)} onFocus={() => previsualizar(doc)} onClick={() => previsualizar(doc)} className="block w-full rounded-lg px-2 py-2 text-left text-xs hover:bg-[var(--erp-primary-soft)]" title={doc.nombre_original || "Ver documento"}>
+                  <button key={doc.id} type="button" onMouseEnter={() => previsualizar(doc)} onFocus={() => previsualizar(doc)} onClick={() => previsualizar(doc)} className="block w-full px-2 py-2" title={doc.nombre_original || "Ver documento"}>
                     <span className="mr-1" aria-hidden="true">📄</span>{doc.nombre_original || "Documento"}
-                    {doc.fecha_subida && <span className="mt-1 block text-[10px]" style={{ color: "var(--erp-text-soft)" }}>{new Date(doc.fecha_subida).toLocaleDateString("es-ES")}</span>}
+                    {doc.fecha_subida && <span className="mt-1 block">{new Date(doc.fecha_subida).toLocaleDateString("es-ES")}</span>}
                   </button>
                 ))}
               </div>
-              <div className="min-h-40 overflow-hidden rounded-lg border" style={{ borderColor: "var(--erp-border)" }}>
-                {cargandoPreview ? <p className="p-3 text-xs">Preparando vista previa…</p> : previewUrl ? (
+              <div className="min-h-40 overflow-hidden">
+                {cargandoPreview ? <p className="p-3">Preparando vista previa…</p> : previewUrl ? (
                   previewNombre.toLowerCase().endsWith(".pdf") || documentos.find((doc) => doc.nombre_original === previewNombre)?.tipo_mime === "application/pdf" ? (
                     <iframe title={`Vista previa de ${previewNombre}`} src={previewUrl} className="h-56 w-full" />
-                  ) : <div className="p-3 text-xs">Vista previa disponible para PDF. Pulsa el icono para abrir la carpeta y descargar este archivo.</div>
-                ) : <p className="p-3 text-xs" style={{ color: "var(--erp-text-soft)" }}>Pasa el ratón por un PDF para ver su contenido aquí.</p>}
+                  ) : <div className="p-3">Vista previa disponible para PDF. Pulsa el icono para abrir la carpeta y descargar este archivo.</div>
+                ) : <p className="p-3">Pasa el ratón por un PDF para ver su contenido aquí.</p>}
               </div>
             </div>
           )}
-          <p className="mt-2 text-[10px]" style={{ color: "var(--erp-text-soft)" }}>Pulsa el icono para abrir la carpeta digital completa.</p>
+          <p className="mt-2">Pulsa el icono para abrir la carpeta digital completa.</p>
         </div>
       )}
     </div>
@@ -943,8 +944,8 @@ const COLUMNAS_POR_ACTIVIDAD = {
   "liquidacion-impuestos": COLUMNAS_LIQUIDACION_IMPUESTOS,
   "tramitacion-inscripcion": COLUMNAS_TRAMITACION_INSCRIPCION,
   "defectos-registrales": COLUMNAS_DEFECTOS_REGISTRALES,
-  "facturacion-cierre": COLUMNAS_FACTURACION_CIERRE,
-};
+  "facturacion-cierre": COLUMNAS_FACTURACION_CIERRE
+            };
 
 function obtenerColumnasActividad(actividad) {
   return COLUMNAS_POR_ACTIVIDAD[actividad] || COLUMNAS_POR_DEFECTO;
@@ -1035,8 +1036,8 @@ function formatearValor(
     return new Intl.NumberFormat(
       "es-ES",
       {
-        maximumFractionDigits: 2,
-      }
+        maximumFractionDigits: 2
+            }
     ).format(
       numero
     );
@@ -1048,23 +1049,6 @@ function formatearValor(
 
 }
 
-
-// ============================================================
-// ESTILO DE ETIQUETAS DE ESTADO
-// ============================================================
-
-function estiloEstado(valor) {
-  const estado = String(valor || "").trim().toLocaleLowerCase("es-ES");
-
-  // Códigos oficiales de Estado expediente: distinguirlos de un vistazo.
-  if (estado === "rst") return { background: "#f3e8ff", color: "#6b21a8", borderColor: "#d8b4fe" };
-  if (estado === "pva") return { background: "#dbeafe", color: "#1d4ed8", borderColor: "#93c5fd" };
-
-  if (/vencid|bloquead|error|rechaz|defecto|urgente|atrasad/.test(estado)) return { background: "#fef2f2", color: "#991b1b", borderColor: "#fecaca" };
-  if (/pendient|espera|revis|tramit|proceso/.test(estado)) return { background: "#fffbeb", color: "#92400e", borderColor: "#fde68a" };
-  if (/finaliz|cerrad|complet|inscrit|entregad|facturad|pagad|realizad|firmad|correcto/.test(estado)) return { background: "#ecfdf5", color: "#065f46", borderColor: "#a7f3d0" };
-  return { background: "var(--erp-surface-soft)", color: "var(--erp-text)", borderColor: "var(--erp-border)" };
-}
 
 // ============================================================
 // FORMATEAR NÚMERO
@@ -1151,6 +1135,10 @@ export default function ExpedientesListado() {
     mostrarFiltros,
     setMostrarFiltros,
   ] = useState(false);
+  const filtrosDialogRef = useRef(null);
+  const plazosDialogRef = useRef(null);
+  useAccessibleDialog({ open: mostrarFiltros, onClose: () => setMostrarFiltros(false), dialogRef: filtrosDialogRef });
+  useAccessibleDialog({ open: mostrarAyudaControlPlazos, onClose: () => setMostrarAyudaControlPlazos(false), dialogRef: plazosDialogRef });
   // ==========================================================
   // FILTROS EDITABLES — FILTROS AVANZADOS DEFINITIVOS
   // ==========================================================
@@ -1215,8 +1203,8 @@ export default function ExpedientesListado() {
     contrato: "", tipoFirma: "", tipoDocumento: "", provincia: "",
     poblacion: "", tributacion: "", estadoRegistral: "", estadoFacturacion: "",
     tieneDefectosAbiertos: "",
-    faltaDefecto: "",
-  });
+    faltaDefecto: ""
+            });
 
 
   // ==========================================================
@@ -1295,8 +1283,8 @@ export default function ExpedientesListado() {
     dts: [],
     vinccancs: [],
     lucys: [],
-    notarios: [],
-  });
+    notarios: []
+            });
 
 
   const [
@@ -1495,9 +1483,8 @@ export default function ExpedientesListado() {
                 ? JSON.stringify(
                     ordenMultiple
                   )
-                : undefined,
-
-          });
+                : undefined
+            });
 
 
         if (!activo) {
@@ -1627,8 +1614,8 @@ export default function ExpedientesListado() {
         ]);
         if (activo) setTotalesEstadosDiferenciales({
           PVA: Number(pendientes?.total || 0),
-          RST: Number(retencion?.total || 0),
-        });
+          RST: Number(retencion?.total || 0)
+            });
       } catch (err) {
         if (activo) setTotalesEstadosDiferenciales({ PVA: 0, RST: 0 });
         console.error("No se han podido cargar los recuentos de estados diferenciales.");
@@ -1680,8 +1667,8 @@ export default function ExpedientesListado() {
           dts: Array.isArray(res?.dts) ? res.dts : [],
           vinccancs: Array.isArray(res?.vinccancs) ? res.vinccancs : [],
           lucys: Array.isArray(res?.lucys) ? res.lucys : [],
-          notarios: Array.isArray(res?.notarios) ? res.notarios : [],
-        });
+          notarios: Array.isArray(res?.notarios) ? res.notarios : []
+            });
       } catch (err) {
         console.error("No se han podido cargar los catálogos del listado.");
         if (activo) {
@@ -1695,8 +1682,8 @@ export default function ExpedientesListado() {
             tipos_operacion: [], subtipos_operacion: [], gestorias: [], tipos_error: [], defectos_abiertos: [],
             falta_defecto: [], estados_ancert: [], tipos_acta: [], tipos_firma: [], tipos_documento: [],
             provincias: [], poblaciones: [], tributaciones: [], estados_registrales: [],
-            estados_facturacion: [], dts: [], vinccancs: [], lucys: [], notarios: [],
-          });
+            estados_facturacion: [], dts: [], vinccancs: [], lucys: [], notarios: []
+            });
         }
       }
     }
@@ -1769,9 +1756,8 @@ export default function ExpedientesListado() {
                       item?.cantidad ??
                       item?.count ??
                       0
-                    ),
-
-                })
+                    )
+            })
               )
 
               .filter(
@@ -1878,9 +1864,8 @@ export default function ExpedientesListado() {
                   total:
                     Number(
                       total || 0
-                    ),
-
-                })
+                    )
+            })
               );
 
 
@@ -2004,8 +1989,8 @@ export default function ExpedientesListado() {
       estadoRegistral: filtroEstadoRegistral,
       estadoFacturacion: filtroEstadoFacturacion,
       tieneDefectosAbiertos: filtroTieneDefectosAbiertos,
-      faltaDefecto: filtroFaltaDefecto,
-    });
+      faltaDefecto: filtroFaltaDefecto
+            });
     setPagina(1);
     setError("");
   };
@@ -2079,8 +2064,8 @@ export default function ExpedientesListado() {
       contrato: "", tipoFirma: "", tipoDocumento: "", provincia: "",
       poblacion: "", tributacion: "", estadoRegistral: "", estadoFacturacion: "",
       tieneDefectosAbiertos: "",
-      faltaDefecto: "",
-    });
+      faltaDefecto: ""
+            });
     setPagina(1);
     setError("");
   };
@@ -2121,9 +2106,8 @@ export default function ExpedientesListado() {
               actual.direccion ===
               "asc"
                 ? "desc"
-                : "asc",
-
-          },
+                : "asc"
+            },
 
         ]);
 
@@ -2136,9 +2120,8 @@ export default function ExpedientesListado() {
             columna,
 
             direccion:
-              "asc",
-
-          },
+              "asc"
+            },
 
         ]);
 
@@ -2194,9 +2177,8 @@ export default function ExpedientesListado() {
                   orden.direccion ===
                   "asc"
                     ? "desc"
-                    : "asc",
-
-              };
+                    : "asc"
+            };
 
             }
           )
@@ -2214,9 +2196,8 @@ export default function ExpedientesListado() {
             columna,
 
             direccion:
-              "asc",
-
-          },
+              "asc"
+            },
 
         ]
       );
@@ -2341,8 +2322,8 @@ export default function ExpedientesListado() {
           estadoRegistral: filtrosAplicados.estadoRegistral || undefined,
           estadoFacturacion: filtrosAplicados.estadoFacturacion || undefined,
           tieneDefectosAbiertos: filtrosAplicados.tieneDefectosAbiertos || undefined,
-          faltaDefecto: filtrosAplicados.faltaDefecto || undefined,
-        });
+          faltaDefecto: filtrosAplicados.faltaDefecto || undefined
+            });
 
       } catch (
         err
@@ -2380,22 +2361,7 @@ export default function ExpedientesListado() {
   return (
 
     <div
-      className="
-        erp-page
-        molsan-page
-        expedientes-page
-        min-h-full
-
-        p-4
-        sm:p-6
-        lg:p-8
-
-        text-[var(--erp-text)]
-
-        space-y-6
-
-        animate-fade-in
-      "
+      className="erp-page expedientes-page min-h-full space-y-6"
       aria-busy={loading}
     >
 
@@ -2407,20 +2373,16 @@ export default function ExpedientesListado() {
       {error && (
 
         <div
-          className="
-            w-full
+          className="w-full
 
-            bg-red-50
+ 
 
-            border
-            border-red-200
+ 
+ 
 
-            rounded-xl
+ 
 
-            p-4
-
-            text-red-700
-          "
+ p-4"
         >
           {error}
         </div>
@@ -2431,29 +2393,15 @@ export default function ExpedientesListado() {
       {/* Área principal de trabajo de expedientes */}
 
       <main className="min-w-0 w-full space-y-6">
-        <header className="molsan-page-header expedientes-page__header">
-          <div className="molsan-page-header__identity">
-            <div className="expedientes-page__header-icon molsan-page-header__mark" aria-hidden="true">EXP</div>
-            <div className="min-w-0">
-              <p className="expedientes-page__eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
-              <h1 className="molsan-page-header__title">Expedientes</h1>
-              <p className="molsan-page-header__description">
-                Consulta, seguimiento y control de la tramitación de expedientes.
-              </p>
-            </div>
-          </div>
-          <div className="molsan-page-header__actions">
-            <span className="expedientes-page__header-note">Gestión y seguimiento</span>
-          </div>
-        </header>
+        <MolsanPageHeader mark="EX" title="Expedientes" description="Consulta, seguimiento y control de la tramitación de expedientes." />
 
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-12">
         <div className="space-y-3 xl:col-span-4">
       {/* SLA GLOBAL: CIRCUITOS DIFERENCIADOS */}
       <section className="space-y-3" aria-label="SLA global por circuito">
         <div>
-          <h3 className="text-base font-bold text-[var(--erp-text)]">SLA global por circuito</h3>
-          <p className="text-sm text-[var(--erp-text-soft)]">Controles independientes de los plazos de cada actividad. Pulsa un circuito para ver sus expedientes fuera de plazo.</p>
+          <h3>SLA global por circuito</h3>
+          <p>Controles independientes de los plazos de cada actividad. Pulsa un circuito para ver sus expedientes fuera de plazo.</p>
         </div>
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {[
@@ -2462,18 +2410,14 @@ export default function ExpedientesListado() {
               titulo: "Circuito CaixaBank",
               descripcion: "Propia entidad · Vinculada propia entidad",
               plazo: "40 días",
-              icono: "🏦",
-              borde: "#2563eb",
-              fondo: "rgba(37, 99, 235, 0.07)",
+              icono: "🏦"
             },
             {
               key: "sla_otra_entidad",
               titulo: "Circuito otra entidad",
               descripcion: "Vinculada otra entidad · Otra entidad",
               plazo: "70 días",
-              icono: "🏢",
-              borde: "#b7791f",
-              fondo: "rgba(183, 121, 31, 0.08)",
+              icono: "🏢"
             },
           ].map((circuito) => {
             const alerta = alertasControl.find((item) => item.key === circuito.key);
@@ -2493,31 +2437,25 @@ export default function ExpedientesListado() {
                   setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                   setPagina(1);
                 }}
-                className="rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
-                style={{
-                  borderColor: activa ? circuito.borde : "var(--erp-border)",
-                  background: activa ? circuito.fondo : "var(--erp-surface)",
-                  boxShadow: activa ? `0 0 0 1px ${circuito.borde}` : undefined,
-                }}
-              >
+                className="p-4"
+                              >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: circuito.fondo }}>{circuito.icono}</span>
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center">{circuito.icono}</span>
                     <div className="min-w-0">
-                      <div className="font-bold text-[var(--erp-text)]">{circuito.titulo}</div>
-                      <div className="mt-1 text-xs text-[var(--erp-text-soft)]">{circuito.descripcion}</div>
+                      <div>{circuito.titulo}</div>
+                      <div className="mt-1">{circuito.descripcion}</div>
                     </div>
                   </div>
-                  <span className="rounded-full border px-3 py-1 text-xs font-bold whitespace-nowrap" style={{ borderColor: circuito.borde, color: circuito.borde }}>{circuito.plazo}</span>
+                  <span className="px-3 py-1 whitespace-nowrap">{circuito.plazo}</span>
                 </div>
                 <div className="mt-4 flex items-end justify-between gap-3">
                   <div>
-                    <div className="text-3xl font-bold tabular-nums" style={{ color: circuito.borde }}>
-                      {loadingAlertasControl ? "—" : formatearNumero(total)}
+                    <div className="tabular-nums">{loadingAlertasControl ? "—" : formatearNumero(total)}
                     </div>
-                    <div className="text-xs text-[var(--erp-text-soft)]">expedientes fuera de plazo</div>
+                    <div>expedientes fuera de plazo</div>
                   </div>
-                  <div className="text-sm font-semibold" style={{ color: circuito.borde }}>
+                  <div>
                     {activa ? "Circuito seleccionado ✓" : "Ver expedientes →"}
                   </div>
                 </div>
@@ -2525,19 +2463,19 @@ export default function ExpedientesListado() {
             );
           })}
         </div>
-        <p className="text-xs text-[var(--erp-text-soft)]">Se calcula desde la fecha de envío hasta Fin actividad o la fecha actual si sigue abierto. Hipotecario y Crédito Stock quedan excluidos.</p>
+        <p>Se calcula desde la fecha de envío hasta Fin actividad o la fecha actual si sigue abierto. Hipotecario y Crédito Stock quedan excluidos.</p>
         </section>
 
       {/* ESTADOS DIFERENCIALES: son estados del expediente, no actividades ni SLA */}
       <section className="space-y-1" aria-label="Estados diferenciales del expediente">
         <div>
-          <h3 className="text-base font-bold text-[var(--erp-text)]">Estados diferenciales</h3>
-          <p className="text-sm text-[var(--erp-text-soft)]">Estos filtros se basan en el estado del expediente. No son actividades y no calculan SLA.</p>
+          <h3>Estados diferenciales</h3>
+          <p>Estos filtros se basan en el estado del expediente. No son actividades y no calculan SLA.</p>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[
-            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "🔎", borde: "#2563eb", fondo: "rgba(37, 99, 235, 0.08)" },
-            { codigo: "RST", titulo: "Retención", icono: "⏸️", borde: "#7e22ce", fondo: "rgba(126, 34, 206, 0.08)" },
+            { codigo: "PVA", titulo: "Pendientes de Validar", icono: "🔎" },
+            { codigo: "RST", titulo: "Retención", icono: "⏸️" },
           ].map((estado) => {
             const activa = filtrosAplicados.estadoExpediente.trim().toLocaleUpperCase("es-ES") === estado.codigo;
             return (
@@ -2555,16 +2493,15 @@ export default function ExpedientesListado() {
                   setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                   setPagina(1);
                 }}
-                className="min-h-[116px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
-                style={{ background: activa ? estado.fondo : "var(--erp-surface)", borderColor: activa ? estado.borde : "var(--erp-border)", boxShadow: activa ? `0 0 0 1px ${estado.borde}` : undefined }}
-              >
+                className="min-h-[116px] p-4"
+                              >
                 <div className="flex items-start justify-between gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: estado.fondo }}>{estado.icono}</span>
-                  <span className="text-3xl font-extrabold tabular-nums" style={{ color: estado.borde }}>{loading ? "…" : formatearNumero(totalesEstadosDiferenciales[estado.codigo])}</span>
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center">{estado.icono}</span>
+                  <span className="tabular-nums">{loading ? "…" : formatearNumero(totalesEstadosDiferenciales[estado.codigo])}</span>
                 </div>
-                <div className="mt-3 font-bold text-[var(--erp-text)]">{estado.titulo}</div>
-                <div className="mt-1 text-xs text-[var(--erp-text-soft)]">Estado ABSIS: {estado.codigo}</div>
-                <div className="mt-2 text-xs font-semibold" style={{ color: activa ? estado.borde : "var(--erp-text-soft)" }}>{activa ? "Estado seleccionado · pulsa para quitar" : "Ver expedientes →"}</div>
+                <div className="mt-3">{estado.titulo}</div>
+                <div className="mt-1">Estado ABSIS: {estado.codigo}</div>
+                <div className="mt-2">{activa ? "Estado seleccionado · pulsa para quitar" : "Ver expedientes →"}</div>
               </button>
             );
           })}
@@ -2572,14 +2509,13 @@ export default function ExpedientesListado() {
       </section>
       {/* Acciones principales: agrupadas justo debajo de los bloques de tarjetas */}
       <section className="w-full flex flex-wrap items-center justify-start gap-2 -mt-2" aria-label="Acciones de expedientes">
-        <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}>📊 Exportar Excel</button>
-        <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>🔎 Filtros avanzados</button>
+        <button type="button" onClick={exportarExcel} disabled={loading} className="molsan-export-excel"><span className="molsan-export-excel__icon" aria-hidden="true">📗</span>{loading ? "Preparando Excel…" : "Exportar a Excel"}</button>
+        <button type="button" onClick={() => setMostrarFiltros(true)} className="px-4 py-2.5">🔎 Filtros avanzados</button>
         <button
           type="button"
           onClick={() => setMostrarAyudaControlPlazos(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
-          style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface)", color: "var(--erp-primary)" }}
-        >
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5"
+                  >
           📌 Ver Control de plazos
         </button>
       </section>
@@ -2588,8 +2524,8 @@ export default function ExpedientesListado() {
       {/* GRIDS DE ACTIVIDAD */}
       <section className="space-y-3" aria-label="Expedientes por actividad">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-          <div><h3 className="text-base font-bold text-[var(--erp-text)]">{(configuracionesVisibilidad.find((item) => item.actividad_key === actividadSeleccionada)?.nombre_tabla) || "Expedientes por actividad"}</h3><p className="text-sm text-[var(--erp-text-soft)]">Pulsa un grid para ver debajo la tabla con los expedientes de esa actividad.</p></div>
-          {actividadSeleccionada && <button type="button" onClick={() => { setActividadSeleccionada(""); setAlertaSeleccionada(""); setColumnasVisibles(COLUMNAS_POR_DEFECTO); setFiltroActividad(""); setFiltrosAplicados((actual) => ({ ...actual, actividad: "" })); setPagina(1); }} className="self-start rounded-lg border px-3 py-2 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)", background: "var(--erp-surface)" }}>Ver todas las actividades</button>}
+          <div><h3>{(configuracionesVisibilidad.find((item) => item.actividad_key === actividadSeleccionada)?.nombre_tabla) || "Expedientes por actividad"}</h3><p>Pulsa un grid para ver debajo la tabla con los expedientes de esa actividad.</p></div>
+          {actividadSeleccionada && <button type="button" onClick={() => { setActividadSeleccionada(""); setAlertaSeleccionada(""); setColumnasVisibles(COLUMNAS_POR_DEFECTO); setFiltroActividad(""); setFiltrosAplicados((actual) => ({ ...actual, actividad: "" })); setPagina(1); }} className="self-start px-3 py-2">Ver todas las actividades</button>}
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {ACTIVIDADES_EXPEDIENTES.map((actividad) => {
@@ -2600,7 +2536,7 @@ export default function ExpedientesListado() {
               "liquidacion-impuestos": { alerta: "liquidacion_pendiente", etiqueta: (cantidad) => `Fuera de plazo (>2 días): ${cantidad}` },
               "tramitacion-inscripcion": { alerta: "inscripcion_30_dias", etiqueta: (cantidad) => `Fuera de plazo (>23 días): ${cantidad}` },
               "defectos-registrales": { alerta: "defectos_vencidos", etiqueta: (cantidad) => `Fuera de plazo (>60 días): ${cantidad}` },
-              "facturacion-cierre": { alerta: "facturacion_cierre", etiqueta: (cantidad) => `Fuera de plazo (>5 días): ${cantidad}` },
+              "facturacion-cierre": { alerta: "facturacion_cierre", etiqueta: (cantidad) => `Fuera de plazo (>5 días): ${cantidad}` }
             }[actividad.key];
             const alertaPlazo = reglaPlazo ? alertasControl.find((item) => item.key === reglaPlazo.alerta) : null;
             const cantidadPlazo = Number(alertaPlazo?.total || 0);
@@ -2614,37 +2550,35 @@ export default function ExpedientesListado() {
                 setFiltroActividad(activa ? "" : valorBackend);
                 setFiltrosAplicados((actual) => ({ ...actual, actividad: activa ? "" : valorBackend })); setPagina(1);
               }}
-              className="min-h-[148px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
-              style={{ background: activa ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: activa ? "var(--erp-primary)" : "var(--erp-border)", boxShadow: activa ? "0 0 0 1px var(--erp-primary)" : undefined }}>
-              <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: activa ? "rgba(59,130,246,.14)" : "var(--erp-surface-soft)" }}>{actividad.icono}</span><span className="text-3xl font-extrabold tabular-nums" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text)" }}>{loadingActividades ? "…" : formatearNumero(total)}</span></div>
-              <div className="mt-3 text-sm font-bold leading-snug text-[var(--erp-text)]">{actividad.label}</div>
+              className="min-h-[148px] p-4">
+              <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center">{actividad.icono}</span><span className="tabular-nums">{loadingActividades ? "…" : formatearNumero(total)}</span></div>
+              <div className="mt-3">{actividad.label}</div>
               <div className="mt-3">
                 {loadingAlertasControl ? (
-                  <span className="inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)" }}>Calculando plazos…</span>
+                  <span className="inline-flex items-center px-2.5 py-1">Calculando plazos…</span>
                 ) : reglaPlazo ? (
-                  <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold ${cantidadPlazo > 0 ? "border-amber-300 bg-amber-50 text-amber-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>
+                  <span className={`inline-flex items-center px-2.5 py-1 ${cantidadPlazo > 0 ? "" : ""}`}>
                     {cantidadPlazo > 0 ? "⚠ " : "✓ "}{reglaPlazo.etiqueta(formatearNumero(cantidadPlazo))}
                   </span>
                 ) : (
                   actividad.key !== "documentacion-previa" ? (
-                    <span className="inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)", background: "var(--erp-surface-soft)" }}>Sin alerta de plazo</span>
+                    <span className="inline-flex items-center px-2.5 py-1">Sin alerta de plazo</span>
                   ) : null
                 )}
               </div>
-              <div className="mt-2 text-xs font-semibold" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text-soft)" }}>{activa ? "Actividad seleccionada · pulsa para quitar" : "Ver expedientes →"}</div>
+              <div className="mt-2">{activa ? "Actividad seleccionada · pulsa para quitar" : "Ver expedientes →"}</div>
             </button>;
           })}
         </div>
       </section>
       {/* BÚSQUEDA FÁCIL: ocupa todo el ancho disponible */}
       <section
-        className="w-full rounded-2xl border p-3 sm:p-4 shadow-sm space-y-2"
-        style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
-        aria-label="Buscar expedientes"
+        className="w-full p-3 sm:p-4 space-y-2"
+                aria-label="Buscar expedientes"
       >
         <div>
-          <h3 className="text-base font-bold text-[var(--erp-text)]">¿Qué expediente necesitas?</h3>
-          <p className="mt-1 text-sm text-[var(--erp-text-soft)]">
+          <h3>¿Qué expediente necesitas?</h3>
+          <p className="mt-1">
             Escribe cualquier dato que conozcas: número, nombre, NIF, notario, oficina, finca o registro.
           </p>
         </div>
@@ -2657,28 +2591,27 @@ export default function ExpedientesListado() {
           }}
         >
           <div className="relative min-w-0 flex-1">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg" aria-hidden="true">🔎</span>
+            <span className="absolute left-3 top-1/2" aria-hidden="true">🔎</span>
             <input
               type="search"
               value={busquedaRapida}
               onChange={(event) => setBusquedaRapida(event.target.value)}
               placeholder="Ej.: 2026-00123, María García, notario, finca…"
               aria-label="Buscar en todos los datos de los expedientes"
-              className="w-full rounded-xl border py-3 pl-10 pr-3 text-sm outline-none focus:ring-2"
-              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
-            />
+              className="w-full py-3 pl-10 pr-3"
+                          />
           </div>
-          <button type="submit" className="rounded-xl px-5 py-3 text-sm font-bold text-white" style={{ background: "var(--erp-primary)" }}>
+          <button type="submit" className="px-5 py-3">
             Buscar
           </button>
           {(busquedaRapida || busquedaAplicada) && (
-            <button type="button" onClick={() => { setBusquedaRapida(""); setBusquedaAplicada(""); setPagina(1); }} className="rounded-xl border px-4 py-3 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+            <button type="button" onClick={() => { setBusquedaRapida(""); setBusquedaAplicada(""); setPagina(1); }} className="px-4 py-3">
               Limpiar búsqueda
             </button>
           )}
         </form>
         {busquedaAplicada && (
-          <p className="text-xs text-[var(--erp-text-soft)]" role="status">
+          <p role="status">
             Búsqueda activa: <strong>{busquedaAplicada}</strong>. Puedes combinarla con los filtros avanzados.
           </p>
         )}
@@ -2691,30 +2624,18 @@ export default function ExpedientesListado() {
       ====================================================== */}
 
       <section
-        className="
-          erp-card
+        className="erp-card
 
-          w-full
+ w-full
 
-          p-2
-          sm:p-3
-
-          shadow-sm
-        "
+ p-2
+ sm:p-3"
       >
 
         {loading ? (
 
           <div
-            className="
-              text-[var(--erp-text-soft)]
-
-              animate-pulse
-
-              py-16
-
-              text-center
-            "
+            className="py-16"
           >
             Cargando expedientes…
           </div>
@@ -2722,13 +2643,7 @@ export default function ExpedientesListado() {
         ) : expedientes.length === 0 ? (
 
           <div
-            className="
-              text-[var(--erp-text-soft)]
-
-              py-16
-
-              text-center
-            "
+            className="py-16"
           >
             {busquedaAplicada || alertaSeleccionada || Object.values(filtrosAplicados).some(Boolean)
               ? "No encontramos expedientes con esos datos. Prueba con menos palabras o limpia algún filtro."
@@ -2738,41 +2653,21 @@ export default function ExpedientesListado() {
         ) : (
 
           <div
-            className="
-              expedientes-table-scroll
-              molsan-table-wrap
-              overflow-auto
-
-              rounded-xl
-
-              border
-              border-[var(--erp-border)]
-
-              bg-[var(--erp-surface)]
-            "
+            className="expedientes-table-scroll
+ molsan-table-wrap
+ overflow-auto"
           >
 
             <table
-              className="
-                molsan-table
-                min-w-max
+              className="molsan-table
+ min-w-max
 
-                w-full
-
-                text-sm
-
-                text-[var(--erp-text)]
-              "
+ w-full"
             >
 
               <thead>
 
                 <tr
-                  className="
-                    text-left
-
-                    bg-[var(--erp-primary)]
-                  "
                 >
 
                   {columnasActivas.map(
@@ -2785,31 +2680,27 @@ export default function ExpedientesListado() {
                           columna.key
                         }
 
-                        className="
-                          px-4
-                          py-3
+                        className="px-4
+ py-3
 
-                          cursor-pointer
-                          select-none
+ 
+ 
 
-                          whitespace-nowrap
+ whitespace-nowrap
 
-                          text-white
+ 
 
-                          font-semibold
+ 
 
-                          border-b
-                          border-white/20
+ 
+ 
 
-                          sticky
-                          top-0
+ sticky
+ top-0
 
-                          bg-[var(--erp-primary)]
+ 
 
-                          z-10
-
-                          hover:bg-[var(--erp-primary-dark)]
-                        "
+ z-10"
 
                         onClick={(
                           event
@@ -2828,12 +2719,10 @@ export default function ExpedientesListado() {
                       >
 
                         <div
-                          className="
-                            flex
-                            items-center
+                          className="flex
+ items-center
 
-                            gap-2
-                          "
+ gap-2"
                         >
 
                           <span>
@@ -2844,11 +2733,6 @@ export default function ExpedientesListado() {
 
 
                           <span
-                            className="
-                              text-white/70
-
-                              text-xs
-                            "
                           >
                             {
                               iconoOrden(
@@ -2886,17 +2770,6 @@ export default function ExpedientesListado() {
                         expediente.id ||
                         indice
                       }
-
-                      className="
-                        bg-[var(--erp-surface)]
-
-                        border-t
-                        border-[var(--erp-border)]
-
-                        hover:bg-[var(--erp-primary-soft)]
-
-                        transition-colors
-                      "
                     >
 
                       {columnasActivas.map(
@@ -2910,8 +2783,8 @@ export default function ExpedientesListado() {
                             }
 
                             className={REPOSITORIOS_CARPETA_DIGITAL.some((item) => item.key === columna.key)
-                              ? "relative px-4 py-3 whitespace-nowrap max-w-[400px] overflow-visible text-[var(--erp-text)]"
-                              : "px-4 py-3 whitespace-nowrap max-w-[400px] overflow-hidden text-ellipsis text-[var(--erp-text)]"
+                              ? "relative px-4 py-3 whitespace-nowrap max-w-[400px] overflow-visible"
+                              : "px-4 py-3 whitespace-nowrap max-w-[400px] overflow-hidden"
                             }
 
                             title={
@@ -2928,19 +2801,19 @@ export default function ExpedientesListado() {
                                 valor={expediente[columna.key]}
                                 onAbrir={() => setCarpetaDigitalSeleccionada({
                                   expedienteId: expediente.id_expediente || expediente.id,
-                                  actividadId: actividadSeleccionada,
-                                })}
+                                  actividadId: actividadSeleccionada
+            })}
                               />
                             ) : columna.key === "carpeta_digital" ? (
                               Number.parseInt(String(expediente[columna.key] || "").match(/\d+/)?.[0] || "0", 10) > 0 ? (
-                                <button type="button" onClick={() => setCarpetaDigitalSeleccionada({ expedienteId: expediente.id_expediente || expediente.id, actividadId: actividadSeleccionada })} className="rounded-lg border px-2 py-1 text-xs font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)" }}>📂 {expediente[columna.key]}</button>
+                                <button type="button" onClick={() => setCarpetaDigitalSeleccionada({ expedienteId: expediente.id_expediente || expediente.id, actividadId: actividadSeleccionada })} className="px-2 py-1">📂 {expediente[columna.key]}</button>
                               ) : null
                             ) : columna.key === "id_expediente" ? (
-                              <Link to={`/expedientes/${encodeURIComponent(expediente.id_expediente || expediente.id || "")}`} className="font-extrabold text-[var(--erp-primary)] underline-offset-2 hover:underline" title={`Abrir ficha del expediente ${expediente.id_expediente || expediente.id || ""}`}>
+                              <Link to={`/expedientes/${encodeURIComponent(expediente.id_expediente || expediente.id || "")}`} className="underline-offset-2" title={`Abrir ficha del expediente ${expediente.id_expediente || expediente.id || ""}`}>
                                 {formatearValor(expediente[columna.key], columna.tipo)}
                               </Link>
                             ) : ["estado_expediente", "estado_actividad", "facturacion_estado", "registral_estado", "estado_facturas"].includes(columna.key) && expediente[columna.key] ? (
-                              <span className="inline-flex max-w-[220px] items-center rounded-full border px-2.5 py-1 text-xs font-semibold whitespace-normal" style={estiloEstado(expediente[columna.key])} title={String(expediente[columna.key])}>
+                              <span className="inline-flex max-w-[220px] items-center px-2.5 py-1 whitespace-normal" title={String(expediente[columna.key])}>
                                 {formatearValor(expediente[columna.key], columna.tipo)}
                               </span>
                             ) : formatearValor(expediente[columna.key], columna.tipo)}
@@ -2974,24 +2847,18 @@ export default function ExpedientesListado() {
       ====================================================== */}
 
       <div
-        className="
-          w-full
+        className="w-full
 
-          flex
+ flex
 
-          flex-col
+ flex-col
 
-          sm:flex-row
+ sm:flex-row
 
-          items-center
-          justify-between
+ items-center
+ justify-between
 
-          gap-3
-
-          text-sm
-
-          text-[var(--erp-text-soft)]
-        "
+ gap-3"
       >
 
         <span>
@@ -2999,9 +2866,6 @@ export default function ExpedientesListado() {
           Total de expedientes:{" "}
 
           <strong
-            className="
-              text-[var(--erp-text)]
-            "
           >
             {
               formatearNumero(
@@ -3018,9 +2882,6 @@ export default function ExpedientesListado() {
           Mostrando{" "}
 
           <strong
-            className="
-              text-[var(--erp-text)]
-            "
           >
             {
               expedientes.length
@@ -3039,19 +2900,17 @@ export default function ExpedientesListado() {
       ====================================================== */}
 
       <div
-        className="
-          w-full
+        className="w-full
 
-          flex
-          flex-col
+ flex
+ flex-col
 
-          sm:flex-row
+ sm:flex-row
 
-          items-center
-          justify-center
+ items-center
+ justify-center
 
-          gap-4
-        "
+ gap-4"
       >
 
         <button
@@ -3072,44 +2931,19 @@ export default function ExpedientesListado() {
             )
           }
 
-          className="
-            px-4
-            py-2
-
-            rounded-xl
-
-            bg-white
-
-            border
-            border-[var(--erp-border)]
-
-            text-[var(--erp-text)]
-
-            hover:bg-[var(--erp-surface-soft)]
-
-            transition
-
-            disabled:opacity-40
-
-            disabled:cursor-not-allowed
-          "
+          className="px-4
+ py-2"
         >
           Anterior
         </button>
 
 
         <span
-          className="
-            text-[var(--erp-text-soft)]
-          "
         >
 
           Página{" "}
 
           <strong
-            className="
-              text-[var(--erp-text)]
-            "
           >
             {
               pagina
@@ -3119,9 +2953,6 @@ export default function ExpedientesListado() {
           {" "}de{" "}
 
           <strong
-            className="
-              text-[var(--erp-text)]
-            "
           >
             {
               totalPaginas
@@ -3150,27 +2981,8 @@ export default function ExpedientesListado() {
             )
           }
 
-          className="
-            px-4
-            py-2
-
-            rounded-xl
-
-            bg-white
-
-            border
-            border-[var(--erp-border)]
-
-            text-[var(--erp-text)]
-
-            hover:bg-[var(--erp-surface-soft)]
-
-            transition
-
-            disabled:opacity-40
-
-            disabled:cursor-not-allowed
-          "
+          className="px-4
+ py-2"
         >
           Siguiente
         </button>
@@ -3185,67 +2997,67 @@ export default function ExpedientesListado() {
 
       {mostrarFiltros && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-filtros-titulo"
+          className="molsan-modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+          role="presentation"
         >
           <button
             type="button"
             aria-label="Cerrar filtros avanzados"
             onClick={() => setMostrarFiltros(false)}
-            className="absolute inset-0 bg-slate-900/35 backdrop-blur-sm"
+            className="absolute inset-0"
           />
 
           <section
-            className="relative z-10 w-full max-w-5xl max-h-[88vh] overflow-y-auto rounded-3xl border shadow-2xl"
-            style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
-          >
+            ref={filtrosDialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-filtros-titulo"
+            className="molsan-modal__panel relative z-10 flex max-h-[88vh] w-full max-w-5xl flex-col overflow-hidden"
+                      >
             <div
-              className="sticky top-0 z-10 px-6 py-5 border-b flex items-start justify-between gap-4"
-              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
-            >
+              className="molsan-modal__header z-10 flex items-start justify-between gap-4"
+                          >
               <div>
-                <h3 id="modal-filtros-titulo" className="text-xl font-bold" style={{ color: "var(--erp-text)" }}>
+                <h3 id="modal-filtros-titulo">
                   Filtros avanzados
                 </h3>
-                <p className="text-sm mt-1" style={{ color: "var(--erp-text-soft)" }}>
+                <p className="mt-1">
                   Empieza por los datos que conozcas. Puedes combinar varios criterios; los campos están agrupados por tema.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setMostrarFiltros(false)}
-                className="shrink-0 w-10 h-10 rounded-xl border text-lg font-semibold transition hover:bg-[var(--erp-surface-soft)]"
-                style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)" }}
-                aria-label="Cerrar"
+                className="shrink-0 w-10 h-10"
+                                aria-label="Cerrar"
               >
                 ×
               </button>
             </div>
 
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              <div className="md:col-span-2 xl:col-span-3 border-b pb-2" style={{ borderColor: "var(--erp-border)" }}><h4 className="text-sm font-bold" style={{ color: "var(--erp-text)" }}>Identificación y fechas</h4><p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Localiza el expediente por número, oficina o fecha de alta.</p></div>
+            <div className="molsan-modal__body min-h-0 flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div className="md:col-span-2 xl:col-span-3 pb-2"><h4>Identificación y fechas</h4><p className="mt-1">Localiza el expediente por número, oficina o fecha de alta.</p></div>
               <FiltroInput label="N.º expediente" value={filtroNumeroExpediente} onChange={setFiltroNumeroExpediente} placeholder="Número completo o parte del expediente" />
               <FiltroSelect label="Oficina" value={filtroOficina} onChange={setFiltroOficina} options={catalogosListado.oficinas} emptyLabel="Todas las oficinas" />
               <FiltroInput label="Fecha de alta desde" type="date" value={filtroFechaInicio} onChange={setFiltroFechaInicio} />
               <FiltroInput label="Fecha de alta hasta" type="date" value={filtroFechaFin} onChange={setFiltroFechaFin} />
-              <div className="md:col-span-2 xl:col-span-3 border-b pb-2 mt-2" style={{ borderColor: "var(--erp-border)" }}><h4 className="text-sm font-bold" style={{ color: "var(--erp-text)" }}>Personas y notaría</h4><p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Titular, solicitante y notario asociados al expediente.</p></div>
+              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2"><h4>Personas y notaría</h4><p className="mt-1">Titular, solicitante y notario asociados al expediente.</p></div>
               <FiltroInput label="NIF titular" value={filtroNifTitular} onChange={setFiltroNifTitular} placeholder="NIF / CIF titular" />
               <FiltroInput label="Nombre titular" value={filtroNombreTitular} onChange={setFiltroNombreTitular} placeholder="Nombre o razón social" />
               <FiltroInput label="NIF solicitante" value={filtroNifSolicitante} onChange={setFiltroNifSolicitante} placeholder="NIF / CIF solicitante" />
               <FiltroInput label="Nombre solicitante" value={filtroNombreSolicitante} onChange={setFiltroNombreSolicitante} placeholder="Nombre o razón social" />
               <FiltroSelect label="Notario" value={filtroNotario} onChange={setFiltroNotario} options={catalogosListado.notarios} emptyLabel="Todos los notarios" />
               <FiltroInput label="NIF notario" value={filtroNifNotario} onChange={setFiltroNifNotario} placeholder="NIF notario" />
-              <div className="md:col-span-2 xl:col-span-3 border-b pb-2 mt-2" style={{ borderColor: "var(--erp-border)" }}><h4 className="text-sm font-bold" style={{ color: "var(--erp-text)" }}>Registro y economía</h4><p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Finca, registro, importes, observaciones y estado de tramitación.</p></div>
+              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2"><h4>Registro y economía</h4><p className="mt-1">Finca, registro, importes, observaciones y estado de tramitación.</p></div>
               <FiltroInput label="Finca" value={filtroFinca} onChange={setFiltroFinca} placeholder="Número o referencia de finca" />
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Registro de la Propiedad</label>
-                <select value={filtroRegistroPropiedad} onChange={(event) => setFiltroRegistroPropiedad(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                <label className="block mb-1">Registro de la Propiedad</label>
+                <select value={filtroRegistroPropiedad} onChange={(event) => setFiltroRegistroPropiedad(event.target.value)} className="w-full px-3 py-2.5">
                   <option value="">Todos los registros</option>
                   {(catalogosListado.registros.length ? catalogosListado.registros : [...new Set(expedientes.map((item) => item.registro_propiedad || item.nombre_registro || item.registro).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((registro) => <option key={registro} value={registro}>{registro}</option>)}
                 </select>
-                <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Opciones del catálogo completo de registros, independientemente de la página del listado.</p>
+                <p className="mt-1">Opciones del catálogo completo de registros, independientemente de la página del listado.</p>
               </div>
               <FiltroInput label="Saldo real" type="number" value={filtroSaldoReal} onChange={setFiltroSaldoReal} placeholder="Importe exacto" />
               <FiltroInput label="Saldo disponible" type="number" value={filtroSaldoDisponible} onChange={setFiltroSaldoDisponible} placeholder="Importe exacto" />
@@ -3253,29 +3065,29 @@ export default function ExpedientesListado() {
               <FiltroInput label="Observaciones" value={filtroObservaciones} onChange={setFiltroObservaciones} placeholder="Texto a buscar" />
               <FiltroInput label="Promoción" value={filtroPromocion} onChange={setFiltroPromocion} placeholder="Referencia interna" />
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Estado actividad</label>
-                <select value={filtroEstadoActividad} onChange={(event) => setFiltroEstadoActividad(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                <label className="block mb-1">Estado actividad</label>
+                <select value={filtroEstadoActividad} onChange={(event) => setFiltroEstadoActividad(event.target.value)} className="w-full px-3 py-2.5">
                   <option value="">Todos los estados</option>
                   {(catalogosListado.estados_actividad.length ? catalogosListado.estados_actividad : [...new Set(expedientes.map((item) => item.estado_actividad).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Actividad actual</label>
-                <select value={filtroActividad} onChange={(event) => setFiltroActividad(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                <label className="block mb-1">Actividad actual</label>
+                <select value={filtroActividad} onChange={(event) => setFiltroActividad(event.target.value)} className="w-full px-3 py-2.5">
                   <option value="">Todas las actividades</option>
                   {(catalogosListado.actividades.length ? catalogosListado.actividades : actividades).map((item) => <option key={item.actividad} value={item.actividad}>{item.actividad}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Estado expediente</label>
-                <select value={filtroEstadoExpediente} onChange={(event) => setFiltroEstadoExpediente(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                <label className="block mb-1">Estado expediente</label>
+                <select value={filtroEstadoExpediente} onChange={(event) => setFiltroEstadoExpediente(event.target.value)} className="w-full px-3 py-2.5">
                   <option value="">Todos los estados</option>
                   {(catalogosListado.estados_expediente.length ? catalogosListado.estados_expediente : [...new Set(expedientes.map((item) => item.estado_expediente).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
                 </select>
               </div>
-              <div className="md:col-span-2 xl:col-span-3 border-b pb-2 mt-2" style={{ borderColor: "var(--erp-border)" }}>
-                <h4 className="text-sm font-bold" style={{ color: "var(--erp-text)" }}>Clasificación ABSIS</h4>
-                <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Filtros de categorías importadas; puedes combinarlos entre sí.</p>
+              <div className="md:col-span-2 xl:col-span-3 pb-2 mt-2">
+                <h4>Clasificación ABSIS</h4>
+                <p className="mt-1">Filtros de categorías importadas; puedes combinarlos entre sí.</p>
               </div>
               <FiltroSelect label="Origen Bankia" value={filtroOrigenBankia} onChange={setFiltroOrigenBankia} options={catalogosListado.origenes_bankia} emptyLabel="Todos los orígenes" />
               <FiltroSelect label="Producto GTG" value={filtroProductoGtg} onChange={setFiltroProductoGtg} options={catalogosListado.productos_gtg} emptyLabel="Todos los productos" />
@@ -3301,21 +3113,19 @@ export default function ExpedientesListado() {
               <FiltroSelect label="Estado facturación" value={filtroEstadoFacturacion} onChange={setFiltroEstadoFacturacion} options={catalogosListado.estados_facturacion} emptyLabel="Todos los estados de facturación" />
             </div>
 
-            <div className="px-6 py-4 border-t flex flex-wrap items-center justify-end gap-3" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)" }}>
+            <div className="molsan-modal__footer flex flex-wrap items-center justify-end gap-3">
               <button
                 type="button"
                 onClick={limpiarFiltros}
-                className="px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm"
-                style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
-              >
+                className="px-4 py-2.5"
+                              >
                 Limpiar filtros
               </button>
               <button
                 type="button"
                 onClick={aplicarFiltros}
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md"
-                style={{ background: "var(--erp-primary)" }}
-              >
+                className="px-5 py-2.5"
+                              >
                 Aplicar filtros
               </button>
             </div>
@@ -3324,16 +3134,16 @@ export default function ExpedientesListado() {
       )}
 
       {mostrarAyudaControlPlazos && (
-        <div className="fixed inset-0 z-[11000] flex items-center justify-center bg-slate-950/60 p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setMostrarAyudaControlPlazos(false); }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="titulo-control-plazos" className="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
-            <header className="flex items-start justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
+        <div className="molsan-modal-overlay fixed inset-0 z-[11000] flex items-center justify-center p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setMostrarAyudaControlPlazos(false); }}>
+          <section ref={plazosDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="titulo-control-plazos" className="molsan-modal__panel flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden">
+            <header className="molsan-modal__header flex items-start justify-between gap-4">
               <div>
-                <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Expedientes</p>
-                <h2 id="titulo-control-plazos" className="mt-1 text-lg font-extrabold text-slate-900">📌 Control de plazos</h2>
+                <p className="uppercase">MOLSAN ERP · Expedientes</p>
+                <h2 id="titulo-control-plazos" className="mt-1">📌 Control de plazos</h2>
               </div>
-              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} aria-label="Cerrar" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">✕</button>
+              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} aria-label="Cerrar" className="px-3 py-2">✕</button>
             </header>
-            <div className="space-y-3 px-5 py-5 text-sm leading-6 text-slate-700">
+            <div className="molsan-modal__body min-h-0 flex-1 space-y-3 overflow-y-auto">
               <p>Los recuentos por actividad son independientes del SLA global:</p>
               <ul className="list-disc space-y-1 pl-5">
                 <li>Sede notarial: 5 días.</li>
@@ -3344,11 +3154,11 @@ export default function ExpedientesListado() {
                 <li>Liquidación y cierre: 5 días.</li>
                 <li>Documentación previa no tiene plazo de vencimiento.</li>
               </ul>
-              <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 font-semibold text-amber-900">SLA global superado: {formatearNumero(Number(alertasControl.find((item) => item.key === "sla_global")?.total || 0))} expedientes.</p>
+              <p className="px-4 py-3">SLA global superado: {formatearNumero(Number(alertasControl.find((item) => item.key === "sla_global")?.total || 0))} expedientes.</p>
               <p>El SLA global se calcula desde el envío hasta Fin actividad o hoy: 40 días para Propia entidad/Vinculada propia entidad y 70 días para Vinculada otra entidad/Otra entidad. Hipotecario y Crédito Stock se excluyen.</p>
             </div>
-            <footer className="flex justify-end border-t border-slate-200 bg-slate-50 px-5 py-3">
-              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white hover:bg-indigo-700">Cerrar</button>
+            <footer className="molsan-modal__footer flex justify-end">
+              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} className="px-4 py-2">Cerrar</button>
             </footer>
           </section>
         </div>
@@ -3376,13 +3186,12 @@ export default function ExpedientesListado() {
 function FiltroSelect({ label, value, onChange, options = [], emptyLabel = "Todos" }) {
   return (
     <div>
-      <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>{label}</label>
+      <label className="block mb-1">{label}</label>
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none"
-        style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
-      >
+        className="w-full px-3 py-2.5"
+              >
         <option value="">{emptyLabel}</option>
         {options.map((option) => <option key={option} value={option}>{option}</option>)}
       </select>
@@ -3395,24 +3204,22 @@ function FiltroInput({
   value,
   onChange,
   type = "text",
-  placeholder = "",
-}) {
+  placeholder = ""
+            }) {
 
   return (
 
     <div>
 
       <label
-        className="
-          block
+        className="block
 
-          text-sm
-          font-medium
+ 
+ 
 
-          text-[var(--erp-text)]
+ 
 
-          mb-1
-        "
+ mb-1"
       >
         {label}
       </label>
@@ -3431,33 +3238,10 @@ function FiltroInput({
           )
         }
 
-        className="
-          w-full
+        className="w-full
 
-          px-3
-          py-2.5
-
-          rounded-xl
-
-          bg-[var(--erp-surface)]
-
-          border
-          border-[var(--erp-border)]
-
-          text-[var(--erp-text)]
-
-          placeholder:text-[var(--erp-text-soft)]
-
-          outline-none
-
-          focus:border-[var(--erp-primary)]
-
-          focus:ring-2
-
-          focus:ring-[var(--erp-primary-soft)]
-
-          transition
-        "
+ px-3
+ py-2.5"
       />
 
     </div>

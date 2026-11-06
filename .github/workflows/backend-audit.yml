@@ -2,7 +2,7 @@ name: Backend audit
 
 on:
   push:
-    branches: [main]
+    branches: [main, molsan-premium-2027-glass-luxe, audit-fixes-api]
     paths:
       - "backend/**"
       - ".github/workflows/backend-audit.yml"

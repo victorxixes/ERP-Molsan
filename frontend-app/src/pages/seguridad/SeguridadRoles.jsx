@@ -1,15 +1,15 @@
+import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useMemo,
   useState,
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
-import "./SeguridadSubpaginasPremium.css";
 
 
 /**
  * ============================================================
- * SEGURIDAD ROLES — MOLSAN ERP SAAS PREMIUM 2027
+ * SEGURIDAD ROLES
  * ============================================================
  *
  * - No realiza cargarTodo()
@@ -56,54 +56,30 @@ function estadoRol(rol) {
   return activo
     ? {
         texto: "Activo",
-        clase:
-          "border-emerald-200 bg-emerald-50 text-emerald-700",
-        punto: "bg-emerald-500",
+
       }
     : {
         texto: "Inactivo",
-        clase:
-          "border-red-200 bg-red-50 text-red-700",
-        punto: "bg-red-500",
+
       };
 }
 
 
 function Chip({
   children,
-  tone = "neutral",
 }) {
-
-  const estilos = {
-    neutral:
-      "border-[var(--erp-border)] bg-[var(--erp-bg)] text-[var(--erp-text-soft)]",
-
-    primary:
-      "border-blue-200 bg-blue-50 text-blue-700",
-
-    success:
-      "border-emerald-200 bg-emerald-50 text-emerald-700",
-
-    warning:
-      "border-amber-200 bg-amber-50 text-amber-700",
-
-    purple:
-      "border-purple-200 bg-purple-50 text-purple-700",
-  };
 
   return (
     <span
-      className={`
-        inline-flex
-        items-center
-        rounded-full
-        border
-        px-2.5
-        py-1
-        text-[11px]
-        font-semibold
-        ${estilos[tone] || estilos.neutral}
-      `}
+      className={`inline-flex
+ items-center
+ 
+ 
+ px-2.5
+ py-1
+ 
+ 
+ `}
     >
       {children}
     </span>
@@ -120,57 +96,32 @@ function TarjetaMetrica({
 
   return (
     <div
-      className="
-        rounded-2xl
-        border
-        border-[var(--erp-border)]
-        bg-[var(--erp-surface)]
-        p-4
-        shadow-sm
-      "
+      className="p-4"
     >
 
       <div
-        className="
-          flex
-          items-center
-          justify-between
-          gap-3
-        "
+        className="flex
+ items-center
+ justify-between
+ gap-3"
       >
 
         <div className="min-w-0">
 
           <p
-            className="
-              text-[11px]
-              font-semibold
-              uppercase
-              tracking-[0.08em]
-              text-[var(--erp-text-soft)]
-            "
+            className="uppercase"
           >
             {titulo}
           </p>
 
           <p
-            className="
-              mt-1
-              text-2xl
-              font-bold
-              tracking-tight
-              text-[var(--erp-text)]
-            "
+            className="mt-1"
           >
             {valor}
           </p>
 
           <p
-            className="
-              mt-0.5
-              text-xs
-              text-[var(--erp-text-soft)]
-            "
+            className="mt-0.5"
           >
             {descripcion}
           </p>
@@ -179,17 +130,12 @@ function TarjetaMetrica({
 
 
         <div
-          className="
-            flex
-            h-10
-            w-10
-            shrink-0
-            items-center
-            justify-center
-            rounded-xl
-            bg-[var(--erp-primary-soft)]
-            text-lg
-          "
+          className="flex
+ h-10
+ w-10
+ shrink-0
+ items-center
+ justify-center"
         >
           {icono}
         </div>
@@ -651,95 +597,20 @@ export default function SeguridadRoles() {
 
   return (
     <div
-      className="seguridad-subpagina-premium seguridad-roles-premium w-full space-y-4"
+      className="erp-page w-full space-y-4"
     >
 
-      {/* CABECERA */}
-
-      <div
-        className="
-          flex
-          flex-col
-          gap-4
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-bg)]
-          p-5
-          md:flex-row
-          md:items-center
-          md:justify-between
-        "
-      >
-
-        <div
-          className="
-            flex
-            items-center
-            gap-3
-          "
-        >
-
-          <div
-            className="
-              flex
-              h-11
-              w-11
-              shrink-0
-              items-center
-              justify-center
-              rounded-xl
-              bg-[var(--erp-primary-soft)]
-              text-xl
-            "
-          >
-            🛡️
-          </div>
-
-          <div>
-
-            <h2
-              className="
-                text-xl
-                font-bold
-                text-[var(--erp-text)]
-              "
-            >
-              Roles de seguridad
-            </h2>
-
-            <p
-              className="
-                mt-0.5
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
-            >
-              Perfiles y niveles de acceso.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <Chip tone="primary">
-          {estadisticas.total} roles
-        </Chip>
-
-      </div>
-
+      <MolsanPageHeader mark="SE" title="Roles de seguridad" description="Perfiles y niveles de acceso." />
+      <div className="flex justify-end"><Chip tone="primary">{estadisticas.total} roles</Chip></div>
 
       {/* KPIS */}
 
       <div
-        className="
-          grid
-          grid-cols-1
-          gap-3
-          sm:grid-cols-2
-          xl:grid-cols-4
-        "
+        className="grid
+ grid-cols-1
+ gap-3
+ sm:grid-cols-2
+ xl:grid-cols-4"
       >
 
         <TarjetaMetrica
@@ -776,24 +647,15 @@ export default function SeguridadRoles() {
       {/* FILTROS */}
 
       <div
-        className="
-          rounded-2xl
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          p-4
-          shadow-sm
-        "
+        className="p-4"
       >
 
         <div
-          className="
-            flex
-            flex-col
-            gap-3
-            lg:flex-row
-            lg:items-center
-          "
+          className="flex
+ flex-col
+ gap-3
+ lg:flex-row
+ lg:items-center"
         >
 
           <input
@@ -805,32 +667,21 @@ export default function SeguridadRoles() {
               )
             }
             placeholder="Buscar rol..."
-            className="
-              min-w-0
-              flex-1
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-bg)]
-              px-4
-              py-2.5
-              text-sm
-              text-[var(--erp-text)]
-              outline-none
-              placeholder:text-[var(--erp-text-soft)]
-              focus:border-[var(--erp-primary)]
-              focus:ring-2
-              focus:ring-[var(--erp-primary-soft)]
-            "
+            className="min-w-0
+ flex-1
+ 
+ 
+ 
+ 
+ px-4
+ py-2.5"
           />
 
 
           <div
-            className="
-              flex
-              flex-wrap
-              gap-2
-            "
+            className="flex
+ flex-wrap
+ gap-2"
           >
 
             <button
@@ -838,18 +689,8 @@ export default function SeguridadRoles() {
               onClick={() =>
                 cambiarOrden("nombre")
               }
-              className="
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                px-3
-                py-2.5
-                text-xs
-                font-semibold
-                text-[var(--erp-text-soft)]
-                hover:text-[var(--erp-primary)]
-              "
+              className="px-3
+ py-2.5"
             >
               Nombre{" "}
               {orden.campo === "nombre"
@@ -867,18 +708,8 @@ export default function SeguridadRoles() {
                   "usuariosCount"
                 )
               }
-              className="
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-[var(--erp-bg)]
-                px-3
-                py-2.5
-                text-xs
-                font-semibold
-                text-[var(--erp-text-soft)]
-                hover:text-[var(--erp-primary)]
-              "
+              className="px-3
+ py-2.5"
             >
               Usuarios{" "}
               {orden.campo ===
@@ -918,14 +749,7 @@ export default function SeguridadRoles() {
             return (
               <section
                 key={String(rol.id)}
-                className="
-                  overflow-hidden
-                  rounded-2xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-[var(--erp-surface)]
-                  shadow-sm
-                "
+                className="overflow-hidden"
               >
 
                 {/* CABECERA */}
@@ -939,67 +763,47 @@ export default function SeguridadRoles() {
                         : rol.id
                     )
                   }
-                  className="
-                    flex
-                    w-full
-                    items-center
-                    justify-between
-                    gap-4
-                    px-4
-                    py-4
-                    text-left
-                    transition
-                    hover:bg-[var(--erp-bg)]
-                  "
+                  className="flex
+ w-full
+ items-center
+ justify-between
+ gap-4
+ px-4
+ py-4"
                 >
 
                   <div
-                    className="
-                      flex
-                      min-w-0
-                      items-center
-                      gap-3
-                    "
+                    className="flex
+ min-w-0
+ items-center
+ gap-3"
                   >
 
                     <div
-                      className="
-                        flex
-                        h-10
-                        w-10
-                        shrink-0
-                        items-center
-                        justify-center
-                        rounded-xl
-                        bg-[var(--erp-primary-soft)]
-                        text-lg
-                      "
+                      className="flex
+ h-10
+ w-10
+ shrink-0
+ items-center
+ justify-center"
                     >
                       🛡️
                     </div>
 
 
                     <div
-                      className="
-                        min-w-0
-                      "
+                      className="min-w-0"
                     >
 
                       <div
-                        className="
-                          flex
-                          flex-wrap
-                          items-center
-                          gap-2
-                        "
+                        className="flex
+ flex-wrap
+ items-center
+ gap-2"
                       >
 
                         <h3
-                          className="
-                            truncate
-                            font-semibold
-                            text-[var(--erp-text)]
-                          "
+                          className="truncate"
                         >
                           {textoSeguro(
                             rol.nombre
@@ -1015,15 +819,6 @@ export default function SeguridadRoles() {
                               : "neutral"
                           }
                         >
-                          <span
-                            className={`
-                              mr-1.5
-                              h-1.5
-                              w-1.5
-                              rounded-full
-                              ${estado.punto}
-                            `}
-                          />
                           {estado.texto}
                         </Chip>
 
@@ -1031,12 +826,8 @@ export default function SeguridadRoles() {
 
 
                       <p
-                        className="
-                          mt-1
-                          truncate
-                          text-xs
-                          text-[var(--erp-text-soft)]
-                        "
+                        className="mt-1
+ truncate"
                       >
                         {textoSeguro(
                           rol.descripcion
@@ -1053,12 +844,10 @@ export default function SeguridadRoles() {
 
 
                   <div
-                    className="
-                      flex
-                      shrink-0
-                      items-center
-                      gap-2
-                    "
+                    className="flex
+ shrink-0
+ items-center
+ gap-2"
                   >
 
                     <span className="hidden sm:inline-flex">
@@ -1076,11 +865,7 @@ export default function SeguridadRoles() {
                     </Chip>
 
                     <span
-                      className="
-                        ml-1
-                        text-sm
-                        text-[var(--erp-text-soft)]
-                      "
+                      className="ml-1"
                     >
                       {abierto ? "▲" : "▼"}
                     </span>
@@ -1094,21 +879,14 @@ export default function SeguridadRoles() {
 
                 {abierto && (
                   <div
-                    className="
-                      border-t
-                      border-[var(--erp-border)]
-                      bg-[var(--erp-bg)]
-                      p-4
-                    "
+                    className="p-4"
                   >
 
                     <div
-                      className="
-                        grid
-                        grid-cols-1
-                        gap-3
-                        md:grid-cols-3
-                      "
+                      className="grid
+ grid-cols-1
+ gap-3
+ md:grid-cols-3"
                     >
 
                       <TarjetaMetrica
@@ -1142,53 +920,36 @@ export default function SeguridadRoles() {
 
 
                     <div
-                      className="
-                        mt-4
-                        grid
-                        grid-cols-1
-                        gap-4
-                        lg:grid-cols-2
-                      "
+                      className="mt-4
+ grid
+ grid-cols-1
+ gap-4
+ lg:grid-cols-2"
                     >
 
                       {/* USUARIOS */}
 
                       <div
-                        className="
-                          rounded-2xl
-                          border
-                          border-[var(--erp-border)]
-                          bg-[var(--erp-surface)]
-                          p-4
-                        "
+                        className="p-4"
                       >
 
                         <div
-                          className="
-                            flex
-                            items-center
-                            justify-between
-                            gap-3
-                          "
+                          className="flex
+ items-center
+ justify-between
+ gap-3"
                         >
 
                           <div>
 
                             <h4
-                              className="
-                                font-semibold
-                                text-[var(--erp-text)]
-                              "
+                             
                             >
                               👥 Usuarios asignados
                             </h4>
 
                             <p
-                              className="
-                                mt-0.5
-                                text-xs
-                                text-[var(--erp-text-soft)]
-                              "
+                              className="mt-0.5"
                             >
                               Empleados vinculados a este rol.
                             </p>
@@ -1212,29 +973,22 @@ export default function SeguridadRoles() {
                                   key={String(
                                     empleado.id
                                   )}
-                                  className="
-                                    flex
-                                    items-center
-                                    justify-between
-                                    gap-3
-                                    rounded-xl
-                                    border
-                                    border-[var(--erp-border)]
-                                    bg-[var(--erp-bg)]
-                                    px-3
-                                    py-2.5
-                                  "
+                                  className="flex
+ items-center
+ justify-between
+ gap-3
+ 
+ 
+ 
+ 
+ px-3
+ py-2.5"
                                 >
 
                                   <div className="min-w-0">
 
                                     <p
-                                      className="
-                                        truncate
-                                        text-sm
-                                        font-medium
-                                        text-[var(--erp-text)]
-                                      "
+                                      className="truncate"
                                     >
                                       {textoSeguro(
                                         empleado.nombre
@@ -1243,11 +997,7 @@ export default function SeguridadRoles() {
                                     </p>
 
                                     <p
-                                      className="
-                                        truncate
-                                        text-xs
-                                        text-[var(--erp-text-soft)]
-                                      "
+                                      className="truncate"
                                     >
                                       {textoSeguro(
                                         empleado.usuario
@@ -1258,17 +1008,15 @@ export default function SeguridadRoles() {
                                   </div>
 
                                   <span
-                                    className={`
-                                      h-2
-                                      w-2
-                                      shrink-0
-                                      rounded-full
-                                      ${
-                                        empleado.activo
-                                          ? "bg-emerald-500"
-                                          : "bg-red-500"
-                                      }
-                                    `}
+                                    className={`h-2
+ w-2
+ shrink-0
+ 
+ ${
+ empleado.activo
+ ? ""
+ : ""
+ }`}
                                   />
 
                                 </div>
@@ -1279,16 +1027,7 @@ export default function SeguridadRoles() {
                           {rol.usuarios.length ===
                             0 && (
                             <div
-                              className="
-                                rounded-xl
-                                border
-                                border-dashed
-                                border-[var(--erp-border)]
-                                p-4
-                                text-center
-                                text-xs
-                                text-[var(--erp-text-soft)]
-                              "
+                              className="p-4"
                             >
                               No hay usuarios vinculados.
                             </div>
@@ -1298,10 +1037,7 @@ export default function SeguridadRoles() {
                           {rol.usuarios.length >
                             8 && (
                             <p
-                              className="
-                                text-xs
-                                text-[var(--erp-text-soft)]
-                              "
+                             
                             >
                               Mostrando los primeros 8 usuarios.
                             </p>
@@ -1315,30 +1051,17 @@ export default function SeguridadRoles() {
                       {/* CONFIGURACIÓN */}
 
                       <div
-                        className="
-                          rounded-2xl
-                          border
-                          border-[var(--erp-border)]
-                          bg-[var(--erp-surface)]
-                          p-4
-                        "
+                        className="p-4"
                       >
 
                         <h4
-                          className="
-                            font-semibold
-                            text-[var(--erp-text)]
-                          "
+                         
                         >
                           🔐 Configuración del rol
                         </h4>
 
                         <p
-                          className="
-                            mt-0.5
-                            text-xs
-                            text-[var(--erp-text-soft)]
-                          "
+                          className="mt-0.5"
                         >
                           Módulos y permisos asociados.
                         </p>
@@ -1347,24 +1070,18 @@ export default function SeguridadRoles() {
                         <div className="mt-4">
 
                           <p
-                            className="
-                              mb-2
-                              text-xs
-                              font-semibold
-                              uppercase
-                              tracking-wide
-                              text-[var(--erp-text-soft)]
-                            "
+                            className="mb-2
+ 
+ 
+ uppercase"
                           >
                             Módulos
                           </p>
 
                           <div
-                            className="
-                              flex
-                              flex-wrap
-                              gap-2
-                            "
+                            className="flex
+ flex-wrap
+ gap-2"
                           >
 
                             {rol.modulosRol
@@ -1385,10 +1102,7 @@ export default function SeguridadRoles() {
                             {rol.modulosRol.length ===
                               0 && (
                               <span
-                                className="
-                                  text-xs
-                                  text-[var(--erp-text-soft)]
-                                "
+                               
                               >
                                 Sin módulos específicos.
                               </span>
@@ -1402,24 +1116,18 @@ export default function SeguridadRoles() {
                         <div className="mt-4">
 
                           <p
-                            className="
-                              mb-2
-                              text-xs
-                              font-semibold
-                              uppercase
-                              tracking-wide
-                              text-[var(--erp-text-soft)]
-                            "
+                            className="mb-2
+ 
+ 
+ uppercase"
                           >
                             Permisos
                           </p>
 
                           <div
-                            className="
-                              flex
-                              flex-wrap
-                              gap-2
-                            "
+                            className="flex
+ flex-wrap
+ gap-2"
                           >
 
                             {rol.permisosRol
@@ -1428,7 +1136,7 @@ export default function SeguridadRoles() {
                                 (permiso, index) => (
                                   <Chip
                                     key={`${permiso}-${index}`}
-                                    tone="purple"
+                                    tone="primary"
                                   >
                                     {String(
                                       permiso
@@ -1440,10 +1148,7 @@ export default function SeguridadRoles() {
                             {rol.permisosRol.length ===
                               0 && (
                               <span
-                                className="
-                                  text-xs
-                                  text-[var(--erp-text-soft)]
-                                "
+                               
                               >
                                 Sin permisos específicos.
                               </span>
@@ -1469,37 +1174,21 @@ export default function SeguridadRoles() {
 
         {rolesOrdenados.length === 0 && (
           <div
-            className="
-              rounded-2xl
-              border
-              border-dashed
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface)]
-              p-10
-              text-center
-            "
+            className="p-10"
           >
 
-            <div className="text-3xl">
+            <div>
               🛡️
             </div>
 
             <p
-              className="
-                mt-3
-                font-semibold
-                text-[var(--erp-text)]
-              "
+              className="mt-3"
             >
               No hay roles
             </p>
 
             <p
-              className="
-                mt-1
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
+              className="mt-1"
             >
               No se han encontrado perfiles que coincidan con la búsqueda.
             </p>

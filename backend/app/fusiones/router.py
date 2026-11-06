@@ -7,10 +7,15 @@ from sqlalchemy import Column, Date, DateTime, Float, ForeignKey, Integer, Strin
 from sqlalchemy.orm import Session
 
 from backend.app.database import Base, get_db
+from backend.app.auth.dependencies import get_current_user
 from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 
-router = APIRouter(prefix="/fusiones", tags=["Fusiones"])
+router = APIRouter(
+    prefix="/fusiones",
+    tags=["Fusiones"],
+    dependencies=[Depends(get_current_user)],
+)
 
 
 class SolicitudFusion(Base):
