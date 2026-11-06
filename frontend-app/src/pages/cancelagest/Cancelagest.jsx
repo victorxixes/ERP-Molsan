@@ -1,5 +1,6 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanStatCard from "../../components/ui/MolsanStatCard";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { puedeVerModulo } from "../../utils/permisos";
@@ -85,10 +86,10 @@ export default function Cancelagest() {
       {error && <div className="cg-error" role="alert"><strong>No se han podido cargar los indicadores.</strong><p>{error}</p><button onClick={cargar}>Reintentar</button></div>}
 
       <section className="cg-kpis">
-        <article className="cg-kpi"><span>Cancelaciones registradas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_cancelaciones)}</strong><small>Expedientes identificados como cancelación</small></article>
-        <article className="cg-kpi"><span>Firmas realizadas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_firmadas)}</strong><small>Cancelaciones con fecha de firma</small></article>
-        <article className="cg-kpi"><span>Cancelaciones con provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "con_provision")?.total)}</strong><small>Con provisión identificada</small></article>
-        <article className="cg-kpi"><span>Cancelaciones sin provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "sin_provision")?.total)}</strong><small>Sin provisión identificada</small></article>
+        <MolsanStatCard title="Cancelaciones registradas" value={cargando && !datos ? "…" : fmtNumero(datos?.total_cancelaciones)} description="Expedientes identificados como cancelación" icon="fileCheck" tone="ocean" />
+        <MolsanStatCard title="Firmas realizadas" value={cargando && !datos ? "…" : fmtNumero(datos?.total_firmadas)} description="Cancelaciones con fecha de firma" icon="check" tone="emerald" />
+        <MolsanStatCard title="Cancelaciones con provisión" value={fmtNumero(categorias.find((x) => x.key === "con_provision")?.total)} description="Con provisión identificada" icon="wallet" tone="cyan" />
+        <MolsanStatCard title="Cancelaciones sin provisión" value={fmtNumero(categorias.find((x) => x.key === "sin_provision")?.total)} description="Sin provisión identificada" icon="alert" tone="amber" />
       </section>
 
       <section className="cg-section">
