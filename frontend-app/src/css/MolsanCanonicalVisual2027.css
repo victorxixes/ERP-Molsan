@@ -129,6 +129,12 @@
 .ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,.notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card):focus-within {
   border-color: #A9CCDF !important;
 }
+:where(.ng-admin-notaria-card.ng-admin-notaria-activa) {
+  border-color: #064675 !important;
+  border-top-color: #064675 !important;
+  background: #F2F7FB !important;
+  box-shadow: 0 9px 22px rgba(6,70,117,.12) !important;
+}
 :where(button.erp-card,a.erp-card,[role="button"].erp-card):active {
   transform: translateY(-1px) !important;
 }
