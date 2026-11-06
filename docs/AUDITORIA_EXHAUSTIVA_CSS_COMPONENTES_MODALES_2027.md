@@ -951,3 +951,16 @@ Se ha revisado `components/ui/useAccessibleDialog.js`, usado por los 11 diálogo
 - Excluye elementos no visibles, deshabilitados, dentro de `aria-hidden` o de contenedores `inert`.
 
 No se han cambiado el hook ni sus consumidores. La lectura estática confirma el mecanismo; queda probar en navegador el comportamiento real de los 11 estados, especialmente cierres bloqueados durante guardado, modales anidados, scroll y retorno de foco.
+
+
+## 55. Cabeceras sin parpadeo en Catálogos y Utilidades — verificación de consumidores JSX
+
+Se han contrastado las clases reales de los componentes con los selectores globales:
+
+- `Utilidades.jsx` monta `.utilidades-premium-page` y `.animate-fadeIn`, con cabecera `MolsanPageHeader`.
+- `Catalogos.jsx` monta `.catalogos-premium-page` y `.animate-fadeIn`, con cabecera `MolsanPageHeader`.
+- `MolsanGlobalConsistency2027.css` neutraliza la animación del root y de la cabecera dentro de ambos contenedores, dejando `opacity:1`, `transform:none` y sin animación de entrada.
+- La misma capa evita un segundo padding interior porque el Layout ya aporta el gutter. `MolsanCardsPremium2027.css` conserva para Catálogos la distribución de identidad a la izquierda y acciones a la derecha, con ajuste responsive a móvil.
+- `MolsanCanonicalVisual2027.css` define la geometría y la apariencia de la cabecera, pero no reintroduce una animación de montaje.
+
+La coincidencia de clases y orden de importación confirma que las reglas alcanzan ambos JSX. El parpadeo queda corregido en el código estático; no se afirma la comprobación visual en navegador autenticado.
