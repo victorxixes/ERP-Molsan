@@ -1,9 +1,8 @@
 /* MOLSAN ERP PREMIUM 2027 · GLASS LUXE
    Responsabilidad de esta hoja:
-   - compatibilidad visual de botones heredados mientras se migran a MolsanButton;
-   - patrón de tarjeta maestro exclusivo de Espacios de trabajo.
-   Las cabeceras y tarjetas funcionales del ERP se gobiernan en
-   MolsanCanonicalVisual2027.css para evitar dos fuentes de presentación.
+   - compatibilidad visual de botones heredados mientras se migran a MolsanButton.
+   Las cabeceras y tarjetas funcionales se gobiernan en CanonicalVisual y
+   el patrón de Espacios de trabajo se mantiene en MolsanPremium2027.css.
 */
 
 /* Compatibilidad de botones heredados: conserva la acción y sus variantes. */
