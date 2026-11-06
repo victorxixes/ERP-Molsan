@@ -647,3 +647,18 @@ La referencia visual de tarjetas queda en el componente `MolsanPremiumCard` y su
 - Se retiraron también dos overrides locales de `.erp-card`: el radio de 20 px repetía exactamente `--molsan-canon-card-radius: 20px`, y el hover duplicaba un `transform` ya impuesto por la capa canónica con prioridad. Catálogos hereda ahora ambas propiedades del mismo sistema que el resto del ERP.
 - Alcance: CSS de presentación; sin cambios JSX, datos, permisos, API, Supabase ni producción.
 - Pendiente: comprobar Catálogos en Preview en escritorio/tablet/móvil y validar visualmente que las acciones no se desbordan; la compilación y la revisión de cascada de esta modificación aún no se han ejecutado.
+
+
+## 26. Cobertura de tarjetas KPI de EncargaGest y NotarGest — 6 de noviembre de 2026
+
+Se ha detectado una omisión en las listas de superficies de `MolsanCanonicalVisual2027.css`: aunque `.eg-kpi`, `.ng-dashboard-kpi` y `.ng-kpi-card` seguían teniendo consumidores activos, no estaban incluidos en todas las reglas comunes de superficie, hover, iconografía y movimiento reducido.
+
+Se han incorporado esos tres selectores a las siete listas canónicas correspondientes. Así reciben el mismo borde, franja superior, radio, sombra, elevación y respuesta de hover que las tarjetas KPI equivalentes, sin tocar su JSX ni sus reglas de contenido específicas.
+
+Comprobación estática posterior:
+- Llaves CSS equilibradas: 41 aperturas y 41 cierres.
+- Los tres selectores aparecen en las listas de superficie/interacción previstas.
+- No se han modificado páginas, lógica de negocio, permisos, API, Supabase, datos ni producción.
+- Commit: `2136abf3290513eb327ca7fcd44f9bd9ea8592a7`.
+
+La comprobación estática no sustituye el build ni la inspección visual autenticada en Preview. Sigue pendiente revisar estos KPI en escritorio, tablet y móvil, junto con los modales de los módulos afectados.
