@@ -192,3 +192,41 @@ El commit de código `315f84c` ha terminado con resultado correcto en los tres w
 - `Validar Fichaje Molsan`: success.
 
 La actualización posterior `6ca454c` solo añade esta documentación. CI correcto confirma compilación y controles automatizados disponibles; no sustituye las pruebas interactivas en navegador ni el despliegue de Preview.
+
+## 12. Segunda pasada estática de las 41 hojas CSS
+
+Se ha vuelto a recorrer el árbol Git completo de `frontend-app/src` en el commit auditado: el árbol no está truncado y devuelve exactamente **41 CSS** y **143 JSX/TSX**.
+
+La pasada ha calculado líneas y usos de `!important` y ha comparado selectores/declaraciones en las ocho capas globales principales. Los datos confirman que la deuda no está concentrada en una sola hoja:
+
+| Hoja | Líneas | `!important` |
+|---|---:|---:|
+| `MolsanRedesign2027.css` | 2.757 | 57 |
+| `MolsanCanonicalVisual2027.css` | 321 | 115 |
+| `molsan-design-system.css` | 952 | 40 |
+| `MolsanPremium2027.css` | 1.350 | 18 |
+| `MolsanGlobalConsistency2027.css` | 226 | 5 |
+| `MolsanGlassLuxeUnified2027.css` | 69 | 18 |
+| `MolsanCardsPremium2027.css` | 206 | 2 |
+| `MolsanFase3.css` | 189 | 4 |
+| `ApoderaGest.css` | 1.203 | 25 |
+| `EncargaGest.css` | 830 | 72 |
+| `NotarGest.css` | 741 | 2 |
+| `Agenda.css` | 161 | 40 |
+| `CtnListadoPage.css` | 1.519 | 3 |
+
+El recuento de `!important` es un indicador de precedencia, no una lista automática de código eliminable. La capa Canonical tiene una densidad especialmente alta; EncargaGest y Agenda también necesitan revisión por estados y contexto, no borrado masivo.
+
+### Colisiones entre capas globales
+
+La comparación heurística de reglas con selector exacto y propiedad repetida en las ocho hojas globales detectó solapamientos entre:
+- `.mol-sidebar-premium`: `position` y `z-index` con valores idénticos en Redesign y Design System.
+- `.erp-app-shell`: `color` compartido; `background` aparece repetido y la capa Premium añade `!important`.
+- `.molsan-icon-3d`: base repetida, pero no idéntica; Design System aporta color, transformación y hover, mientras Premium aporta radio, variantes cromáticas y tratamiento `bare`. No se debe borrar el bloque completo de ninguna de las dos hojas sin trasladar primero las propiedades exclusivas.
+- `.molsan-premium-card::before`: Design System crea el pseudoelemento y Canonical lo neutraliza con `content:none !important`; la última capa gana por orden y prioridad.
+
+La detección es estática y no modela por completo media queries, estados, especificidad, herencia ni estilos inline. Por eso estos casos quedan registrados como candidatos de consolidación, no como eliminaciones autorizadas.
+
+### Decisión de esta pasada
+
+No se ha reordenado `main.jsx` ni se han retirado capas globales: la cascada actual sí tiene dependencias verificables. La siguiente consolidación debe mover cada responsabilidad a una única hoja y retirar la regla anterior en el mismo cambio, conservando el valor computado actual y validándolo en Preview antes de continuar con la siguiente familia.
