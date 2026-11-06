@@ -13,6 +13,7 @@ import AgendaToast from "../../components/agenda/AgendaToast.jsx";
 import SelectSJ from "../../components/ui/SelectSJ";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 const MESES = [
   "Enero",
   "Febrero",
@@ -443,7 +444,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
             title="Mes anterior"
             aria-label="Mes anterior"
           >
-            ←
+            <MolsanIcon name="arrowLeft" size={18} />
           </button>
 
           <SelectSJ
@@ -486,7 +487,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
             title="Mes siguiente"
             aria-label="Mes siguiente"
           >
-            →
+            <MolsanIcon name="arrowRight" size={18} />
           </button>
 
           <button type="button" className="agenda-today-action" onClick={() => {
