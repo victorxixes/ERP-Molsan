@@ -3,14 +3,6 @@
    Las cabeceras usan vidrio azul hielo translúcido; las acciones conservan
    su semántica (principal, secundaria o destructiva). */
 
-:root {
-  --molsan-glass-border: rgba(6,70,117,.14);
-  --molsan-glass-shadow: 0 8px 22px rgba(6,70,117,.075);
-  --molsan-card-border: #D8E4EC;
-  --molsan-card-shadow: 0 9px 24px rgba(6,50,82,.065);
-  --molsan-card-shadow-hover: 0 19px 38px rgba(6,50,82,.13);
-}
-
 /* Cabecera común: fondo Glass Luxe suave y blur real del contenido tras ella. */
 :where(
   .molsan-page-header,
