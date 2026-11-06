@@ -33,11 +33,7 @@
 .apoderagest .ag-contenido,.encargagest .eg-main,.notargest.ng-content{
   min-width:0!important;
 }
-.encargagest .eg-main{
-  display:flex!important;flex-direction:column!important;gap:18px!important;
-  width:100%!important;max-width:none!important;margin:0!important;
-  padding:4px 0 24px!important;
-}
+
 .apoderagest .ag-grid-kpi,.apoderagest .ag-grid-secundario,
 .encargagest .eg-main>section.grid,.notargest.ng-content .ng-dashboard-graficos{
   gap:12px!important;
@@ -190,8 +186,8 @@
 .apoderagest .ag-panel table td,.encargagest .eg-panel table td,
 .encargagest .eg-directorio-tabla td,.notargest.ng-content .ng-tabla td,
 .notargest.ng-content .ng-panel table td{border-color:var(--molsan-prof-border)!important}
-.encargagest .eg-directorio{min-width:0!important;padding:0!important;overflow:hidden!important;border:1px solid var(--molsan-prof-border)!important;border-radius:18px!important;background:#fff!important;box-shadow:var(--molsan-prof-shadow)!important}
-.encargagest .eg-directorio-cabecera{border-radius:0!important}
+
+
 .notargest.ng-content .ng-dashboard-graficos{display:grid!important;gap:14px!important}
 .notargest.ng-content .ng-dashboard-grafico{padding:0!important}
 .notargest.ng-content .ng-dashboard-grafico>.ng-bloque-heading{padding:16px 18px!important}
@@ -326,19 +322,14 @@
   width: calc(100% - 32px);
   margin: 24px 16px 16px;
 }
-.encargagest .eg-main {
-  padding: 0 16px 24px !important;
-}
+
 @media (min-width: 1024px) {
   .encargagest > header.ag-hero.molsan-page-header {
     width: calc(100% - 48px);
     margin-right: 24px;
     margin-left: 24px;
   }
-  .encargagest .eg-main {
-    padding-right: 24px !important;
-    padding-left: 24px !important;
-  }
+  
 }
 
 
