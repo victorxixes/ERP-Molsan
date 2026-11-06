@@ -592,6 +592,8 @@ Commits: `9a5a9a0` y `256fa92`.
 
 ### Resultado de esta pasada
 
+- En `CatalogosMaestrosPremium.css` se retiró el selector `.tipos-carga-hipotecaria-premium` de sus siete listas: no aparece en el JSX de `TiposCargaHipotecaria.jsx`, que usa `.catalogo-maestro-page-premium`, ni en la búsqueda de código del repositorio. Se conserva el wrapper que sí utiliza la página.
+- Commit adicional: `7e7a9db`.
 - No quedan selectores vacíos en estas cuatro hojas inspeccionadas (`CatalogosMaestrosPremium.css`, `MolsanCardsPremium2027.css`, `EncargaGest.css` y `NotarGest.css`).
 - Las coincidencias de selectores que permanecen se han clasificado como responsive, variantes de modal/perfil o reglas con distinta especificidad; no se consideran duplicados eliminables sin pruebas de navegador.
 - **Validación pendiente:** ejecutar build sobre los commits de esta pasada y revisar visualmente Catálogos (incluidas fichas), EncargaGest y NotarGest en Preview, con escritorio/tablet/móvil y modales abiertos.
