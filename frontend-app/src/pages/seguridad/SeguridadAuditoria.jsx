@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import "./SeguridadSubpaginasPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
