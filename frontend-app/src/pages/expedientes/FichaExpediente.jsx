@@ -5462,7 +5462,7 @@ const cuantiaFincasParaEnvio =
               titulo="Notario"
               subtitulo="Información del notario asociado"
               icono="notario"
-              className="h-full xl:col-span-4"
+              className="h-full xl:col-span-3"
               compacto
               colapsable
               colapsadaInicial
@@ -5492,7 +5492,7 @@ const cuantiaFincasParaEnvio =
               titulo="Información crediticia"
               subtitulo="Datos contractuales y de financiación"
               icono="economico"
-              className="h-full xl:col-span-4"
+              className="h-full xl:col-span-3"
               compacto
               colapsable
               colapsadaInicial
@@ -5859,7 +5859,7 @@ const cuantiaFincasParaEnvio =
                       generandoFacturacion={generandoHonorariosGestoria}
                       facturaEmitida={Boolean(honorariosGestoria?.guardado || expediente?.facturacion_fecha || expediente?.numero_factura || expediente?.factura_honorarios_id)}
                       onPagar={() => { void abrirPagoDesdeGestionEconomica(); }}
-                      panelLibroPagos={<section className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                      panelLibroPagos={actividadSeleccionada === "gestion-economica" ? (<section className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/90 px-4 py-4 sm:px-5">
                       <div className="flex min-w-0 items-center gap-3">
                         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700"><span aria-hidden="true">▤</span></span>
@@ -5940,7 +5940,7 @@ const cuantiaFincasParaEnvio =
                       </div>
                     </div>
                     {errorGastos && <p role="alert" className="border-t border-red-100 bg-red-50 px-4 py-2 text-xs text-red-700">{errorGastos}</p>}
-                  </section>}
+                  </section>) : null}
                       formularioPago={origenFormularioGasto === "pagar" ? (
                         <>
                         {mostrarFormularioPagoReal && createPortal((
