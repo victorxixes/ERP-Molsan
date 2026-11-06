@@ -18,7 +18,7 @@ export default function ImportarCTN() {
   };
 
   return (
-    <div className="importar-ctn-premium herramientas-subpagina-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
+    <div className="importar-ctn-premium herramientas-subpagina-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 ">
 
       {/* =====================================================
           CABECERA
@@ -111,7 +111,7 @@ export default function ImportarCTN() {
                 bg-blue-50/70
                 px-4 py-3
                 text-sm text-blue-700
-                animate-fadeIn
+                
               "
             >
               <span>✓</span>
@@ -192,7 +192,7 @@ export default function ImportarCTN() {
                 border border-emerald-200
                 bg-emerald-50
                 p-5
-                animate-fadeIn
+                
               "
             >
 
