@@ -1,16 +1,17 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { puedeVerModulo } from "../../utils/permisos";
 import MODULOS_ERP from "../../config/modulos";
 import axios from "../../api/axios";
 const TARJETAS_DASHBOARD = [
-  { key: "expedientes", descripcion: "Consultar expedientes y su situación actual.", icono: "▤" },
-  { key: "agenda", descripcion: "Revisar citas y actividad programada.", icono: "▦" },
-  { key: "informes", descripcion: "Acceder a informes y seguimiento de gestión.", icono: "▥" },
-  { key: "apoderagest", descripcion: "Encargos, firmas y actividad del apoderado.", icono: "AG" },
-  { key: "notargest", descripcion: "Seguimiento del trabajo y estados notariales.", icono: "NG" },
-  { key: "ctn", descripcion: "Consultar el catálogo de notarías y sus relaciones.", icono: "◇" },
+  { key: "expedientes", descripcion: "Consultar expedientes y su situación actual.", icono: "folder" },
+  { key: "agenda", descripcion: "Revisar citas y actividad programada.", icono: "calendar" },
+  { key: "informes", descripcion: "Acceder a informes y seguimiento de gestión.", icono: "chart" },
+  { key: "apoderagest", descripcion: "Encargos, firmas y actividad del apoderado.", icono: "users" },
+  { key: "notargest", descripcion: "Seguimiento del trabajo y estados notariales.", icono: "landmark" },
+  { key: "ctn", descripcion: "Consultar el catálogo de notarías y sus relaciones.", icono: "building" },
 ];
 
 const fmtNumero = (n) => Number(n || 0).toLocaleString("es-ES");
@@ -60,10 +61,6 @@ export default function Cancelagest() {
 
   useEffect(() => { cargar(); }, [cargar]);
 
-  const fechaActual = useMemo(() => new Intl.DateTimeFormat("es-ES", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric",
-  }).format(new Date()), []);
-
   const firmasMensuales = (datos?.firmas_mensuales || []).slice(-12).map((x) => ({ ...x, mesLabel: fmtMes(x.mes) }));
   const categorias = datos?.categorias_firma || [];
   const tiempos = datos?.tiempos_circuito || [];
@@ -80,7 +77,7 @@ export default function Cancelagest() {
 
   return <main className="cg-page">
       <MolsanPageHeader
-        mark={<img src="/img/logo.jpg" alt="" className="h-full w-full rounded-lg object-contain" />}
+        mark={<MolsanIcon name="archive" size={34} />}
         title="CancelaGest"
         description="Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral."
       />
@@ -97,7 +94,7 @@ export default function Cancelagest() {
       <section className="cg-section">
         <div className="cg-section-heading"><div><span className="cg-kicker">ACCESOS DIRECTOS</span><h2>Módulos de trabajo</h2><p>Accede a las herramientas principales del ERP sin salir del entorno corporativo.</p></div></div>
         <div className="cg-module-grid">{modulosVisibles.map((modulo) => <button type="button" className="cg-module-card" key={modulo.titulo} onClick={() => navigate(modulo.ruta)}>
-          <span className="cg-module-icon">{modulo.icono}</span><span className="cg-module-text"><strong>{modulo.titulo}</strong><small>{modulo.descripcion}</small></span><span className="cg-module-arrow">↗</span>
+          <span className="cg-module-icon"><MolsanIcon name={modulo.icono} size={30} tone="ocean" /></span><span className="cg-module-text"><strong>{modulo.titulo}</strong><small>{modulo.descripcion}</small></span><span className="cg-module-arrow">↗</span>
         </button>)}</div>
       </section>
 
