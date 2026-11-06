@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
@@ -182,12 +183,12 @@ export default function CatalogoAbsis() {
       <section className="rounded-2xl border border-[var(--molsan-border)] bg-white p-4 shadow-sm sm:p-5">
         <label className="mb-2 block text-sm font-semibold text-[var(--molsan-text)]" htmlFor="absis-categoria">Lista que quieres gestionar</label>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <select id="absis-categoria" value={categoria} onChange={(e) => { setCategoria(e.target.value); setBusqueda(""); setMensaje(""); }} className="min-w-0 flex-1 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-3 text-sm focus:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-100">
+          <select id="absis-categoria" value={categoria} onChange={(e) => { setCategoria(e.target.value); setBusqueda(""); setMensaje(""); }} className="min-w-0 flex-1 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-3 text-sm focus:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-[var(--molsan-primary-soft)]">
             {categorias.map((item) => <option key={item} value={item}>{item}</option>)}
           </select>
-          <button type="button" onClick={() => { setNombreNuevaLista(""); setError(""); setModalNuevaLista(true); }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-primary-soft)] focus:outline-none focus:ring-4 focus:ring-indigo-100">+ Crear lista</button>
+          <button type="button" onClick={() => { setNombreNuevaLista(""); setError(""); setModalNuevaLista(true); }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-primary-soft)] focus:outline-none focus:ring-4 focus:ring-indigo-100"><MolsanIcon name="plus" size={15} tone="inherit" bare />Crear lista</button>
           <button type="button" onClick={abrirNuevo} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--molsan-primary)] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--molsan-primary-hover)] focus:outline-none focus:ring-4 focus:ring-indigo-200">
-            <span aria-hidden="true" className="text-lg leading-none">+</span> Añadir entrada
+            <MolsanIcon name="plus" size={15} tone="ocean" bare /> Añadir entrada
           </button>
         </div>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
