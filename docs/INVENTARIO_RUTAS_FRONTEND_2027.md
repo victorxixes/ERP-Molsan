@@ -138,3 +138,123 @@
 
 El número 98 no debe compararse directamente con las declaraciones de `Route`: hay 110 elementos de ruta, 109 paths, aliases, rutas dinámicas y una ruta índice. Para reconciliar 98 pantallas hay que agrupar estas rutas por componente/pantalla y sumar por separado subpáginas internas y modales. Este documento registra rutas; no afirma que existan 110 pantallas distintas ni que todos los modales estén inventariados.
 
+
+
+## Mapa de ruta a componente (revisión estática)
+
+Fuente: `frontend-app/src/App.jsx` en la rama de trabajo. Se identifican 110 declaraciones `Route` y el componente de página que recibe la ruta, excluyendo wrappers de protección (`RequireAuth`, `RequireModule`) y el layout. Las rutas dinámicas y los componentes con pestañas internas pueden representar varias pantallas; este mapa no sustituye el inventario de modales y estados.
+
+| # | Ruta | Componente de página |
+|---:|---|---|
+| 1 | `/login` | `LoginPage` |
+| 2 | `modulos` | `ModulosSelector` |
+| 3 | `apoderagest` | `ApoderaGest` |
+| 4 | `encargagest` | `EncargaGest` |
+| 5 | `encargagest/notario` | `EncargaGest` |
+| 6 | `encargagest/ctn` | `EncargaGestWorkspace` |
+| 7 | `encargagest/agenda` | `EncargaGestWorkspace` |
+| 8 | `encargagest/mensajes` | `EncargaGestWorkspace` |
+| 9 | `encargagest/intranet` | `EncargaGestWorkspace` |
+| 10 | `notargest` | `NotarGest` |
+| 11 | `notargest-notario` | `NotarGest` |
+| 12 | `notargest-notarios` | `NotarGest` |
+| 13 | `encargagest-notario` | `EncargaGest` |
+| 14 | `encargagest-notarios` | `EncargaGest` |
+| 15 | `notargestweb` | `NotarGest` |
+| 16 | `encargagestweb` | `EncargaGest` |
+| 17 | `/` | `RequireAuth` |
+| 18 | `(index)` | `Dashboard` |
+| 19 | `dashboard` | `Dashboard` |
+| 20 | `cancelagest` | `Cancelagest` |
+| 21 | `fichajes` | `Fichajes` |
+| 22 | `control-fichajes` | `Fichajes` |
+| 23 | `mensajeria` | `MensajeriaSolicitudes` |
+| 24 | `mensajeria-gestion` | `MensajeriaMolsan` |
+| 25 | `apoderagest/liquidaciones` | `ControlApoderados` |
+| 26 | `herramientas/utilidades/control-apoderados` | `ControlApoderados` |
+| 27 | `agenda` | `Agenda` |
+| 28 | `agenda/dia` | `VistaDia` |
+| 29 | `agenda/semana` | `VistaSemana` |
+| 30 | `agenda/mes` | `VistaMes` |
+| 31 | `expedientes` | `ExpedientesListado` |
+| 32 | `expedientes/:id` | `FichaExpediente` |
+| 33 | `expedientes-demo-glass-luxe` | `FichaExpedienteDemo` |
+| 34 | `provisiones-fondos` | `ProvisionesFondosPage` |
+| 35 | `catalogos/provisiones-fondos` | `ProvisionesFondosPage` |
+| 36 | `herramientas/utilidades/visibilidad-tablas` | `AdministracionEmpleadoConfig` |
+| 37 | `herramientas/utilidades/asignaciones` | `AdministracionEmpleadoConfig` |
+| 38 | `herramientas/utilidades/complementos-saldo` | `ComplementosSaldo` |
+| 39 | `herramientas/utilidades/proceso-absis` | `ProcesoAbsis` |
+| 40 | `herramientas/utilidades/ppad` | `PPAD` |
+| 41 | `herramientas/utilidades/verifacti` | `Verifacti` |
+| 42 | `ctn` | `Ctn` |
+| 43 | `ctn/listado` | `CtnListadoPage` |
+| 44 | `ctn/:id` | `CtnDetallePage` |
+| 45 | `empleados` | `EmpleadosModulo2026` |
+| 46 | `empleados/listado` | `EmpleadosListado` |
+| 47 | `empleados/:id` | `EmpleadoFicha` |
+| 48 | `empleados/:id/editar` | `EmpleadoEditar` |
+| 49 | `intranet` | `Intranet` |
+| 50 | `informes` | `Informes` |
+| 51 | `informes/:apartado` | `Informes` |
+| 52 | `mensajes` | `MensajesWrapper` |
+| 53 | `herramientas` | `Herramientas` |
+| 54 | `herramientas/importar-ctn` | `ImportarCTN` |
+| 55 | `herramientas/municipios` | `Municipios` |
+| 56 | `herramientas/importador-absis` | `ImportadorAbsis` |
+| 57 | `herramientas/importador-absis/postfirma` | `ImportadorPostFirma` |
+| 58 | `herramientas/importaciones-datos` | `ImportacionesDatos` |
+| 59 | `herramientas/utilidades` | `Utilidades` |
+| 60 | `herramientas/utilidades/modelos-documentos` | `ModelosDocumentos` |
+| 61 | `herramientas/utilidades/reglas-actividades-expediente` | `ReglasActividadesExpediente` |
+| 62 | `herramientas/utilidades/datos-molsan` | `DatosMolsan` |
+| 63 | `herramientas/utilidades/alta-expediente` | `AltaExpediente` |
+| 64 | `herramientas/utilidades/lectura-copias` | `LecturaCopias` |
+| 65 | `herramientas/utilidades/cambios-actividad-absis` | `CambiosActividadAbsis` |
+| 66 | `herramientas/utilidades/lectura-cancela-i` | `LecturaCancelaI` |
+| 67 | `herramientas/utilidades/accesos-notariales` | `AccesosNotariales` |
+| 68 | `catalogos` | `Catalogos` |
+| 69 | `catalogos/absis` | `CatalogoAbsis` |
+| 70 | `catalogos/oficinas` | `CatalogoOficinas` |
+| 71 | `catalogos/tipos-impositivos` | `TiposImpositivos` |
+| 72 | `catalogos/fichajes` | `CatalogoFichajes` |
+| 73 | `catalogos/mensajeria-servicios` | `MensajeriaMolsan` |
+| 74 | `catalogos/firmas-email` | `FirmasEmail` |
+| 75 | `catalogos/correspondencia-tipificada` | `CorrespondenciaTipificada` |
+| 76 | `herramientas/utilidades/correspondencia-tipificada` | `CorrespondenciaTipificada` |
+| 77 | `herramientas/honorarios-gestoria` | `HonorariosGestoria` |
+| 78 | `herramientas/entidades-bancarias` | `EntidadesBancarias` |
+| 79 | `herramientas/registros-propiedad` | `RegistrosPropiedad` |
+| 80 | `herramientas/oficinas-liquidadoras` | `OficinasLiquidadoras` |
+| 81 | `herramientas/acciones-expediente` | `AccionesExpediente` |
+| 82 | `herramientas/tipos-carga-hipotecaria` | `TiposCargaHipotecaria` |
+| 83 | `herramientas/tipos-concepto-gastos` | `TiposConceptoGastos` |
+| 84 | `herramientas/tipos-expediente` | `TiposExpediente` |
+| 85 | `herramientas/utilidades/crear-noticia` | `CrearNoticia` |
+| 86 | `herramientas/utilidades/subir-documento` | `SubirDocumento` |
+| 87 | `herramientas/mantenimiento-tecnico` | `MantenimientoTecnico` |
+| 88 | `herramientas/utilidades/cambiar-gestor` | `CambiarGestorExpediente` |
+| 89 | `herramientas/utilidades/reasignar-notario` | `ReasignarNotarioExpediente` |
+| 90 | `herramientas/utilidades/asignar-promociones` | `AsignarExpedientesPromociones` |
+| 91 | `logs` | `Logs` |
+| 92 | `notificaciones` | `Notificaciones` |
+| 93 | `/fusiones` | `Fusiones` |
+| 94 | `paneltecnico` | `PanelTecnico` |
+| 95 | `paneltecnico/monitor-sistema` | `MonitorSistema` |
+| 96 | `paneltecnico/monitor-realtime` | `MonitorRealtime` |
+| 97 | `maestros` | `Maestros` |
+| 98 | `paneltecnico/auditoria-avanzada` | `AuditoriaAvanzada` |
+| 99 | `paneltecnico/logs-avanzados` | `LogsAvanzados` |
+| 100 | `seguridad` | `Seguridad` |
+| 101 | `seguridad/usuarios` | `SeguridadUsuarios` |
+| 102 | `seguridad/roles` | `SeguridadRoles` |
+| 103 | `seguridad/modulos` | `SeguridadModulos` |
+| 104 | `seguridad/permisos` | `SeguridadPermisos` |
+| 105 | `seguridad/ficha/:id` | `SeguridadFicha` |
+| 106 | `seguridad/logs` | `SeguridadLogs` |
+| 107 | `seguridad/roles/editor` | `SeguridadRolEditor` |
+| 108 | `auditoria` | `SeguridadAuditoria` |
+| 109 | `seguridad/auditoria` | `SeguridadAuditoria` |
+| 110 | `*` | `Navigate` |
+
+**Límite de la matriz:** identifica el destino de navegación a nivel de componente. Las subpestañas, vistas internas, modales, formularios y estados de carga/error deben seguir auditándose dentro de cada componente y no se consideran rutas independientes.
