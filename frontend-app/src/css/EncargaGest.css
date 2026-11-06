@@ -12,13 +12,7 @@
   font-family: var(--molsan-font-family, Inter, ui-sans-serif, system-ui, sans-serif);
   background: var(--molsan-page-bg, #FFFFFF);
 }
-.encargagest .eg-main {
-  width: 100%;
-  max-width: none;
-  margin-left: 0;
-  margin-right: 0;
-  padding-top: 4px;
-}.encargagest .eg-kpi{min-width: 0; padding: 18px 19px 17px; overflow: hidden}.encargagest .eg-panel{min-width: 0; overflow: hidden}
+.encargagest .eg-kpi{min-width: 0; padding: 18px 19px 17px; overflow: hidden}.encargagest .eg-panel{min-width: 0; overflow: hidden}
 .encargagest .eg-panel-head {}
 .encargagest .eg-panel-head h2,
 .encargagest .eg-panel-head h3 { font-weight: 800; }
@@ -611,7 +605,7 @@
 
 /* Autoridad visual EncargaGest · MOLSAN ERP PREMIUM 2027 */
 .encargagest { --eg-ink:#17344B; --eg-blue:#064675; --eg-muted:#617789; --eg-border:#D8E4EC; --eg-soft:#F2F7FB; }
-.encargagest .eg-main { display:flex; flex-direction:column; gap:18px; width:100%; max-width:none; margin:0; padding:4px 0 24px; }
+
 .encargagest .eg-main > section { min-width:0; }
 .encargagest .eg-kpi {
   min-width:0; min-height:136px; padding:17px 18px; display:flex; flex-direction:column;
@@ -653,7 +647,7 @@
   border-color:rgba(255,255,255,.16)!important;
 }
 .encargagest .eg-modal-header :is(h2,h3,p,span),.encargagest .eg-perfil-cabecera :is(h2,h3,p,span) { color:#fff!important; }
-.encargagest .eg-modal-close { color:#fff!important; border-color:rgba(255,255,255,.3)!important; background:rgba(255,255,255,.12)!important; }
+
 .encargagest .eg-modal-section { border:1px solid var(--eg-border)!important; border-radius:14px!important; background:#fff!important; }
 .encargagest .eg-modal-section-icono { color:var(--eg-blue)!important; background:var(--eg-soft)!important; border-color:var(--eg-border)!important; }
 .encargagest :is(input,select,textarea):focus-visible { outline:3px solid rgba(6,70,117,.16)!important; outline-offset:1px; }
@@ -752,7 +746,7 @@
   background:rgba(255,255,255,.14);box-shadow:0 7px 18px rgba(0,20,35,.16),inset 0 1px 0 rgba(255,255,255,.22);
 }
 .encargagest .eg-modal-brand .molsan-icon-3d { width:40px!important;height:40px!important;color:#FFFFFF; }
-.encargagest .eg-modal-close { color:#FFFFFF!important;border-color:rgba(255,255,255,.32)!important;background:rgba(255,255,255,.12)!important; }
+
 .encargagest .eg-modal-footer {
   position:sticky;bottom:0;z-index:4;
   display:flex;align-items:center;justify-content:flex-end;gap:10px;
