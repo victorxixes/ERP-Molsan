@@ -708,16 +708,16 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       {accesoERP && esAdminNotarGest && (
         <section className="ng-admin-notarias molsan-professional-shell">
           {!tokenAdminNotaria ? <>
-            <header className="ng-hero ng-hero-notargest ng-admin-notarias-hero molsan-page-header">
-              <div className="ng-hero-identidad molsan-page-header__identity">
-                <div className="ng-hero-marca molsan-page-header__mark" aria-label="NotarGest"><MolsanIcon name="courthouse" size={34} tone="ocean" /></div>
+            <header className="molsan-page-header">
+              <div className="molsan-page-header__identity">
+                <div className="molsan-page-header__mark" aria-label="NotarGest"><MolsanIcon name="courthouse" size={34} tone="ocean" /></div>
                 <div>
-                  <div className="ng-hero-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+                  <div className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
                   <h1 className="molsan-page-header__title">NotarGest</h1>
                   <p className="molsan-page-header__description">Visión global del trabajo notarial y detalle operativo de cada notaría habilitada.</p>
                 </div>
               </div>
-              <div className="ng-hero-acciones molsan-page-header__actions">
+              <div className="molsan-page-header__actions">
                 <button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate("/modulos")}><MolsanIcon name="dashboard" size={22} tone="ocean" /> Ir a módulos</button>
               </div>
             </header>
@@ -818,16 +818,16 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="erp-page molsan-page molsan-professional-shell w-full notargest-workspace-premium">
             <div className="notargest ng-content">
-    <header className="ng-hero ng-hero-notargest molsan-page-header">
-      <div className="ng-hero-identidad molsan-page-header__identity">
-        <div className="ng-hero-marca molsan-page-header__mark" aria-label="NotarGest"><MolsanIcon name="courthouse" size={34} tone="ocean" /></div>
+    <header className="molsan-page-header">
+      <div className="molsan-page-header__identity">
+        <div className="molsan-page-header__mark" aria-label="NotarGest"><MolsanIcon name="courthouse" size={34} tone="ocean" /></div>
         <div>
-          <div className="ng-hero-eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+          <div className="molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</div>
           <h1 className="molsan-page-header__title">NotarGest</h1>
           <p className="molsan-page-header__description">Centro de gestión notarial, firmas y seguimiento registral.</p>
         </div>
       </div>
-      <div className="ng-hero-acciones molsan-page-header__actions">
+      <div className="molsan-page-header__actions">
         {vista !== "inicio" && <button type="button" onClick={volverVistaAnterior} className="ng-boton-secundario"><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> {vista === "detalle" ? "Volver a la vista anterior" : "Volver al inicio"}</button>}
         {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="molsan-btn molsan-btn--secondary inline-flex items-center gap-2"><MolsanIcon name="dashboard" size={22} tone="ocean" /> Ir a módulos</button>}
       </div>
