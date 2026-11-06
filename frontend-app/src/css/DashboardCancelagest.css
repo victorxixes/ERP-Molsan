@@ -9,22 +9,6 @@
   min-width: 0;
 }
 
-.dashboard-cancelagest .ag-hero {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 24px;
-  padding: 10px 4px 26px;
-}
-
-.dashboard-cancelagest .ag-hero-identidad {
-  display: flex;
-  align-items: center;
-  gap: 17px;
-  min-width: 0;
-}
-
 .dashboard-cancelagest .ag-marca {
   display: grid;
   flex: 0 0 62px;
@@ -48,31 +32,6 @@
   font-weight: 800;
   letter-spacing: 1.65px;
   line-height: 1.5;
-}
-
-.dashboard-cancelagest .ag-hero h1 {
-  margin: 5px 0 4px;
-  color: var(--molsan-text, #17243a);
-  font-size: clamp(26px, 3vw, 36px);
-  font-weight: 820;
-  letter-spacing: -1.3px;
-  line-height: 1.12;
-}
-
-.dashboard-cancelagest .ag-hero p {
-  max-width: 650px;
-  margin: 0;
-  color: var(--molsan-text-muted, #64748b);
-  font-size: 13px;
-  line-height: 1.65;
-}
-
-.dashboard-cancelagest .ag-hero-acciones {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 12px;
 }
 
 .dashboard-cancelagest .ag-fecha-actual {
@@ -126,26 +85,12 @@
 }
 
 @media (max-width: 640px) {
-  .dashboard-cancelagest .ag-hero {
-    align-items: flex-start;
-    padding-bottom: 18px;
-  }
-
-  .dashboard-cancelagest .ag-hero-identidad {
-    align-items: flex-start;
-    gap: 11px;
-  }
 
   .dashboard-cancelagest .ag-marca {
     flex-basis: 48px;
     width: 48px;
     height: 48px;
     border-radius: 12px;
-  }
-
-  .dashboard-cancelagest .ag-hero-acciones {
-    justify-content: flex-start;
-    width: 100%;
   }
 }
 
@@ -173,23 +118,6 @@
   color: var(--molsan-text-muted, var(--molsan-text-muted, #64748b));
   font-size: 10px;
   letter-spacing: 1.35px;
-}
-
-.dashboard-cancelagest .ag-hero h1 {
-  margin: 3px 0 4px;
-  font-size: clamp(25px, 2.3vw, 30px);
-  font-weight: 750;
-  letter-spacing: -.8px;
-  line-height: 1.2;
-}
-
-.dashboard-cancelagest .ag-hero p {
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.dashboard-cancelagest .ag-hero-acciones {
-  gap: 8px;
 }
 
 .dashboard-cancelagest .ag-fecha-actual {
@@ -268,10 +196,6 @@
     gap: 14px;
     margin-bottom: 18px;
     padding-bottom: 16px;
-  }
-
-  .dashboard-cancelagest .ag-hero-acciones {
-    gap: 8px;
   }
 
   .dashboard-cancelagest .ag-fecha-actual {
