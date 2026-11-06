@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import "./PanelTecnico.css";
 import { useAuthStore } from "../../store/authStore";
 import EmpleadosModulo2026 from "../empleados/EmpleadosModulo2026";
 import MonitorSistema from "./MonitorSistema";
