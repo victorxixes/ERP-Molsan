@@ -2,6 +2,7 @@ import React from "react";
 import MolsanIcon from "./MolsanIcon";
 
 const ICONOS_MARCA = {
+  CG: "dashboard",
   AG: "calendar",
   AP: "users",
   NG: "courthouse",
