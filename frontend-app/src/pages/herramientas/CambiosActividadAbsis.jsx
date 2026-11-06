@@ -62,63 +62,63 @@ export default function CambiosActividadAbsis() {
 
   return (
     <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <MolsanPageHeader mark="AB" title="Cambios de actividad ABSIS" description="Busca un expediente, selecciona la actividad de destino y registra la solicitud. La conexión y la confirmación de ABSIS se implementarán más adelante por informática." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>}/>
+      <MolsanPageHeader mark="AB" title="Cambios de actividad ABSIS" description="Busca un expediente, selecciona la actividad de destino y registra la solicitud. La conexión y la confirmación de ABSIS se implementarán más adelante por informática." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-[var(--molsan-primary)] hover:underline">← Volver a Utilidades</Link>}/>
 
-      <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <h2 className="text-base font-extrabold text-slate-900">1. Buscar expediente</h2>
-        <p className="mt-1 text-sm text-slate-500">Busca por número de expediente, solicitante, NIF o contrato. Los resultados que aparecen ahora son de ejemplo.</p>
+      <section className="rounded-3xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm sm:p-6">
+        <h2 className="text-base font-extrabold text-[var(--molsan-primary)]">1. Buscar expediente</h2>
+        <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Busca por número de expediente, solicitante, NIF o contrato. Los resultados que aparecen ahora son de ejemplo.</p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-          <input value={busqueda} onChange={(e) => { setBusqueda(e.target.value); setSeleccionado(null); setActividadDeseada(""); setMensaje(""); setError(""); }} placeholder="Escribe el número de expediente, solicitante, NIF o contrato…" className="min-w-0 flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" />
-          <button type="button" onClick={() => { setError(""); setMensaje(""); if (!busqueda.trim()) setError("Introduce un criterio de búsqueda."); else if (resultados.length === 0) setError("No hay coincidencias en los expedientes ficticios disponibles."); }} className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white hover:bg-slate-800">Buscar</button>
+          <input value={busqueda} onChange={(e) => { setBusqueda(e.target.value); setSeleccionado(null); setActividadDeseada(""); setMensaje(""); setError(""); }} placeholder="Escribe el número de expediente, solicitante, NIF o contrato…" className="min-w-0 flex-1 rounded-xl border border-[var(--molsan-border-strong)] px-4 py-3 text-sm outline-none focus:border-[var(--molsan-border-strong)] focus:ring-4 focus:ring-[var(--molsan-primary-soft)]" />
+          <button type="button" onClick={() => { setError(""); setMensaje(""); if (!busqueda.trim()) setError("Introduce un criterio de búsqueda."); else if (resultados.length === 0) setError("No hay coincidencias en los expedientes ficticios disponibles."); }} className="rounded-xl bg-[var(--molsan-primary)] px-5 py-3 text-sm font-bold text-white hover:bg-[var(--molsan-primary-hover)]">Buscar</button>
         </div>
         {resultados.length > 0 && (
-          <div className="mt-4 overflow-x-auto rounded-2xl border border-slate-200">
+          <div className="mt-4 overflow-x-auto rounded-2xl border border-[var(--molsan-border)]">
             <table className="w-full min-w-[620px] text-left text-sm">
-              <thead className="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500"><tr><th className="px-4 py-3">Expediente</th><th className="px-4 py-3">Solicitante</th><th className="px-4 py-3">Contrato</th><th className="px-4 py-3">Actividad actual</th><th className="px-4 py-3">Acción</th></tr></thead>
-              <tbody>{resultados.map((item) => <tr key={item.expediente} className="border-t border-slate-100"><td className="px-4 py-3 font-bold text-blue-700">{item.expediente}</td><td className="px-4 py-3 text-slate-700">{item.solicitante}</td><td className="px-4 py-3 text-slate-700">{item.contrato}</td><td className="px-4 py-3 text-slate-600">{item.actividad}</td><td className="px-4 py-3"><button type="button" onClick={() => seleccionar(item)} className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white hover:bg-blue-700">Seleccionar</button></td></tr>)}</tbody>
+              <thead className="bg-[var(--molsan-surface-soft)] text-[10px] uppercase tracking-wide text-[var(--molsan-text-secondary)]"><tr><th className="px-4 py-3">Expediente</th><th className="px-4 py-3">Solicitante</th><th className="px-4 py-3">Contrato</th><th className="px-4 py-3">Actividad actual</th><th className="px-4 py-3">Acción</th></tr></thead>
+              <tbody>{resultados.map((item) => <tr key={item.expediente} className="border-t border-[var(--molsan-border-light)]"><td className="px-4 py-3 font-bold text-[var(--molsan-primary)]">{item.expediente}</td><td className="px-4 py-3 text-[var(--molsan-text)]">{item.solicitante}</td><td className="px-4 py-3 text-[var(--molsan-text)]">{item.contrato}</td><td className="px-4 py-3 text-[var(--molsan-text-secondary)]">{item.actividad}</td><td className="px-4 py-3"><button type="button" onClick={() => seleccionar(item)} className="rounded-lg bg-[var(--molsan-primary)] px-3 py-2 text-xs font-bold text-white hover:bg-[var(--molsan-primary)]">Seleccionar</button></td></tr>)}</tbody>
             </table>
           </div>
         )}
-        <p className="mt-3 text-xs text-slate-500">Aviso: esta búsqueda es local y solo consulta una lista de demostración; no consulta la base de datos real.</p>
+        <p className="mt-3 text-xs text-[var(--molsan-text-secondary)]">Aviso: esta búsqueda es local y solo consulta una lista de demostración; no consulta la base de datos real.</p>
       </section>
 
       {seleccionado && (
-        <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-          <div className="border-b border-slate-200 bg-slate-50/80 p-5">
-            <h2 className="text-base font-extrabold text-slate-900">2. Revisar y solicitar cambio de actividad</h2>
-            <p className="mt-1 text-sm text-slate-500">Revisa los datos del expediente y selecciona la nueva actividad antes de enviar la solicitud de demostración.</p>
+        <section className="overflow-hidden rounded-3xl border border-[var(--molsan-border)] bg-white shadow-sm">
+          <div className="border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-5">
+            <h2 className="text-base font-extrabold text-[var(--molsan-primary)]">2. Revisar y solicitar cambio de actividad</h2>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Revisa los datos del expediente y selecciona la nueva actividad antes de enviar la solicitud de demostración.</p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1500px] text-left text-xs">
-              <thead className="bg-white text-[10px] uppercase tracking-wide text-slate-500"><tr>
-                {["Expediente", "Oficina", "Fecha Alta", "Solicitante", "NIF", "Contrato", "Finca", "Actividad Actual", "Actividad deseada", "Fecha de inicio", "Estado", "Fecha consolidado en ABSIS"].map((col) => <th key={col} className="border-b border-slate-200 px-3 py-3 font-extrabold">{col}</th>)}
+              <thead className="bg-white text-[10px] uppercase tracking-wide text-[var(--molsan-text-secondary)]"><tr>
+                {["Expediente", "Oficina", "Fecha Alta", "Solicitante", "NIF", "Contrato", "Finca", "Actividad Actual", "Actividad deseada", "Fecha de inicio", "Estado", "Fecha consolidado en ABSIS"].map((col) => <th key={col} className="border-b border-[var(--molsan-border)] px-3 py-3 font-extrabold">{col}</th>)}
               </tr></thead>
               <tbody><tr className="align-top">
-                <td className="border-b border-slate-100 px-3 py-4 font-extrabold text-blue-700">{seleccionado.expediente}</td>
-                <td className="border-b border-slate-100 px-3 py-4 text-slate-700">{seleccionado.oficina}</td>
-                <td className="border-b border-slate-100 px-3 py-4 whitespace-nowrap text-slate-700">{seleccionado.alta}</td>
-                <td className="border-b border-slate-100 px-3 py-4 text-slate-700">{seleccionado.solicitante}</td>
-                <td className="border-b border-slate-100 px-3 py-4 text-slate-700">{seleccionado.nif}</td>
-                <td className="border-b border-slate-100 px-3 py-4 text-slate-700">{seleccionado.contrato}</td>
-                <td className="border-b border-slate-100 px-3 py-4 text-slate-700">{seleccionado.finca}</td>
-                <td className="border-b border-slate-100 px-3 py-4 text-slate-700">{seleccionado.actividad}</td>
-                <td className="border-b border-slate-100 px-3 py-4 min-w-[200px]"><select value={actividadDeseada} onChange={(e) => setActividadDeseada(e.target.value)} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700"><option value="">Selecciona actividad…</option>{ACTIVIDADES.filter((a) => a !== seleccionado.actividad).map((a) => <option key={a} value={a}>{a}</option>)}</select></td>
-                <td className="border-b border-slate-100 px-3 py-4 whitespace-nowrap text-slate-700">{solicitudes[seleccionado.expediente]?.fechaInicio || "—"}</td>
-                <td className="border-b border-slate-100 px-3 py-4 whitespace-nowrap"><span className={`inline-flex rounded-full border px-2 py-1 font-bold ${solicitudes[seleccionado.expediente]?.estado === "Consolidado en ABSIS" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : solicitudes[seleccionado.expediente]?.estado === "Iniciado" ? "border-blue-200 bg-blue-50 text-blue-700" : "border-slate-200 bg-slate-50 text-slate-500"}`}>{solicitudes[seleccionado.expediente]?.estado || "Pendiente"}</span></td>
-                <td className="border-b border-slate-100 px-3 py-4 whitespace-nowrap text-slate-700">{fechaHoy(solicitudes[seleccionado.expediente]?.fechaConsolidacion)}</td>
+                <td className="border-b border-[var(--molsan-border-light)] px-3 py-4 font-extrabold text-[var(--molsan-primary)]">{seleccionado.expediente}</td>
+                <td className="border-b border-[var(--molsan-border-light)] px-3 py-4 text-[var(--molsan-text)]">{seleccionado.oficina}</td>
+                <td className="border-b border-[var(--molsan-border-light)] px-3 py-4 whitespace-nowrap text-[var(--molsan-text)]">{seleccionado.alta}</td>
+                <td className="border-b border-[var(--molsan-border-light)] px-3 py-4 text-[var(--molsan-text)]">{seleccionado.solicitante}</td>
+                <td className="border-b border-[var(--molsan-border-light)] px-3 py-4 text-[var(--molsan-text)]">{seleccionado.nif}</td>
+                <td className="border-b border-[var(--molsan-border-light)] px-3 py-4 text-[var(--molsan-text)]">{seleccionado.contrato}</td>
+                <td className="border-b border-[var(--molsan-border-light)] px-3 py-4 text-[var(--molsan-text)]">{seleccionado.finca}</td>
+                <td className="border-b border-[var(--molsan-border-light)] px-3 py-4 text-[var(--molsan-text)]">{seleccionado.actividad}</td>
+                <td className="border-b border-[var(--molsan-border-light)] px-3 py-4 min-w-[200px]"><select value={actividadDeseada} onChange={(e) => setActividadDeseada(e.target.value)} className="w-full rounded-lg border border-[var(--molsan-border-strong)] bg-white px-3 py-2 text-xs text-[var(--molsan-text)]"><option value="">Selecciona actividad…</option>{ACTIVIDADES.filter((a) => a !== seleccionado.actividad).map((a) => <option key={a} value={a}>{a}</option>)}</select></td>
+                <td className="border-b border-[var(--molsan-border-light)] px-3 py-4 whitespace-nowrap text-[var(--molsan-text)]">{solicitudes[seleccionado.expediente]?.fechaInicio || "—"}</td>
+                <td className="border-b border-[var(--molsan-border-light)] px-3 py-4 whitespace-nowrap"><span className={`inline-flex rounded-full border px-2 py-1 font-bold ${solicitudes[seleccionado.expediente]?.estado === "Consolidado en ABSIS" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : solicitudes[seleccionado.expediente]?.estado === "Iniciado" ? "border-[var(--molsan-border-strong)] bg-[var(--molsan-primary-soft)] text-[var(--molsan-primary)]" : "border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] text-[var(--molsan-text-secondary)]"}`}>{solicitudes[seleccionado.expediente]?.estado || "Pendiente"}</span></td>
+                <td className="border-b border-[var(--molsan-border-light)] px-3 py-4 whitespace-nowrap text-[var(--molsan-text)]">{fechaHoy(solicitudes[seleccionado.expediente]?.fechaConsolidacion)}</td>
               </tr></tbody>
             </table>
           </div>
-          <div className="flex flex-col gap-3 border-t border-slate-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 border-t border-[var(--molsan-border)] bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-3xl rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-5 text-amber-800"><strong>Aviso para informática:</strong> el botón debe conectarse a la API/script de ABSIS. Al enviar, registrar la fecha de inicio y el estado «Iniciado»; solo al recibir confirmación real de ABSIS cambiar a «Consolidado en ABSIS» y guardar la fecha de confirmación. En esta maqueta no se envía ninguna petición real.</div>
-            <button type="button" onClick={enviar} disabled={!actividadDeseada} className="shrink-0 rounded-xl bg-blue-600 px-6 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">Enviar a ABSIS</button>
+            <button type="button" onClick={enviar} disabled={!actividadDeseada} className="shrink-0 rounded-xl bg-[var(--molsan-primary)] px-6 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[var(--molsan-primary)] disabled:cursor-not-allowed disabled:opacity-50">Enviar a ABSIS</button>
           </div>
         </section>
       )}
 
       {error && <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</div>}
-      {mensaje && <div role="status" className="rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">{mensaje}</div>}
-      <section className="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-xs leading-5 text-slate-600">
+      {mensaje && <div role="status" className="rounded-2xl border border-[var(--molsan-border-strong)] bg-[var(--molsan-primary-soft)] px-4 py-3 text-sm font-medium text-[var(--molsan-primary)]">{mensaje}</div>}
+      <section className="rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-5 py-4 text-xs leading-5 text-[var(--molsan-text-secondary)]">
         <strong>Nota de implementación:</strong> la búsqueda, los expedientes, la fecha y los estados son ficticios y se guardan solo en memoria mientras la página está abierta. Informática deberá conectar la consulta con el origen real de expedientes ABSIS y desarrollar el envío y la confirmación para actualizar el estado automáticamente.
       </section>
     </main>
