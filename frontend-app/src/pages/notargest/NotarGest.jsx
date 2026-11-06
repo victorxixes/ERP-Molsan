@@ -513,9 +513,6 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
   const esDetalle = vista === "detalle" && detalle;
   const titulo = esDetalle ? `Expediente ${detalle.id_expediente}` : (bandejas.find(b => b.id === vista)?.titulo || ({ avisos_comentarios: "Observaciones del gestor", avisos_documentos: "Nueva documentación añadida" }[vista]) || (vista === "inicio" ? "Mis tareas pendientes" : vista === "documentacion" ? "Carpeta Digital" : "NotarGest"));
   const tablaFactura = vista === "factura";
-  const fechaActual = new Intl.DateTimeFormat("es-ES", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric",
-  }).format(new Date());
   const sidebarVista = vista === "inicio" ? "Dashboard" : ({
     recepcion: "Nuevos encargos",
     firma: "Pendientes de firma",
@@ -618,24 +615,6 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         notificationBadge={totalAvisosPendientes}
         onProfileClick={() => setPerfilNotarioAbierto(true)}
         onLogoutClick={salir}
-        headerActions={
-          <>
-            <div className="ng-sidebar-date" aria-label={`Fecha actual: ${fechaActual}`}>
-              <span className="ng-sidebar-live-dot" aria-hidden="true" />
-              <span>{fechaActual}</span>
-            </div>
-            <button
-              type="button"
-              className="ng-sidebar-refresh"
-              onClick={actualizarDatosSidebar}
-              disabled={cargando || cargandoSelectorNotaria}
-              aria-live="polite"
-            >
-              <MolsanIcon name="refresh" size={22} className={cargando || cargandoSelectorNotaria ? "ng-icono-girando" : ""} tone="ocean" />
-              {cargando || cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
-            </button>
-          </>
-        }
       />
       {notificacionesAbiertas && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setNotificacionesAbiertas(false); }}><section ref={avisosDialogRef} tabIndex={-1} className="ng-modal ng-modal-avisos" role="dialog" aria-modal="true" aria-labelledby="ng-avisos-titulo"><header><div><span className="ng-kicker">NOTARGEST · AVISOS</span><h2 id="ng-avisos-titulo">Notificaciones pendientes</h2><p>Documentos nuevos y observaciones del gestor vinculados a tus expedientes.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setNotificacionesAbiertas(false)}><MolsanIcon name="x" size={20} tone="ocean" /> Cerrar</button></header><div className="ng-modal-lista">{totalAvisosPendientes === 0 ? <div className="ng-modal-vacio"><strong>Todo al día</strong><p>No tienes notificaciones pendientes de leer.</p></div> : <>{avisosPendientes.documentos.map(item => <article className="ng-aviso-item" key={`documento:${item.id}`}><span className="ng-aviso-icono">PDF</span><div className="ng-aviso-contenido"><strong>Nuevo documento en expediente {item.id_expediente}</strong><p>{texto(item.nombre)} · {texto(item.categoria)}</p><small>{texto(item.oficina)} · {texto(item.fecha_subida)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("documento", item.id)}>Marcar como leída</button></div></div></article>)}{avisosPendientes.comentarios.map(item => <article className="ng-aviso-item" key={`comentario:${item.id}`}><span className="ng-aviso-icono ng-aviso-icono-observacion">!</span><div className="ng-aviso-contenido"><strong>Nueva observación · expediente {item.id_expediente}</strong><p>{texto(item.comentario)}</p><small>{texto(item.oficina)} · {texto(item.fecha)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("comentario", item.id)}>Marcar como leída</button></div></div></article>)}</>}</div></section></div>}
       {pagosAbiertos && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPagosAbiertos(false); }}>
@@ -728,7 +707,12 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
               mark="NG"
               title="NotarGest"
               description="Visión global del trabajo notarial y detalle operativo de cada notaría habilitada."
-              
+              actions={
+                <button type="button" className="ng-boton-secundario" onClick={actualizarDatosSidebar} disabled={cargandoSelectorNotaria} aria-live="polite">
+                  <MolsanIcon name="refresh" size={18} className={cargandoSelectorNotaria ? "ng-icono-girando" : ""} tone="ocean" />
+                  {cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
+                </button>
+              }
             />
             {cargandoSelectorNotaria && <p className="ng-mensaje">Calculando pendientes de las notarías…</p>}
             {!cargandoSelectorNotaria && notariasSeleccionables.length === 0 && <div className="ng-admin-vacio"><strong>No hay notarías habilitadas</strong><p>Activa el acceso NotarGest desde la ficha CTN de cada notaría.</p></div>}
@@ -843,7 +827,10 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       actions={
         <>
           {vista !== "inicio" && <button type="button" onClick={volverVistaAnterior} className="ng-boton-secundario"><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> {vista === "detalle" ? "Volver a la vista anterior" : "Volver al inicio"}</button>}
-          
+          <button type="button" className="ng-boton-secundario" onClick={actualizarDatosSidebar} disabled={cargando || cargandoSelectorNotaria} aria-live="polite">
+            <MolsanIcon name="refresh" size={18} className={cargando || cargandoSelectorNotaria ? "ng-icono-girando" : ""} tone="ocean" />
+            {cargando || cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
+          </button>
         </>
       }
     />
