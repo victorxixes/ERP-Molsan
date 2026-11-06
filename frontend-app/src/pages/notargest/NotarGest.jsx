@@ -533,26 +533,6 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     setVista(destinos[label] || "inicio");
   };
 
-  const actualizarDatosSidebar = async () => {
-    if (accesoERP && esAdminNotarGest && !tokenAdminNotaria) {
-      setCargandoSelectorNotaria(true);
-      setError("");
-      try {
-        const response = await fetch(API_BASE + "/notargest/seleccion/notarias", {
-          headers: { Authorization: "Bearer " + tokenERP },
-        });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(data.detail || "No se ha podido actualizar el resumen de notarías.");
-        setNotariasSeleccionables(Array.isArray(data) ? data : []);
-      } catch (e) {
-        setError(e.message || "No se ha podido actualizar el resumen de notarías.");
-      } finally {
-        setCargandoSelectorNotaria(false);
-      }
-      return;
-    }
-    await cargar();
-  };
 
   if (accesoERP && !esAdminNotarGest) {
     return (
