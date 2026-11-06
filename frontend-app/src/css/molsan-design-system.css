@@ -1016,3 +1016,5 @@
 }
 @media (prefers-reduced-motion:reduce) {
   .molsan-stat-card,.molsan-stat-card * { transition:none !important; }
+  .molsan-stat-card.is-interactive:hover { transform:none; }
+}
