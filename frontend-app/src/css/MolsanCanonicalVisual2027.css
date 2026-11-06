@@ -9,6 +9,7 @@
 :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero) {
   box-sizing: border-box !important;
   width: 100% !important;
+  max-width: none !important;
   min-width: 0 !important;
   min-height: var(--molsan-canon-header-height) !important;
   margin: 0 0 20px !important;
