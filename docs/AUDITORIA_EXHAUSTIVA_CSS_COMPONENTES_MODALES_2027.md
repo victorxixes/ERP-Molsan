@@ -1313,3 +1313,127 @@ Se ha completado la incidencia estructural identificada en la sección 25:
 - Se retiraron de `NotarGest.css` los estilos obsoletos `.ng-sidebar-date`, `.ng-sidebar-live-dot` y `.ng-sidebar-refresh`. Se conserva `.ng-icono-girando`, que ahora utilizan las acciones reubicadas.
 
 **Comprobación estática posterior:** las cuatro clases/variables de la cabecera lateral antigua (`fechaActual`, `.ng-sidebar-date`, `.ng-sidebar-live-dot`, `.ng-sidebar-refresh`) ya no aparecen ni en el JSX ni en la hoja CSS. `actualizarDatosSidebar` sigue teniendo sus dos puntos de invocación (cabecera principal y cabecera global) además de su definición; `.ng-icono-girando` sigue teniendo consumidores JSX y regla CSS. La comprobación no sustituye build, navegación ni prueba visual autenticada, que continúan pendientes.
+
+
+## 28. Reconciliación de cobertura de ficheros frontend — 6 de noviembre de 2026
+
+Se ha contrastado el árbol completo de `frontend-app/src` de esta rama con el contenido de esta auditoría y con el inventario de rutas:
+
+- Árbol actual: **241 ficheros** bajo `frontend-app/src`: 143 JSX, 57 JS y 41 CSS.
+- Las **41 hojas CSS** tienen registrada una pasada estática de llaves, bloques vacíos y selectores repetidos (sección 45). Esto no equivale a validar visualmente todas sus reglas ni todos los estados.
+- El inventario `docs/INVENTARIO_RUTAS_FRONTEND_2027.md` registra 110 declaraciones Route y 91 componentes de destino distintos. La matriz ruta → componente está hecha; no certifica por sí sola todas las subpáginas, pestañas, estados y modales.
+- La PR #409 contiene 103 ficheros cambiados, 97 bajo `frontend-app/src` (40 JSX/TSX y 57 CSS según el recuento documentado en la sección 49). Los restantes ficheros del árbol no se deben considerar automáticamente revisados por el hecho de que la PR sea amplia.
+- La búsqueda de trazabilidad por nombre de fichero en esta auditoría encuentra referencias explícitas a 45 de los 143 JSX. Quedan **98 JSX sin una referencia individual inequívoca por nombre en el documento**. Esto es una lista de cobertura documental pendiente, no una afirmación de que ninguno haya sido leído durante las sesiones anteriores.
+
+### JSX sin trazabilidad individual explícita en esta auditoría
+
+**Componentes compartidos, layout, autenticación y utilidades**
+- `components/AuthenticatedPhoto.jsx`
+- `components/PortalLogin.jsx`
+- `components/Sidebar.jsx`
+- `components/SidebarPerfilModal.jsx`
+- `components/agenda/AgendaToast.jsx`
+- `components/agenda/AutocompleteNotario.jsx`
+- `components/auth/RequireAuth.jsx`
+- `components/auth/RequireModule.jsx`
+- `components/ctn/PortalAccessTabs.jsx`
+- `components/expedientes/ProvisionesLauncher.jsx`
+- `components/expedientes/ProvisionesModal.jsx`
+- `components/expedientes/VisibilidadTablas.jsx`
+- `components/informes/InformeApoderado.jsx`
+- `components/intranet/DocumentosTable.jsx`
+- `components/intranet/NoticiasFeed.jsx`
+- `components/layout/NotificacionesBadge.jsx`
+- `components/logs/TablaLogs.jsx`
+- `components/mensajes/MensajeBubble.jsx`
+- `components/mensajes/MensajesHeader.jsx`
+- `components/notificaciones/NotificacionesToast.jsx`
+- `components/realtime/RealtimeGlobal.jsx`
+- `components/ui/MolsanDetailField.jsx`
+- `components/ui/MolsanSortableTh.jsx`
+- `components/ui/MolsanStatCard.jsx`
+- `components/ui/SelectSJ.jsx`
+- `context/AuthContext.jsx`
+- `icons/IconCalendar.jsx`
+- `icons/IconClock.jsx`
+- `icons/IconMonth.jsx`
+- `icons/IconWeek.jsx`
+
+**Páginas y módulos**
+- `pages/LoginPage.jsx`
+- `pages/ModuloPendiente.jsx`
+- `pages/ModulosSelector.jsx`
+- `pages/agenda/VistaDia.jsx`
+- `pages/agenda/VistaMes.jsx`
+- `pages/agenda/VistaSemana.jsx`
+- `pages/apoderagest/ControlApoderados.jsx`
+- `pages/ctn/Ctn.jsx`
+- `pages/dashboard/Dashboard.jsx`
+- `pages/empleados/EmpleadoEditar.jsx`
+- `pages/empleados/EmpleadoFicha.jsx`
+- `pages/empleados/EmpleadoPerfil.jsx`
+- `pages/empleados/EmpleadosModulo2026.jsx`
+- `pages/expedientes/FichaExpedienteDemo.jsx`
+- `pages/fichajes/DocumentosAdmin.jsx`
+- `pages/fichajes/FestivosCompensaciones.jsx`
+- `pages/fichajes/Fichajes.jsx`
+- `pages/fichajes/FichajesResumen.jsx`
+- `pages/fichajes/SolicitudesAusencia.jsx`
+- `pages/fusiones/Fusiones.jsx`
+- `pages/herramientas/AdministracionEmpleadoConfig.jsx`
+- `pages/herramientas/AltaExpediente.jsx`
+- `pages/herramientas/AsignarExpedientesPromociones.jsx`
+- `pages/herramientas/CambiarGestorExpediente.jsx`
+- `pages/herramientas/CambiosActividadAbsis.jsx`
+- `pages/herramientas/CatalogoAbsis.jsx`
+- `pages/herramientas/CatalogoFichajes.jsx`
+- `pages/herramientas/CatalogoOficinas.jsx`
+- `pages/herramientas/ComplementosSaldo.jsx`
+- `pages/herramientas/CorrespondenciaTipificada.jsx`
+- `pages/herramientas/CrearNoticia.jsx`
+- `pages/herramientas/DatosMolsan.jsx`
+- `pages/herramientas/FirmasEmail.jsx`
+- `pages/herramientas/HonorariosGestoria.jsx`
+- `pages/herramientas/ImportacionesDatos.jsx`
+- `pages/herramientas/ImportadorPostFirma.jsx`
+- `pages/herramientas/ImportarCTN.jsx`
+- `pages/herramientas/LecturaCancelaI.jsx`
+- `pages/herramientas/LecturaCopias.jsx`
+- `pages/herramientas/MantenimientoTecnico.jsx`
+- `pages/herramientas/ModelosDocumentos.jsx`
+- `pages/herramientas/Municipios.jsx`
+- `pages/herramientas/OficinasLiquidadoras.jsx`
+- `pages/herramientas/PPAD.jsx`
+- `pages/herramientas/ProcesoAbsis.jsx`
+- `pages/herramientas/ReasignarNotarioExpediente.jsx`
+- `pages/herramientas/RegistrosPropiedad.jsx`
+- `pages/herramientas/ReglasActividadesExpediente.jsx`
+- `pages/herramientas/SubirDocumento.jsx`
+- `pages/herramientas/TiposConceptoGastos.jsx`
+- `pages/herramientas/TiposImpositivos.jsx`
+- `pages/herramientas/Verifacti.jsx`
+- `pages/herramientas/importador_absis.jsx`
+- `pages/intranet/Intranet.jsx`
+- `pages/maestros/Maestros.jsx`
+- `pages/mensajeria/MensajeriaProveedores.jsx`
+- `pages/mensajes/Mensajes.jsx`
+- `pages/notificaciones/Notificaciones.jsx`
+- `pages/paneltecnico/MonitorRealtime.jsx`
+- `pages/paneltecnico/PanelTecnico.jsx`
+- `pages/seguridad/Seguridad.jsx`
+- `pages/seguridad/SeguridadFicha.jsx`
+- `pages/seguridad/SeguridadModulos.jsx`
+- `pages/seguridad/SeguridadPermisos.jsx`
+- `pages/seguridad/SeguridadResumen.jsx`
+- `pages/seguridad/SeguridadRolEditor.jsx`
+- `pages/seguridad/SeguridadRoles.jsx`
+- `pages/seguridad/SeguridadUsuarios.jsx`
+
+### Qué falta para poder declarar cierre
+
+1. Reconciliar estos 98 JSX con la memoria de revisión y comprobar especialmente los componentes compartidos que afectan a todas las rutas: Sidebar, MolsanStatCard, MolsanDetailField, MolsanSortableTh, SelectSJ, autenticación, notificaciones y layouts.
+2. Verificar que los 91 destinos de ruta quedan cubiertos por la revisión de componentes; incluir las vistas secundarias de Agenda, Fichajes, Seguridad y Herramientas que no tengan evidencia explícita.
+3. Ejecutar build sobre el HEAD actual y pruebas de navegación/modal/responsive en Preview. Para el HEAD actual `a2b042a8ccd1f0f0340cb06c84582c23cef45564`, GitHub no devuelve ejecuciones de workflow ni checks asociados. No se declara build ni despliegue de este HEAD.
+4. La revisión visual autenticada de todas las rutas no está certificada por la auditoría estática. No se marca como terminada por extrapolación desde un build anterior.
+
+**Conclusión de cobertura:** el inventario de rutas y el barrido estático de las 41 hojas CSS están documentados; la revisión individual de todos los JSX no puede darse por cerrada con la evidencia documental actual. Esta sección deja identificados los 98 ficheros cuya revisión necesita trazabilidad explícita, sin afirmar que el trabajo previo sobre ellos no haya existido.
