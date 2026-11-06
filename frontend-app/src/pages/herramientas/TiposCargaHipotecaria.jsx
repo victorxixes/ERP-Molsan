@@ -1,7 +1,9 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import React, {
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 // ============================================================
@@ -115,6 +117,8 @@ export default function TiposCargaHipotecaria() {
     mostrarModal,
     setMostrarModal,
   ] = useState(false);
+  const tipoCargaDialogRef = useRef(null);
+  useAccessibleDialog({ open: mostrarModal, onClose: cerrarModal, dialogRef: tipoCargaDialogRef });
 
   const [
     modoEdicion,
@@ -1149,6 +1153,11 @@ export default function TiposCargaHipotecaria() {
         >
 
           <div
+            ref={tipoCargaDialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Formulario de tipo de carga hipotecaria"
             className="
               w-full
               max-w-xl

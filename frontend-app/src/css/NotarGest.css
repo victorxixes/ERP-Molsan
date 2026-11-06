@@ -30,7 +30,9 @@
   max-width: none;
   min-width: 0;
   margin: 0;
-  padding: 22px 26px 30px;
+  /* El wrapper de NotarGest ya aporta el gutter común (px-4/py-6 y lg:px-6).
+     Evita sumar un segundo margen interior frente a ApoderaGest y EncargaGest. */
+  padding: 0;
   color: var(--ng-text);
   background: transparent;
   font-family: var(--molsan-font-family, Inter, ui-sans-serif, system-ui, sans-serif);
@@ -72,10 +74,6 @@
 .ng-admin-resumen-principal,
 .ng-admin-resumen {
   min-width: 0;
-  border: 1px solid var(--ng-border, #D8E4EC);
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 6px 18px rgba(6,50,82,.05);
 }
 .ng-dashboard-grafico { display: flex; flex-direction: column; gap: 14px; padding: 18px; }
 .ng-bloque-heading,
@@ -89,8 +87,8 @@
   min-width: 0;
   padding: 14px 17px;
   color: var(--ng-primary, #064675);
-  border-bottom: 1px solid var(--ng-border, #D8E4EC);
-  background: var(--ng-soft, #F2F7FB);
+  border: 0;
+  background: transparent;
 }
 .ng-dashboard-grafico > .ng-bloque-heading { margin: -18px -18px 0; }
 .ng-bloque-heading h3,
@@ -120,17 +118,12 @@
 .ng-dashboard-economica { min-width: 0; }
 .ng-dashboard-etapas { min-width: 0; }
 .ng-dashboard-hitos { min-width: 0; }
-.ng-dashboard-ciclo { min-width: 0; }
-.ng-dashboard-kpis { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
-.ng-dashboard-kpis article { min-width: 0; padding: 16px; }
-.ng-dashboard-kpis strong { display: block; color: var(--ng-primary); font-size: 25px; font-weight: 850; font-variant-numeric: tabular-nums; }
-.ng-dashboard-kpis small { color: var(--ng-muted); font-size: 11px; }
 .ng-barras-meses { display: flex; align-items: flex-end; justify-content: space-around; gap: 12px; min-height: 150px; padding: 8px 4px 0; }
 .ng-barra-mes { display: flex; flex: 1; flex-direction: column; align-items: center; gap: 7px; min-width: 0; color: var(--ng-muted); font-size: 10px; }
 .ng-barra-mes strong { color: var(--ng-primary); font-size: 11px; font-variant-numeric: tabular-nums; }
 .ng-barra-pista { display: flex; align-items: flex-end; width: min(100%,34px); height: 94px; overflow: hidden; border-radius: 7px; background: var(--ng-table-head); }
 .ng-barra-pista span { display: block; width: 100%; min-height: 0; border-radius: 7px 7px 0 0; background: linear-gradient(180deg,#0D638C,#064675); }
-.ng-pagos-resumen { display: flex; flex-direction: column; gap: 12px; padding: 14px; border: 1px solid var(--ng-border); border-radius: 12px; background: #F8FBFD; }
+.ng-pagos-resumen { display: flex; flex-direction: column; gap: 12px; padding: 14px 0; border: 0; border-radius: 0; background: transparent; }
 .ng-pagos-resumen p { margin: 0; color: var(--ng-muted); font-size: 11px; }
 .ng-barras-pagos,.ng-barras-medias { display: flex; flex-direction: column; gap: 11px; }
 .ng-media-row { display: grid; grid-template-columns: minmax(120px,.8fr) minmax(0,1.2fr); align-items: center; gap: 12px; }
@@ -152,39 +145,37 @@
 .ng-admin-global-total { flex: 0 0 auto; padding: 7px 11px; color: var(--ng-primary); border: 1px solid var(--ng-border); border-radius: 999px; background: #fff; font-size: 11px; font-weight: 800; }
 .ng-admin-kpis { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; padding: 16px; }
 .ng-admin-kpis-global { grid-template-columns: repeat(5,minmax(0,1fr)); }
-.ng-admin-kpi-button {
+.ng-admin-notarias-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
+.ng-admin-notaria-card {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 9px;
-  min-width: 0;
-  min-height: 142px;
-  padding: 16px;
+  gap: 14px;
+  padding: 18px;
   text-align: left;
-  color: var(--ng-text);
-  border: 1px solid var(--ng-border);
-  border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(6,50,82,.04);
   cursor: pointer;
   transition: transform .18s ease,border-color .18s ease,box-shadow .18s ease;
 }
-.ng-admin-kpi-button > span { color: var(--ng-muted); font-size: 11px; font-weight: 750; line-height: 1.4; }
-.ng-admin-kpi-button > strong { margin-top: auto; color: var(--ng-primary); font-size: clamp(24px,2vw,32px); font-weight: 850; line-height: 1; font-variant-numeric: tabular-nums; }
-.ng-admin-kpi-button > small { color: var(--ng-primary); font-size: 10px; font-weight: 800; }
-
-.ng-admin-notarias-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
-.ng-admin-notaria-card { display: flex; flex-direction: column; gap: 14px; padding: 18px; text-align: left; cursor: pointer; transition: transform .18s ease,border-color .18s ease,box-shadow .18s ease; }
 .ng-admin-notaria-activa { border-color: var(--ng-primary,#064675); background: #F2F7FB; }
 .ng-admin-notaria-identidad { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.ng-admin-notaria-icono { display: grid; flex: 0 0 42px; place-items: center; width: 42px; height: 42px; color: var(--ng-primary); border: 1px solid var(--ng-border); border-radius: 11px; background: var(--ng-soft); }
+.ng-admin-notaria-icono {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  place-items: center;
+  color: var(--ng-primary);
+  border: 1px solid #D8E4EC;
+  border-radius: 15px;
+  background: linear-gradient(145deg,#FFFFFF,#EAF2F8);
+  box-shadow: 0 5px 14px rgba(6,50,82,.09);
+}
 .ng-admin-notaria-titulo { min-width: 0; color: var(--ng-primary); font-size: 13px; font-weight: 800; overflow-wrap: anywhere; }
 .ng-admin-metricas { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
-.ng-admin-metricas > div { padding: 9px; border: 1px solid var(--ng-border); border-radius: 10px; background: #F8FBFD; }
+.ng-admin-metricas > div { min-width: 0; padding: 8px 0; border: 0; border-radius: 0; background: transparent; }
 .ng-admin-metricas strong { display: block; color: var(--ng-primary); font-size: 18px; font-weight: 850; }
 .ng-admin-metricas small { color: var(--ng-muted); font-size: 10px; }
 .ng-admin-circuitos { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
-.ng-admin-circuito { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 12px; border: 1px solid var(--ng-border); border-radius: 12px; background: #fff; }
+.ng-admin-circuito { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 10px 0; border: 0; border-radius: 0; background: transparent; }
 .ng-admin-circuito-icono { display: grid; flex: 0 0 34px; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: var(--ng-soft); color: var(--ng-primary); }
 .ng-admin-circuito-icono-fiscal { background: #FDF6E8; color: #986515; }
 .ng-admin-circuito-titulo { color: var(--ng-text); font-size: 11px; font-weight: 750; }
@@ -193,12 +184,13 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 5px;
+  min-width: 0;
   margin: 0 0 16px;
-  padding: 14px 18px;
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: 14px;
-  background: linear-gradient(135deg, #FFFFFF 0%, #F2F7FB 100%);
-  box-shadow: 0 8px 20px rgba(6, 70, 117, .06);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 .ng-admin-individual-titulo .ng-admin-global-eyebrow {
   margin: 0;
@@ -231,10 +223,7 @@
 .ng-panel { overflow: hidden; }
 .ng-panel-titulo { min-height: 58px; }
 .ng-panel-titulo h2 { margin: 0; }
-.ng-panel-titulo .ng-volver { margin-left: auto; }
-.ng-panel-titulo:has(.ng-volver) { flex-wrap: wrap; }
-.ng-volver { display: inline-flex; align-items: center; gap: 7px; margin-left: auto; color: var(--ng-primary); border: 0; background: transparent; font-size: 11px; font-weight: 800; cursor: pointer; }
-.ng-filtros { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; padding: 14px 17px; color: var(--ng-muted); border-bottom: 1px solid var(--ng-border); background: #fff; }
+.ng-filtros { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; padding: 14px 17px; color: var(--ng-muted); border:0; border-bottom:0; background:#FFFFFF; }
 .ng-filtros label { display: flex; flex: 1; flex-direction: column; gap: 6px; color: var(--ng-muted); font-size: 11px; font-weight: 750; }
 .ng-filtros input,
 .ng-workflow-form input,
@@ -279,7 +268,7 @@
 
 /* Ficha de expediente y carpeta digital */
 .ng-ficha { min-width: 0; }
-.ng-ficha-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--ng-border); background: var(--ng-soft); }
+.ng-ficha-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; border:0; border-bottom:0; background:#FFFFFF; }
 .ng-ficha-cabecera small { color: var(--ng-muted); font-size: 10px; }
 .ng-ficha-cuerpo,.ng-ficha-premium { display: flex; flex-direction: column; gap: 16px; min-width: 0; padding: 18px; }
 .ng-ficha-premium > .ng-detalle-bloque { margin: 0; padding: 18px; }
@@ -317,7 +306,7 @@
 .ng-carpeta-layout { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(300px,.9fr); align-items: stretch; gap: 16px; }
 .ng-carpeta-categorias { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .ng-categoria-documental { overflow: hidden; border: 1px solid var(--ng-border); border-radius: 12px; background: #fff; }
-.ng-categoria-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 13px; border-bottom: 1px solid var(--ng-border); background: var(--ng-soft); }
+.ng-categoria-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 13px; border:0; border-bottom:0; background:#FFFFFF; }
 .ng-categoria-heading > div { display: flex; flex-direction: column; gap: 3px; }
 .ng-categoria-heading strong { color: var(--ng-primary); font-size: 11px; }
 .ng-categoria-heading small { color: var(--ng-muted); font-size: 10px; }
@@ -330,7 +319,7 @@
 .ng-archivo-info strong { color: var(--ng-text); font-size: 11px; overflow-wrap: anywhere; }
 .ng-archivo-info small { color: var(--ng-muted); font-size: 10px; }
 .ng-visor-documentos { display: flex; flex-direction: column; min-width: 0; min-height: 480px; overflow: hidden; border: 1px solid var(--ng-border); border-radius: 12px; background: #F8FBFD; }
-.ng-visor-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--ng-border); background: #fff; }
+.ng-visor-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border:0; border-bottom:0; background:#FFFFFF; }
 .ng-visor-cabecera > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .ng-visor-cabecera strong { color: var(--ng-primary); font-size: 11px; }
 .ng-visor-cabecera small { color: var(--ng-muted); font-size: 10px; overflow-wrap: anywhere; }
@@ -362,10 +351,6 @@
   min-width: 0;
   overflow: hidden;
   color: var(--ng-text);
-  border: 1px solid var(--ng-border);
-  border-radius: 17px;
-  background: #fff;
-  box-shadow: 0 24px 70px rgba(3,32,52,.24);
 }
 .ng-modal > header,.ng-resumen-expedientes-modal > header {
   display: flex;
@@ -373,8 +358,6 @@
   justify-content: space-between;
   gap: 16px;
   padding: 18px 20px;
-  border-bottom: 1px solid var(--ng-border);
-  background: var(--ng-soft);
 }
 .ng-modal > header h2,.ng-resumen-expedientes-modal > header h2 { margin: 0; color: var(--ng-primary); font-size: 17px; font-weight: 850; }
 .ng-modal > header p,.ng-resumen-expedientes-modal > header p { margin: 5px 0 0; color: var(--ng-muted); font-size: 11px; }
@@ -430,14 +413,13 @@
 }
 @media (max-width: 900px) {
   .notargest.ng-content,.ng-admin-notarias { padding: 16px; }
-  .ng-dashboard-graficos,.ng-dashboard-graficos-tres-columnas { grid-template-columns: repeat(2,minmax(0,1fr)); }
-  .ng-dashboard-kpis,.ng-admin-kpis { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .ng-dashboard-graficos,.ng-dashboard-graficos-tres-columnas { grid-template-columns: repeat(2,minmax(0,1fr)); }.ng-admin-kpis { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .ng-datos-superiores,.ng-documentacion-layout,.ng-carpeta-layout { grid-template-columns: minmax(0,1fr); }
   .ng-visor-documentos { min-height: 380px; }
 }
 @media (max-width: 640px) {
   .notargest.ng-content,.ng-admin-notarias { gap: 13px; padding: 12px; }
-  .ng-dashboard-graficos,.ng-dashboard-graficos-tres-columnas,.ng-dashboard-kpis,
+  .ng-dashboard-graficos,.ng-dashboard-graficos-tres-columnas,
   .ng-admin-kpis,.ng-admin-kpis-global,.ng-admin-notarias-grid,.ng-admin-circuitos { grid-template-columns: 1fr; }
   .ng-dashboard-grafico { padding: 13px; }
   .ng-dashboard-grafico > .ng-bloque-heading { margin: -13px -13px 0; }
@@ -451,77 +433,15 @@
   .ng-archivo-row { align-items: flex-start; flex-wrap: wrap; }
   .ng-archivo-row .ng-boton-secundario { margin-left: 42px; }
   .ng-modal-overlay,.ng-resumen-expedientes-overlay { align-items: flex-start; padding: 10px; }
-  .ng-modal,.ng-resumen-expedientes-modal { width: 100%; max-height: calc(100dvh - 20px); border-radius: 13px; }
+  .ng-modal,.ng-resumen-expedientes-modal { width: 100%; max-height: calc(100dvh - 20px); }
   .ng-modal > header,.ng-resumen-expedientes-modal > header { padding: 14px; }
   .ng-modal-pagos,.ng-modal-pagos-amplio,.ng-modal-perfil { width: 100%; }
   .ng-ficha-cuerpo,.ng-ficha-premium { padding: 10px; gap: 12px; }
   .ng-detalle-bloque,.ng-ficha-premium > .ng-detalle-bloque { padding: 12px; }
   .ng-media-row { grid-template-columns: 1fr; gap: 6px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .ng-admin-kpi-button,.ng-admin-notaria-card { transition: none; }
-}
-
-
-/* Iconografía de cabecera centralizada en MolsanIcon y estilos comunes. */
-.ng-admin-kpi-button {
-  display:flex;
-  min-height:190px;
-  flex-direction:column;
-  align-items:flex-start;
-  gap:11px;
-  padding:17px;
-  text-align:left;
-  border:1px solid #D8E4EC;
-  border-radius:16px;
-  background:linear-gradient(155deg,#FFFFFF 0%,#F7FAFC 100%);
-  box-shadow:0 7px 20px rgba(6,50,82,.065),inset 0 1px 0 #FFFFFF;
-}
-.ng-admin-kpi-button > .molsan-icon-3d {
-  display:grid;
-  width:52px!important;
-  height:52px!important;
-  flex:0 0 52px;
-  place-items:center;
-  border:1px solid #D8E4EC;
-  border-radius:15px;
-  background:linear-gradient(145deg,#FFFFFF 0%,#EAF2F8 100%);
-  box-shadow:0 6px 15px rgba(6,50,82,.10),inset 0 1px 0 #FFFFFF;
-}
-.ng-admin-kpi-button > .molsan-icon-3d svg { filter:drop-shadow(0 2px 3px rgba(6,50,82,.16)); }
-.ng-admin-kpi-button > span { min-height:32px; }
-.ng-admin-kpi-button > strong { margin-top:auto; }
-.ng-admin-kpi-button > small { display:flex;align-items:center;gap:6px; }
-.ng-admin-notaria-card {
-  border:1px solid #D8E4EC;
-  border-radius:17px;
-  background:#FFFFFF;
-  box-shadow:0 7px 20px rgba(6,50,82,.055);
-}
-.ng-admin-notaria-icono {
-  display:grid;
-  width:54px;height:54px;flex:0 0 54px;
-  place-items:center;
-  border:1px solid #D8E4EC;
-  border-radius:15px;
-  background:linear-gradient(145deg,#FFFFFF,#EAF2F8);
-  box-shadow:0 5px 14px rgba(6,50,82,.09);
-}
-.ng-modal-overlay,.ng-resumen-expedientes-overlay { z-index:1200; }
-.ng-modal,.ng-resumen-expedientes-modal {
-  border:1px solid #D8E4EC;
-  border-radius:18px;
-  box-shadow:0 24px 70px rgba(3,32,52,.24);
-}
-.ng-modal > header,.ng-resumen-expedientes-modal > header {
-  background:#F2F7FB;
-  border-bottom:1px solid #D8E4EC;
-}
 .ng-modal :is(input,select,textarea),.ng-resumen-expedientes-modal :is(input,select,textarea) {
   max-width:100%;min-width:0;box-sizing:border-box;
-}
-@media(max-width:640px) {
-  .ng-admin-kpi-button { min-height:150px; }
 }
 
 /* Detalle por notaría: título y fichas comparten una única superficie. */
@@ -529,16 +449,11 @@
   min-width: 0;
   margin: 0 0 18px;
   padding: 16px;
-  border: 1px solid var(--molsan-border, #D8E4EC);
-  border-radius: 18px;
-  background: #FFFFFF;
-  box-shadow: 0 8px 22px rgba(6, 70, 117, .055);
 }
 .ng-admin-individual-panel > .ng-admin-individual-titulo {
   margin: 0 0 14px;
-  padding: 0 0 12px;
+  padding: 0;
   border: 0;
-  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: 0;
   background: transparent;
   box-shadow: none;
@@ -566,17 +481,6 @@
   gap:12px;
 }
 
-/* Cabecera unificada: estructura y aspecto definidos por MolsanPageHeader. */
-
-.notargest.ng-content .ng-dashboard-kpi,
-.notargest.ng-content .ng-kpi-card {
-
-  position:relative;display:flex;flex-direction:column;align-items:flex-start;
-  justify-content:space-between;gap:9px;min-width:0;min-height:136px;
-  margin:0;padding:17px 18px;color:var(--molsan-prof-text);
-  text-align:left;
-}
-
 .notargest.ng-content .ng-panel,
 .notargest.ng-content .ng-dashboard-grafico,
 .notargest.ng-content .ng-detalle-bloque {
@@ -590,8 +494,7 @@
 
   display:flex;align-items:center;justify-content:space-between;gap:12px;
   margin:0;padding:16px 19px;color:var(--molsan-prof-blue);
-  border:0;border-bottom:1px solid var(--molsan-prof-border);border-radius:0;
-  background:var(--molsan-prof-soft);
+  border:0;border-bottom:0;border-radius:0;background:#FFFFFF;
 }
 
 .notargest.ng-content .ng-panel-titulo h2,
@@ -630,7 +533,7 @@ background:linear-gradient(180deg,#0D638C,#064675)}
 
 .notargest.ng-content .ng-ficha-cuerpo,
 .notargest.ng-content .ng-ficha-premium {
-background:var(--molsan-prof-soft)}
+background:#FFFFFF}
 
 .notargest.ng-content .ng-dato,
 .notargest.ng-content .ng-documento,
@@ -648,23 +551,18 @@ flex-shrink:0}
   background:rgba(3,28,46,.58);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
 }
 
-.notargest .ng-modal {
-
-  color:var(--molsan-prof-text);border:1px solid var(--molsan-prof-border);
-  border-radius:18px;background:#fff;box-shadow:0 24px 64px rgba(3,28,46,.24);
-}
+.notargest .ng-modal { color:var(--molsan-prof-text); }
 
 .notargest .ng-modal>header,
 .notargest .ng-resumen-expedientes-modal>header {
-
   display:flex;align-items:center;justify-content:space-between;gap:14px;
-  padding:18px 22px;color:#fff;border:0;border-bottom:1px solid rgba(255,255,255,.14);
-  border-radius:0;background:linear-gradient(116deg,#032D4B 0%,#064675 58%,#0D638C 100%);
+  padding:18px 22px;color:#064675;border:0;border-bottom:0;
+  border-radius:0;background:#FFFFFF;box-shadow:none;
 }
-
-.notargest .ng-modal>header :is(h2,h3,p,span,.ng-kicker),
-.notargest .ng-resumen-expedientes-modal>header :is(h2,h3,p,span,.ng-kicker) {
-color:#fff}
+.notargest .ng-modal>header :is(h2,h3),
+.notargest .ng-resumen-expedientes-modal>header :is(h2,h3) { color:#064675; }
+.notargest .ng-modal>header :is(p,span,.ng-kicker),
+.notargest .ng-resumen-expedientes-modal>header :is(p,span,.ng-kicker) { color:#617789; }
 
 .notargest .ng-modal-lista {
 
@@ -683,8 +581,11 @@ color:#fff}
 .ng-admin-notarias {
 
   box-sizing:border-box;width:100%;max-width:none;
-  min-width:0;margin:0;color:var(--molsan-prof-text);
+  min-width:0;margin:0;padding:24px 16px;color:var(--molsan-prof-text);
   background:transparent;
+}
+@media (min-width:1024px) {
+  .ng-admin-notarias { padding-right:24px; padding-left:24px; }
 }
 
 .ng-admin-notarias *,
@@ -699,43 +600,11 @@ box-sizing:border-box}
 
 /* Cabecera administrativa: misma autoridad visual compartida. */
 
-.ng-admin-notarias .ng-admin-kpi-button {
-
-  position:relative;display:flex;flex-direction:column;align-items:flex-start;
-  justify-content:space-between;gap:9px;min-width:0;min-height:136px;
-  margin:0;padding:17px 18px;color:var(--molsan-prof-text);
-  border:1px solid var(--molsan-prof-border);border-radius:15px;
-  background:linear-gradient(145deg,#fff 0%,#fff 66%,#F7FAFC 100%);
-  box-shadow:var(--molsan-prof-shadow);transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
-  text-align:left;
-}
-
-.ng-admin-notarias .ng-admin-kpi-button>span:first-child {
-
-  color:var(--molsan-prof-muted);font-size:11px;font-weight:800;letter-spacing:.08em;line-height:1.4;text-transform:uppercase;
-}
-
-.ng-admin-notarias .ng-admin-kpi-button>strong {
-
-  color:var(--molsan-prof-blue);font-size:clamp(26px,2vw,32px);font-weight:850;line-height:1.1;letter-spacing:-.035em;font-variant-numeric:tabular-nums;
-}
-
 .ng-admin-notarias .ng-admin-kpis,
 .ng-admin-notarias .ng-admin-kpis-global {
 
   display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;
 }
-
-.ng-admin-notarias .ng-admin-kpi-button {
-width:100%;min-height:136px;appearance:none;-webkit-appearance:none}
-
-
-
-.ng-admin-notarias .ng-admin-kpi-button>strong {
-margin:auto 0 0}
-
-.ng-admin-notarias .ng-admin-kpi-button>small {
-color:var(--molsan-prof-blue);font-size:10px;font-weight:800}
 
 .ng-admin-notarias .ng-admin-global-resumen,
 .ng-admin-notarias .ng-admin-notaria-card {
@@ -747,8 +616,7 @@ color:var(--molsan-prof-blue);font-size:10px;font-weight:800}
 
   display:flex;align-items:center;justify-content:space-between;gap:12px;
   margin:0;padding:16px 19px;color:var(--molsan-prof-blue);
-  border:0;border-bottom:1px solid var(--molsan-prof-border);border-radius:0;
-  background:var(--molsan-prof-soft);
+  border:0;border-bottom:0;border-radius:0;background:#FFFFFF;
 }
 
 .ng-admin-notarias button:focus-visible {

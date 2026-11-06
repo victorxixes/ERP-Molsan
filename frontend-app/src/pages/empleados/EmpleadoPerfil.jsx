@@ -720,7 +720,7 @@ export default function EmpleadoPerfil({
     <div className="
       erp-page
       space-y-5
-      animate-fade-in
+      
     ">
 
 

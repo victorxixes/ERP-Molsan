@@ -18,7 +18,7 @@ export default function ImportarCTN() {
   };
 
   return (
-    <div className="importar-ctn-premium herramientas-subpagina-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
+    <div className="importar-ctn-premium herramientas-subpagina-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 ">
 
       {/* =====================================================
           CABECERA
@@ -36,9 +36,9 @@ export default function ImportarCTN() {
           relative overflow-hidden
           rounded-[24px]
           border border-slate-200/80
-          bg-white/85
-          backdrop-blur-xl
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
+          bg-white
+          
+          
           p-6 sm:p-7
         "
       >
@@ -111,7 +111,7 @@ export default function ImportarCTN() {
                 bg-blue-50/70
                 px-4 py-3
                 text-sm text-blue-700
-                animate-fadeIn
+                
               "
             >
               <span>✓</span>
@@ -148,14 +148,10 @@ export default function ImportarCTN() {
                 px-6 py-3
                 text-sm font-semibold
                 text-white
-                bg-gradient-to-r
-                from-blue-600
-                to-blue-500
-                shadow-[0_10px_25px_rgba(37,99,235,0.20)]
-                transition-all
-                hover:from-blue-500
-                hover:to-blue-400
-                active:scale-[0.98]
+                bg-[#064675]
+                shadow-sm
+                transition-colors duration-150
+                hover:bg-[#04375B]
                 disabled:opacity-40
                 disabled:cursor-not-allowed
               "
@@ -192,7 +188,7 @@ export default function ImportarCTN() {
                 border border-emerald-200
                 bg-emerald-50
                 p-5
-                animate-fadeIn
+                
               "
             >
 

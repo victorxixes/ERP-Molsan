@@ -1,8 +1,8 @@
 // ============================================================
-// ERP SJ-2026 — Punto de entrada principal
+// MOLSAN ERP PREMIUM 2027 — Punto de entrada principal
 // ============================================================
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
@@ -11,13 +11,13 @@ import { useAuthStore } from "./store/authStore";
 // Añade JWT a llamadas fetch antiguas al backend; Axios ya lo hace solo.
 import "./api/fetchAuth";
 
-// Estilos heredados y utilidades globales SJ-2026.
+// Base heredada y utilidades globales; se mantiene mientras existan componentes legacy.
 import "./css/index.css";
 // Tokens primero; las reglas del design system los consumen después.
 import "./css/molsan-tokens.css";
 // Capa opt-in consolidada: estructura, tablas, controles y componentes.
 import "./css/molsan-design-system.css";
-// Componentes y módulos funcionales.
+// La shell y sus dependencias se evalúan antes de las capas globales finales.
 import App from "./App";
 // Estilos transversales ligeros de compatibilidad Fase 3, sin hoja monolítica de overrides.
 import "./css/MolsanFase3.css";
@@ -28,7 +28,6 @@ import "./css/ApoderaGest.css";
 import "./css/EncargaGest.css";
 import "./css/NotarGest.css";
 // Compatibilidad heredada y presentación de Espacios de trabajo.
-
 import "./css/MolsanRedesign2027.css";
 import "./css/MolsanPremium2027.css";
 // Tarjetas semánticas y excepciones específicas de módulos (sin inferir tarjetas Tailwind).
@@ -42,7 +41,7 @@ import "./css/MolsanCanonicalVisual2027.css";
 
 
 // ============================================================
-// Root — Inicialización del ERP SJ-2026
+// Root — Inicialización y recuperación de sesión
 // ============================================================
 
 function Root() {
@@ -91,7 +90,7 @@ function Root() {
 }
 
 // ============================================================
-// Render principal
+// Montaje de la aplicación
 // ============================================================
 
 ReactDOM.createRoot(document.getElementById("root")).render(

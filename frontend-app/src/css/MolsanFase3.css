@@ -38,8 +38,12 @@
   min-width: 0;
 }
 
-/* Contenedores de tabla largos: desplazamiento horizontal sin romper la página. */
-.erp-route-content :where(.overflow-x-auto, .table-responsive, .tabla-responsive) {
+/* Redesign ya fija max-width y overscroll para overflow-x-auto/table-responsive.
+   Fase 3 conserva solo el scrollbar fino y la excepción tabla-responsive. */
+.erp-route-content :where(.overflow-x-auto, .table-responsive) {
+  scrollbar-width: thin;
+}
+.erp-route-content .tabla-responsive {
   max-width: 100%;
   overscroll-behavior-x: contain;
   scrollbar-width: thin;
@@ -84,7 +88,6 @@
     animation-iteration-count: 1 !important;
   }
 }
-
 
 /* Portales y modales: compatibilidad transversal consolidada */
 /* MOLSAN ERP PREMIUM 2027 · FASE 3 · PORTALES INDEPENDIENTES Y MODALES */
@@ -152,9 +155,17 @@ body :where(
 ) {
   color: var(--molsan-text, #18364b);
   background-color: #fff;
-  border-color: var(--molsan-border, #d8e4ec);
-  border-radius: var(--molsan-radius-modal, 16px);
-  box-shadow: var(--molsan-shadow-modal, 0 18px 48px rgba(6, 40, 65, .18));
+  border-color: var(--molsan-card-border, #C5D8E5);
+  border-radius: var(--molsan-radius-dialog, 22px);
+  box-shadow: 0 22px 54px rgba(6,70,117,.18);
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: calc(100vw - 32px);
+  max-height: min(88dvh, 900px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 @media (max-width: 720px) {
@@ -168,24 +179,8 @@ body :where(
     max-width: calc(100vw - 20px);
     max-height: calc(100dvh - 20px);
     overflow: auto;
+    border-radius: 18px;
   }
-}
-
-/* FASE 3 · Contrato técnico común para diálogos heredados.
-   Se excluyen overlays y paneles que ya implementan su propio contrato.
-   Los paneles legacy conservan su ancho declarado, pero nunca exceden el viewport
-   y pueden desplazar su contenido sin ensanchar el documento. */
-body :where(
-  [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal):not(.molsan-modal):not(.molsan-modal__panel):not(.erp-modal-panel):not(.expediente-operativo-modal-panel):not(.ng-modal):not(.eg-modal-form):not(.eg-modal-perfil):not(.ctn-detalle-modal)
-) {
-  box-sizing: border-box;
-  min-width: 0;
-  max-width: calc(100vw - 32px);
-  max-height: min(88dvh, 900px);
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
 }
 
 @supports selector(body:has([role="dialog"][aria-modal="true"])) {
@@ -195,12 +190,3 @@ body :where(
   }
 }
 
-@media (max-width: 720px) {
-  body :where(
-    [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0):not(.expediente-operativo-modal):not(.molsan-modal):not(.molsan-modal__panel):not(.erp-modal-panel):not(.expediente-operativo-modal-panel):not(.ng-modal):not(.eg-modal-form):not(.eg-modal-perfil):not(.ctn-detalle-modal)
-  ) {
-    max-width: calc(100vw - 20px);
-    max-height: calc(100dvh - 20px);
-    border-radius: 14px;
-  }
-}

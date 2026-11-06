@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { Link, useParams } from "react-router-dom";
@@ -13,6 +13,7 @@ import TraspasoSaldoPanel from "../../components/expedientes/TraspasoSaldoPanel"
 import { useAuthStore } from "../../store/authStore";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
 
@@ -1168,6 +1169,9 @@ function Modal({
   footer,
   ancho = "max-w-3xl",
 }) {
+  const dialogRef = useRef(null);
+  useAccessibleDialog({ open: Boolean(open), onClose, dialogRef });
+
   if (!open) {
     return null;
   }
@@ -1195,7 +1199,13 @@ function Modal({
       }}
     >
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={titulo || "Diálogo del expediente"}
+        tabIndex={-1}
         className={`
+          molsan-modal__panel
           relative
           flex
           max-h-[92vh]
@@ -1203,11 +1213,6 @@ function Modal({
           ${ancho}
           flex-col
           overflow-hidden
-          rounded-2xl
-          border
-          border-slate-200
-          bg-white
-          shadow-2xl
         `}
         onMouseDown={(event) => {
           event.stopPropagation();
@@ -1219,11 +1224,9 @@ function Modal({
             items-center
             justify-between
             gap-4
-            border-b
-            border-slate-200
-            bg-gradient-to-r
-            from-slate-50
-            to-white
+            molsan-modal-header
+            border-0
+            bg-white
             px-6
             py-5
           "
@@ -2215,6 +2218,36 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     concepto: "",
     importe: "",
     imputableA: "Molsan",
+  });
+
+  // Diálogos propios de la ficha: mantener foco, Escape y anidamiento accesible.
+  const pagoRealDialogRef = useRef(null);
+  const ppadDialogRef = useRef(null);
+  const gastoDialogRef = useRef(null);
+  useAccessibleDialog({
+    open: Boolean(mostrarFormularioPagoReal),
+    onClose: () => {
+      if (!guardandoPagoReal) {
+        setMostrarFormularioPagoReal(false);
+        setPagoGastoSeleccionadoId("");
+      }
+    },
+    dialogRef: pagoRealDialogRef,
+  });
+  useAccessibleDialog({
+    open: Boolean(mostrarModalPpad),
+    onClose: () => {
+      setMostrarModalPpad(false);
+      cancelarPpad();
+    },
+    dialogRef: ppadDialogRef,
+  });
+  useAccessibleDialog({
+    open: Boolean(mostrarFormularioGasto && origenFormularioGasto === "economico"),
+    onClose: () => {
+      if (!guardandoGasto) setMostrarFormularioGasto(false);
+    },
+    dialogRef: gastoDialogRef,
   });
 
   // OBSERVACIONES — datos persistidos en el backend
@@ -5943,9 +5976,9 @@ const cuantiaFincasParaEnvio =
                       formularioPago={origenFormularioGasto === "pagar" ? (
                         <>
                         {mostrarFormularioPagoReal && createPortal((
-                          <div className="fixed inset-0 z-[12000] flex items-center justify-center bg-slate-950/65 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="orden-pago-titulo">
-                            <section className="flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-white/70 bg-slate-50 shadow-2xl">
-                              <header className="flex items-start justify-between gap-3 border-b border-slate-200 bg-white px-5 py-4 sm:px-6">
+                          <div ref={pagoRealDialogRef} tabIndex={-1} className="fixed inset-0 z-[12000] flex items-center justify-center bg-slate-950/65 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="orden-pago-titulo">
+                            <section className="molsan-modal__panel flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl">
+                              <header className="molsan-modal-header flex items-start justify-between gap-3 border-0 bg-white px-5 py-4 sm:px-6">
                                 <div><p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Gestión económica</p><h2 id="orden-pago-titulo" className="mt-1 text-xl font-extrabold text-slate-900">Orden de pago</h2><p className="mt-1 text-xs text-slate-500">Expediente {expediente?.id_expediente || expediente?.id || id || "—"} · Preparar la orden no ejecuta una transferencia bancaria.</p></div>
                                 <button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); } }} disabled={guardandoPagoReal} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-lg leading-none text-slate-600 hover:bg-slate-100 disabled:opacity-50" aria-label="Cerrar orden de pago">×</button>
                               </header>
@@ -6259,7 +6292,7 @@ const cuantiaFincasParaEnvio =
                   </div>
                   <div className="mt-4 flex flex-wrap justify-end gap-2">
                     <Boton onClick={() => guardarEstadoAbsis(false)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Guardando…" : <><MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar datos para integración</>}</Boton>
-                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : <><MolsanIcon name="mail" size={14} tone="inherit" bare /> Registrar solicitud pendiente</>}}</Boton>
+                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : <><MolsanIcon name="mail" size={14} tone="inherit" bare /> Registrar solicitud pendiente</>}</Boton>
                   </div>
                   {estadoDocumentacionAbsis.solicitud_registrada_localmente && <p className="mt-2 text-right text-xs font-semibold text-amber-700">Pendiente de API externa; todavía no transmitida a ABSIS.</p>}
                 </section>
@@ -6830,8 +6863,7 @@ const cuantiaFincasParaEnvio =
                     ? "Validando…"
                     : actividadActual === "facturacion-cierre"
                       ? <><MolsanIcon name="check" size={14} tone="inherit" bare /> Validar y cerrar expediente</>
-                      : <><MolsanIcon name="arrowRight" size={14} tone="inherit" bare /> Validar y avanzar actividad</>}}
-                </Boton>
+                      : <><MolsanIcon name="arrowRight" size={14} tone="inherit" bare /> Validar y avanzar actividad</>}</Boton>
               )}
             </div>
 
@@ -6930,6 +6962,8 @@ const cuantiaFincasParaEnvio =
               onMouseDown={(event) => { if (event.target === event.currentTarget) { setMostrarModalPpad(false); cancelarPpad(); } }}
             >
               <section
+                ref={ppadDialogRef}
+                tabIndex={-1}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="modal-ppad-titulo"
@@ -7351,9 +7385,6 @@ const cuantiaFincasParaEnvio =
                           </div>
                         </div>
 
-                  
-                )}
-
                         <div className="mt-4">
                           <h5 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-600">Movimientos de la provisión</h5>
                           {cargandoGastos ? (
@@ -7401,7 +7432,7 @@ const cuantiaFincasParaEnvio =
                         )}
 
                         {mostrarFormularioGasto && origenFormularioGasto === "economico" && createPortal((
-                          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-gasto">
+                          <div ref={gastoDialogRef} tabIndex={-1} className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-gasto">
                             <div className="flex max-h-[94vh] w-full max-w-[96vw] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
                           <form onSubmit={guardarGastoExpediente} className="flex min-h-0 flex-col overflow-hidden">
                             <div className="flex items-start justify-between gap-3 border-b border-slate-200 bg-slate-50 px-5 py-4">

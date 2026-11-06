@@ -26,7 +26,7 @@ export default function CatalogoFichajes() {
     } catch (e) { setError(e?.response?.data?.detail || "No se pudo guardar el tipo de ausencia."); }
     finally { setGuardando(false); }
   };
-  return <main className="catalogos-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
+  return <main className="catalogos-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
     <MolsanPageHeader
       mark="FIC"
       title="Fichajes · Tipos de ausencia"

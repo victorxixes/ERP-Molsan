@@ -202,7 +202,13 @@ export default function ModalNuevaCita({
   ] = useState(null);
 
   const dialogRef = useRef(null);
-  useAccessibleDialog({ open: Boolean(fecha), onClose, dialogRef });
+  useAccessibleDialog({
+    open: Boolean(fecha),
+    onClose: () => {
+      if (!loading) onClose?.();
+    },
+    dialogRef,
+  });
 
 
   // ==========================================================
@@ -424,51 +430,6 @@ export default function ModalNuevaCita({
   ]);
 
 
-  // ==========================================================
-  // ESC
-  // ==========================================================
-
-  useEffect(() => {
-
-    if (!fecha)
-      return;
-
-    const handleEscape =
-      (event) => {
-
-        if (
-          event.key ===
-            "Escape" &&
-          !loading
-        ) {
-
-          onClose();
-
-        }
-
-      };
-
-
-    window.addEventListener(
-      "keydown",
-      handleEscape
-    );
-
-
-    return () => {
-
-      window.removeEventListener(
-        "keydown",
-        handleEscape
-      );
-
-    };
-
-  }, [
-    fecha,
-    loading,
-    onClose,
-  ]);
 
 
   // ==========================================================

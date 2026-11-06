@@ -211,7 +211,7 @@ export default function Logs() {
         min-h-full
         space-y-6
         text-slate-800
-        animate-fadeIn
+        
       "
     >
 

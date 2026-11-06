@@ -1,4 +1,6 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanStatCard from "../../components/ui/MolsanStatCard";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 const ESTADOS = ["Pendiente", "En curso", "Aceptada", "Desestimada", "Facturadas"];
@@ -22,27 +24,11 @@ function euros(valor) {
   const n = Number(valor);
   return Number.isFinite(n) ? n.toLocaleString("es-ES", { style: "currency", currency: "EUR" }) : "—";
 }
-function Icon({ name, size = 20 }) {
-  const p = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true };
-  if (name === "merge") return <svg {...p}><path d="M7 3v5c0 2.2 1.8 4 4 4h2c2.2 0 4-1.8 4-4V3" /><path d="M7 21v-5c0-2.2 1.8-4 4-4h2c2.2 0 4 1.8 4 4v5" /><path d="M4 3h6M14 21h6" /></svg>;
-  if (name === "search") return <svg {...p}><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>;
-  if (name === "refresh") return <svg {...p}><path d="M20 11a8 8 0 0 0-14.8-4L4 9M4 4v5h5M4 13a8 8 0 0 0 14.8 4L20 15M20 20v-5h-5" /></svg>;
-  if (name === "file") return <svg {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h5" /></svg>;
-  return <svg {...p}><circle cx="12" cy="12" r="9" /><path d="M12 8v4l3 2" /></svg>;
-}
 function BadgeEstado({ estado }) {
   const e = normalizarEstado(estado);
   const tone = ({ "Pendiente": "border-amber-200 bg-amber-50 text-amber-800", "En curso": "border-blue-200 bg-blue-50 text-blue-800", "Aceptada": "border-emerald-200 bg-emerald-50 text-emerald-800", "Desestimada": "border-rose-200 bg-rose-50 text-rose-800", "Facturadas": "border-violet-200 bg-violet-50 text-violet-800" })[e] || "border-slate-200 bg-slate-50 text-slate-700";
   return <span className={"inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-semibold " + tone}><span className="h-1.5 w-1.5 rounded-full bg-current" />{e}</span>;
 }
-function Indicador({ titulo, valor, detalle, tono, activo, onClick }) {
-  const colors = { slate: "bg-slate-100 text-slate-700", amber: "bg-amber-50 text-amber-700", blue: "bg-blue-50 text-blue-700", green: "bg-emerald-50 text-emerald-700", red: "bg-rose-50 text-rose-700", violet: "bg-violet-50 text-violet-700" };
-  return <button type="button" onClick={onClick} className={"group min-w-0 rounded-2xl border p-4 text-left transition duration-200 hover:-translate-y-0.5 hover:shadow-md sm:p-5 " + (activo ? "border-blue-300 bg-blue-50/60 shadow-sm ring-2 ring-blue-100" : "border-[var(--erp-border)] bg-[var(--erp-surface,var(--erp-card,#fff))] hover:border-blue-200")}>
-    <div className="flex items-start justify-between gap-2"><div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-wider text-[var(--erp-text-soft)]">{titulo}</p><p className="mt-2 text-3xl font-bold tracking-tight text-[var(--erp-text)] tabular-nums">{valor}</p></div><span className={"flex h-10 w-10 shrink-0 items-center justify-center rounded-xl " + (colors[tono] || colors.slate)}><Icon name={titulo === "Total solicitudes" ? "file" : "clock"} size={19} /></span></div>
-    <p className="mt-2 text-xs text-[var(--erp-text-soft)]">{detalle}</p>
-  </button>;
-}
-
 export default function Fusiones() {
   const [solicitudes, setSolicitudes] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -83,7 +69,7 @@ export default function Fusiones() {
     ["Facturadas", contar("Facturadas"), "Con factura o pre-factura indicada", "violet", "Facturadas"]
   ];
 
-  return <main className="erp-page min-h-full space-y-6 p-4 text-[var(--erp-text)] sm:p-6 lg:p-8">
+  return <main className="erp-page fusiones-page min-h-full space-y-6 p-4 text-[var(--erp-text)] sm:p-6 lg:p-8">
     <MolsanPageHeader
       mark="FUS"
       title="Gestión de fusiones"
@@ -94,12 +80,12 @@ export default function Fusiones() {
     {error && <div role="alert" className="flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-semibold">No se han podido cargar las solicitudes</p><p className="mt-1 leading-5">{error}</p></div><button type="button" onClick={cargarSolicitudes} className="shrink-0 rounded-lg border border-rose-200 bg-white px-3 py-2 text-xs font-semibold hover:bg-rose-100">Reintentar</button></div>}
 
     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-      {indicadores.map(([titulo, valor, detalle, tono, filtro]) => <Indicador key={titulo} titulo={titulo} valor={valor} detalle={detalle} tono={tono} activo={estado === filtro} onClick={() => setEstado(estado === filtro && filtro !== "Todos" ? "Todos" : filtro)} />)}
+      {indicadores.map(([titulo, valor, detalle, tono, filtro]) => <MolsanStatCard key={titulo} title={titulo} value={valor} description={detalle} tone={tono === "green" ? "emerald" : tono === "blue" ? "ocean" : tono === "red" ? "rose" : tono} icon={({ "Total solicitudes": "file", "Pendiente": "clock", "En curso": "timer", "Aceptada": "check", "Desestimada": "alert", "Facturadas": "receipt" })[titulo]} className={estado === filtro ? "is-active" : ""} onClick={() => setEstado(estado === filtro && filtro !== "Todos" ? "Todos" : filtro)} />)}
     </section>
 
     <section className="overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface,var(--erp-card,#fff))] shadow-sm">
       <div className="border-b border-[var(--erp-border)] p-4 sm:p-5"><div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"><div><h2 className="text-base font-bold">Solicitudes de fusión</h2><p className="mt-1 text-sm text-[var(--erp-text-soft)]">Busca por expediente, registro, entrada, factura o registrador.</p></div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center"><label className="relative block min-w-0 sm:w-80"><span className="sr-only">Buscar solicitudes</span><span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--erp-text-soft)]"><Icon name="search" size={17} /></span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar solicitudes…" className="min-h-10 w-full rounded-xl border border-[var(--erp-border)] bg-[var(--erp-bg,#fff)] py-2 pl-10 pr-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-100/70" /></label>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center"><label className="relative block min-w-0 sm:w-80"><span className="sr-only">Buscar solicitudes</span><span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--erp-text-soft)]"><MolsanIcon name="search" size={17} /></span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar solicitudes…" className="min-h-10 w-full rounded-xl border border-[var(--erp-border)] bg-[var(--erp-bg,#fff)] py-2 pl-10 pr-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-100/70" /></label>
         <label><span className="sr-only">Filtrar por estado</span><select value={estado} onChange={(e) => setEstado(e.target.value)} className="min-h-10 w-full rounded-xl border border-[var(--erp-border)] bg-[var(--erp-bg,#fff)] px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100/70 sm:w-44"><option value="Todos">Todos los estados</option>{ESTADOS.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
         {(busqueda || estado !== "Todos") && <button type="button" onClick={limpiar} className="min-h-10 rounded-xl px-3 py-2 text-sm font-semibold text-[var(--erp-text-soft)] hover:bg-[var(--erp-bg,#f8fafc)]">Limpiar</button>}</div>
       </div></div>
@@ -107,7 +93,7 @@ export default function Fusiones() {
         {["ID", "Expediente", "Registro", "N.º entrada", "Factura", "Fecha factura", "Importe", "Estado"].map((label, index) => <th key={label} className={"px-4 py-3 font-semibold " + (index === 6 ? "text-right" : "")}>{label}</th>)}
       </tr></thead><tbody>
         {cargando && solicitudes.length === 0 ? <tr><td colSpan={8} className="px-4 py-12 text-center text-[var(--erp-text-soft)]"><span className="inline-flex items-center gap-2"><span className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />Cargando solicitudes reales…</span></td></tr>
-        : filtradas.length === 0 ? <tr><td colSpan={8} className="px-4 py-12 text-center"><div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--erp-bg,#f8fafc)] text-[var(--erp-text-soft)]"><Icon name="file" size={21} /></div><p className="mt-3 font-semibold">{error ? "No hay datos disponibles" : solicitudes.length ? "No hay resultados para estos filtros" : "Todavía no hay solicitudes de fusión"}</p><p className="mt-1 text-sm text-[var(--erp-text-soft)]">{error ? "Revisa la conexión con el servidor y vuelve a intentarlo." : solicitudes.length ? "Prueba otra búsqueda o limpia los filtros." : "Las solicitudes enviadas desde CancelaGest aparecerán aquí."}</p>{(busqueda || estado !== "Todos") && <button type="button" onClick={limpiar} className="mt-3 rounded-lg px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50">Limpiar filtros</button>}</td></tr>
+        : filtradas.length === 0 ? <tr><td colSpan={8} className="px-4 py-12 text-center"><div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--erp-bg,#f8fafc)] text-[var(--erp-text-soft)]"><MolsanIcon name="file" size={21} /></div><p className="mt-3 font-semibold">{error ? "No hay datos disponibles" : solicitudes.length ? "No hay resultados para estos filtros" : "Todavía no hay solicitudes de fusión"}</p><p className="mt-1 text-sm text-[var(--erp-text-soft)]">{error ? "Revisa la conexión con el servidor y vuelve a intentarlo." : solicitudes.length ? "Prueba otra búsqueda o limpia los filtros." : "Las solicitudes enviadas desde CancelaGest aparecerán aquí."}</p>{(busqueda || estado !== "Todos") && <button type="button" onClick={limpiar} className="mt-3 rounded-lg px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50">Limpiar filtros</button>}</td></tr>
         : filtradas.map((item) => <tr key={item.id} className="border-t border-[var(--erp-border)] transition-colors hover:bg-blue-50/40">
           <td className="whitespace-nowrap px-4 py-3 font-semibold text-[var(--erp-text-soft)]">#{item.id}</td><td className="whitespace-nowrap px-4 py-3 font-semibold">{item.numero_expediente || "—"}</td><td className="max-w-[250px] px-4 py-3"><span className="block truncate" title={item.registro || ""}>{item.registro || "—"}</span></td><td className="whitespace-nowrap px-4 py-3">{item.numero_entrada || "—"}</td><td className="max-w-[230px] px-4 py-3"><span className="block truncate" title={item.serie_numero_factura || item.tipo_factura || ""}>{item.serie_numero_factura || item.tipo_factura || "—"}</span></td><td className="whitespace-nowrap px-4 py-3">{fechaCorta(item.fecha_factura || item.creado_en)}</td><td className="whitespace-nowrap px-4 py-3 text-right font-medium tabular-nums">{euros(item.importe)}</td><td className="whitespace-nowrap px-4 py-3"><BadgeEstado estado={item.estado} /></td>
         </tr>)}

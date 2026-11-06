@@ -10,7 +10,7 @@ import MolsanIcon from "../../components/ui/MolsanIcon";
 export default function Utilidades() {
 
   return (
-    <div className="utilidades-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8 animate-fadeIn">
+    <div className="utilidades-premium-page min-h-full space-y-7 p-4 sm:p-6 lg:p-8 ">
       <MolsanPageHeader
         mark="UT"
         title="Utilidades del sistema"

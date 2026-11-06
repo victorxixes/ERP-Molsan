@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState, useEffect } from "react";
 import axios from "../../api/axios";
 const CAMPO = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-semibold file:text-blue-700";
@@ -151,13 +152,13 @@ export default function ImportadorPostFirma() {
           <Metrica titulo="ID de carga" valor={resultado.carga_id} />
         </div>
         <p className="break-all text-xs text-slate-500">Huella del fichero SHA-256: {resultado.sha256}</p>
-        <button type="button" onClick={() => document.getElementById("historico-postfirma")?.scrollIntoView({ behavior: "smooth" })} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">Ver histórico cargado ↓</button>
+        <button type="button" onClick={() => document.getElementById("historico-postfirma")?.scrollIntoView({ behavior: "smooth" })} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">Ver histórico cargado <MolsanIcon name="arrowDown" size={14} tone="inherit" /></button>
       </section>}
 
       <section id="historico-postfirma" className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div><h2 className="text-lg font-bold text-slate-800">Histórico Post Firma · datos originales</h2><p className="mt-1 text-sm text-slate-500">Consulta independiente por fichero. Las filas repetidas y los meses distintos se conservan por separado.</p></div>
-          <button type="button" onClick={() => { cargarCargas(); cargarRegistros(cargaSeleccionada, offset); }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600">↻ Actualizar</button>
+          <button type="button" onClick={() => { cargarCargas(); cargarRegistros(cargaSeleccionada, offset); }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600"><MolsanIcon name="refresh" size={14} tone="inherit" /> Actualizar</button>
         </div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
           <div><label htmlFor="postfirma-carga" className="mb-2 block text-sm font-semibold text-slate-700">Fichero / carga</label><select id="postfirma-carga" value={cargaSeleccionada} onChange={(e) => { setCargaSeleccionada(e.target.value); setOffset(0); }} className={CAMPO}><option value="">Todas las cargas</option>{cargas.map((carga) => <option key={carga.id} value={String(carga.id)}>{"#" + carga.id + " · " + carga.nombre_archivo + " · " + carga.filas_guardadas + " filas"}</option>)}</select></div>

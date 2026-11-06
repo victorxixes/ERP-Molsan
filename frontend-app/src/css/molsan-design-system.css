@@ -506,7 +506,6 @@
 }
 .molsan-data-table__resizer:hover,
 .molsan-data-table__resizer:active { background:rgba(6,70,117,.28); }
-.molsan-data-table__empty { padding:30px 16px !important; color:#718696; text-align:center; }
 .molsan-data-table__pagination {
   display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:9px;
   padding:10px 12px; border:1px solid #D8E4EC; border-radius:13px; background:#F7FAFC;
@@ -525,20 +524,131 @@
 }
 
 
-/* Controles, botones y estados: estilos compartidos consolidados */
-/* MOLSAN ERP · controles de formulario, botones y estados */
-.molsan-btn { display:inline-flex; min-height:var(--molsan-control-height); align-items:center; justify-content:center; gap:8px; padding:0 12px; border:1px solid transparent; border-radius:var(--molsan-radius-control); font:inherit; font-size:var(--molsan-font-size-md); font-weight:650; line-height:1.2; text-decoration:none; white-space:nowrap; cursor:pointer; transition:color var(--molsan-transition-fast),background-color var(--molsan-transition-fast),border-color var(--molsan-transition-fast),box-shadow var(--molsan-transition-fast); }
-.molsan-btn:focus-visible,.molsan-field__control:focus-visible { outline:3px solid rgba(6,70,117,.22); outline-offset:2px; }
-.molsan-btn:disabled,.molsan-btn[aria-disabled="true"] { cursor:not-allowed; opacity:.55; }
-.molsan-btn--primary { color:#fff; background:var(--molsan-primary); border-color:var(--molsan-primary); }
-.molsan-btn--primary:hover:not(:disabled) { color:#fff; background:var(--molsan-primary-hover); border-color:var(--molsan-primary-hover); }
-.molsan-btn--secondary { color:var(--molsan-text); background:var(--molsan-surface); border-color:var(--molsan-border-strong); }
-.molsan-btn--secondary:hover:not(:disabled) { background:var(--molsan-surface-soft); border-color:var(--molsan-primary); }
-.molsan-btn--danger { color:#fff; background:var(--molsan-danger); border-color:var(--molsan-danger); }
-.molsan-btn--compact { min-height:var(--molsan-control-height-compact); padding-inline:9px; font-size:var(--molsan-font-size-sm); }
+/* Controles, botones y estados · una única definición compartida */
+.molsan-btn {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  color: var(--molsan-text);
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: var(--molsan-surface);
+  box-shadow: 0 2px 5px rgba(6,50,82,.045);
+  font-family: var(--molsan-font-family);
+  font-size: var(--molsan-font-size-md);
+  font-weight: 700;
+  letter-spacing: -.01em;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 180ms ease, color 180ms ease, background-color 180ms ease,
+    border-color 180ms ease, box-shadow 180ms ease;
+}
+.molsan-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(6,50,82,.10);
+}
+.molsan-btn:active:not(:disabled) { transform: translateY(0); }
+.molsan-btn:focus-visible,
+.molsan-field__control:focus-visible { outline: 3px solid rgba(6,70,117,.22); outline-offset: 2px; }
+.molsan-btn:disabled,
+.molsan-btn[aria-disabled="true"] { cursor: not-allowed; opacity: .55; }
+.molsan-btn--primary {
+  color: #FFFFFF;
+  background: linear-gradient(135deg,#075487,#064675);
+  border-color: #064675;
+}
+.molsan-btn--primary:hover:not(:disabled) {
+  color: #FFFFFF;
+  background: #04375B;
+  border-color: #04375B;
+}
+.molsan-btn--secondary {
+  color: #064675;
+  background: linear-gradient(145deg,#FFFFFF,#F2F7FB);
+  border-color: #D8E4EC;
+}
+.molsan-btn--secondary:hover:not(:disabled) {
+  color: #043B60;
+  background: #EAF2F8;
+  border-color: #AFCFDF;
+}
+.molsan-btn--success {
+  color: #176B4B;
+  background: linear-gradient(145deg,#F3FBF6,#E6F4EB);
+  border-color: #BFE2CC;
+}
+.molsan-btn--success:hover:not(:disabled) {
+  color: #145A40;
+  background: #DDF0E5;
+  border-color: #9CCFB1;
+}
+.molsan-btn--warning {
+  color: #8A620D;
+  background: linear-gradient(145deg,#FFFCF2,#FFF4D8);
+  border-color: #EEDCA8;
+}
+.molsan-btn--warning:hover:not(:disabled) {
+  color: #76520A;
+  background: #FCECC2;
+  border-color: #E5CD88;
+}
+.molsan-btn--danger {
+  color: #FFFFFF;
+  background: #B42318;
+  border-color: #B42318;
+}
+.molsan-btn--danger:hover:not(:disabled) { background: #941B13; border-color: #941B13; }
+.molsan-btn--excel {
+  color: #FFFFFF;
+  background: linear-gradient(135deg,#16845B,#11734E);
+  border-color: #11734E;
+}
+.molsan-btn--excel:hover:not(:disabled) {
+  color: #FFFFFF;
+  background: linear-gradient(135deg,#11734E,#0D6242);
+  border-color: #0D6242;
+}
+.molsan-btn--ghost {
+  color: #617789;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.molsan-btn--ghost:hover:not(:disabled) {
+  color: #064675;
+  background: #EAF2F8;
+  box-shadow: none;
+}
+.molsan-btn--compact {
+  min-height: var(--molsan-control-height-compact);
+  padding-inline: 9px;
+  font-size: var(--molsan-font-size-sm);
+}
+.molsan-btn__icon { width: 16px; height: 16px; flex: 0 0 auto; }
+.molsan-btn__spinner {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: molsan-spin .7s linear infinite;
+}
+@keyframes molsan-spin { to { transform: rotate(360deg); } }
+
 .molsan-field { display:flex; min-width:0; flex-direction:column; gap:6px; }
 .molsan-field__label { color:var(--molsan-text); font-size:var(--molsan-font-size-md); font-weight:600; line-height:1.4; }
-.molsan-field__control { width:100%; min-width:0; min-height:var(--molsan-control-height); padding:7px 10px; color:var(--molsan-text); background:var(--molsan-surface); border:1px solid var(--molsan-border-strong); border-radius:var(--molsan-radius-control); font:inherit; font-size:var(--molsan-font-size-md); }
+.molsan-field__control {
+  width:100%; min-width:0; min-height:var(--molsan-control-height); padding:7px 10px;
+  color:var(--molsan-text); background:var(--molsan-surface);
+  border:1px solid var(--molsan-border-strong); border-radius:var(--molsan-radius-control);
+  font:inherit; font-size:var(--molsan-font-size-md);
+}
 .molsan-field__control:focus-visible { outline:none; border-color:var(--molsan-primary); box-shadow:0 0 0 3px rgba(6,70,117,.14); }
 .molsan-field__control:disabled { color:var(--molsan-text-muted); background:var(--molsan-surface-soft); cursor:not-allowed; }
 .molsan-status { display:inline-flex; align-items:center; gap:6px; max-width:100%; padding:3px 8px; border:1px solid transparent; border-radius:999px; font-size:var(--molsan-font-size-sm); font-weight:650; line-height:1.4; }
@@ -547,77 +657,11 @@
 .molsan-status--danger { color:var(--molsan-danger); background:#fff0f1; border-color:#f4d0d4; }
 .molsan-status--info { color:var(--molsan-primary); background:var(--molsan-primary-soft); border-color:var(--molsan-border); }
 
-
-/* MOLSAN BUTTON SYSTEM · acciones operativas */
-.molsan-btn {
-  min-height: 38px;
-  padding: 0 14px;
-  border-radius: 11px;
-  font-family: var(--molsan-font-family);
-  font-weight: 700;
-  letter-spacing: -.01em;
-  box-shadow: 0 2px 5px rgba(6, 50, 82, .045);
-  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease, border-color 180ms ease;
-}
-.molsan-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(6, 50, 82, .10);
-}
-.molsan-btn:active:not(:disabled) { transform: translateY(0) scale(.985); }
-.molsan-btn--primary { color:#fff; background:linear-gradient(135deg,#075487,#064675); border-color:#064675; }
-.molsan-btn--secondary { color:#064675; background:linear-gradient(145deg,#fff,#F2F7FB); border-color:#D8E4EC; }
-.molsan-btn--success { color:#176B4B; background:linear-gradient(145deg,#F3FBF6,#E6F4EB); border-color:#BFE2CC; }
-.molsan-btn--excel { color:#FFFFFF; background:linear-gradient(135deg,#16845B,#11734E); border-color:#11734E; }
-.molsan-btn--excel:hover:not(:disabled) { color:#FFFFFF; background:linear-gradient(135deg,#11734E,#0D6242); border-color:#0D6242; }
-.molsan-btn--success:hover:not(:disabled) { color:#145A40; background:#DDF0E5; border-color:#9CCFB1; }
-.molsan-btn--warning { color:#8A620D; background:linear-gradient(145deg,#FFFCF2,#FFF4D8); border-color:#EEDCA8; }
-.molsan-btn--warning:hover:not(:disabled) { color:#76520A; background:#FCECC2; border-color:#E5CD88; }
-.molsan-btn--danger { color:#fff; background:#B42318; border-color:#B42318; }
-.molsan-btn--danger:hover:not(:disabled) { background:#941B13; }
-.molsan-btn--ghost { color:#617789; background:transparent; border-color:transparent; box-shadow:none; }
-.molsan-btn--ghost:hover:not(:disabled) { color:#064675; background:#EAF2F8; box-shadow:none; }
-.molsan-btn__icon { width:16px; height:16px; flex:0 0 auto; }
-.molsan-btn__spinner {
-  width:15px; height:15px; flex:0 0 auto; border:2px solid currentColor;
-  border-right-color:transparent; border-radius:50%; animation:molsan-spin .7s linear infinite;
-}
-@keyframes molsan-spin { to { transform:rotate(360deg); } }
-
-/* Iconos con profundidad Glass Luxe. Aplicación progresiva mediante clase. */
-.molsan-icon-3d {
-  display:inline-grid; place-items:center; flex:0 0 auto;
-  border:1px solid #D8E4EC; border-radius:16px;
-  color:#064675;
-  background:radial-gradient(circle at 30% 22%,#fff 0%,#fff 18%,#EAF2F8 62%,#DCEAF3 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 5px 12px rgba(6,50,82,.10);
-  transform:translateZ(0);
-  transition:transform 220ms ease,box-shadow 220ms ease;
-}
-a:hover .molsan-icon-3d,button:hover .molsan-icon-3d,.molsan-icon-3d.is-active {
-  transform:translateY(-2px) scale(1.045);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 9px 18px rgba(6,50,82,.15);
-}
-.molsan-icon-3d svg { filter:drop-shadow(0 1px 1px rgba(6,70,117,.18)); }
-@media(prefers-reduced-motion:reduce) {
-  .molsan-btn,.molsan-icon-3d { transition:none; }
-  .molsan-btn__spinner { animation:none; }
-}
-
-/* Microinteracción Glass Luxe: iconos nítidos, con profundidad discreta y sin movimiento continuo. */
-.molsan-btn__icon {
-  filter: drop-shadow(0 1px 1px rgba(255,255,255,.28)) drop-shadow(0 1px 1px rgba(6,70,117,.12));
-  transition: transform 180ms ease, filter 180ms ease;
-}
-.molsan-btn:hover:not(:disabled) .molsan-btn__icon {
-  transform: translateY(-1px) scale(1.055);
-  filter: drop-shadow(0 2px 2px rgba(255,255,255,.38)) drop-shadow(0 2px 3px rgba(6,70,117,.18));
-}
-.molsan-btn:active:not(:disabled) .molsan-btn__icon { transform: scale(.96); }
 @media (prefers-reduced-motion: reduce) {
-  .molsan-btn__icon { transition: none; }
-  .molsan-btn:hover:not(:disabled) .molsan-btn__icon { transform: none; }
+  .molsan-btn { transition: none; }
+  .molsan-btn:hover:not(:disabled) { transform: none; }
+  .molsan-btn__spinner { animation: none; }
 }
-
 
 /* Estructura común de navegación lateral consolidada */
 /* MOLSAN ERP · sidebar conservado
@@ -672,57 +716,54 @@ a:hover .molsan-icon-3d,button:hover .molsan-icon-3d,.molsan-icon-3d.is-active {
 }
 
 
-/* Tarjeta estructural canónica Molsan Premium integrada */
-/* MOLSAN ERP PREMIUM 2027 · componente estructural canónico */
+/* Tarjeta estructural canónica Molsan Premium · una sola franja superior */
 .molsan-premium-card {
   position: relative;
   isolation: isolate;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid #D8E4EC;
-  border-radius: 20px;
-  background: linear-gradient(145deg,#FFFFFF 0%,#FFFFFF 58%,#F2F7FB 100%);
-  box-shadow: 0 7px 20px rgba(6,70,117,.065);
-  transition: transform .24s cubic-bezier(.2,.75,.25,1), box-shadow .24s ease,
-    border-color .24s ease, background .24s ease, color .24s ease;
+  border: 1.5px solid #C5D8E5;
+  border-top: 4px solid #6CC5D9;
+  border-radius: var(--molsan-canon-card-radius, 20px);
+  background: #FFFFFF;
+  box-shadow: 0 7px 20px rgba(6,70,117,.09), 0 1px 3px rgba(6,50,82,.045);
+  transition: transform .2s cubic-bezier(.2,.75,.25,1), border-color .2s ease,
+    box-shadow .2s ease;
 }
-.molsan-premium-card::before {
-  position: absolute;
-  z-index: 0;
-  top: 0;
-  left: 18px;
-  right: 18px;
-  height: 4px;
-  border-radius: 0 0 6px 6px;
-  content: "";
-  background: linear-gradient(90deg,#064675 0%,#2696A5 58%,#8BC8D8 100%);
-  transition: filter .24s ease, opacity .24s ease;
+.molsan-premium-card::before,
+.molsan-premium-card::after {
+  content: none;
+  display: none;
 }
 .molsan-premium-card:hover {
   transform: translateY(-4px);
-  border-color: #9BCBDD;
-  background: linear-gradient(145deg,#EAF7FB 0%,#F5FAFD 58%,#EAF2F8 100%);
-  box-shadow: 0 16px 34px rgba(6,70,117,.16);
+  border-color: #9FBFD2;
+  border-top-color: #064675;
+  background: #FFFFFF;
+  box-shadow: 0 16px 34px rgba(6,70,117,.15);
 }
-.molsan-premium-card:hover::before { filter: saturate(1.28) brightness(.94); }
+.molsan-premium-card:focus-within { border-color: #A9CCDF; }
+.molsan-premium-card:hover .molsan-premium-card__title { color: #043B60; }
 .molsan-premium-card__header {
   position: relative;
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: 15px;
   min-width: 0;
-  padding: 20px 20px 0;
+  padding: 22px 22px 0;
+  border: 0;
+  background: transparent;
 }
 .molsan-premium-card__icon {
   display: grid;
   place-items: center;
-  flex: 0 0 44px;
-  width: 44px;
-  height: 44px;
+  flex: 0 0 54px;
+  width: 54px;
+  height: 54px;
   color: #064675;
   border: 1px solid #D8E4EC;
-  border-radius: 13px;
+  border-radius: 16px;
   background: #F2F7FB;
   transition: transform .24s ease, background .24s ease, color .24s ease;
 }
@@ -747,8 +788,8 @@ a:hover .molsan-icon-3d,button:hover .molsan-icon-3d,.molsan-icon-3d.is-active {
 }
 .molsan-premium-card__title {
   color: #064675;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 750;
   line-height: 1.35;
 }
 .molsan-premium-card__description {
@@ -760,12 +801,16 @@ a:hover .molsan-icon-3d,button:hover .molsan-icon-3d,.molsan-icon-3d.is-active {
   position: relative;
   z-index: 1;
   min-width: 0;
-  padding: 14px 20px 20px;
+  padding: 16px 22px 22px;
+  border: 0;
+  background: transparent;
 }
 @media (max-width: 760px) {
   .molsan-premium-card { border-radius: 16px; }
-  .molsan-premium-card__header { padding: 16px 16px 0; }
-  .molsan-premium-card__content { padding: 12px 16px 16px; }
+  .molsan-premium-card__header { padding: 17px 17px 0; }
+  .molsan-premium-card__icon { flex-basis: 48px; width: 48px; height: 48px; }
+  .molsan-premium-card__title { font-size: 16px; }
+  .molsan-premium-card__content { padding: 13px 17px 17px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .molsan-premium-card,.molsan-premium-card::before,.molsan-premium-card__icon { transition: none; }
@@ -920,13 +965,26 @@ a:hover .molsan-icon-3d,button:hover .molsan-icon-3d,.molsan-icon-3d.is-active {
 @media(prefers-reduced-motion:reduce){.agenda-toast-premium *,.notificaciones-toast-premium *,.informe-apoderado-premium *,.visibilidad-tablas-premium *,.provisiones-launcher-premium *,.select-sj-premium *,.herramientas-home-premium *,.mantenimiento-tecnico-premium *,.verifacti-premium *,.crear-noticia-premium *{animation:none!important;transition:none!important}}
 
 
-/* Tarjeta KPI compartida: estructura y microinteracciones del patrón Espacios de trabajo. */
+/* Tarjeta KPI compartida · misma superficie y hover del patrón Espacios de trabajo. */
 .molsan-stat-card {
-  --molsan-stat-accent:#1477A5; --molsan-stat-ink:#07537D; --molsan-stat-tint:#EAF5FA;
-  position:relative; display:flex; min-width:0; min-height:150px; flex-direction:column; align-items:stretch; overflow:hidden;
-  padding:18px 19px 16px; text-align:left; color:var(--molsan-text,#17384D); border:1px solid var(--molsan-border,#D8E4EC);
-  border-radius:19px; background:linear-gradient(150deg,#fff 0%,#fff 58%,var(--molsan-stat-tint) 100%);
-  box-shadow:0 8px 22px rgba(6,50,82,.065); transition:transform .24s cubic-bezier(.2,.8,.2,1),box-shadow .24s ease,border-color .24s ease;
+  --molsan-stat-accent:#1477A5;
+  --molsan-stat-ink:#07537D;
+  --molsan-stat-tint:#EAF5FA;
+  position:relative;
+  display:flex;
+  min-width:0;
+  min-height:150px;
+  flex-direction:column;
+  align-items:stretch;
+  overflow:hidden;
+  padding:18px 19px 16px;
+  text-align:left;
+  color:var(--molsan-text,#17384D);
+  border:1.5px solid #C5D8E5;
+  border-radius:20px;
+  background:#FFFFFF;
+  box-shadow:0 7px 20px rgba(6,70,117,.09),0 1px 3px rgba(6,50,82,.045);
+  transition:transform .2s cubic-bezier(.2,.75,.25,1),box-shadow .2s ease,border-color .2s ease;
 }
 .molsan-stat-card::before { content:""; position:absolute; inset:0 0 auto; height:4px; background:var(--molsan-stat-accent); }
 .molsan-stat-card--ocean { --molsan-stat-accent:#1477A5; --molsan-stat-ink:#07537D; --molsan-stat-tint:#EAF5FA; }
@@ -937,16 +995,26 @@ a:hover .molsan-icon-3d,button:hover .molsan-icon-3d,.molsan-icon-3d.is-active {
 .molsan-stat-card--slate { --molsan-stat-accent:#8093A1; --molsan-stat-ink:#617789; --molsan-stat-tint:#F2F7FB; }
 .molsan-stat-card--rose { --molsan-stat-accent:#C45B65; --molsan-stat-ink:#A83D49; --molsan-stat-tint:#FCEFF0; }
 .molsan-stat-card__top { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-.molsan-stat-card__title { color:var(--molsan-stat-ink); font-size:11px; font-weight:800; letter-spacing:.1em; line-height:1.35; text-transform:uppercase; }
-.molsan-stat-card__icon { display:grid; width:48px; height:48px; flex:0 0 48px; place-items:center; border:1px solid color-mix(in srgb,var(--molsan-stat-accent) 27%,#fff); border-radius:15px; background:radial-gradient(circle at 28% 18%,#fff 0 10%,var(--molsan-stat-tint) 58%,color-mix(in srgb,var(--molsan-stat-accent) 14%,#fff)); box-shadow:0 7px 16px color-mix(in srgb,var(--molsan-stat-accent) 13%,transparent),inset 0 1px 1px rgba(255,255,255,.95); transition:transform .24s ease,box-shadow .24s ease; }
+.molsan-stat-card__title { color:var(--molsan-stat-ink); font-size:13px; font-weight:700; letter-spacing:0; line-height:1.4; }
+.molsan-stat-card__icon {
+  display:grid; width:48px; height:48px; flex:0 0 48px; place-items:center;
+  color:var(--molsan-stat-ink); border:1px solid #D8E4EC; border-radius:15px;
+  background:var(--molsan-stat-tint); box-shadow:0 5px 12px rgba(6,70,117,.08);
+}
 .molsan-stat-card__value { margin-top:7px; color:#17384D; font-size:clamp(23px,2vw,29px); font-weight:850; letter-spacing:-.045em; line-height:1.15; overflow-wrap:anywhere; }
 .molsan-stat-card__description { margin:6px 0 0; color:var(--molsan-text-muted,#617789); font-size:12px; line-height:1.45; }
 .molsan-stat-card__action { display:flex; align-items:center; gap:5px; margin-top:auto; padding-top:10px; color:var(--molsan-stat-ink); font-size:11px; font-weight:750; }
-.molsan-stat-card__action svg { transition:transform .2s ease; }
 .molsan-stat-card.is-interactive { cursor:pointer; font:inherit; }
-.molsan-stat-card.is-interactive:hover { z-index:1; transform:translateY(-4px); border-color:color-mix(in srgb,var(--molsan-stat-accent) 42%,#fff); box-shadow:0 17px 32px rgba(6,50,82,.13); }
-.molsan-stat-card.is-interactive:hover .molsan-stat-card__icon { transform:translateY(-2px) rotate(-2deg) scale(1.035); box-shadow:0 12px 22px color-mix(in srgb,var(--molsan-stat-accent) 20%,transparent),inset 0 1px 1px rgba(255,255,255,.98); }
-.molsan-stat-card.is-interactive:hover .molsan-stat-card__action svg { transform:translateX(4px); }
+.molsan-stat-card.is-interactive:hover {
+  z-index:1; transform:translateY(-4px); border-color:#9FBFD2;
+  box-shadow:0 16px 34px rgba(6,70,117,.15);
+}
 .molsan-stat-card.is-interactive:focus-visible { outline:3px solid rgba(6,70,117,.28); outline-offset:3px; }
-@media (max-width:640px) { .molsan-stat-card { min-height:138px; padding:16px; } .molsan-stat-card__icon { width:43px; height:43px; flex-basis:43px; } }
-@media (prefers-reduced-motion:reduce) { .molsan-stat-card,.molsan-stat-card * { transition:none !important; } .molsan-stat-card.is-interactive:hover { transform:none; } }
+@media (max-width:640px) {
+  .molsan-stat-card { min-height:138px; padding:16px; }
+  .molsan-stat-card__icon { width:43px; height:43px; flex-basis:43px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .molsan-stat-card,.molsan-stat-card * { transition:none !important; }
+  .molsan-stat-card.is-interactive:hover { transform:none; }
+}

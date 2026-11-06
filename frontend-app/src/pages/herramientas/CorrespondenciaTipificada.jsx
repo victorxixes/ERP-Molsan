@@ -249,7 +249,7 @@ export default function CorrespondenciaTipificada() {
   }
 
   return (
-    <div className="correspondencia-tipificada-premium herramientas-subpagina-premium min-h-full space-y-5 p-4 pb-10 sm:p-6 lg:p-8 animate-fadeIn">
+    <div className="correspondencia-tipificada-premium herramientas-subpagina-premium min-h-full space-y-5 p-4 pb-10 sm:p-6 lg:p-8 ">
       <MolsanPageHeader
         mark="COR"
         title="Correspondencia tipificada"

@@ -89,7 +89,7 @@ export default function Verifacti() {
   }
 
   return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
+    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
       <MolsanPageHeader mark="VF" title="Verifacti" description="Panel de control de facturación electrónica y registros VERI*FACTU." />
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[245px_minmax(0,1fr)]">
@@ -118,10 +118,10 @@ export default function Verifacti() {
             <Panel title="Centro de control" description="Accesos a las operaciones contempladas en la API oficial de Verifacti.">
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 {[
-                  ["⌕", "Consultar facturas", "Buscar por ejercicio, periodo, serie o número.", "facturas"],
-                  ["＋", "Registrar factura", "Preparar los campos de una nueva factura.", "crear"],
-                  ["↻", "Subsanaciones y anulaciones", "Preparar una operación sobre un registro existente.", "operaciones"],
-                  ["⇩", "XML y exportaciones", "Consultar XML de una factura o preparar una exportación.", "xml"],
+                  ["search", "Consultar facturas", "Buscar por ejercicio, periodo, serie o número.", "facturas"],
+                  ["plus", "Registrar factura", "Preparar los campos de una nueva factura.", "crear"],
+                  ["refresh", "Subsanaciones y anulaciones", "Preparar una operación sobre un registro existente.", "operaciones"],
+                  ["download", "XML y exportaciones", "Consultar XML de una factura o preparar una exportación.", "xml"],
                 ].map(([icon, title, desc, id]) => <button key={id} onClick={() => cambiarSeccion(id)} className="flex items-start gap-3 rounded-2xl border border-slate-200 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/40">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50"><MolsanIcon name={icon} size={22} tone="ocean" /></span><span><strong className="block text-sm text-slate-800">{title}</strong><span className="mt-1 block text-sm leading-5 text-slate-500">{desc}</span></span><span className="ml-auto text-slate-300"><MolsanIcon name="arrowRight" size={16} tone="slate" bare /></span>
                 </button>)}
@@ -202,7 +202,7 @@ export default function Verifacti() {
           {seccion === "api" && <Panel title="API de Verifacti" description="Listado de endpoints identificados en la documentación oficial.">
             <div className="mb-4 flex flex-wrap items-center gap-2"><span className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700">Base URL</span><code className="break-all rounded-lg bg-slate-900 px-3 py-1.5 text-xs text-cyan-200">https://api.verifacti.com</code></div>
             <div className="overflow-x-auto"><table className="w-full min-w-[520px] border-collapse text-left text-sm"><thead><tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500"><th className="px-3 py-3">Método</th><th className="px-3 py-3">Endpoint</th><th className="px-3 py-3">Uso</th></tr></thead><tbody>{ENDPOINTS.map(([method, endpoint, desc]) => <tr key={endpoint} className="border-b border-slate-100 last:border-0"><td className="px-3 py-3"><span className={`rounded-md px-2 py-1 text-[10px] font-bold ${method === "GET" ? "bg-emerald-50 text-emerald-700" : method === "POST" ? "bg-blue-50 text-blue-700" : method === "PUT" ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-700"}`}>{method}</span></td><td className="px-3 py-3 font-mono text-xs text-slate-700">{endpoint}</td><td className="px-3 py-3 text-slate-500">{desc}</td></tr>)}</tbody></table></div>
-            <div className="mt-5 flex flex-wrap gap-3"><a href="https://www.verifacti.com/docs" target="_blank" rel="noreferrer" className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Abrir documentación completa ↗</a><a href="https://www.verifacti.com/" target="_blank" rel="noreferrer" className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Web de Verifacti ↗</a></div>
+            <div className="mt-5 flex flex-wrap gap-3"><a href="https://www.verifacti.com/docs" target="_blank" rel="noreferrer" className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Abrir documentación completa <MolsanIcon name="externalLink" size={14} tone="inherit" /></a><a href="https://www.verifacti.com/" target="_blank" rel="noreferrer" className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Web de Verifacti <MolsanIcon name="externalLink" size={14} tone="inherit" /></a></div>
           </Panel>}
 
           {aviso && <div role="status" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">{aviso}</div>}

@@ -6,6 +6,7 @@ import {
 } from "react";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 /**
  * ============================================================
@@ -1527,7 +1528,7 @@ export default function EntidadesBancarias() {
         min-h-full
         p-4 sm:p-6 lg:p-8
         space-y-6
-        animate-fadeIn
+        
       "
     >
 
@@ -1598,7 +1599,7 @@ export default function EntidadesBancarias() {
               "
               title="Descargar el catálogo filtrado en Excel"
             >
-              <span className="text-lg">⬇️</span>
+              <MolsanIcon name="download" size={16} tone="inherit" />
               Descargar Excel
             </button>
 
@@ -2105,7 +2106,7 @@ export default function EntidadesBancarias() {
                   >
                     <button type="button" onClick={() => ordenarPor("codigo_europeo")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Código Europeo">
                       Código Europeo
-                      <span aria-hidden="true">{ordenColumna === "codigo_europeo" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                      <span aria-hidden="true">{ordenColumna === "codigo_europeo" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
                   </th>
 
@@ -2125,7 +2126,7 @@ export default function EntidadesBancarias() {
                   >
                     <button type="button" onClick={() => ordenarPor("lei")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por LEI">
                       LEI
-                      <span aria-hidden="true">{ordenColumna === "lei" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                      <span aria-hidden="true">{ordenColumna === "lei" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
                   </th>
 
@@ -2145,7 +2146,7 @@ export default function EntidadesBancarias() {
                   >
                     <button type="button" onClick={() => ordenarPor("nombre")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Nombre">
                       Nombre
-                      <span aria-hidden="true">{ordenColumna === "nombre" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                      <span aria-hidden="true">{ordenColumna === "nombre" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
                   </th>
 
@@ -2165,7 +2166,7 @@ export default function EntidadesBancarias() {
                   >
                     <button type="button" onClick={() => ordenarPor("categoria")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Categoría">
                       Categoría
-                      <span aria-hidden="true">{ordenColumna === "categoria" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                      <span aria-hidden="true">{ordenColumna === "categoria" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
                   </th>
 
@@ -2185,7 +2186,7 @@ export default function EntidadesBancarias() {
                   >
                     <button type="button" onClick={() => ordenarPor("entidad_actual")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Entidad actual">
                       Entidad actual
-                      <span aria-hidden="true">{ordenColumna === "entidad_actual" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                      <span aria-hidden="true">{ordenColumna === "entidad_actual" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
                   </th>
 
@@ -2204,7 +2205,7 @@ export default function EntidadesBancarias() {
                   >
                     <button type="button" onClick={() => ordenarPor("direccion")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Dirección">
                       Dirección
-                      <span aria-hidden="true">{ordenColumna === "direccion" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                      <span aria-hidden="true">{ordenColumna === "direccion" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
                   </th>
 
@@ -2711,6 +2712,9 @@ function ModalImportarExcel({
   formatearTamano
 }) {
 
+  const importarEntidadesDialogRef = useRef(null);
+  useAccessibleDialog({ open: true, onClose: () => { if (!importando) onCerrar(); }, dialogRef: importarEntidadesDialogRef });
+
   return (
 
     <div
@@ -2741,6 +2745,11 @@ function ModalImportarExcel({
     >
 
       <div
+        ref={importarEntidadesDialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Importar entidades bancarias desde Excel"
         className="
           w-full
           max-w-2xl
@@ -2882,9 +2891,7 @@ function ModalImportarExcel({
               "
             >
 
-              <div className="text-lg">
-                ℹ️
-              </div>
+              <div className="shrink-0"><MolsanIcon name="help" size={19} tone="ocean" /></div>
 
 
               <div>
@@ -3325,6 +3332,9 @@ function ModalEntidadBancaria({
   }
 
 
+  const entidadBancariaDialogRef = useRef(null);
+  useAccessibleDialog({ open: true, onClose: () => { if (!guardando) onCerrar(); }, dialogRef: entidadBancariaDialogRef });
+
   return (
 
     <div
@@ -3355,6 +3365,11 @@ function ModalEntidadBancaria({
     >
 
       <div
+        ref={entidadBancariaDialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Formulario de entidad bancaria"
         className="
           w-full
           max-w-2xl

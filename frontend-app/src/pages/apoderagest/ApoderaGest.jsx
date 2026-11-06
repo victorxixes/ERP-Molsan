@@ -289,21 +289,6 @@ function TablaEncargos({ encargos, onFirmado }) {
 
   const grupos = useMemo(() => agruparEncargosPorApoderado(encargos), [encargos]);
 
-  useEffect(() => {
-    const clavesAbiertas = grupos.filter((grupo) => abiertos[grupo.clave]).map((grupo) => grupo.clave);
-    if (!clavesAbiertas.length) return undefined;
-    const cerrarConEscape = (event) => {
-      if (event.key !== "Escape") return;
-      setAbiertos((actual) => {
-        const siguiente = { ...actual };
-        clavesAbiertas.forEach((clave) => { siguiente[clave] = false; });
-        return siguiente;
-      });
-    };
-    window.addEventListener("keydown", cerrarConEscape);
-    return () => window.removeEventListener("keydown", cerrarConEscape);
-  }, [abiertos, grupos]);
-
   function cambiarDatoAceptacion(encargo, campo, valor) {
     const id = String(encargo.id_expediente || encargo.id);
     setDatosAceptacion((actual) => ({
@@ -500,7 +485,7 @@ function TablaEncargos({ encargos, onFirmado }) {
         const expedientesBloqueados = grupo.expedientes.filter((encargo) => Boolean(encargo.bloqueado)).length;
         return (
           <section className="ag-panel ag-grupo-notario ag-grupo-apoderado" key={grupo.clave}>
-            <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger ag-apoderado-grupo-trigger" aria-expanded={abierto} onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: !actual[grupo.clave] }))}>
+            <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger ag-apoderado-grupo-trigger" aria-expanded={abierto} onClick={() => setGrupoEncargosAbierto(abierto ? null : grupo.clave)}>
               <span className="ag-notario-grupo-icono" aria-hidden="true"><MolsanIcon name="users" size={34} tone="violet" /></span>
               <span className="ag-notario-grupo-info">
                 <span className="ag-notario-linea-unica">
@@ -516,11 +501,11 @@ function TablaEncargos({ encargos, onFirmado }) {
               </span>
             </button>
             {abierto ? createPortal((
-              <div className="apoderagest ag-portal-root ag-grupo-modal-overlay fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" ref={grupoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} onMouseDown={(e) => { if (e.target === e.currentTarget) setAbiertos(actual => ({ ...actual, [grupo.clave]: false })); }}>
+              <div className="apoderagest ag-portal-root ag-grupo-modal-overlay fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" ref={grupoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} onMouseDown={(e) => { if (e.target === e.currentTarget) setGrupoEncargosAbierto(null); }}>
                 <div className="ag-grupo-modal flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
                   <header className="ag-grupo-modal-cabecera molsan-modal-header flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
                     <div><span className="text-xs font-semibold uppercase tracking-widest text-slate-500">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1 text-xl font-bold text-slate-900">{grupo.nombre}</h3><p className="text-sm text-slate-600">{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
-                    <button type="button" className="ag-grupo-modal-cerrar rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" autoFocus onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: false }))}>Cerrar <MolsanIcon name="x" size={14} bare /></button>
+                    <button type="button" className="ag-grupo-modal-cerrar rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" autoFocus onClick={() => setGrupoEncargosAbierto(null)}>Cerrar <MolsanIcon name="x" size={14} bare /></button>
                   </header>
                   <div className="molsan-modal__body overflow-y-auto p-4">
                 {grupo.expedientes.map((encargo, indice) => {
@@ -817,15 +802,6 @@ export default function ApoderaGest() {
     if (tieneAccesoApoderagest) cargarDatos();
   }, [cargarDatos, tieneAccesoApoderagest]);
 
-  useEffect(() => {
-    if (!modalResumen) return undefined;
-    const cerrarConEscape = (event) => {
-      if (event.key === "Escape") setModalResumen(null);
-    };
-    window.addEventListener("keydown", cerrarConEscape);
-    return () => window.removeEventListener("keydown", cerrarConEscape);
-  }, [modalResumen]);
-
   const esEncargoFirmado = (encargo) => Boolean(encargo?.fecha_firma && String(encargo?.protocolo || "").trim());
   const normalizarModalidad = (valor) => String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
   const encargosDelResumen = useMemo(() => {
@@ -920,10 +896,9 @@ export default function ApoderaGest() {
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="erp-page molsan-page molsan-professional-shell w-full apoderagest">
       <MolsanPageHeader
-        mark="AG"
+        mark="AP"
         title="ApoderaGest"
         description="Centro de gestión de encargos, firmas y actividad del apoderado."
-        className="ag-hero dashboard-header"
       />
 
       {error ? (
@@ -945,10 +920,10 @@ export default function ApoderaGest() {
             {ultimaActualizacion ? <span className="ag-actualizado">Actualizado a las {ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</span> : null}
           </div>
           <div className="ag-grid-kpi">
-            <TarjetaIndicador titulo="Total de encargos" valor={numeroLegible(dashboard?.total_encargos ?? 0)} detalle="Volumen registrado" icono="fileCheck" tono="ocean" variante="ag-kpi-azul" onClick={() => abrirResumenEncargos("todos", "Todos los encargos")} />
-            <TarjetaIndicador titulo="Firmados" valor={numeroLegible(dashboard?.firmados ?? 0)} detalle="Encargos completados" icono="check" tono="emerald" variante="ag-kpi-verde" onClick={() => abrirResumenEncargos("firmados", "Encargos firmados")} />
-            <TarjetaIndicador titulo="Pendientes" valor={numeroLegible(dashboard?.pendientes ?? 0)} detalle="Requieren seguimiento" icono="timer" tono="amber" variante="ag-kpi-ambar" onClick={() => abrirResumenEncargos("pendientes", "Encargos pendientes")} />
-            <TarjetaIndicador titulo="Media hasta firma" valor={dashboard?.media_dias_hasta_firma == null ? "—" : `${Math.abs(dashboard.media_dias_hasta_firma)} días ${dashboard.media_dias_hasta_firma < 0 ? "antes" : dashboard.media_dias_hasta_firma > 0 ? "después" : "en fecha"}`} detalle="Desde fecha prevista hasta fecha real" icono="chart" tono="violet" variante="ag-kpi-violeta" onClick={() => abrirResumenEncargos("media", "Encargos incluidos en la media hasta firma")} />
+            <TarjetaIndicador titulo="Total de encargos" valor={numeroLegible(dashboard?.total_encargos ?? 0)} detalle="Volumen registrado" icono="fileCheck" tono="ocean" onClick={() => abrirResumenEncargos("todos", "Todos los encargos")} />
+            <TarjetaIndicador titulo="Firmados" valor={numeroLegible(dashboard?.firmados ?? 0)} detalle="Encargos completados" icono="check" tono="emerald" onClick={() => abrirResumenEncargos("firmados", "Encargos firmados")} />
+            <TarjetaIndicador titulo="Pendientes" valor={numeroLegible(dashboard?.pendientes ?? 0)} detalle="Requieren seguimiento" icono="timer" tono="amber" onClick={() => abrirResumenEncargos("pendientes", "Encargos pendientes")} />
+            <TarjetaIndicador titulo="Media hasta firma" valor={dashboard?.media_dias_hasta_firma == null ? "—" : `${Math.abs(dashboard.media_dias_hasta_firma)} días ${dashboard.media_dias_hasta_firma < 0 ? "antes" : dashboard.media_dias_hasta_firma > 0 ? "después" : "en fecha"}`} detalle="Desde fecha prevista hasta fecha real" icono="chart" tono="violet" onClick={() => abrirResumenEncargos("media", "Encargos incluidos en la media hasta firma")} />
           </div>
           <div className="molsan-stat-grid">
             <TarjetaIndicador titulo="Firmas presenciales" valor={numeroLegible(dashboard?.firmas_presenciales)} detalle="Actividad presencial" icono="pin" tono="cyan" onClick={() => abrirResumenEncargos("presenciales", "Firmas presenciales")} />

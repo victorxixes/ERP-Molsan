@@ -57,7 +57,7 @@ export default function LecturaCopias() {
               <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} disabled={procesando} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100" />
             </label>
             <button type="button" onClick={procesar} disabled={!fecha || procesando} className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
-              {procesando ? "Procesando…" : "▶ Procesar"}
+              {procesando ? "Procesando…" : <><MolsanIcon name="play" size={14} tone="inherit" /> Procesar</>}
             </button>
           </div>
           <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">

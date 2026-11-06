@@ -209,8 +209,6 @@
   border-radius:.7rem; background:var(--molsan-surface,#fff); color:var(--molsan-text,#24324a); box-shadow:inset 0 1px 2px rgba(15,23,42,.025);
 }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(input,select,textarea):focus { border-color:var(--molsan-primary, #064675); outline:3px solid color-mix(in srgb,var(--molsan-primary, #064675) 15%,transparent); }
-@media(max-width:680px) {
-}
 @media(prefers-reduced-motion:reduce) { :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn { transition:none; } }
 
 
@@ -292,77 +290,4 @@
   .seguridad-usuarios-premium .erp-card-body { padding:1rem; }
   .seguridad-rol-editor-premium table,
   .seguridad-usuarios-premium table { min-width:620px; }
-}
-
-
-/* Distribución de la pantalla Usuarios y seguridad: directorio estrecho, ficha amplia. */
-.seguridad-usuarios-layout { align-items:start; grid-template-columns:minmax(280px,.8fr) minmax(0,2fr); }
-.seguridad-usuarios-layout > .erp-card,
-.seguridad-usuarios-layout > .space-y-6 { min-width:0; width:100%; }
-.seguridad-usuarios-layout > .erp-card { position:sticky; top:1rem; }
-
-.seguridad-usuarios-layout > .erp-card .erp-card-body { min-width:0; }
-.seguridad-usuarios-layout > .erp-card .erp-card-body > * { min-width:0; max-width:100%; }
-/* El directorio se presenta como una lista vertical; evita mini tarjetas en columnas. */
-.seguridad-usuarios-layout > .erp-card .erp-card-body .grid {
-  grid-template-columns:minmax(0,1fr) !important;
-}
-.seguridad-usuarios-layout > .erp-card .erp-card-body [class*="grid-cols-"] {
-  grid-template-columns:minmax(0,1fr) !important;
-}
-.seguridad-usuarios-layout > .erp-card .erp-card-body img {
-  max-width:100%; object-fit:cover;
-}
-.seguridad-usuarios-layout > .space-y-6 > .erp-card,
-.seguridad-usuarios-layout > .space-y-6 .erp-card { min-width:0; }
-.seguridad-usuarios-layout .erp-data-item {
-  display:flex; flex-direction:column; align-items:flex-start; gap:.35rem;
-  min-width:0; padding:.85rem 1rem; border:1px solid #e5ebf4;
-  border-radius:12px; background:#fbfcfe;
-}
-.seguridad-usuarios-layout .erp-data-value { overflow-wrap:anywhere; word-break:break-word; }
-.seguridad-usuarios-layout .erp-action-bar {
-  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
-  gap:1rem; padding:1rem; border:1px solid #e1e8f2; border-radius:12px;
-  background:#f8faff;
-}
-@media(max-width:1100px) {
-  .seguridad-usuarios-layout { grid-template-columns:minmax(0,1fr); }
-  .seguridad-usuarios-layout > .erp-card { position:static; }
-  .seguridad-usuarios-layout > .erp-card .erp-card-body .grid,
-  .seguridad-usuarios-layout > .erp-card .erp-card-body [class*="grid-cols-"] {
-    grid-template-columns:minmax(0,1fr) !important;
-  }
-}
-@media(max-width:640px) {
-  .seguridad-usuarios-layout { gap:1rem; }
-  .seguridad-usuarios-layout .erp-action-bar { align-items:stretch; }
-  .seguridad-usuarios-layout .erp-action-bar > * { width:100%; }
-}
-
-
-/* Buscador del directorio dentro de Seguridad > Usuarios y seguridad. */
-.seguridad-usuarios-layout .empleados-filtros-busqueda {
-  display:block; position:relative; width:100%; min-width:0;
-}
-.seguridad-usuarios-layout .empleados-filtros-busqueda input {
-  display:block; box-sizing:border-box; width:100%; min-width:0; max-width:100%;
-  height:44px; padding:.7rem .75rem .7rem 2.7rem;
-  border:1px solid #aebfd6 !important; border-radius:10px;
-  background:#fff !important; color:#172b4d !important;
-  font-size:.875rem; line-height:1.4; opacity:1;
-  box-shadow:0 1px 3px rgba(15,35,65,.08);
-}
-.seguridad-usuarios-layout .empleados-filtros-busqueda input::placeholder {
-  color:#64748b !important; opacity:1; white-space:nowrap;
-}
-.seguridad-usuarios-layout .empleados-filtros-busqueda input:focus {
-  border-color:var(--molsan-primary) !important; outline:3px solid color-mix(in srgb, var(--molsan-primary) 16%, transparent);
-  outline-offset:1px;
-}
-.seguridad-usuarios-layout .empleados-filtros-busqueda > span {
-  left:.85rem; color:#526784 !important; font-size:1.15rem; line-height:1;
-}
-.seguridad-usuarios-layout .erp-card-body > .rounded-2xl {
-  min-width:0; width:100%; box-sizing:border-box;
 }

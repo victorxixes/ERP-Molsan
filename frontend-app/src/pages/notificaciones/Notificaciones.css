@@ -23,5 +23,4 @@
 @media (max-width: 640px) {
   .notificaciones-premium-page { min-width:0; }
 }
-@media (prefers-reduced-motion: reduce) {
-}
+

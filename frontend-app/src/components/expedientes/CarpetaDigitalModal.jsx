@@ -589,7 +589,7 @@ export default function CarpetaDigitalModal({
                   <span className="block">{bytes(doc.tamano_bytes || 0)}{doc.fecha_subida ? ` · ${new Date(doc.fecha_subida).toLocaleString("es-ES")}` : ""}</span>
                 </button>
                 <button type="button" onClick={() => verDocumento(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-indigo-700 hover:bg-indigo-100">Ver</button>
-                <button type="button" onClick={() => descargar(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-slate-600 hover:bg-slate-100" title="Descargar">↓</button>
+                <button type="button" onClick={() => descargar(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-slate-600 hover:bg-slate-100" title="Descargar"><MolsanIcon name="download" size={14} tone="inherit" /></button>
                 <button type="button" onClick={() => eliminar(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-red-600 hover:bg-red-50" title="Eliminar"><MolsanIcon name="x" size={12} bare /></button>
               </li>
             ))}

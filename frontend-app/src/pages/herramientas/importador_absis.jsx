@@ -144,7 +144,7 @@ export default function ImportadorAbsis() {
                 p-4
                 lg:p-6
                 space-y-5
-                animate-fade-in
+                
                 text-[var(--erp-text)]
             "
         >
@@ -679,7 +679,7 @@ export default function ImportadorAbsis() {
                         rounded-2xl
                         p-5
                         shadow-sm
-                        animate-fade-in
+                        
                     "
                 >
 
@@ -754,7 +754,7 @@ export default function ImportadorAbsis() {
                         p-5
                         lg:p-6
                         shadow-sm
-                        animate-fade-in
+                        
                     "
                 >
 
@@ -999,7 +999,7 @@ export default function ImportadorAbsis() {
                             "
                         >
 
-                            ⚠️ La importación terminó con{" "}
+                            <MolsanIcon name="alert" size={17} tone="amber" /> La importación terminó con{" "}
 
                             <strong>
                                 {resultado.errores}

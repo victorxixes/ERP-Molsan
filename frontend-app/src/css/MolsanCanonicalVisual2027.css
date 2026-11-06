@@ -5,10 +5,33 @@
    - botones: acciones con icono en lenguaje de accesos; secundarios discretos y coherentes
    - márgenes idénticos en páginas y subpáginas
 */
-/* Geometría y posición iguales al Dashboard; tono Glass intermedio y legible. */
-:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero) {
+
+/* Superficies de página: blanco corporativo uniforme en todas las rutas. */
+:is(
+  .erp-app-shell, .erp-main-content, .erp-main-inner, .erp-route-content, .erp-page,
+  .cg-page, .cg-unified-workspace, .ctn-detalle-page, .empleado-perfil-premium, .expedientes-page, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium, .fusiones-page,
+  .apoderagest, .notargest, .notargest-workspace-premium, .encargagest,
+  .encargagest-workspace-premium, .catalogos-premium-page, .catalogos-maestros-premium,
+  .catalogos-maestros-page, .utilidades-premium-page, .herramientas-subpagina-premium,
+  .herramienta-operativa-premium, .herramientas-home-premium,
+  .honorarios-gestoria-premium, .empleados-premium-page, .empleados-listado-premium,
+  .empleado-ficha-premium, .empleado-editar-premium, .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page, .seguridad-subpagina-premium,
+  .notificaciones-premium-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .informes-premium-page, .mensajes-premium-page, .molsan-intranet-page,
+  .fichajes-premium-page, .provisiones-fondos-premium,
+  .provisiones-fondos-page
+) {
+  background: #FFFFFF !important;
+}
+
+/* Geometría y posición iguales al Dashboard; superficie blanca y sobria. */
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header) {
   box-sizing: border-box !important;
   width: 100% !important;
+  max-width: none !important;
   min-width: 0 !important;
   min-height: var(--molsan-canon-header-height) !important;
   margin: 0 0 20px !important;
@@ -19,20 +42,18 @@
   gap: 16px !important;
   flex-wrap: wrap !important;
   color: var(--molsan-canon-header-text) !important;
-  border: 1px solid #C5DCE9 !important;
+  border: 1.5px solid #C5D8E5 !important;
   border-radius: 18px !important;
-  background:
-    radial-gradient(ellipse at 88% 8%,rgba(255,255,255,.78),transparent 46%),
-    linear-gradient(112deg,var(--molsan-canon-header-start) 0%,var(--molsan-canon-header-mid) 56%,var(--molsan-canon-header-end) 100%) !important;
-  box-shadow: 0 8px 22px rgba(6,70,117,.09) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(118%) !important;
-  backdrop-filter: blur(16px) saturate(118%) !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 7px 20px rgba(6,70,117,.09), 0 1px 3px rgba(6,50,82,.045) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
 }
-:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header)
 :where(h1,h2,.molsan-page-header__title,.erp-page-title) {
   color: var(--molsan-canon-header-text) !important;
 }
-:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header)
 :where(p,.molsan-page-header__description,.erp-page-description) {
   color: var(--molsan-canon-header-muted) !important;
 }
@@ -58,91 +79,217 @@
 
 /* Tarjetas funcionales: mismo acento superior, acabado, iconografía y hover cromático.
    No se aplica a bloques de contenido, formularios ni paneles de calendario. */
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
-.eg-card,.eg-directorio-card,.ctn-modal-resumen-firmas > div,.accesos-notariales-resumen-card,
-.ctn-detalle-info-card,.ctn-detalle-stat,.expediente-card,.dashboard-card,.stat-card,.kpi-card,
-.agenda-upcoming-card,.notificaciones-premium-page article,.notificaciones-premium-page [role="article"],
-.panel-tecnico-submodulo-premium article,.ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
-  .eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpi,.notargest.ng-content .ng-kpi-card,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card) {
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
+.accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
+.agenda-upcoming-card,.ag-grupo-notario,.ag-grupo-apoderado,.ag-panel,.ag-carpeta-apoderado,.cg-panel,.eg-panel,
+.ng-panel,.ng-detalle-bloque,.ng-admin-individual-panel,.ng-admin-global-resumen,.ng-admin-resumen-principal,.ng-admin-resumen,
+.ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
+.notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card) {
   position: relative !important;
   overflow: hidden;
-  border: 1px solid #D8E4EC !important;
+  border: 1.5px solid #C5D8E5 !important;
   border-top: 4px solid #6CC5D9 !important;
   border-radius: var(--molsan-canon-card-radius) !important;
-  background: linear-gradient(145deg,#FFFFFF 0%,#FFFFFF 58%,#F2F7FB 100%) !important;
-  box-shadow: 0 8px 23px rgba(6,70,117,.075) !important;
-  transition: transform .23s cubic-bezier(.2,.75,.25,1),background .23s ease,
-    border-color .23s ease,box-shadow .23s ease !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 7px 20px rgba(6,70,117,.09),0 1px 3px rgba(6,50,82,.045) !important;
+  transition: transform .2s cubic-bezier(.2,.75,.25,1),border-color .2s ease,
+    box-shadow .2s ease !important;
 }
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
-.eg-card,.eg-directorio-card,.ctn-modal-resumen-firmas > div,.accesos-notariales-resumen-card,
-.ctn-detalle-info-card,.ctn-detalle-stat,.expediente-card,.dashboard-card,.stat-card,.kpi-card,
-.agenda-upcoming-card,.notificaciones-premium-page article,.notificaciones-premium-page [role="article"],
-.panel-tecnico-submodulo-premium article,.ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
-  .eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpi,.notargest.ng-content .ng-kpi-card,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card):hover {
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
+.accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
+.agenda-upcoming-card,.ag-grupo-notario,.ag-grupo-apoderado,.ag-panel,.ag-carpeta-apoderado,.cg-panel,.eg-panel,
+.ng-panel,.ng-detalle-bloque,.ng-admin-individual-panel,.ng-admin-global-resumen,.ng-admin-resumen-principal,.ng-admin-resumen,
+.ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
+.notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card):hover {
   transform: translateY(-4px) !important;
-  border-color: #AFCFDF !important;
+  border-color: #9FBFD2 !important;
   border-top-color: #064675 !important;
-  background: linear-gradient(145deg,#EAF5FA 0%,#F6FAFC 56%,#EAF2F8 100%) !important;
+  background: #FFFFFF !important;
   box-shadow: 0 16px 34px rgba(6,70,117,.15) !important;
 }
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
-.eg-card,.eg-directorio-card,.ctn-modal-resumen-firmas > div,.accesos-notariales-resumen-card,
-.ctn-detalle-info-card,.ctn-detalle-stat,.expediente-card,.dashboard-card,.stat-card,.kpi-card,
-.agenda-upcoming-card,.notificaciones-premium-page article,.notificaciones-premium-page [role="article"],
-.panel-tecnico-submodulo-premium article,.ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
-  .eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpi,.notargest.ng-content .ng-kpi-card,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card)
-:where(.molsan-icon-3d,.molsan-icon-wrap,.agenda-stat-icon,.ag-kpi-icono,.eg-kpi-icono) {
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
+.accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
+.agenda-upcoming-card,.ag-grupo-notario,.ag-grupo-apoderado,.ag-panel,.ag-carpeta-apoderado,.cg-panel,.eg-panel,
+.ng-panel,.ng-detalle-bloque,.ng-admin-individual-panel,.ng-admin-global-resumen,.ng-admin-resumen-principal,.ng-admin-resumen,
+.ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
+.notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card)
+:where(.molsan-icon-3d,.molsan-icon-wrap) {
   transition: transform .23s ease,background .23s ease,box-shadow .23s ease !important;
 }
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
-.eg-card,.eg-directorio-card,.ctn-modal-resumen-firmas > div,.accesos-notariales-resumen-card,
-.ctn-detalle-info-card,.ctn-detalle-stat,.expediente-card,.dashboard-card,.stat-card,.kpi-card,
-.agenda-upcoming-card,.notificaciones-premium-page article,.notificaciones-premium-page [role="article"],
-.panel-tecnico-submodulo-premium article,.ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
-  .eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpi,.notargest.ng-content .ng-kpi-card,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card):hover
-:where(.molsan-icon-3d,.molsan-icon-wrap,.agenda-stat-icon,.ag-kpi-icono,.eg-kpi-icono) {
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
+.accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
+.agenda-upcoming-card,.ag-grupo-notario,.ag-grupo-apoderado,.ag-panel,.ag-carpeta-apoderado,.cg-panel,.eg-panel,
+.ng-panel,.ng-detalle-bloque,.ng-admin-individual-panel,.ng-admin-global-resumen,.ng-admin-resumen-principal,.ng-admin-resumen,
+.ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
+.notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card):hover
+:where(.molsan-icon-3d,.molsan-icon-wrap) {
   transform: translateY(-2px) scale(1.045) !important;
 }
 
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
-.eg-card,.eg-directorio-card,.ctn-modal-resumen-firmas > div,.accesos-notariales-resumen-card,
-.ctn-detalle-info-card,.ctn-detalle-stat,.expediente-card,.dashboard-card,.stat-card,.kpi-card,
-.agenda-upcoming-card,.notificaciones-premium-page article,.notificaciones-premium-page [role="article"],
-.panel-tecnico-submodulo-premium article,.ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,.eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpi,.notargest.ng-content .ng-kpi-card,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card):focus-within {
+:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
+.accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
+.agenda-upcoming-card,.ag-grupo-notario,.ag-grupo-apoderado,.ag-panel,.ag-carpeta-apoderado,.cg-panel,.eg-panel,
+.ng-panel,.ng-detalle-bloque,.ng-admin-individual-panel,.ng-admin-global-resumen,.ng-admin-resumen-principal,.ng-admin-resumen,
+.ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,.notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card):focus-within {
   border-color: #A9CCDF !important;
+}
+:where(.ng-admin-notaria-card.ng-admin-notaria-activa) {
+  border-color: #064675 !important;
+  border-top-color: #064675 !important;
+  background: #F2F7FB !important;
+  box-shadow: 0 9px 22px rgba(6,70,117,.12) !important;
 }
 :where(button.erp-card,a.erp-card,[role="button"].erp-card):active {
   transform: translateY(-1px) !important;
 }
-.molsan-premium-card::before {
-  content: none !important;
-  display: none !important;
+
+/* Superficie modal única: conserva overlays y geometría funcional, unifica el panel. */
+:is(
+  .encargagest .eg-modal-form, .encargagest .eg-modal-perfil,
+  .notargest .ng-modal, .notargest .ng-resumen-expedientes-modal,
+  .molsan-modal__panel, .erp-modal-panel, .expediente-operativo-modal-panel,
+  .ctn-detalle-modal
+) {
+  color: #173247 !important;
+  border: 1.5px solid #C5D8E5 !important;
+  border-radius: 22px !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 22px 54px rgba(6,70,117,.18) !important;
 }
-.molsan-premium-card:hover .molsan-premium-card__title {
-  color: #043B60 !important;
+:is(
+  .encargagest .eg-modal-header, .encargagest .eg-perfil-cabecera,
+  .notargest .ng-modal > header, .notargest .ng-resumen-expedientes-modal > header
+) {
+  color: #064675 !important;
+  border: 0 !important;
+  border-bottom: 0 !important;
+  background: #FFFFFF !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+:is(
+  .encargagest .eg-modal-header, .encargagest .eg-perfil-cabecera,
+  .notargest .ng-modal > header, .notargest .ng-resumen-expedientes-modal > header
+) :is(h1,h2,h3) { color: #064675 !important; }
+:is(
+  .encargagest .eg-modal-header, .encargagest .eg-perfil-cabecera,
+  .notargest .ng-modal > header, .notargest .ng-resumen-expedientes-modal > header
+) :is(p,small) { color: #617789 !important; }
+.encargagest .eg-modal-footer {
+  border-top: 0 !important;
+  background: #FFFFFF !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
 }
 
-/* Las tarjetas KPI de los portales reciben la franja superior de esta hoja;
-   se neutralizan sus pseudoelementos locales para evitar dos líneas superpuestas. */
-:where(.ag-kpi,.eg-kpi,.ng-dashboard-kpi,.ng-kpi-card,.ng-admin-kpi-button)::before {
-  content: none !important;
-  display: none !important;
+/* Cabeceras y pies de diálogos accesibles: sin bandas ni separadores interiores. */
+body :where(
+  [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0)
+) > header {
+  color: #064675 !important;
+  border: 0 !important;
+  border-bottom: 0 !important;
+  background: #FFFFFF !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body :where(
+  [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0)
+) > header :is(h1,h2,h3) { color: #064675 !important; }
+body :where(
+  [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0)
+) > header :is(p,small) { color: #617789 !important; }
+body :where(
+  [role="dialog"]:not([data-molsan-style-exempt]):not(.fixed.inset-0)
+) > footer {
+  border-top: 0 !important;
+  background: #FFFFFF !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+@media (max-width: 720px) {
+  :is(
+    .encargagest .eg-modal-form, .encargagest .eg-modal-perfil,
+    .notargest .ng-modal, .notargest .ng-resumen-expedientes-modal,
+    .molsan-modal__panel, .erp-modal-panel, .expediente-operativo-modal-panel,
+    .ctn-detalle-modal
+  ) { border-radius: 18px !important; }
+}
+
+/* Tarjetas Tailwind heredadas en subpáginas: migración controlada al patrón Espacios de trabajo. */
+:where(
+  .apoderagest, .encargagest, .notargest-workspace-premium, .crear-noticia-premium, .cg-page, .ctn-detalle-page, .empleado-perfil-premium,
+  .ficha-expediente-premium, .expedientes-page,
+  .seguridad-premium-page, .seguridad-subpagina-premium,
+  .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page, .catalogos-premium-page,
+  .catalogos-maestros-premium, .catalogos-maestros-page, .honorarios-gestoria-premium, .informes-premium-page,
+  .notificaciones-premium-page, .logs-premium-page, .herramientas-subpagina-premium,
+  .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
+  .fichajes-premium-page, .mensajes-premium-page, .molsan-intranet-page, .ctn-workspace-premium,
+  .agenda-premium-page, .fusiones-page
+) :where(section.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), article.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), article[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), div.rounded-2xl.border:not([role="dialog"]):not([class*="modal"])) {
+  position: relative;
+  min-width: 0;
+  border: 1.5px solid #C5D8E5 !important;
+  border-top: 4px solid #6CC5D9 !important;
+  border-radius: var(--molsan-canon-card-radius) !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 7px 20px rgba(6,70,117,.09),0 1px 3px rgba(6,50,82,.045) !important;
+  transition: transform .2s ease,border-color .2s ease,box-shadow .2s ease !important;
+}
+:where(
+  .apoderagest, .encargagest, .notargest-workspace-premium, .crear-noticia-premium, .cg-page, .ctn-detalle-page, .empleado-perfil-premium,
+  .ficha-expediente-premium, .expedientes-page,
+  .seguridad-premium-page, .seguridad-subpagina-premium,
+  .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page, .catalogos-premium-page,
+  .catalogos-maestros-premium, .catalogos-maestros-page, .honorarios-gestoria-premium, .informes-premium-page,
+  .notificaciones-premium-page, .logs-premium-page, .herramientas-subpagina-premium,
+  .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
+  .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
+  .agenda-premium-page, .fusiones-page
+) :where(section.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), article.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), article[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), div.rounded-2xl.border:not([role="dialog"]):not([class*="modal"])):hover {
+  transform: translateY(-2px);
+  border-color: #9FBFD2 !important;
+  border-top-color: #064675 !important;
+  box-shadow: 0 16px 34px rgba(6,70,117,.15) !important;
+}
+:where(
+  .apoderagest, .encargagest, .notargest-workspace-premium, .crear-noticia-premium, .cg-page, .ctn-detalle-page, .empleado-perfil-premium,
+  .ficha-expediente-premium, .expedientes-page,
+  .seguridad-premium-page, .seguridad-subpagina-premium,
+  .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page, .catalogos-premium-page,
+  .catalogos-maestros-premium, .catalogos-maestros-page, .honorarios-gestoria-premium, .informes-premium-page,
+  .notificaciones-premium-page, .logs-premium-page, .herramientas-subpagina-premium,
+  .utilidades-premium-page, .provisiones-fondos-premium, .provisiones-fondos-page,
+  .fichajes-premium-page, .mensajes-premium-page, .ctn-workspace-premium,
+  .agenda-premium-page
+) :where(section.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), section[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), div[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]), article.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]), article[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]), div.rounded-2xl.border:not([role="dialog"]):not([class*="modal"])) > :where(.border-b,header.border-b) {
+  border-bottom: 0 !important;
+  background: transparent !important;
 }
 
 /* Botones de acción con icono (Excel, imprimir, importar, exportar, descargar):
    tratamiento de acceso de Espacios de trabajo, sin cambiar el significado cromático. */
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(button,a,[role="button"])
 :where(.molsan-icon-3d,.molsan-btn__icon,.molsan-icon-wrap) {
   transition: transform .2s ease,filter .2s ease,box-shadow .2s ease !important;
 }
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(button,a,[role="button"]):hover
 :where(.molsan-icon-3d,.molsan-btn__icon,.molsan-icon-wrap) {
   transform: translateY(-2px) scale(1.05);
 }
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(.molsan-btn,.erp-btn,.ctn-btn,.agenda-open-cita,.agenda-today-action,
   .eg-secondary,.eg-button-primary,.cg-button-primary,.molsan-page-back-button) {
   min-height: 38px;
@@ -151,14 +298,14 @@
   font-weight: 700;
   transition: transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease;
 }
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(.molsan-btn--secondary,.molsan-btn--ghost,.eg-secondary,.molsan-page-back-button) {
   color: #064675 !important;
   border: 1px solid #D0E0EA !important;
-  background: linear-gradient(145deg,#FFFFFF,#F2F7FB) !important;
+  background: #FFFFFF !important;
   box-shadow: 0 2px 7px rgba(6,70,117,.055) !important;
 }
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(.molsan-btn--secondary,.molsan-btn--ghost,.eg-secondary,.molsan-page-back-button):hover {
   color: #043B60 !important;
   border-color: #AFCFDF !important;
@@ -166,14 +313,14 @@
   box-shadow: 0 6px 14px rgba(6,70,117,.10) !important;
   transform: translateY(-1px);
 }
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(.molsan-btn--primary,.erp-btn-primary,.eg-button-primary,.cg-button-primary) {
   color: #FFFFFF !important;
   border: 1px solid #064675 !important;
-  background: linear-gradient(135deg,#075487,#064675) !important;
+  background: #064675 !important;
   box-shadow: 0 4px 12px rgba(6,70,117,.16) !important;
 }
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(.molsan-btn--primary,.erp-btn-primary,.eg-button-primary,.cg-button-primary):hover {
   box-shadow: 0 8px 18px rgba(6,70,117,.22) !important;
   transform: translateY(-1px);
@@ -182,12 +329,12 @@
 /* Variantes semánticas de acción en cabecera, centralizadas en la capa canónica. */
 .molsan-page-header .molsan-btn--success {
   color: #176B4B !important;
-  background: linear-gradient(145deg,#F3FBF6,#E6F4EB) !important;
+  background: #EAF5EF !important;
   border-color: #BFE2CC !important;
 }
 .molsan-page-header .molsan-btn--warning {
   color: #8A620D !important;
-  background: linear-gradient(145deg,#FFFCF2,#FFF4D8) !important;
+  background: #FFF8E6 !important;
   border-color: #EEDCA8 !important;
 }
 .molsan-page-header .molsan-btn--danger {
@@ -197,7 +344,7 @@
 }
 .molsan-page-header .molsan-btn--excel {
   color: #FFFFFF !important;
-  background: linear-gradient(135deg,#16845B,#11734E) !important;
+  background: #16845B !important;
   border-color: #11734E !important;
 }
 .molsan-page-header .molsan-btn--success:hover:not(:disabled) {
@@ -216,17 +363,17 @@
 }
 .molsan-page-header .molsan-btn--excel:hover:not(:disabled) {
   color: #FFFFFF !important;
-  background: linear-gradient(135deg,#11734E,#0D6242) !important;
+  background: #11734E !important;
   border-color: #0D6242 !important;
 }
 
 /* Formularios y selectores comparten alturas, bordes y foco, sin inflar controles. */
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea,.select-sj > button) {
   border-color: #D0E0EA;
   border-radius: 10px;
 }
-:where(.erp-route-content,.apoderagest,.encargagest,.notargest)
+:where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest)
 :where(input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea,.select-sj > button):focus-visible {
   outline: 3px solid rgba(6,70,117,.18);
   outline-offset: 1px;
@@ -234,42 +381,33 @@
 }
 
 @media(max-width:720px) {
-  :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero) {
+  :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header) {
     min-height: 0 !important;
     padding: 14px !important;
     margin-bottom: 16px !important;
   }
 }
 @media(prefers-reduced-motion:reduce) {
-  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
-.eg-card,.eg-directorio-card,.ctn-modal-resumen-firmas > div,.accesos-notariales-resumen-card,
-.ctn-detalle-info-card,.ctn-detalle-stat,.expediente-card,.dashboard-card,.stat-card,.kpi-card,
-.agenda-upcoming-card,.notificaciones-premium-page article,.notificaciones-premium-page [role="article"],
-.panel-tecnico-submodulo-premium article,.ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
-    .eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpi,.notargest.ng-content .ng-kpi-card,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card),
-  :where(.erp-route-content,.apoderagest,.encargagest,.notargest) * {
+  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
+.accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
+.agenda-upcoming-card,.ag-grupo-notario,.ag-grupo-apoderado,.ag-panel,.ag-carpeta-apoderado,.cg-panel,.eg-panel,
+.ng-panel,.ng-detalle-bloque,.ng-admin-individual-panel,.ng-admin-global-resumen,.ng-admin-resumen-principal,.ng-admin-resumen,
+.ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
+  .notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card),
+  :where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest) * {
     transition-duration: .01ms !important;
   }
-  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.molsan-premium-card,.erp-card-soft,.cg-kpi,.cg-module-card,.ag-kpi,.ag-card,.ng-contador,.ng-tarea,.ng-acceso,
-.eg-card,.eg-directorio-card,.ctn-modal-resumen-firmas > div,.accesos-notariales-resumen-card,
-.ctn-detalle-info-card,.ctn-detalle-stat,.expediente-card,.dashboard-card,.stat-card,.kpi-card,
-.agenda-upcoming-card,.notificaciones-premium-page article,.notificaciones-premium-page [role="article"],
-.panel-tecnico-submodulo-premium article,.ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
-    .eg-kpi,.notargest.ng-content .ng-dashboard-grafico,.notargest.ng-content .ng-dashboard-kpi,.notargest.ng-content .ng-kpi-card,.notargest.ng-content .ng-dashboard-kpis article,.ng-admin-kpi-button,.ng-admin-notaria-card):hover {
+  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
+.accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
+.agenda-upcoming-card,.ag-grupo-notario,.ag-grupo-apoderado,.ag-panel,.ag-carpeta-apoderado,.cg-panel,.eg-panel,
+.ng-panel,.ng-detalle-bloque,.ng-admin-individual-panel,.ng-admin-global-resumen,.ng-admin-resumen-principal,.ng-admin-resumen,
+.ctn-portal-card,.ctn-portal-field-card,.seguridad-acceso,
+  .notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card):hover {
     transform: none !important;
   }
 }
 
 
-/* No convertir paneles genéricos con utilidades Tailwind en tarjetas.
-   Las tarjetas deben estar identificadas por su componente/clase semántica. */
-@media (prefers-reduced-motion: reduce) {
-  .molsan-premium-card,
-  .molsan-premium-card::before,
-  .molsan-premium-card__icon { transition:none !important; }
-  .molsan-premium-card:hover,
-  .molsan-premium-card:hover .molsan-premium-card__icon { transform:none !important; }
-}
 
 
 /* Compatibilidad de pictogramas en cabeceras heredadas. La marca MolsanPageHeader
@@ -277,7 +415,7 @@
 :where(.molsan-page-header__icon,.erp-page-header__icon) {
   color: #064675 !important;
   opacity: 1 !important;
-  background: linear-gradient(145deg,#FFFFFF 0%,#E2F0F7 100%) !important;
+  background: #F2F7FB !important;
   border-color: #AFCFDF !important;
 }
 :where(.molsan-page-header__mark,.molsan-page-header__icon,.erp-page-header__icon) svg {
@@ -295,12 +433,12 @@
 
 
 /* Títulos de cabecera: siempre azul corporativo, nunca blanco. */
-:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header)
 :where(h1,h2,.molsan-page-header__title,.erp-page-title,[class*="title"]) {
   color: #064675 !important;
   -webkit-text-fill-color: #064675 !important;
 }
-:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header)
 :where(h1,h2,.molsan-page-header__title,.erp-page-title,[class*="title"]) :where(span,strong,em) {
   color: #064675 !important;
   -webkit-text-fill-color: #064675 !important;
@@ -308,7 +446,7 @@
 
 
 /* Subtítulos de cabecera: contraste explícito sobre el fondo azul Glass. */
-:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header,.ng-hero)
+:where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header)
 :where(.molsan-page-header__description,.erp-page-description,.molsan-page-subtitle,.page-subtitle,p[class*="description"]) {
   color: #496B82 !important;
   -webkit-text-fill-color: #496B82 !important;

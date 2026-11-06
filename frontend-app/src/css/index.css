@@ -315,17 +315,7 @@
   -webkit-backdrop-filter: none;
 }
 
-.modal-sj {
-  background: var(--molsan-surface, #fff);
-  border-radius: var(--molsan-radius-dialog, 16px);
-  padding: 24px;
-  width: min(100%, 760px);
-  max-height: calc(100dvh - 32px);
-  overflow-y: auto;
-  box-shadow: var(--molsan-shadow-popover, 0 18px 45px rgba(15, 23, 42, .14));
-  border: 1px solid var(--molsan-border, #dce4ef);
-}
-
+/* La superficie y geometría de .modal-sj se centralizan en las capas Premium2027/Redesign2027. */
 
 .modal-sj-header {
   font-weight: 600;
@@ -1208,9 +1198,7 @@
    RESPONSIVE
    ============================================================ */
 
-@media (max-width: 768px) {
 
-  }
 
 
 /* ============================================================

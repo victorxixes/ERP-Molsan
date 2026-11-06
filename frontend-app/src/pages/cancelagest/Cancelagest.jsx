@@ -1,16 +1,18 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanStatCard from "../../components/ui/MolsanStatCard";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { puedeVerModulo } from "../../utils/permisos";
 import MODULOS_ERP from "../../config/modulos";
 import axios from "../../api/axios";
 const TARJETAS_DASHBOARD = [
-  { key: "expedientes", descripcion: "Consultar expedientes y su situación actual.", icono: "▤" },
-  { key: "agenda", descripcion: "Revisar citas y actividad programada.", icono: "▦" },
-  { key: "informes", descripcion: "Acceder a informes y seguimiento de gestión.", icono: "▥" },
-  { key: "apoderagest", descripcion: "Encargos, firmas y actividad del apoderado.", icono: "AG" },
-  { key: "notargest", descripcion: "Seguimiento del trabajo y estados notariales.", icono: "NG" },
-  { key: "ctn", descripcion: "Consultar el catálogo de notarías y sus relaciones.", icono: "◇" },
+  { key: "expedientes", descripcion: "Consultar expedientes y su situación actual.", icono: "folder" },
+  { key: "agenda", descripcion: "Revisar citas y actividad programada.", icono: "calendar" },
+  { key: "informes", descripcion: "Acceder a informes y seguimiento de gestión.", icono: "chart" },
+  { key: "apoderagest", descripcion: "Encargos, firmas y actividad del apoderado.", icono: "users" },
+  { key: "notargest", descripcion: "Seguimiento del trabajo y estados notariales.", icono: "landmark" },
+  { key: "ctn", descripcion: "Consultar el catálogo de notarías y sus relaciones.", icono: "building" },
 ];
 
 const fmtNumero = (n) => Number(n || 0).toLocaleString("es-ES");
@@ -60,10 +62,6 @@ export default function Cancelagest() {
 
   useEffect(() => { cargar(); }, [cargar]);
 
-  const fechaActual = useMemo(() => new Intl.DateTimeFormat("es-ES", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric",
-  }).format(new Date()), []);
-
   const firmasMensuales = (datos?.firmas_mensuales || []).slice(-12).map((x) => ({ ...x, mesLabel: fmtMes(x.mes) }));
   const categorias = datos?.categorias_firma || [];
   const tiempos = datos?.tiempos_circuito || [];
@@ -80,7 +78,7 @@ export default function Cancelagest() {
 
   return <main className="cg-page">
       <MolsanPageHeader
-        mark={<img src="/img/logo.jpg" alt="" className="h-full w-full rounded-lg object-contain" />}
+        mark={<MolsanIcon name="archive" size={34} />}
         title="CancelaGest"
         description="Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral."
       />
@@ -88,16 +86,16 @@ export default function Cancelagest() {
       {error && <div className="cg-error" role="alert"><strong>No se han podido cargar los indicadores.</strong><p>{error}</p><button onClick={cargar}>Reintentar</button></div>}
 
       <section className="cg-kpis">
-        <article className="cg-kpi"><span>Cancelaciones registradas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_cancelaciones)}</strong><small>Expedientes identificados como cancelación</small></article>
-        <article className="cg-kpi"><span>Firmas realizadas</span><strong>{cargando && !datos ? "…" : fmtNumero(datos?.total_firmadas)}</strong><small>Cancelaciones con fecha de firma</small></article>
-        <article className="cg-kpi"><span>Cancelaciones con provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "con_provision")?.total)}</strong><small>Con provisión identificada</small></article>
-        <article className="cg-kpi"><span>Cancelaciones sin provisión</span><strong>{fmtNumero(categorias.find((x) => x.key === "sin_provision")?.total)}</strong><small>Sin provisión identificada</small></article>
+        <MolsanStatCard title="Cancelaciones registradas" value={cargando && !datos ? "…" : fmtNumero(datos?.total_cancelaciones)} description="Expedientes identificados como cancelación" icon="fileCheck" tone="ocean" />
+        <MolsanStatCard title="Firmas realizadas" value={cargando && !datos ? "…" : fmtNumero(datos?.total_firmadas)} description="Cancelaciones con fecha de firma" icon="check" tone="emerald" />
+        <MolsanStatCard title="Cancelaciones con provisión" value={fmtNumero(categorias.find((x) => x.key === "con_provision")?.total)} description="Con provisión identificada" icon="wallet" tone="cyan" />
+        <MolsanStatCard title="Cancelaciones sin provisión" value={fmtNumero(categorias.find((x) => x.key === "sin_provision")?.total)} description="Sin provisión identificada" icon="alert" tone="amber" />
       </section>
 
       <section className="cg-section">
         <div className="cg-section-heading"><div><span className="cg-kicker">ACCESOS DIRECTOS</span><h2>Módulos de trabajo</h2><p>Accede a las herramientas principales del ERP sin salir del entorno corporativo.</p></div></div>
         <div className="cg-module-grid">{modulosVisibles.map((modulo) => <button type="button" className="cg-module-card" key={modulo.titulo} onClick={() => navigate(modulo.ruta)}>
-          <span className="cg-module-icon">{modulo.icono}</span><span className="cg-module-text"><strong>{modulo.titulo}</strong><small>{modulo.descripcion}</small></span><span className="cg-module-arrow">↗</span>
+          <span className="cg-module-icon"><MolsanIcon name={modulo.icono} size={30} tone="ocean" /></span><span className="cg-module-text"><strong>{modulo.titulo}</strong><small>{modulo.descripcion}</small></span><span className="cg-module-arrow"><MolsanIcon name="arrowRight" size={16} /></span>
         </button>)}</div>
       </section>
 

@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useRef,
   useState,
 } from "react";
 import axios from "../../api/axios";
@@ -7,6 +8,7 @@ import { useAuthStore } from "../../store/authStore";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 import {
   Link,
@@ -1152,6 +1154,19 @@ export default function ExpedientesListado() {
     mostrarFiltros,
     setMostrarFiltros,
   ] = useState(false);
+
+  const filtrosDialogRef = useRef(null);
+  const ayudaPlazosDialogRef = useRef(null);
+  useAccessibleDialog({
+    open: mostrarFiltros,
+    onClose: () => setMostrarFiltros(false),
+    dialogRef: filtrosDialogRef,
+  });
+  useAccessibleDialog({
+    open: mostrarAyudaControlPlazos,
+    onClose: () => setMostrarAyudaControlPlazos(false),
+    dialogRef: ayudaPlazosDialogRef,
+  });
   // ==========================================================
   // FILTROS EDITABLES — FILTROS AVANZADOS DEFINITIVOS
   // ==========================================================
@@ -2251,7 +2266,7 @@ export default function ExpedientesListado() {
         indice === -1
       ) {
 
-        return "↕";
+        return <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />;
 
       }
 
@@ -2265,8 +2280,8 @@ export default function ExpedientesListado() {
       const flecha =
         orden.direccion ===
         "asc"
-          ? "↑"
-          : "↓";
+          ? "arrowUp"
+          : "arrowDown";
 
 
       if (
@@ -2275,13 +2290,16 @@ export default function ExpedientesListado() {
       ) {
 
         return (
-          `${flecha}${indice + 1}`
+          <span className="inline-flex items-center gap-1">
+            <MolsanIcon name={flecha} size={13} tone="inherit" />
+            <small>{indice + 1}</small>
+          </span>
         );
 
       }
 
 
-      return flecha;
+      return <MolsanIcon name={flecha} size={13} tone="inherit" />;
 
     };
 
@@ -2394,8 +2412,6 @@ export default function ExpedientesListado() {
         text-[var(--erp-text)]
 
         space-y-6
-
-        animate-fade-in
       "
       aria-busy={loading}
     >
@@ -3178,6 +3194,8 @@ export default function ExpedientesListado() {
 
       {mostrarFiltros && (
         <div
+          ref={filtrosDialogRef}
+          tabIndex={-1}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
           role="dialog"
           aria-modal="true"
@@ -3318,7 +3336,7 @@ export default function ExpedientesListado() {
 
       {mostrarAyudaControlPlazos && (
         <div className="fixed inset-0 z-[11000] flex items-center justify-center bg-slate-950/60 p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setMostrarAyudaControlPlazos(false); }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="titulo-control-plazos" className="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+          <section ref={ayudaPlazosDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="titulo-control-plazos" className="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
             <header className="flex items-start justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
               <div>
                 <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Expedientes</p>

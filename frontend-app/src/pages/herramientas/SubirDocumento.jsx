@@ -57,7 +57,7 @@ export default function SubirDocumento() {
   ]);
 
   return (
-    <div className="subir-documento-premium herramientas-subpagina-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
+    <div className="subir-documento-premium herramientas-subpagina-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 ">
 
       {/* =====================================================
           CABECERA
@@ -281,7 +281,7 @@ export default function SubirDocumento() {
                 text-sm
                 font-medium
                 text-emerald-700
-                animate-fadeIn
+                
               "
             >
               <span>✓</span>

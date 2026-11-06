@@ -97,7 +97,7 @@ export default function CatalogoOficinas() {
   const totalPaginas = Math.max(1, Math.ceil(total / limite));
 
   return (
-    <main className="catalogos-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
+    <main className="catalogos-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
       <MolsanPageHeader
         mark="OFI"
         title="Catálogo de oficinas"

@@ -1,7 +1,9 @@
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import {
   useEffect,
+  useRef,
   useState,
   useCallback,
   useMemo,
@@ -354,6 +356,7 @@ export default function EmpleadosListado({
     errorNuevo,
     setErrorNuevo,
   ] = useState("");
+  const nuevoEmpleadoDialogRef = useRef(null);
 
 
   /* ==========================================================
@@ -636,6 +639,9 @@ export default function EmpleadosListado({
     );
 
 
+  useAccessibleDialog({ open: mostrarNuevo, onClose: cerrarNuevo, dialogRef: nuevoEmpleadoDialogRef });
+
+
   /* ==========================================================
      CAMBIAR CAMPO
   ========================================================== */
@@ -916,7 +922,7 @@ export default function EmpleadosListado({
 
   return (
 
-    <div className="empleados-listado-premium space-y-5 animate-fade-in" aria-busy={cargando}>
+    <div className="empleados-listado-premium space-y-5 " aria-busy={cargando}>
 
       {/* ======================================================
           CABECERA
@@ -1378,6 +1384,11 @@ export default function EmpleadosListado({
         >
 
           <div
+            ref={nuevoEmpleadoDialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Formulario de alta de empleado"
             className="
               w-full
               max-w-4xl

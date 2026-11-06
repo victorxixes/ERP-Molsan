@@ -68,7 +68,7 @@ export default function ReglasActividadesExpediente() {
   };
 
   return (
-    <main className="utilidades-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8 animate-fadeIn">
+    <main className="utilidades-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
       <MolsanPageHeader mark="UT" title="Reglas de actividades expediente" description="Define los documentos, campos y validaciones de cada fase, y deja identificadas las integraciones y reglas que requieren revisión técnica." actions={<Link to="/herramientas/utilidades" className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>}/>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">

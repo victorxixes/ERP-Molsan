@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   listarNotarias,
@@ -27,6 +28,8 @@ export default function CtnDetallePage() {
   const [error, setError] = useState("");
 
   const [modalAbierto, setModalAbierto] = useState(false);
+  const modalFirmasRef = useRef(null);
+  useAccessibleDialog({ open: modalAbierto, onClose: () => setModalAbierto(false), dialogRef: modalFirmasRef });
   const [modalModalidad, setModalModalidad] = useState("VC");
   const [filtroHistorico, setFiltroHistorico] = useState("");
   const [historico, setHistorico] = useState([]);
@@ -236,7 +239,7 @@ export default function CtnDetallePage() {
 
       {modalAbierto && (
         <div className="ctn-detalle-overlay" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
-          <div className="ctn-detalle-modal" role="dialog" aria-modal="true" aria-label={`Firmas realizadas: ${modalidadTexto}`}>
+          <div ref={modalFirmasRef} tabIndex={-1} className="ctn-detalle-modal" role="dialog" aria-modal="true" aria-label={`Firmas realizadas: ${modalidadTexto}`}>
             <div className="ctn-detalle-modal-header">
               <div><h2 className="ctn-detalle-modal-title">Firmas realizadas · {modalidadTexto}</h2><p className="ctn-detalle-muted ctn-detalle-modal-subtitle">{nombreNotario(notaria)}</p></div>
               <button type="button" onClick={() => setModalAbierto(false)}>Cerrar</button>

@@ -1,6 +1,7 @@
 import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanDataTable from "../../components/ui/MolsanDataTable";
+import MolsanStatCard from "../../components/ui/MolsanStatCard";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
@@ -727,7 +728,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
               mark="NG"
               title="NotarGest"
               description="Visión global del trabajo notarial y detalle operativo de cada notaría habilitada."
-              className="ng-hero ng-hero-notargest ng-admin-notarias-hero"
+              className="ng-hero-notargest ng-admin-notarias-hero"
             />
             {cargandoSelectorNotaria && <p className="ng-mensaje">Calculando pendientes de las notarías…</p>}
             {!cargandoSelectorNotaria && notariasSeleccionables.length === 0 && <div className="ng-admin-vacio"><strong>No hay notarías habilitadas</strong><p>Activa el acceso NotarGest desde la ficha CTN de cada notaría.</p></div>}
@@ -749,10 +750,16 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                   ["Escrituras cerradas inscritas", "escrituras_cerradas_inscritas", n => n.escrituras_cerradas],
                   ["Firmas urgentes", "firmas_urgentes", n => n.firmas_urgentes],
                 ].map(([label, filtro, cuenta]) => (
-                  <button type="button" className="ng-admin-kpi-button" key={filtro} onClick={() => abrirModalResumen(filtro, label)} title={`Ver expedientes: ${label}`}>
-                    <MolsanIcon name={({ pendiente_recepcion: "clipboardList", pendiente_firma: "pen", pendiente_copia_simple: "files", pendiente_factura_notarial: "receipt", pendiente_ajd_itp: "calculator", pendiente_presentacion_registro: "folderOpen", con_defectos: "alert", pendiente_inscripcion: "book", escrituras_cerradas_inscritas: "check", firmas_urgentes: "zap" })[filtro] || "file"} size={34} tone={["con_defectos", "firmas_urgentes"].includes(filtro) ? "amber" : "ocean"} /><span>{label}</span><strong className={["con_defectos", "firmas_urgentes"].includes(filtro) && notariasSeleccionables.some(n => Number(cuenta(n)) > 0) ? "ng-cifra-urgente" : ""}>{notariasSeleccionables.reduce((s, n) => s + Number(cuenta(n) || 0), 0)}</strong>
-                    <small>Ver expedientes <MolsanIcon name="arrowRight" size={18} tone="ocean" /></small>
-                  </button>
+                  <MolsanStatCard
+                    key={filtro}
+                    title={label}
+                    value={notariasSeleccionables.reduce((s, n) => s + Number(cuenta(n) || 0), 0)}
+                    description="Expedientes en este bloque"
+                    icon={({ pendiente_recepcion: "clipboardList", pendiente_firma: "pen", pendiente_copia_simple: "files", pendiente_factura_notarial: "receipt", pendiente_ajd_itp: "calculator", pendiente_presentacion_registro: "folderOpen", con_defectos: "alert", pendiente_inscripcion: "book", escrituras_cerradas_inscritas: "check", firmas_urgentes: "zap" })[filtro] || "file"}
+                    tone={["con_defectos", "firmas_urgentes"].includes(filtro) && notariasSeleccionables.some(n => Number(cuenta(n)) > 0) ? "amber" : "ocean"}
+                    onClick={() => abrirModalResumen(filtro, label)}
+                    ariaLabel={`Ver expedientes: ${label}`}
+                  />
                 ))}
               </div>
             </section>
@@ -832,7 +839,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       mark="NG"
       title="NotarGest"
       description="Centro de gestión notarial, firmas y seguimiento registral."
-      className="ng-hero ng-hero-notargest"
+      className="ng-hero-notargest"
       actions={
         <>
           {vista !== "inicio" && <button type="button" onClick={volverVistaAnterior} className="ng-boton-secundario"><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> {vista === "detalle" ? "Volver a la vista anterior" : "Volver al inicio"}</button>}

@@ -35,20 +35,20 @@ export default function PanelTecnico() {
   );
 
   return (
-    <div className="panel-tecnico-premium w-full space-y-8 animate-fade-in">
+    <div className="panel-tecnico-premium w-full space-y-8">
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <MolsanPageHeader
-          mark="PT"
-          title="Panel Técnico"
-          description="Administración, diagnóstico y supervisión del sistema."
-          className="panel-tecnico-page-header flex-1"
-        />
-        <span className="inline-flex w-fit items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
-          <span className="h-2 w-2 rounded-full bg-emerald-500" />
-          Sistema operativo
-        </span>
-      </div>
+      <MolsanPageHeader
+        mark="PT"
+        title="Panel Técnico"
+        description="Administración, diagnóstico y supervisión del sistema."
+        className="panel-tecnico-page-header"
+        actions={
+          <span className="inline-flex w-fit items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            Sistema operativo
+          </span>
+        }
+      />
 
 
       {/* ======================================================
@@ -81,7 +81,7 @@ export default function PanelTecnico() {
 
         </div>
 
-        <MonitorSistema />
+        <MonitorSistema embedded />
 
       </section>
 
@@ -116,7 +116,7 @@ export default function PanelTecnico() {
 
         </div>
 
-        <AuditoriaAvanzada />
+        <AuditoriaAvanzada embedded />
 
       </section>
 
@@ -151,7 +151,7 @@ export default function PanelTecnico() {
 
         </div>
 
-        <LogsAvanzados />
+        <LogsAvanzados embedded />
 
       </section>
 

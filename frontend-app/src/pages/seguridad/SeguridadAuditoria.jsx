@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 
 /**
@@ -32,18 +34,8 @@ import { useSeguridad } from "../../hooks/useSeguridad";
  * ============================================================
  */
 
-const Icono = ({
-  name,
-  className = "w-5 h-5",
-}) => (
-  <svg
-    className={`${className} flex-shrink-0`}
-    aria-hidden="true"
-  >
-    <use
-      href={`/icons/icons.svg#${name}`}
-    />
-  </svg>
+const Icono = ({ name, className = "w-5 h-5" }) => (
+  <MolsanIcon name={name} size={20} className={className} />
 );
 
 
@@ -574,6 +566,8 @@ function ModalDetalle({
   registro,
   onCerrar,
 }) {
+  const detalleDialogRef = useRef(null);
+  useAccessibleDialog({ open: Boolean(registro), onClose: onCerrar, dialogRef: detalleDialogRef });
 
   if (!registro) {
     return null;
@@ -608,6 +602,11 @@ function ModalDetalle({
     >
 
       <div
+        ref={detalleDialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Detalle de registro de auditoría"
         className="
           w-full
           max-w-2xl
@@ -1464,7 +1463,7 @@ export default function SeguridadAuditoria() {
 
   return (
     <div
-      className="seguridad-auditoria-premium space-y-6 animate-fade-in"
+      className="seguridad-auditoria-premium space-y-6"
     >
 
       <MolsanPageHeader

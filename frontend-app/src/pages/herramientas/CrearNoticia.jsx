@@ -51,7 +51,7 @@ export default function CrearNoticia() {
   ]);
 
   return (
-    <div className="crear-noticia-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
+    <div className="crear-noticia-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 ">
 
       {/* =====================================================
           CABECERA
@@ -69,9 +69,9 @@ export default function CrearNoticia() {
           relative overflow-hidden
           rounded-[24px]
           border border-slate-200/80
-          bg-white/85
-          backdrop-blur-xl
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
+          bg-white
+          
+          
           p-6 sm:p-7
         "
       >
@@ -171,15 +171,10 @@ export default function CrearNoticia() {
                 px-6 py-3
                 text-sm font-semibold
                 text-white
-                bg-gradient-to-r
-                from-purple-600
-                to-purple-500
-                shadow-[0_10px_25px_rgba(147,51,234,0.20)]
-                transition-all duration-200
-                hover:from-purple-500
-                hover:to-purple-400
-                hover:shadow-[0_14px_30px_rgba(147,51,234,0.25)]
-                active:scale-[0.98]
+                bg-[#064675]
+                shadow-sm
+                transition-colors duration-150
+                hover:bg-[#04375B]
                 disabled:opacity-40
                 disabled:cursor-not-allowed
               "
@@ -220,7 +215,7 @@ export default function CrearNoticia() {
                 text-sm
                 font-medium
                 text-emerald-700
-                animate-fadeIn
+                
               "
             >
               <span>✓</span>

@@ -5,6 +5,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Component, lazy, Suspense } from "react";
 import { useAuthStore } from "./store/authStore";
+import RealtimeGlobal from "./components/realtime/RealtimeGlobal";
 
 /* AUTH */
 import RequireAuth from "./components/auth/RequireAuth";
@@ -19,7 +20,6 @@ const LoginPage = lazy(() => import("./pages/LoginPage"));
 /* MODULOS */
 const ModulosSelector = lazy(() => import("./pages/ModulosSelector"));
 
-const ModuloPendiente = lazy(() => import("./pages/ModuloPendiente"));
 
 /* DASHBOARD */
 const Dashboard = lazy(() => import("./pages/dashboard/Dashboard.jsx"));
@@ -136,8 +136,6 @@ const Maestros = lazy(() => import("./pages/maestros/Maestros.jsx"));
 /* FUSIONES */
 const Fusiones = lazy(() => import("./pages/fusiones/Fusiones"));
 
-/* REAL TIME */
-import RealtimeGlobal from "./components/realtime/RealtimeGlobal";
 
 /* TIPOS DE CARGA HIPOTECARIA */
 const TiposCargaHipotecaria = lazy(() => import("./pages/herramientas/TiposCargaHipotecaria.jsx"));
@@ -283,7 +281,7 @@ class AppErrorBoundary extends Component {
         `Causa posible: ${diagnostico.causa}`,
         `Acción recomendada: ${diagnostico.accion}`,
         this.state.errorInfo?.componentStack ? `Componentes: ${this.state.errorInfo.componentStack}` : ""
-      ].filter(Boolean).join("\\n");
+      ].filter(Boolean).join("\n");
 
       return (
         <main className="flex min-h-screen items-center justify-center p-6">
@@ -302,7 +300,7 @@ class AppErrorBoundary extends Component {
             <pre className="max-h-44 overflow-auto whitespace-pre-wrap p-3">{String(error?.message || error || "Error de renderizado desconocido")}</pre>
             <p className="mt-3">Ruta: {window.location.pathname} · Fecha: {new Date().toLocaleString()}</p>
             <div className="mt-4 flex gap-3">
-              <button type="button" onClick={() => { try { navigator.clipboard?.writeText(detalle); } catch (e) { console.warn("No se pudo copiar el diagnóstico."); } }}>Copiar diagnóstico</button>
+              <button type="button" onClick={async () => { try { if (!navigator.clipboard?.writeText) throw new Error("Clipboard API no disponible"); await navigator.clipboard.writeText(detalle); } catch { console.warn("No se pudo copiar el diagnóstico."); } }}>Copiar diagnóstico</button>
               <button type="button" onClick={() => window.location.reload()}>Recargar ERP</button>
             </div>
           </section>

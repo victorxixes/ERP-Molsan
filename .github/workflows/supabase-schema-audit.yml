@@ -92,7 +92,7 @@ SQL
           echo "$MIGRATION_FILE" > schema-audit/migration-path.txt
           echo "Generated migration: $MIGRATION_FILE"
       - name: Commit generated migration to candidate branch
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref_name == 'release/molsan-premium-2027-candidate'
         uses: actions/github-script@v7
         with:
           script: |

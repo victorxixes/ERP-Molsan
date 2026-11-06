@@ -19,31 +19,31 @@
 }
 
 /* Revisión integral: páginas de catálogos maestros. Mantener reglas acotadas a estos módulos. */
-:is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium, .tipos-carga-hipotecaria-premium) {
+:is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium) {
   min-width: 0;
   max-width: 100%;
   color: var(--molsan-text, #17243a);
 }
-:is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium, .tipos-carga-hipotecaria-premium) :is(input, select, textarea, button):focus-visible {
+:is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium) :is(input, select, textarea, button):focus-visible {
   outline: 2px solid var(--molsan-primary, #064675);
   outline-offset: 2px;
 }
-:is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium, .tipos-carga-hipotecaria-premium) :is(table, [role="table"]) {
+:is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium) :is(table, [role="table"]) {
   width: 100%;
   max-width: 100%;
 }
-:is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium, .tipos-carga-hipotecaria-premium) :is(td, th) {
+:is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium) :is(td, th) {
   overflow-wrap: anywhere;
 }
 @media (max-width: 640px) {
-  :is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium, .tipos-carga-hipotecaria-premium) {
+  :is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium) {
     font-size: .94rem;
   }
-  :is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium, .tipos-carga-hipotecaria-premium) .overflow-x-auto {
+  :is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium) .overflow-x-auto {
     max-width: 100%;
     -webkit-overflow-scrolling: touch;
   }
-  :is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium, .tipos-carga-hipotecaria-premium) :is(input, select, textarea) {
+  :is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium) :is(input, select, textarea) {
     min-width: 0;
     max-width: 100%;
   }
