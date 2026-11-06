@@ -1441,3 +1441,5 @@
 @media (max-width: 640px) {
   .accesos-notariales-resumen { grid-template-columns: minmax(0, 1fr); }
 }
+
+.molsan-modal.ctn-modal-panel{width:min(1450px,100%)}
