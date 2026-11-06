@@ -161,3 +161,37 @@
   .agenda-stat-icon { transition: none; }
   .agenda-stat-card:hover .agenda-stat-icon { transform: none; }
 }
+
+
+/* Correcciones Agenda: contraste, controles compactos y tarjetas canónicas */
+.agenda-premium-page > .agenda-page-header,
+.erp-route-content .agenda-premium-page > .agenda-page-header {
+  color: #064675 !important;
+  background: linear-gradient(112deg,rgba(234,244,250,.97),rgba(226,239,247,.95) 58%,rgba(241,247,251,.97)) !important;
+  border: 1px solid #D8E4EC !important;
+  box-shadow: 0 8px 22px rgba(6,70,117,.09) !important;
+}
+.agenda-premium-page > .agenda-page-header .molsan-page-header__title { color: #064675 !important; }
+.agenda-premium-page > .agenda-page-header .molsan-page-header__description { color: #617789 !important; }
+.agenda-premium-page > .agenda-page-header .molsan-page-header__mark {
+  color: #064675 !important; background: rgba(255,255,255,.88) !important; border-color: #D8E4EC !important;
+}
+.agenda-premium-page > .erp-card:first-of-type > .flex {
+  display:flex !important; flex-wrap:wrap !important; align-items:center !important;
+  column-gap:10px !important; row-gap:10px !important;
+}
+.agenda-premium-page .select-sj.w-32 { flex:0 0 120px !important; width:120px !important; min-width:120px !important; }
+.agenda-premium-page .select-sj.w-40 { flex:0 0 160px !important; width:160px !important; min-width:160px !important; }
+.agenda-premium-page .select-sj > button {
+  width:100% !important; min-height:40px !important; justify-content:space-between !important;
+  border:1px solid #D8E4EC !important; border-radius:10px !important; background:#fff !important; color:#173247 !important;
+}
+.agenda-resumen-grid { align-items:stretch; }
+.agenda-resumen-grid > .agenda-stat-card { display:flex; flex-direction:column; justify-content:flex-start; min-height:112px; padding:0 !important; }
+.agenda-resumen-grid > .agenda-stat-card .molsan-premium-card__header { padding:16px 16px 0; }
+.agenda-resumen-grid > .agenda-stat-card .molsan-premium-card__content { padding:6px 16px 15px 73px; }
+.agenda-resumen-grid > .agenda-stat-card strong { color:#173247; font-size:26px; line-height:1.2; font-weight:750; }
+.agenda-calendar-card { border-radius:20px !important; }
+@media(max-width:768px) {
+ .agenda-premium-page .select-sj.w-32,.agenda-premium-page .select-sj.w-40 { flex-basis:calc(50% - 5px) !important; width:calc(50% - 5px) !important; min-width:0 !important; }
+}

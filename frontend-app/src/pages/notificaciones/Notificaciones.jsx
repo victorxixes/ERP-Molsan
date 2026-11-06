@@ -1,6 +1,6 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useMemo } from "react";
-import "./Notificaciones.css";
 import { useNotificacionesStore } from "../../store/notificacionesStore";
 
 /**
@@ -41,14 +41,14 @@ export default function Notificaciones() {
   // ==========================================================
 
   const iconosTipo = {
-    error: "⛔",
-    security: "🔐",
-    warning: "⚠️",
-    success: "✅",
-    info: "ℹ️",
-    noticia: "📰",
-    sistema: "⚙️",
-    default: "🔔",
+    error: "alert",
+    security: "shield",
+    warning: "alert",
+    success: "check",
+    info: "help",
+    noticia: "newspaper",
+    sistema: "settings",
+    default: "bell",
   };
 
   // ==========================================================
@@ -272,7 +272,7 @@ export default function Notificaciones() {
               mb-5
             "
           >
-            🔕
+            <MolsanIcon name="bell" size={38} tone="ocean" />
           </div>
 
 
@@ -426,7 +426,7 @@ export default function Notificaciones() {
                       shadow-sm
                     `}
                   >
-                    {icono}
+                    <MolsanIcon name={icono} size={22} tone="ocean" />
                   </div>
 
 
@@ -543,7 +543,7 @@ export default function Notificaciones() {
                             text-[10px]
                           "
                         >
-                          🏷️
+                          <MolsanIcon name="tag" size={13} tone="ocean" bare />
                         </span>
 
                         {n.tipo || "general"}

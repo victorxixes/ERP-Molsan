@@ -1,0 +1,52 @@
+# MOLSAN ERP Premium 2027 — existing Preview services, one source branch.
+# This Blueprint adopts the already existing services; it must not create duplicates.
+services:
+  - type: web
+    name: molsan-premium-2027-candidate-preview
+    runtime: static
+    repo: https://github.com/victorxixes/ERP-Molsan
+    branch: integration/erp-molsan-supabase-ready
+    buildCommand: cd frontend-app && npm install --no-audit --no-fund && npm run build
+    staticPublishPath: frontend-app/dist
+    autoDeployTrigger: off
+    envVars:
+      - key: VITE_API_URL
+        value: https://molsan-glass-luxe-preview-api.onrender.com/api
+      - key: VITE_WS_URL
+        value: wss://molsan-glass-luxe-preview-api.onrender.com
+
+  - type: web
+    name: molsan-glass-luxe-preview-api
+    runtime: docker
+    repo: https://github.com/victorxixes/ERP-Molsan
+    branch: integration/erp-molsan-supabase-ready
+    region: frankfurt
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeployTrigger: off
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "480"
+      - key: MOLSAN_ENVIRONMENT
+        value: preview
+      - key: MOLSAN_STORAGE_BACKEND
+        value: supabase
+      - key: SUPABASE_URL
+        value: https://powiprqarmluanplxpyb.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: MOLSAN_STORAGE_BUCKET
+        value: molsan-private
+      - key: MOLSAN_PREVIEW_BOOTSTRAP_ADMIN
+        value: "0"
+      - key: MOLSAN_PREVIEW_BOOTSTRAP_SCHEMA
+        value: "0"
+      - key: MOLSAN_ENABLE_RUNTIME_SCHEMA_MIGRATIONS
+        value: "0"

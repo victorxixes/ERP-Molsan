@@ -4,9 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { puedeVerModulo } from "../../utils/permisos";
 import MODULOS_ERP from "../../config/modulos";
 import axios from "../../api/axios";
-import "../../css/Cancelagest.css";
-import "../../css/CancelagestUnified.css";
-
 const TARJETAS_DASHBOARD = [
   { key: "expedientes", descripcion: "Consultar expedientes y su situación actual.", icono: "▤" },
   { key: "agenda", descripcion: "Revisar citas y actividad programada.", icono: "▦" },

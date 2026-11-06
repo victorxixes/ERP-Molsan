@@ -1,9 +1,8 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { Link } from "react-router-dom";
-import "../../css/HerramientasPremium.css";
-
 const DOCUMENTOS_INICIALES = [
   { id: "solicitud", nombre: "Hoja de solicitud", detalle: "Debe estar incorporada en la carpeta digital del resumen del expediente." },
   { id: "justificante", nombre: "Justificante de cancelación", detalle: "Nombre vigente del documento; sustituye la denominación genérica «certificado de cancelación»." },
@@ -73,9 +72,9 @@ export default function ReglasActividadesExpediente() {
       <MolsanPageHeader mark="UT" title="Reglas de actividades expediente" description="Define los documentos, campos y validaciones de cada fase, y deja identificadas las integraciones y reglas que requieren revisión técnica." actions={<Link to="/herramientas/utilidades" className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>}/>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Resumen icono="📂" titulo="Actividad inicial" valor="Documentación previa" />
-        <Resumen icono="📄" titulo="Documentos requeridos" valor={`${documentosActivos} de ${DOCUMENTOS_INICIALES.length}`} />
-        <Resumen icono="📨" titulo="Flujo principal" valor="5 transiciones" />
+        <Resumen icono="folderOpen" titulo="Actividad inicial" valor="Documentación previa" />
+        <Resumen icono="file" titulo="Documentos requeridos" valor={`${documentosActivos} de ${DOCUMENTOS_INICIALES.length}`} />
+        <Resumen icono="mail" titulo="Flujo principal" valor="5 transiciones" />
       </section>
 
       <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
@@ -340,7 +339,7 @@ function Resumen({ icono, titulo, valor }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 text-xl">{icono}</span>
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 text-xl"><MolsanIcon name={icono} size={20} tone="ocean" /></span>
         <div className="min-w-0">
           <p className="text-xs font-semibold text-slate-500">{titulo}</p>
           <p className="mt-1 text-base font-bold text-slate-800">{valor}</p>

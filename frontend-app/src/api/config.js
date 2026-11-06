@@ -1,21 +1,41 @@
 /**
- * Base común de API para llamadas Axios y recursos del backend.
- *
- * Cada entorno debe declarar VITE_API_URL explícitamente. Nunca se permite
- * que una Preview o una compilación local caiga silenciosamente en Producción.
+ * Configuración única de conexión con el backend MOLSAN.
+ * Cada entorno debe declarar VITE_API_URL; nunca se permite un fallback
+ * silencioso a Producción ni a un servicio histórico.
  */
 const API_BASE_CONFIGURADA = String(import.meta.env.VITE_API_URL || "").trim();
 
-if (!API_BASE_CONFIGURADA && import.meta.env.PROD) {
+if (!API_BASE_CONFIGURADA) {
   throw new Error(
-    "Configuración incompleta: define VITE_API_URL para este entorno antes de compilar."
+    "Configuración incompleta: define VITE_API_URL para este entorno antes de iniciar o compilar."
   );
 }
 
-export const API_BASE = String(API_BASE_CONFIGURADA || "/api").replace(/\/+$/, "");
+let apiUrl;
+try {
+  apiUrl = new URL(API_BASE_CONFIGURADA);
+} catch {
+  throw new Error("VITE_API_URL debe ser una URL absoluta válida del backend.");
+}
 
-/** Devuelve el origen efectivo de la API, resolviendo también /api en local. */
+if (!["http:", "https:"].includes(apiUrl.protocol)) {
+  throw new Error("VITE_API_URL debe utilizar HTTP o HTTPS.");
+}
+
+export const API_BASE = API_BASE_CONFIGURADA.replace(/\/+$/, "");
+
 export function getApiOrigin() {
-  const base = typeof window !== "undefined" ? window.location.href : "http://localhost";
-  return new URL(API_BASE, base).origin;
+  return new URL(API_BASE).origin;
+}
+
+export function getWebSocketBase() {
+  const configured = String(import.meta.env.VITE_WS_URL || "").trim().replace(/\/+$/, "");
+  if (configured) {
+    const wsUrl = new URL(configured);
+    if (!["ws:", "wss:"].includes(wsUrl.protocol)) {
+      throw new Error("VITE_WS_URL debe utilizar WS o WSS.");
+    }
+    return configured;
+  }
+  return getApiOrigin().replace(/^http:/i, "ws:").replace(/^https:/i, "wss:");
 }

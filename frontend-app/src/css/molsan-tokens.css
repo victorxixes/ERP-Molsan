@@ -1,6 +1,30 @@
 /* MOLSAN ERP PREMIUM 2027 · GLASS LUXE
    Tokens semánticos únicos para todo el ERP y sus portales. */
 :root {
+  /* Vidrio y superficies compartidas */
+  --molsan-glass-border: rgba(6,70,117,.14);
+  --molsan-glass-shadow: 0 8px 22px rgba(6,70,117,.075);
+  --molsan-card-border: #D8E4EC;
+  --molsan-card-shadow: 0 9px 24px rgba(6,50,82,.065);
+  --molsan-card-shadow-hover: 0 19px 38px rgba(6,50,82,.13);
+  /* Geometría canónica de cabeceras, controles y contenido */
+  --molsan-canon-header-start: #CFE3EF;
+  --molsan-canon-header-mid: #BED9E8;
+  --molsan-canon-header-end: #D8E9F2;
+  --molsan-canon-header-text: #064675;
+  --molsan-canon-header-muted: #496B82;
+  --molsan-canon-gutter: 28px;
+  --molsan-canon-header-height: 82px;
+  --molsan-canon-card-radius: 20px;
+  --molsan-canon-control-radius: 11px;
+  --molsan-content-gutter: 28px;
+  --molsan-content-gutter-tablet: 22px;
+  --molsan-content-gutter-mobile: 14px;
+  --molsan-content-bottom: 32px;
+  --molsan-header-min-height: 82px;
+  --molsan-header-radius: 18px;
+  --molsan-header-gap: 16px;
+
   color-scheme: light;
   --molsan-font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --molsan-font-size-2xs: 11px;
@@ -104,4 +128,28 @@
   --erp-radius-lg: var(--molsan-radius-card);
   --erp-radius-xl: var(--molsan-radius-dialog);
   --erp-transition: var(--molsan-transition-normal);
+}
+
+
+/* Alias temporales de compatibilidad SJ-2026; tokens MOLSAN como fuente única. */
+:root {
+  --sj-azul: var(--molsan-primary, #064675);
+  --sj-azul-claro: var(--molsan-text-muted, #718696);
+  --sj-gris-azulado: var(--molsan-border-light, #E8EFF4);
+  --sj-blanco: var(--molsan-surface, #fff);
+  --sj-verde: var(--molsan-success, #16845b);
+  --sj-verde-claro: #2ca878;
+  --sj-rojo: var(--molsan-danger, #c43d4b);
+  --sj-rojo-claro: #e45b68;
+  --sj-amarillo: var(--molsan-warning, #b7791f);
+  --sj-amarillo-claro: #f3d27a;
+  --sj-font: var(--molsan-font-family, Inter, system-ui, sans-serif);
+  --sj-radius: var(--molsan-radius-card, 14px);
+  --sj-radius-sm: var(--molsan-radius-control, 9px);
+  --sj-radius-lg: var(--molsan-radius-dialog, 16px);
+  --sj-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+  --sj-shadow-lg: var(--molsan-shadow-popover, 0 18px 45px rgba(15, 23, 42, .14));
+  --sj-gap: 24px;
+  --sj-gap-sm: 14px;
+  --sj-gap-lg: 32px;
 }

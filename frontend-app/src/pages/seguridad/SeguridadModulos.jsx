@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import {
   useCallback,
   useMemo,
@@ -5,7 +6,6 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
-import "./SeguridadSubpaginasPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 import MODULOS_ERP from "../../config/modulos";
@@ -270,7 +270,7 @@ export default function SeguridadModulos() {
       >
 
         <div className="text-3xl">
-          📦
+          <MolsanIcon name="archive" size={34} tone="ocean" />
         </div>
 
         <p

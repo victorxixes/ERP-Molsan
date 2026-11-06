@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import "./PanelTecnico.css";
 import { useAuthStore } from "../../store/authStore";
 import EmpleadosModulo2026 from "../empleados/EmpleadosModulo2026";
 import MonitorSistema from "./MonitorSistema";
@@ -7,6 +6,7 @@ import AuditoriaAvanzada from "./AuditoriaAvanzada";
 import LogsAvanzados from "./LogsAvanzados";
 import { puedeVerModulo } from "../../utils/permisos";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
 
 /**
  * ============================================================
@@ -189,82 +189,16 @@ export default function PanelTecnico() {
           </div>
 
 
-          <div
-            className="
-              overflow-hidden
-              rounded-2xl
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface)]
-              shadow-sm
-            "
+          <MolsanPremiumCard
+            icon="users"
+            title="Empleados 2026"
+            description="Gestión de usuarios y empleados"
+            className="panel-tecnico-empleados-card"
           >
-
-            <div
-              className="
-                px-6
-                py-4
-                border-b
-                border-[var(--erp-border)]
-                flex
-                items-center
-                gap-3
-              "
-            >
-
-              <div
-                className="
-                  w-9
-                  h-9
-                  rounded-xl
-                  bg-[var(--erp-primary-soft)]
-                  text-[var(--erp-primary)]
-                  flex
-                  items-center
-                  justify-center
-                "
-              >
-                <svg className="w-4 h-4" aria-hidden="true">
-                  <use href="/icons/icons.svg#user-group" />
-                </svg>
-              </div>
-
-              <div>
-
-                <h3
-                  className="
-                    text-sm
-                    font-semibold
-                    text-[var(--erp-text)]
-                  "
-                >
-                  Empleados 2026
-                </h3>
-
-                <p
-                  className="
-                    text-xs
-                    text-[var(--erp-text-soft)]
-                    mt-0.5
-                  "
-                >
-                  Gestión de usuarios y empleados
-                </p>
-
-              </div>
-
+            <div className="p-2">
+              <EmpleadosModulo2026 usuario={usuario} />
             </div>
-
-
-            <div className="p-6">
-
-              <EmpleadosModulo2026
-                usuario={usuario}
-              />
-
-            </div>
-
-          </div>
+          </MolsanPremiumCard>
 
         </section>
 

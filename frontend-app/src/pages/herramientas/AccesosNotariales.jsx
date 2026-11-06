@@ -1,9 +1,8 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
-import "../../css/CtnListadoPage.css";
-
 const API_BASE = (import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com/api").replace(/\/$/, "");
 function headers() {
   const token = localStorage.getItem("token");
@@ -98,11 +97,11 @@ export default function AccesosNotariales() {
       <MolsanPageHeader mark="UT" title="Accesos notariales" description="Gestión centralizada y restringida de accesos a NotarGest y EncargaGest." actions={<button type="button" className="molsan-btn molsan-btn--secondary" onClick={() => navigate("/herramientas/utilidades")}>Volver a Utilidades</button>}/>
       <section className="accesos-notariales-resumen" aria-label="Resumen de accesos habilitados">
         <article className="accesos-notariales-resumen-card">
-          <span aria-hidden="true">🔐</span>
+          <MolsanIcon name="lock" size={16} tone="ocean" bare />
           <div><p>Notarios habilitados en NotarGest</p><strong>{resumen.notargest === null ? "—" : resumen.notargest}</strong><small>Acceso activo al portal</small></div>
         </article>
         <article className="accesos-notariales-resumen-card">
-          <span aria-hidden="true">📋</span>
+          <MolsanIcon name="clipboardList" size={16} tone="ocean" bare />
           <div><p>Notarios habilitados en EncargaGest</p><strong>{resumen.encargagest === null ? "—" : resumen.encargagest}</strong><small>Acceso activo al portal</small></div>
         </article>
       </section>

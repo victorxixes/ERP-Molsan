@@ -4,8 +4,8 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
-import "./SeguridadSubpaginasPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 
 /**
@@ -192,7 +192,7 @@ function TarjetaMetrica({
             text-lg
           "
         >
-          {icono}
+          <MolsanIcon name={icono} size={24} tone="ocean" />
         </div>
 
       </div>
@@ -679,28 +679,28 @@ export default function SeguridadRoles() {
           titulo="Total"
           valor={estadisticas.total}
           descripcion="Perfiles definidos"
-          icono="🛡️"
+          icono="shield"
         />
 
         <TarjetaMetrica
           titulo="Activos"
           valor={estadisticas.activos}
           descripcion="Disponibles para uso"
-          icono="🟢"
+          icono="check"
         />
 
         <TarjetaMetrica
           titulo="Usuarios"
           valor={estadisticas.usuariosAsignados}
           descripcion="Usuarios asignados"
-          icono="👤"
+          icono="person"
         />
 
         <TarjetaMetrica
           titulo="Con permisos"
           valor={estadisticas.rolesConPermisos}
           descripcion="Con configuración"
-          icono="🔐"
+          icono="lock"
         />
 
       </div>
@@ -908,7 +908,7 @@ export default function SeguridadRoles() {
                         text-lg
                       "
                     >
-                      🛡️
+                      <MolsanIcon name="shield" size={20} tone="ocean" />
                     </div>
 
 
@@ -1050,7 +1050,7 @@ export default function SeguridadRoles() {
                           rol.usuariosCount
                         }
                         descripcion="Asignados al rol"
-                        icono="👤"
+                        icono="person"
                       />
 
                       <TarjetaMetrica
@@ -1059,7 +1059,7 @@ export default function SeguridadRoles() {
                           rol.modulosCount
                         }
                         descripcion="Áreas disponibles"
-                        icono="📦"
+                        icono="archive"
                       />
 
                       <TarjetaMetrica
@@ -1068,7 +1068,7 @@ export default function SeguridadRoles() {
                           rol.permisosCount
                         }
                         descripcion="Autorizaciones"
-                        icono="🔐"
+                        icono="lock"
                       />
 
                     </div>
@@ -1113,7 +1113,7 @@ export default function SeguridadRoles() {
                                 text-[var(--erp-text)]
                               "
                             >
-                              👥 Usuarios asignados
+                              <MolsanIcon name="users" size={16} tone="ocean" bare /> Usuarios asignados
                             </h4>
 
                             <p
@@ -1263,7 +1263,7 @@ export default function SeguridadRoles() {
                             text-[var(--erp-text)]
                           "
                         >
-                          🔐 Configuración del rol
+                          <MolsanIcon name="lock" size={16} tone="ocean" bare /> Configuración del rol
                         </h4>
 
                         <p
@@ -1414,7 +1414,7 @@ export default function SeguridadRoles() {
           >
 
             <div className="text-3xl">
-              🛡️
+              <MolsanIcon name="shield" size={18} tone="ocean" bare />
             </div>
 
             <p

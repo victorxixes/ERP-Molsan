@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import {
   useCallback,
   useEffect,
@@ -10,9 +11,6 @@ import { useSeguridad } from "../../hooks/useSeguridad";
 
 import MODULOS_ERP from "../../config/modulos";
 import { editarEmpleado } from "../../api/empleados";
-import "./SeguridadSubpaginasPremium.css";
-
-
 /* ============================================================
    HELPERS
 ============================================================ */
@@ -174,7 +172,7 @@ function SeccionAcordeon({
               text-lg
             "
           >
-            {icono}
+            <MolsanIcon name={icono} size={22} tone="ocean" />
           </div>
 
           <div className="min-w-0">
@@ -1749,7 +1747,7 @@ const permisosGlobales =
               text-[var(--erp-text)]
             "
           >
-            🔐 Credenciales y acceso
+            <MolsanIcon name="lock" size={16} tone="ocean" bare /> Credenciales y acceso
           </h2>
 
           <p
@@ -1793,7 +1791,7 @@ const permisosGlobales =
                 text-[var(--erp-text)]
               "
             >
-              🔑 Restablecer contraseña
+              <MolsanIcon name="key" size={15} tone="ocean" bare /> Restablecer contraseña
             </h3>
 
             <p
@@ -1892,7 +1890,7 @@ const permisosGlobales =
                 text-[var(--erp-text)]
               "
             >
-              👤 Asignar rol
+              <MolsanIcon name="person" size={15} tone="ocean" bare /> Asignar rol
             </h3>
 
             <p
@@ -1999,7 +1997,7 @@ const permisosGlobales =
       <SeccionAcordeon
         titulo="Módulos visibles"
         descripcion="Control de los módulos disponibles para este empleado."
-        icono="📦"
+        icono="archive"
         contador={
           modulosVisibles.length
         }
@@ -2119,7 +2117,7 @@ const permisosGlobales =
       <SeccionAcordeon
         titulo="Permisos por módulo"
         descripcion="Control granular de las capacidades del empleado."
-        icono="🔧"
+        icono="tools"
         abierto={showPermisos}
         onToggle={() =>
           setShowPermisos(
@@ -2399,7 +2397,7 @@ const permisosGlobales =
       <SeccionAcordeon
         titulo="Auditoría del usuario"
         descripcion="Trazabilidad de las acciones realizadas por este empleado."
-        icono="📊"
+        icono="chart"
         contador={
           auditoriaFiltrada.length
         }
@@ -2497,7 +2495,7 @@ const permisosGlobales =
                 text-emerald-700
               "
             >
-              📊 Exportar
+              <MolsanIcon name="chart" size={14} tone="ocean" bare /> Exportar
             </button>
 
           </div>
@@ -2713,7 +2711,7 @@ const permisosGlobales =
       <SeccionAcordeon
         titulo="Logs técnicos del usuario"
         descripcion="Eventos técnicos, errores e incidencias."
-        icono="📝"
+        icono="pen"
         contador={
           logsFiltrados.length
         }
@@ -2811,7 +2809,7 @@ const permisosGlobales =
                 text-amber-700
               "
             >
-              📝 Exportar
+              <MolsanIcon name="pen" size={14} tone="ocean" bare /> Exportar
             </button>
 
           </div>

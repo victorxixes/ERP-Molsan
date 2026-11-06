@@ -1,7 +1,6 @@
 """WebSocket de Mensajes con validación de identidad y destinatarios."""
 
 import json
-from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
@@ -20,22 +19,31 @@ def _empleado_activo(db: Session, empleado_id: int):
     empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
     if not empleado:
         return None
-    if hasattr(empleado, "activo") and empleado.activo is False:
+    if getattr(empleado, "activo", True) is False:
         return None
     return empleado
 
 
+def _destinatario_activo(empleado_id: int) -> bool:
+    """Consulta breve: nunca conserva una conexión DB durante la vida del WebSocket."""
+    db = SessionLocal()
+    try:
+        return _empleado_activo(db, empleado_id) is not None
+    finally:
+        db.close()
+
+
 @router.websocket("/ws/mensajes/{empleado_id}")
 async def mensajes_ws(websocket: WebSocket, empleado_id: int):
-    """Conexión realtime autenticada: el ID de ruta debe coincidir con el JWT."""
-    db: Session = SessionLocal()
+    """Conexión realtime autenticada sin retener conexiones PostgreSQL en espera."""
     conectado = False
-    try:
-        token = websocket.query_params.get("token")
-        if not token:
-            await websocket.close(code=4001, reason="Falta el token")
-            return
+    token = websocket.query_params.get("token")
 
+    if not token:
+        await websocket.close(code=4001, reason="Falta el token")
+        return
+
+    try:
         try:
             usuario_id = autenticar_websocket(
                 token, modulo="mensajes", accion="ver"
@@ -53,22 +61,29 @@ async def mensajes_ws(websocket: WebSocket, empleado_id: int):
             await websocket.close(code=4003, reason="El token no corresponde al empleado")
             return
 
-        empleado = _empleado_activo(db, empleado_id)
-        if not empleado:
-            await websocket.close(code=4006, reason="Empleado inexistente o inactivo")
-            return
-
-        primera_conexion = await manager.connect(websocket, empleado_id)
-        conectado = True
-
-        if primera_conexion:
-            await manager.broadcast({
+        # La sesión solo vive durante la consulta inicial. Copiamos los campos
+        # necesarios antes de cerrarla; el socket puede permanecer abierto horas.
+        db = SessionLocal()
+        try:
+            empleado = _empleado_activo(db, empleado_id)
+            if empleado is None:
+                await websocket.close(code=4006, reason="Empleado inexistente o inactivo")
+                return
+            empleado_info = {
                 "tipo": "online",
                 "id": empleado.id,
                 "nombre": empleado.nombre,
                 "apellidos": empleado.apellidos,
                 "foto": empleado.foto,
-            })
+            }
+        finally:
+            db.close()
+
+        primera_conexion = await manager.connect(websocket, empleado_id)
+        conectado = True
+
+        if primera_conexion:
+            await manager.broadcast(empleado_info)
 
         while True:
             try:
@@ -98,9 +113,7 @@ async def mensajes_ws(websocket: WebSocket, empleado_id: int):
             if destinatario_id <= 0 or destinatario_id == empleado_id:
                 continue
 
-            destinatario = _empleado_activo(db, destinatario_id)
-            if destinatario is None:
-                # No filtrar detalles del destinatario por el socket; simplemente ignorar.
+            if not _destinatario_activo(destinatario_id):
                 continue
 
             if tipo == "typing":
@@ -110,18 +123,19 @@ async def mensajes_ws(websocket: WebSocket, empleado_id: int):
                 })
                 continue
 
-            if tipo == "mensaje":
-                try:
-                    autenticar_websocket(token, modulo="mensajes", accion="crear")
-                except HTTPException as exc:
-                    await websocket.send_json({"tipo": "error", "codigo": "permiso_insuficiente"})
-                    if exc.status_code == 401:
-                        await websocket.close(code=4005, reason="Sesión no válida")
-                        break
-                    continue
-                except Exception:
-                    await websocket.close(code=4005, reason="No se pudo validar la sesión")
+            try:
+                autenticar_websocket(token, modulo="mensajes", accion="crear")
+            except HTTPException as exc:
+                await websocket.send_json({"tipo": "error", "codigo": "permiso_insuficiente"})
+                if exc.status_code == 401:
+                    await websocket.close(code=4005, reason="Sesión no válida")
                     break
+                continue
+            except Exception:
+                await websocket.close(code=4005, reason="No se pudo validar la sesión")
+                break
+
+            if tipo == "mensaje":
                 contenido = data.get("contenido")
                 if not isinstance(contenido, str):
                     continue
@@ -136,24 +150,16 @@ async def mensajes_ws(websocket: WebSocket, empleado_id: int):
                 continue
 
             if tipo == "archivo":
-                try:
-                    autenticar_websocket(token, modulo="mensajes", accion="crear")
-                except HTTPException as exc:
-                    await websocket.send_json({"tipo": "error", "codigo": "permiso_insuficiente"})
-                    if exc.status_code == 401:
-                        await websocket.close(code=4005, reason="Sesión no válida")
-                        break
-                    continue
-                except Exception:
-                    await websocket.close(code=4005, reason="No se pudo validar la sesión")
-                    break
                 archivo_url = data.get("archivo_url")
-                if ruta_adjunto_mensaje(archivo_url, exigir_existencia=True) is None:
+                if not isinstance(archivo_url, str):
+                    continue
+                archivo_url = archivo_url.strip()
+                if not archivo_url or ruta_adjunto_mensaje(archivo_url, exigir_existencia=True) is None:
                     continue
                 await manager.enviar_archivo_ws(
                     remitente_id=empleado_id,
                     destinatario_id=destinatario_id,
-                    archivo_url=archivo_url.strip(),
+                    archivo_url=archivo_url,
                 )
 
     except WebSocketDisconnect:
@@ -172,4 +178,3 @@ async def mensajes_ws(websocket: WebSocket, empleado_id: int):
                     await manager.broadcast({"tipo": "offline", "id": empleado_id})
                 except Exception as exc:
                     print(f"[WS-MSG] Error broadcast offline: {exc}", flush=True)
-        db.close()

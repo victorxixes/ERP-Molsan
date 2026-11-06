@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
-import "../../css/HerramientasPremium.css";
 import MensajeriaProveedores from "./MensajeriaProveedores.jsx";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
+import MolsanStatCard from "../../components/ui/MolsanStatCard";
 
 const TABS = [
   ["solicitudes", "Solicitudes"],
@@ -127,14 +128,22 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
       description={vistaCatalogo ? "Catálogo interno de servicios, tarifas, suplementos e impuestos." : "Gestiona las solicitudes recibidas, los pedidos al proveedor, las incidencias, los albaranes y las facturas."}
       className="mensajeria-page-header"
     />
-    {vistaGestion && <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"><div className="flex items-start gap-3"><span className="text-xl">⚠️</span><div><b>Integración API con la empresa de mensajería pendiente.</b><p className="mt-1">La conexión automática todavía debe desarrollarse y validarse con la documentación técnica del proveedor. Mientras tanto, la gestión de solicitudes, estados y comunicaciones funciona dentro del ERP; no se envían pedidos reales al transportista desde esta pantalla.</p></div></div></section>}
+    {vistaGestion && <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"><div className="flex items-start gap-3"><span><MolsanIcon name="alert" size={22} tone="amber" /></span><div><b>Integración API con la empresa de mensajería pendiente.</b><p className="mt-1">La conexión automática todavía debe desarrollarse y validarse con la documentación técnica del proveedor. Mientras tanto, la gestión de solicitudes, estados y comunicaciones funciona dentro del ERP; no se envían pedidos reales al transportista desde esta pantalla.</p></div></div></section>}
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{error}</div>}
     {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{mensaje}</div>}
     {vistaGestion && <MensajeriaProveedores />}
-    {!vistaCatalogo && <section className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-      {[["Solicitudes", resumen.solicitudes ?? "—"],["En curso", resumen.pendientes ?? "—"],["Albaranes", resumen.albaranes ?? "—"],["Facturas por pagar", resumen.facturas_pendientes ?? "—"]].map(([label,value]) => <div key={label} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{label}</p><p className="mt-2 text-2xl font-bold text-slate-800">{value}</p></div>)}
+    {!vistaCatalogo && <section className="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-label="Resumen de mensajería">
+      {[
+        { label: "Solicitudes", value: resumen.solicitudes ?? "—", icon: "inbox", tone: "ocean" },
+        { label: "En curso", value: resumen.pendientes ?? "—", icon: "clock", tone: "amber" },
+        { label: "Albaranes", value: resumen.albaranes ?? "—", icon: "file", tone: "cyan" },
+        { label: "Facturas por pagar", value: resumen.facturas_pendientes ?? "—", icon: "receipt", tone: "violet" },
+      ].map((item) => <MolsanStatCard key={item.label} title={item.label} value={item.value} icon={item.icon} tone={item.tone} className="mensajeria-kpi-card" />)}
     </section>}
-    {vistaCatalogo && <section className="grid grid-cols-2 gap-3"><div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Servicios registrados</p><p className="mt-2 text-2xl font-bold text-slate-800">{servicios.length}</p></div><div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Servicios activos</p><p className="mt-2 text-2xl font-bold text-slate-800">{servicios.filter(s=>s.activo).length}</p></div></section>}
+    {vistaCatalogo && <section className="grid grid-cols-2 gap-3" aria-label="Resumen del catálogo">
+      <MolsanStatCard title="Servicios registrados" value={servicios.length} icon="archive" tone="ocean" />
+      <MolsanStatCard title="Servicios activos" value={servicios.filter(s=>s.activo).length} icon="check" tone="emerald" />
+    </section>}
     <section className="flex flex-wrap gap-2">{(vistaCatalogo ? [TABS[1]] : TABS).map(([id,label]) => <button key={id} onClick={() => {setTab(id);setQ("");}} className={`rounded-xl px-4 py-2.5 text-sm font-bold transition ${tab===id?"bg-blue-700 text-white shadow":"border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}>{label}</button>)}</section>
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-4"><div><h2 className="font-bold text-slate-800">{TABS.find(([id])=>id===tab)?.[1]}</h2><p className="text-xs text-slate-500">{lista.length} registro(s)</p></div><div className="flex flex-wrap gap-2"><input className={inputClass+" min-w-48"} value={q} onChange={(e)=>setQ(e.target.value)} placeholder="Buscar…" />{tab==="solicitudes" && <button onClick={()=>abrir("solicitud")} className="rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white">+ Nueva solicitud</button>}{tab==="control" && <button onClick={()=>abrir("servicio")} className="rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white">+ Servicio y tarifa</button>}{tab==="albaranes" && <button onClick={()=>abrir("albaran")} className="rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white">+ Registrar albarán</button>}{tab==="facturas" && <button onClick={()=>abrir("factura")} className="rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white">+ Registrar factura</button>}</div></div>

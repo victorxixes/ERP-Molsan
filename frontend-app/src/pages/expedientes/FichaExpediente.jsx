@@ -11,8 +11,8 @@ import LiquidarExpedienteModal from "../../components/expedientes/LiquidarExpedi
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
 import TraspasoSaldoPanel from "../../components/expedientes/TraspasoSaldoPanel";
 import { useAuthStore } from "../../store/authStore";
-import "./FichaExpedientePremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
 
@@ -230,49 +230,49 @@ const ACTIVIDADES_EXPEDIENTES = [
   {
     key: "documentacion-previa",
     label: "Documentación previa",
-    icono: "📄",
+    icono: "file",
   },
 
   {
     key: "sede-notarial",
     label: "Sede notarial",
-    icono: "🏛️",
+    icono: "courthouse",
   },
 
   {
     key: "sede-notarial-protocolo",
     label: "Sede notarial con protocolo",
-    icono: "📜",
+    icono: "scroll",
   },
 
   {
     key: "gestion-economica",
     label: "Gestión económica",
-    icono: "💼",
+    icono: "briefcase",
   },
 
   {
     key: "liquidacion-impuestos",
     label: "Liquidación de impuestos",
-    icono: "💶",
+    icono: "euro",
   },
 
   {
     key: "tramitacion-inscripcion",
     label: "Tramitación inscripción",
-    icono: "🏢",
+    icono: "building",
   },
 
   {
     key: "defectos-registrales",
     label: "Defectos registrales",
-    icono: "⚠️",
+    icono: "alert",
   },
 
   {
     key: "facturacion-cierre",
     label: "Cierre del expediente",
-    icono: "🧾",
+    icono: "receipt",
   },
 ];
 
@@ -928,32 +928,19 @@ function IconoSeccion({
   tipo = "default",
 }) {
   const iconos = {
-    estado: "◉",
-    titular: "👤",
-    solicitante: "👥",
-    economico: "📊",
-    notario: "✒️",
-    observaciones: "▣",
-    actividad: "⚙️",
-    finca: "🏠",
-    registro: "📚",
-    accion: "⚡",
+    estado: "activity",
+    titular: "person",
+    solicitante: "users",
+    economico: "chart",
+    notario: "pen",
+    observaciones: "clipboard",
+    actividad: "settings",
+    finca: "home",
+    registro: "book",
+    accion: "zap",
   };
 
-  return (
-    <span
-      className="
-        text-base
-        leading-none
-      "
-      aria-hidden="true"
-    >
-      {
-        iconos[tipo] ||
-        "▣"
-      }
-    </span>
-  );
+  return <MolsanIcon name={iconos[tipo] || "file"} size={22} tone="ocean" bare />;
 }
 
 
@@ -1285,7 +1272,7 @@ function Modal({
               hover:text-slate-800
             "
           >
-            ✕
+            <MolsanIcon name="x" size={16} tone="ocean" bare />
           </button>
         </div>
 
@@ -5044,7 +5031,7 @@ const cuantiaFincasParaEnvio =
                         });
                         const fases = [
                           {
-                            key: "documentacion-previa", label: "Documentación previa", icono: "📄",
+                            key: "documentacion-previa", label: "Documentación previa", icono: "file",
                             checks: [
                               requisito(
                                 "Certificado Saldo «0» erróneo",
@@ -5087,14 +5074,14 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "sede-notarial", label: "Sede notarial", icono: "🏛️",
+                            key: "sede-notarial", label: "Sede notarial", icono: "courthouse",
                             checks: [
                               requisito("Notario", Boolean(notario), "Falta seleccionar o indicar el notario en Enviar a notario"),
                               requisito("Fecha de envío", Boolean(fechaEnvio), "No consta la fecha de envío a notario"),
                             ],
                           },
                           {
-                            key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "📜",
+                            key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "scroll",
                             checks: [
                               requisito("Apoderado", Boolean(valor("apoderado")), "Selecciona Gestoría o CaixaBank"),
                               requisito("Fecha firma", Boolean(fechaFirma), "No consta la fecha de firma"),
@@ -5108,7 +5095,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "💶",
+                            key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "euro",
                             checks: [
                               requisito("Fecha presentación tributaria", Boolean(valor("fecha_presentacion_tributaria")), "Falta la fecha de presentación tributaria"),
                               requisito("Fecha liquidación tributaria", Boolean(valor("fecha_liquidacion_tributaria")), "Falta la fecha de liquidación tributaria"),
@@ -5120,7 +5107,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "🏢",
+                            key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "building",
                             checks: [
                               requisito("Fecha presentación", Boolean(valor("fecha_presentacion")), "Falta la fecha de presentación en Registro"),
                               requisito("Fecha vencimiento asiento (+60 días naturales)", Boolean(valor("fecha_vencimiento_asiento", "fecha_vencimiento")), "No consta la fecha de vencimiento del asiento, calculada a 60 días naturales desde la presentación"),
@@ -5137,7 +5124,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "defectos-registrales", label: "Defectos registrales", icono: "⚠️",
+                            key: "defectos-registrales", label: "Defectos registrales", icono: "alert",
                             checks: [
                               requisito(
                                 "Control de defectos registrales",
@@ -5171,7 +5158,7 @@ const cuantiaFincasParaEnvio =
                             ],
                           },
                           {
-                            key: "facturacion-cierre", label: "Facturación y cierre", icono: "🧾",
+                            key: "facturacion-cierre", label: "Facturación y cierre", icono: "receipt",
                             checks: [
                               requisito("Fecha de facturación", Boolean(valor("facturacion_fecha")), "Falta la fecha de facturación"),
                               requisito("Entrega al cliente", Boolean(valor("fecha_entregado_cliente")), "Falta la fecha de entrega al cliente"),
@@ -5198,9 +5185,9 @@ const cuantiaFincasParaEnvio =
                                     aria-label={"Ir a " + fase.label + ". " + (completa ? "Control superado" : pendientes.length + " tareas pendientes")}
                                   >
                                     <span className="flex items-center gap-3">
-                                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg ${completa ? "bg-emerald-100" : actual ? "bg-blue-100" : "bg-slate-100"}`}>{completa ? "✓" : fase.icono}</span>
+                                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg ${completa ? "bg-emerald-100" : actual ? "bg-blue-100" : "bg-slate-100"}`}>{completa ? "✓" : <MolsanIcon name={fase.icono} size={20} tone="ocean" bare />}</span>
                                       <span className="min-w-0 flex-1">
-                                        <span className="block text-sm font-extrabold text-slate-800">{fase.icono} {fase.label}</span>
+                                        <span className="block text-sm font-extrabold text-slate-800"><MolsanIcon name={fase.icono} size={16} tone="ocean" bare /> {fase.label}</span>
                                         <span className={`mt-1 block text-xs font-semibold ${completa ? "text-emerald-700" : actual ? "text-blue-700" : "text-amber-700"}`}>
                                           {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
                                         </span>
@@ -5244,7 +5231,7 @@ const cuantiaFincasParaEnvio =
                                         {completa ? "✓" : actual ? "●" : indice + 1}
                                       </div>
                                       <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-bold text-slate-800">{fase.icono} {fase.label}</p>
+                                        <p className="text-xs font-bold text-slate-800"><MolsanIcon name={fase.icono} size={16} tone="ocean" bare /> {fase.label}</p>
                                         <p className={`mt-0.5 text-[10px] font-semibold ${completa ? "text-emerald-700" : actual ? "text-blue-700" : "text-amber-700"}`}>
                                           {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
                                         </p>
@@ -5284,7 +5271,7 @@ const cuantiaFincasParaEnvio =
                               })}
                               <article className="min-w-0 rounded-xl border border-violet-200 bg-violet-50/40 p-3">
                                 <div className="flex items-center gap-2">
-                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-violet-300 bg-white text-sm">💶</div>
+                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-violet-300 bg-white"><MolsanIcon name="euro" size={18} tone="ocean" bare /></div>
                                   <div className="min-w-0 flex-1">
                                     <p className="text-xs font-bold text-slate-800">PPAD</p>
                                     <p className="mt-0.5 text-[10px] font-semibold text-violet-700">{cargandoPpad ? "Cargando registros…" : `${ppadItems.length} registro(s) · ${ppadItems.filter((item) => !item.compensado).length} pendiente(s)`}</p>
@@ -5302,7 +5289,7 @@ const cuantiaFincasParaEnvio =
                               </article>
                               <article className="min-w-0 rounded-xl border border-amber-200 bg-amber-50/40 p-3">
                                 <div className="flex items-center gap-2">
-                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-white text-sm">💰</div>
+                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-white"><MolsanIcon name="wallet" size={18} tone="ocean" bare /></div>
                                   <div className="min-w-0 flex-1">
                                     <p className="text-xs font-bold text-slate-800">Complementos de saldo</p>
                                     <p className="mt-0.5 text-[10px] font-semibold text-amber-800">{cargandoComplementosExpediente ? "Cargando solicitudes…" : `${complementosSaldoExpediente.length} solicitud(es) · ${complementosSaldoExpediente.filter((item) => !["compensado", "cerrado"].includes(String(item.estado || "").toLowerCase())).length} pendiente(s)`}</p>
@@ -5403,10 +5390,37 @@ const cuantiaFincasParaEnvio =
           >
 
             <Seccion
+              titulo="Carpeta digital"
+              subtitulo="Documentación completa y repositorios del expediente"
+              icono="folder"
+              className="h-full xl:col-span-3"
+              compacto
+            >
+              <div className="flex h-full min-h-[112px] flex-col justify-between gap-3">
+                <div className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-sky-100 bg-white text-sky-800 shadow-sm">
+                    <MolsanIcon name="folder" size={21} tone="ocean" bare />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-extrabold text-slate-800">Repositorio documental</p>
+                    <p className="mt-1 text-[11px] leading-relaxed text-slate-500">Accede a los documentos, justificantes y archivos vinculados a este expediente.</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMostrarCarpetaDigital(true)}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2.5 text-xs font-extrabold text-sky-800 transition hover:border-sky-300 hover:bg-sky-100"
+                >
+                  <MolsanIcon name="folderOpen" size={15} tone="ocean" bare /> Abrir carpeta digital
+                </button>
+              </div>
+            </Seccion>
+
+            <Seccion
               titulo="Titulares y solicitantes"
               subtitulo="Datos independientes de titulares y solicitantes del expediente"
               icono="titular"
-              className="h-full xl:col-span-4"
+              className="h-full xl:col-span-3"
               compacto
               colapsable
               colapsadaInicial
@@ -5447,7 +5461,7 @@ const cuantiaFincasParaEnvio =
               titulo="Notario"
               subtitulo="Información del notario asociado"
               icono="notario"
-              className="h-full xl:col-span-4"
+              className="h-full xl:col-span-3"
               compacto
               colapsable
               colapsadaInicial
@@ -5475,9 +5489,9 @@ const cuantiaFincasParaEnvio =
 
             <Seccion
               titulo="Información crediticia"
-              subtitulo="Resumen económico y contractual"
+              subtitulo="Datos contractuales y de financiación"
               icono="economico"
-              className="h-full xl:col-span-4"
+              className="h-full xl:col-span-3"
               compacto
               colapsable
               colapsadaInicial
@@ -5504,7 +5518,7 @@ const cuantiaFincasParaEnvio =
             </div>
             <div className="flex shrink-0 flex-wrap items-center gap-2">
               <button type="button" onClick={abrirAgregarExpedientes} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold text-blue-700 transition hover:bg-blue-100">
-                ➕ Agregar expediente relacionado
+                <MolsanIcon name="plus" size={15} tone="ocean" bare /> Agregar expediente relacionado
               </button>
             </div>
             {(() => {
@@ -5520,7 +5534,7 @@ const cuantiaFincasParaEnvio =
                   <span className="mr-1 shrink-0 text-[9px] font-bold uppercase tracking-wide text-slate-400">Relacionados</span>
                   {primerosRelacionados.map((relacionado) => (
                     <Link key={String(relacionado.id_expediente)} to={`/expedientes/${encodeURIComponent(relacionado.id_expediente)}`} className="inline-flex max-w-[180px] min-w-0 shrink items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50" title={relacionado.actividad_actual || "Abrir expediente relacionado"}>
-                      <span className="shrink-0 text-blue-700">📁</span>
+                      <MolsanIcon name="folder" size={18} tone="ocean" bare />
                       <span className="truncate">{valorVisible(relacionado.id_expediente)}</span>
                     </Link>
                   ))}
@@ -5532,13 +5546,13 @@ const cuantiaFincasParaEnvio =
                 </div>
               ) : null;
             })()}
-            {expedienteBloqueado && <span className="inline-flex shrink-0 items-center rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[10px] font-extrabold text-red-800">🔒 BLOQUEADO · {motivoBloqueoExpediente}</span>}
+            {expedienteBloqueado && <span className="inline-flex shrink-0 items-center rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[10px] font-extrabold text-red-800"><MolsanIcon name="lock" size={13} tone="amber" bare /> BLOQUEADO · {motivoBloqueoExpediente}</span>}
             <div className="flex shrink-0 items-center gap-1.5">
-              <button type="button" onClick={abrirDefecto} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-blue-700 shadow-sm transition hover:bg-blue-100" title="Registrar un defecto registral">➕ Alta defecto</button>
-              <Boton onClick={abrirControlExpediente} className="!shrink-0 !rounded-lg !px-2.5 !py-2 !text-[11px] !leading-tight">{expedienteBloqueado ? "🔒 Control / desbloqueo" : "🔐 Control y bloqueo"}</Boton>
-              <button type="button" onClick={abrirReclamacionOficina} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100">✉️ Emails</button>
-              <button type="button" onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100" title="Pendiente de enlazar con el área de clientes">🔗 Área de clientes</button>
-              {tieneDefecto && <button type="button" onClick={abrirDefecto} className="animate-pulse inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-red-700 shadow-sm">⚠️ DEFECTO REGISTRAL</button>}
+              <button type="button" onClick={abrirDefecto} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-blue-700 shadow-sm transition hover:bg-blue-100" title="Registrar un defecto registral"><MolsanIcon name="plus" size={14} tone="ocean" bare /> Alta defecto</button>
+              <Boton onClick={abrirControlExpediente} className="!shrink-0 !rounded-lg !px-2.5 !py-2 !text-[11px] !leading-tight">{expedienteBloqueado ? <><MolsanIcon name="lock" size={14} tone="ocean" bare /> Control / desbloqueo</> : <><MolsanIcon name="lock" size={14} tone="ocean" bare /> Control y bloqueo</>}</Boton>
+              <button type="button" onClick={abrirReclamacionOficina} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100"><MolsanIcon name="mail" size={14} tone="ocean" bare /> Emails</button>
+              <button type="button" onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100" title="Pendiente de enlazar con el área de clientes"><MolsanIcon name="link" size={14} tone="ocean" bare /> Área de clientes</button>
+              {tieneDefecto && <button type="button" onClick={abrirDefecto} className="animate-pulse inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-red-700 shadow-sm"><MolsanIcon name="alert" size={14} tone="amber" bare /> DEFECTO REGISTRAL</button>}
             </div>
             <div className="ml-auto flex shrink-0 items-center gap-2">
               <div className="inline-flex max-w-[260px] items-center gap-1.5 rounded-lg border border-blue-100 bg-white px-2.5 py-2 text-[11px]">
@@ -5602,7 +5616,7 @@ const cuantiaFincasParaEnvio =
                       onClick={() => { setMostrarControlCalidad(true); cargarDocumentosCierre(); }}
                       className={`flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start rounded-xl border px-3 py-2 text-left transition ${mostrarControlCalidad ? "border-violet-300 bg-violet-50 shadow-sm" : "border-violet-200 bg-white hover:bg-violet-50"}`}
                     >
-                      <span className={`text-xs font-bold ${mostrarControlCalidad ? "text-violet-700" : "text-violet-800"}`}>🛡️ Control de calidad</span>
+                      <span className={`text-xs font-bold ${mostrarControlCalidad ? "text-violet-700" : "text-violet-800"}`}><MolsanIcon name="shield" size={15} tone="violet" bare /> Control de calidad</span>
                       <span className="mt-2 text-[9px] font-semibold text-slate-500">Revisión independiente</span>
                     </button>
                   )}
@@ -5686,7 +5700,7 @@ const cuantiaFincasParaEnvio =
                         "
                       >
                         {
-                          actividad.icono
+                          <MolsanIcon name={actividad.icono} size={22} tone="ocean" bare />
                         }
                       </span>
 
@@ -5761,7 +5775,7 @@ const cuantiaFincasParaEnvio =
 
               <div className="min-w-0 flex-1">
                 <h3 className="text-base font-bold text-slate-800">
-                  {actividadSeleccionadaDef.icono} {actividadSeleccionadaDef.label}
+                  <MolsanIcon name={actividadSeleccionadaDef.icono} size={20} tone="ocean" bare /> {actividadSeleccionadaDef.label}
                 </h3>
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                   <span className="inline-flex items-center gap-1.5">
@@ -5797,7 +5811,7 @@ const cuantiaFincasParaEnvio =
 
               <div className="flex flex-wrap items-center gap-2">
                 <button type="button" onClick={() => { setErrorActividad(""); setMensajeActividad(""); setMostrarModalDatosActividad(true); }} className="inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-800 transition hover:bg-sky-100">
-                  ☷ Datos de actividad
+                  <MolsanIcon name="clipboardList" size={16} tone="ocean" bare /> Datos de actividad
                 </button>
                 <button type="button" onClick={() => { setPestanaActividad("datos"); setMostrarModalPpad(true); setErrorPpad(""); }} className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-extrabold text-indigo-800 transition hover:bg-indigo-100">
                   PPAD
@@ -5807,7 +5821,7 @@ const cuantiaFincasParaEnvio =
                   <TraspasoSaldoPanel expediente={expediente} visible={actividadSeleccionada === "gestion-economica"} />
                 )}
                 <button type="button" onClick={() => { setPestanaActividad("datos"); abrirAcciones(); }} className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-extrabold text-blue-700 transition hover:bg-blue-100">
-                  ⚡ Acciones
+                  <MolsanIcon name="zap" size={16} tone="ocean" bare /> Acciones
                   {accionesExpediente.length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 py-0.5 text-[10px] font-extrabold text-white">{accionesExpediente.length}</span>}
                 </button>
               </div>
@@ -5844,7 +5858,7 @@ const cuantiaFincasParaEnvio =
                       generandoFacturacion={generandoHonorariosGestoria}
                       facturaEmitida={Boolean(honorariosGestoria?.guardado || expediente?.facturacion_fecha || expediente?.numero_factura || expediente?.factura_honorarios_id)}
                       onPagar={() => { void abrirPagoDesdeGestionEconomica(); }}
-                      panelLibroPagos={<section className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                      panelLibroPagos={actividadSeleccionada === "gestion-economica" ? (<section className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/90 px-4 py-4 sm:px-5">
                       <div className="flex min-w-0 items-center gap-3">
                         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700"><span aria-hidden="true">▤</span></span>
@@ -5920,12 +5934,12 @@ const cuantiaFincasParaEnvio =
                       {gastosPendientesResumen.length > 0 && <p className="mt-3 rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-xs text-amber-800">{gastosPendientesResumen.length} gasto(s) registrado(s) todavía pendiente(s); no se descuentan del saldo hasta confirmar el pago.</p>}
                       <div className="mt-3 flex justify-end border-t border-slate-100 pt-3">
                         <button type="button" onClick={() => generarHonorariosGestoria?.()} disabled={generandoHonorariosGestoria || !generarHonorariosGestoria} className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-700 px-5 py-2.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-emerald-800 disabled:opacity-50" title="Generar y guardar la factura en Honorarios gestoría, sin crear pagos ni avisos de deuda">
-                          {generandoHonorariosGestoria ? "Generando factura…" : "🧾 Facturar"}
+                          {generandoHonorariosGestoria ? "Generando factura…" : <><MolsanIcon name="receipt" size={14} tone="inherit" bare /> Facturar</>}
                         </button>
                       </div>
                     </div>
                     {errorGastos && <p role="alert" className="border-t border-red-100 bg-red-50 px-4 py-2 text-xs text-red-700">{errorGastos}</p>}
-                  </section>}
+                  </section>) : null}
                       formularioPago={origenFormularioGasto === "pagar" ? (
                         <>
                         {mostrarFormularioPagoReal && createPortal((
@@ -6244,8 +6258,8 @@ const cuantiaFincasParaEnvio =
                     <p className="mt-2 text-[11px] text-slate-500">Registrar la solicitud no envía nada ni avanza el expediente. El avance se valida por separado.</p>
                   </div>
                   <div className="mt-4 flex flex-wrap justify-end gap-2">
-                    <Boton onClick={() => guardarEstadoAbsis(false)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Guardando…" : "💾 Guardar datos para integración"}</Boton>
-                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : "📨 Registrar solicitud pendiente"}</Boton>
+                    <Boton onClick={() => guardarEstadoAbsis(false)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Guardando…" : <><MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar datos para integración</>}</Boton>
+                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : <><MolsanIcon name="mail" size={14} tone="inherit" bare /> Registrar solicitud pendiente</>}}</Boton>
                   </div>
                   {estadoDocumentacionAbsis.solicitud_registrada_localmente && <p className="mt-2 text-right text-xs font-semibold text-amber-700">Pendiente de API externa; todavía no transmitida a ABSIS.</p>}
                 </section>
@@ -6506,7 +6520,7 @@ const cuantiaFincasParaEnvio =
                     </p>
                     <p className="mt-1 text-[11px] text-slate-500">La vinculación automática con Notargest se completará cuando esté disponible la integración de documentos.</p>
                     <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">
-                      📁 Abrir carpeta digital
+                      <MolsanIcon name="folderOpen" size={16} tone="ocean" bare /> Abrir carpeta digital
                     </button>
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-white p-3">
@@ -6524,7 +6538,7 @@ const cuantiaFincasParaEnvio =
                 </div>
                 <div className="mt-3 flex justify-end">
                   <Boton tipo="primary" onClick={() => registrarSolicitudIntegracionPendiente("sede-notarial-protocolo")} disabled={guardandoActividad || registrandoSolicitudIntegracion}>
-                    {registrandoSolicitudIntegracion ? "Registrando…" : "📨 Registrar solicitud pendiente"}
+                    {registrandoSolicitudIntegracion ? "Registrando…" : <><MolsanIcon name="mail" size={14} tone="inherit" bare /> Registrar solicitud pendiente</>}
                   </Boton>
                 </div>
               </section>
@@ -6624,7 +6638,7 @@ const cuantiaFincasParaEnvio =
                     </p>
                     <p className="mt-1 text-[11px] text-slate-500">La asociación automática del PDF desde Notargest requiere conectar la integración documental.</p>
                     <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">
-                      📁 Abrir carpeta digital
+                      <MolsanIcon name="folderOpen" size={16} tone="ocean" bare /> Abrir carpeta digital
                     </button>
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-white p-3">
@@ -6641,7 +6655,7 @@ const cuantiaFincasParaEnvio =
                 </div>
                 <div className="mt-3 flex justify-end">
                   <Boton tipo="primary" onClick={() => registrarSolicitudIntegracionPendiente("liquidacion-impuestos")} disabled={guardandoActividad || registrandoSolicitudIntegracion}>
-                    {registrandoSolicitudIntegracion ? "Registrando…" : "📨 Registrar solicitud pendiente"}
+                    {registrandoSolicitudIntegracion ? "Registrando…" : <><MolsanIcon name="mail" size={14} tone="inherit" bare /> Registrar solicitud pendiente</>}
                   </Boton>
                 </div>
               </section>
@@ -6768,7 +6782,7 @@ const cuantiaFincasParaEnvio =
                       disabled={generandoHonorariosGestoria}
                       className="rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-extrabold text-white hover:bg-emerald-800 disabled:opacity-50"
                     >
-                      {generandoHonorariosGestoria ? "Generando…" : "💶 Generar honorarios de gestoría"}
+                      {generandoHonorariosGestoria ? "Generando…" : <><MolsanIcon name="euro" size={14} tone="inherit" bare /> Generar honorarios de gestoría</>}
                     </button>
                   </div>
                   {honorariosGestoria && (
@@ -6802,12 +6816,12 @@ const cuantiaFincasParaEnvio =
                 Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
               ) && (
                 <Boton tipo="primary" onClick={guardarCamposActividad} disabled={guardandoActividad || expedienteBloqueado}>
-                  {guardandoActividad ? "Guardando…" : "💾 Guardar datos de actividad"}
+                  {guardandoActividad ? "Guardando…" : <><MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar datos de actividad</>}
                 </Boton>
               )}
               {actividadSeleccionada === "documentacion-previa" && actividadActual === "documentacion-previa" && (
                 <Boton tipo="primary" onClick={avanzarActividad} disabled={guardandoActividad || expedienteBloqueado || !estadoDocumentacionAbsis.mover_siguiente_actividad}>
-                  {guardandoActividad ? "Validando…" : "➡️ Mover a Sede notarial sin protocolo"}
+                  {guardandoActividad ? "Validando…" : <><MolsanIcon name="arrowRight" size={14} tone="inherit" bare /> Mover a Sede notarial sin protocolo</>}
                 </Boton>
               )}
               {actividadSeleccionada === actividadActual && actividadActual && actividadActual !== "documentacion-previa" && (
@@ -6815,8 +6829,8 @@ const cuantiaFincasParaEnvio =
                   {guardandoActividad
                     ? "Validando…"
                     : actividadActual === "facturacion-cierre"
-                      ? "✅ Validar y cerrar expediente"
-                      : "➡️ Validar y avanzar actividad"}
+                      ? <><MolsanIcon name="check" size={14} tone="inherit" bare /> Validar y cerrar expediente</>
+                      : <><MolsanIcon name="arrowRight" size={14} tone="inherit" bare /> Validar y avanzar actividad</>}}
                 </Boton>
               )}
             </div>
@@ -6900,7 +6914,7 @@ const cuantiaFincasParaEnvio =
                     {item.compensado ? (
                       <p className="mt-1 text-[11px] font-semibold text-emerald-700">✓ PPAD compensado{item.fecha_compensacion ? ` el ${formatearFecha(item.fecha_compensacion)}` : ""}.</p>
                     ) : (
-                      <p role="status" className="mt-1 text-[11px] font-bold text-amber-800">⚠ PPAD pendiente de compensar.</p>
+                      <p role="status" className="mt-1 flex items-center gap-1 text-[11px] font-bold text-amber-800"><MolsanIcon name="alert" size={13} tone="amber" bare /> PPAD pendiente de compensar.</p>
                     )}
                     {!item.compensado && !String(expediente?.fecha_firma || "").slice(0, 10) && (
                       <p className="mt-1 text-[10px] text-slate-600">La compensación estará disponible cuando el expediente tenga fecha de firma.</p>
@@ -6926,7 +6940,7 @@ const cuantiaFincasParaEnvio =
                     <h3 id="modal-ppad-titulo" className="text-base font-extrabold text-slate-900">PPAD · Conceptos y compensaciones</h3>
                     <p className="mt-1 text-xs text-slate-500">Historial completo de PPAD de este expediente.</p>
                   </div>
-                  <button type="button" onClick={() => { setMostrarModalPpad(false); cancelarPpad(); }} aria-label="Cerrar PPAD" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">✕ Cerrar</button>
+                  <button type="button" onClick={() => { setMostrarModalPpad(false); cancelarPpad(); }} aria-label="Cerrar PPAD" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50"><MolsanIcon name="x" size={15} tone="ocean" bare /> Cerrar</button>
                 </header>
                 <div className="space-y-3 p-4 sm:p-6">
                   {errorPpad && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorPpad}</p>}
@@ -6974,7 +6988,7 @@ const cuantiaFincasParaEnvio =
                               ? "Este PPAD ya está compensado. ¿Confirmas que quieres eliminarlo como administrador?"
                               : "¿Confirmas que quieres eliminar este concepto PPAD?";
                             if (window.confirm(mensaje)) eliminarPpad(item.id);
-                          }}>🗑️ Eliminar</Boton>
+                          }}><MolsanIcon name="trash" size={14} tone="inherit" bare /> Eliminar</Boton>
                         )}
                       </div>
                     </article>
@@ -7101,7 +7115,7 @@ const cuantiaFincasParaEnvio =
                 <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">Todavía no hay observaciones añadidas.</p>
               )}
               <button type="button" onClick={() => { setComentario(""); setErrorObservaciones(""); setMostrarObservaciones(true); }} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100">
-                💬 Ver historial y gestionar observaciones <span className="rounded-full bg-white px-2 py-0.5 text-[10px]">{observacionesExpediente.length}</span>
+                <MolsanIcon name="message" size={16} tone="ocean" bare /> Ver historial y gestionar observaciones <span className="rounded-full bg-white px-2 py-0.5 text-[10px]">{observacionesExpediente.length}</span>
               </button>
             </div>
           </Seccion>
@@ -7143,7 +7157,7 @@ const cuantiaFincasParaEnvio =
           <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-8">
         {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
         <div className="min-w-0 w-full xl:col-span-8">
-          {expedienteBloqueado && esRetencionSinTramitar && <section role="alert" className="mx-auto mb-4 w-full rounded-2xl border-2 border-red-300 bg-red-50 px-5 py-4 shadow-sm"><p className="text-xs font-black uppercase text-red-700">⛔ Expediente bloqueado</p><h2 className="mt-1 text-base font-extrabold text-red-900">RETENCIÓN SIN TRAMITAR</h2><p className="mt-1 text-sm text-red-800">Estado RST: retención sin tramitar.</p><p className="mt-2 text-xs font-semibold text-red-700">Las actividades no se pueden modificar ni avanzar mientras esté bloqueado.</p><button type="button" onClick={abrirControlExpediente} className="mt-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-xs font-bold text-red-800">Gestionar bloqueo</button></section>}
+          {expedienteBloqueado && esRetencionSinTramitar && <section role="alert" className="mx-auto mb-4 w-full rounded-2xl border-2 border-red-300 bg-red-50 px-5 py-4 shadow-sm"><p className="flex items-center gap-1 text-xs font-black uppercase text-red-700"><MolsanIcon name="alert" size={14} tone="amber" bare /> Expediente bloqueado</p><h2 className="mt-1 text-base font-extrabold text-red-900">RETENCIÓN SIN TRAMITAR</h2><p className="mt-1 text-sm text-red-800">Estado RST: retención sin tramitar.</p><p className="mt-2 text-xs font-semibold text-red-700">Las actividades no se pueden modificar ni avanzar mientras esté bloqueado.</p><button type="button" onClick={abrirControlExpediente} className="mt-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-xs font-bold text-red-800">Gestionar bloqueo</button></section>}
           <div className="flex w-full min-w-0 justify-center">
           {/* =====================================================
               FICHA COMPLETA DE ENVÍO A NOTARIO
@@ -7151,7 +7165,7 @@ const cuantiaFincasParaEnvio =
           ====================================================== */}
             <section className="w-full max-w-none min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_28px_rgba(30,41,59,0.08)]">
               <div className="hidden flex-wrap items-center justify-center gap-3 border-b border-slate-100 bg-white px-4 py-4 text-center sm:px-5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white text-xl shadow-sm">🏛️</div>
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white shadow-sm"><MolsanIcon name="courthouse" size={24} tone="ocean" /></div>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-extrabold text-slate-800">Envío a notario</h3>
                   <p className="mt-0.5 text-[11px] text-slate-500">Encargo al notario, datos de firma y facturación</p>
@@ -7547,14 +7561,14 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarReclamarOficina}
         onClose={() => !enviandoReclamacion && setMostrarReclamarOficina(false)}
-        titulo="✉️ Emails del expediente"
+        titulo="Emails del expediente"
         subtitulo={`Expediente ${valorVisible(expediente?.id_expediente || id)} · Correspondencia tipificada e histórico`}
         ancho="max-w-5xl"
         footer={
           <div className="flex flex-wrap justify-end gap-2">
             <Boton onClick={() => setMostrarReclamarOficina(false)} disabled={enviandoReclamacion}>Cerrar</Boton>
             <Boton tipo="primary" onClick={enviarReclamacionOficina} disabled={enviandoReclamacion || !emailReclamacion.destinatario.trim() || !emailReclamacion.asunto.trim() || !emailReclamacion.cuerpo.trim() || /\[\[FALTA:/.test(emailReclamacion.destinatario + emailReclamacion.cc + emailReclamacion.asunto + emailReclamacion.cuerpo)}>
-              {enviandoReclamacion ? "Enviando…" : "✉️ Enviar email"}
+              {enviandoReclamacion ? "Enviando…" : <><MolsanIcon name="mail" size={14} tone="inherit" bare /> Enviar email</>}
             </Boton>
           </div>
         }
@@ -7612,18 +7626,18 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarAvisoBloqueoExpediente}
         onClose={() => setMostrarAvisoBloqueoExpediente(false)}
-        titulo="⛔ AVISO DE BLOQUEO DEL EXPEDIENTE"
+        titulo="AVISO DE BLOQUEO DEL EXPEDIENTE"
         subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`}
         ancho="max-w-[620px]"
         footer={
           <div className="flex flex-wrap justify-center gap-3">
             <Boton onClick={() => setMostrarAvisoBloqueoExpediente(false)}>Entendido</Boton>
-            <Boton tipo="primary" onClick={() => { setMostrarAvisoBloqueoExpediente(false); abrirControlExpediente(); }}>🔐 Gestionar bloqueo</Boton>
+            <Boton tipo="primary" onClick={() => { setMostrarAvisoBloqueoExpediente(false); abrirControlExpediente(); }}><MolsanIcon name="lock" size={14} tone="inherit" bare /> Gestionar bloqueo</Boton>
           </div>
         }
       >
         <div role="alert" className="rounded-2xl border-2 border-red-300 bg-red-50 p-5 text-center shadow-inner sm:p-7">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-red-200 bg-white text-4xl shadow-sm">⛔</div>
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-red-200 bg-white shadow-sm"><MolsanIcon name="alert" size={36} tone="amber" /></div>
           <p className="mt-4 text-xs font-black uppercase tracking-[0.18em] text-red-700">Expediente bloqueado</p>
           <h2 className="mt-2 text-xl font-black text-red-900 sm:text-2xl">{motivoBloqueoExpediente}</h2>
           {(String(expediente?.estado_expediente || "").trim().toUpperCase().startsWith("LST") || expediente?.liquidado_sin_tramitar) && (
@@ -7640,7 +7654,7 @@ const cuantiaFincasParaEnvio =
       </Modal>
 
       {/* CONTROL DE BLOQUEO */}
-      <Modal open={mostrarControlExpediente} onClose={()=>!guardandoControlExpediente&&setMostrarControlExpediente(false)} titulo="🔐 Control del expediente" subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`} ancho="max-w-[760px]" footer={<div className="flex justify-end gap-2"><Boton onClick={()=>setMostrarControlExpediente(false)} disabled={guardandoControlExpediente}>Cancelar</Boton><Boton tipo="primary" onClick={guardarControlExpediente} disabled={guardandoControlExpediente}>{guardandoControlExpediente?"Guardando…":"💾 Guardar control"}</Boton></div>}>
+      <Modal open={mostrarControlExpediente} onClose={()=>!guardandoControlExpediente&&setMostrarControlExpediente(false)} titulo="Control del expediente" subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`} ancho="max-w-[760px]" footer={<div className="flex justify-end gap-2"><Boton onClick={()=>setMostrarControlExpediente(false)} disabled={guardandoControlExpediente}>Cancelar</Boton><Boton tipo="primary" onClick={guardarControlExpediente} disabled={guardandoControlExpediente}>{guardandoControlExpediente?"Guardando…":<><MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar control</>}</Boton></div>}>
         <div className="space-y-4">
           {estadoLegadoBloqueante&&<p role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm font-bold text-amber-900">El estado {expediente?.estado_expediente} mantiene el bloqueo automático. Para desbloquearlo, debe corregirse primero el estado del expediente.</p>}
           <label className="flex items-start gap-3 rounded-xl border p-4"><input type="checkbox" className="mt-1" checked={!!controlExpediente.liquidado_sin_tramitar} onChange={e=>setControlExpediente(v=>({...v,liquidado_sin_tramitar:e.target.checked}))}/><span className="flex-1"><strong className="block text-sm">Liquidado sin tramitar</strong><span className="block text-xs text-slate-500">Bloquea el expediente y genera aviso central.</span>{controlExpediente.liquidado_sin_tramitar&&<input aria-label="Fecha liquidado sin tramitar" type="date" className="mt-3 w-full rounded-lg border p-2" value={controlExpediente.fecha_liquidacion_sin_tramitar||""} onChange={e=>setControlExpediente(v=>({...v,fecha_liquidacion_sin_tramitar:e.target.value}))}/>}</span></label>
@@ -7659,7 +7673,7 @@ const cuantiaFincasParaEnvio =
 <Modal
   open={mostrarDefecto}
   onClose={() => setMostrarDefecto(false)}
-  titulo="⚠️ Alta de defecto registral"
+  titulo="Alta de defecto registral"
   subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`}
   ancho="max-w-4xl"
   footer={
@@ -7679,7 +7693,7 @@ const cuantiaFincasParaEnvio =
         disabled={guardandoDefecto}
         onClick={guardarDefectoRegistral}
       >
-        {guardandoDefecto ? "Guardando…" : "💾 Guardar defecto"}
+        {guardandoDefecto ? "Guardando…" : <><MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar defecto</>}
       </Boton>
     </>
   }
@@ -7731,11 +7745,11 @@ const cuantiaFincasParaEnvio =
               <div className="flex flex-wrap gap-2">
                 {defecto.calificacion_nombre && (
                   <Boton onClick={() => descargarPDFCalificacion(defecto)}>
-                    📄 Descargar PDF
+                    <MolsanIcon name="file" size={14} tone="ocean" bare /> Descargar PDF
                   </Boton>
                 )}
                 <Boton onClick={() => editarDefectoRegistrado(defecto)}>
-                  ✏️ Editar
+                  <MolsanIcon name="pen" size={14} tone="ocean" bare /> Editar
                 </Boton>
               </div>
             </div>
@@ -8001,7 +8015,7 @@ const cuantiaFincasParaEnvio =
           setMostrarFincas(false);
           setFincaEditandoId(null);
         }}
-        titulo={fincaEditandoId !== null ? "🏠 Editar finca" : "🏠 Nueva finca"}
+        titulo={fincaEditandoId !== null ? "Editar finca" : "Nueva finca"}
         subtitulo="Datos registrales del expediente"
         ancho="max-w-5xl"
         footer={
@@ -8019,7 +8033,7 @@ const cuantiaFincasParaEnvio =
               onClick={guardarFinca}
               disabled={guardandoFinca}
             >
-              {guardandoFinca ? "Guardando..." : "💾 Guardar finca"}
+              {guardandoFinca ? "Guardando..." : <><MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar finca</>}
             </Boton>
           </>
         }
@@ -8228,7 +8242,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={modalSelectorRegistro}
         onClose={() => setModalSelectorRegistro(false)}
-        titulo="📚 Catálogo de Registros de la Propiedad"
+        titulo="Catálogo de Registros de la Propiedad"
         subtitulo="Busca y vincula un registro al expediente"
         ancho="max-w-4xl"
         footer={<Boton onClick={() => setModalSelectorRegistro(false)}>Cerrar</Boton>}
@@ -8256,7 +8270,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={Boolean(registroDetalleAbierto)}
         onClose={() => setRegistroDetalleAbierto(null)}
-        titulo="🏛️ Datos del Registro de la Propiedad"
+        titulo="Datos del Registro de la Propiedad"
         subtitulo={registroDetalleAbierto?.registro_propiedad || "Datos del catálogo"}
         ancho="max-w-3xl"
         footer={<Boton onClick={() => setRegistroDetalleAbierto(null)}>Cerrar</Boton>}
@@ -8285,7 +8299,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={oficinaDetalleAbierta}
         onClose={() => setOficinaDetalleAbierta(false)}
-        titulo="🏢 Datos de la oficina"
+        titulo="Datos de la oficina"
         subtitulo={expediente?.oficina || "Catálogo de oficinas"}
         ancho="max-w-3xl"
         footer={<Boton onClick={() => setOficinaDetalleAbierta(false)}>Cerrar</Boton>}
@@ -8377,7 +8391,7 @@ const cuantiaFincasParaEnvio =
 <Modal
   open={mostrarAcciones}
   onClose={() => setMostrarAcciones(false)}
-  titulo="⚡ Acciones del expediente"
+  titulo="Acciones del expediente"
   subtitulo="Asignar una acción del catálogo al expediente"
   ancho="max-w-3xl"
   footer={
@@ -8392,7 +8406,7 @@ const cuantiaFincasParaEnvio =
         tipo="primary"
         onClick={guardarAccion}
       >
-        💾 Asignar acción
+        <MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Asignar acción
       </Boton>
     </>
   }
@@ -8471,7 +8485,7 @@ const cuantiaFincasParaEnvio =
                       }}
                       className="shrink-0 rounded-md border border-red-200 px-2 py-1 text-[10px] font-bold text-red-700 hover:bg-red-50 disabled:opacity-50"
                     >
-                      🗑️ Eliminar
+                      <MolsanIcon name="trash" size={14} tone="ocean" bare /> Eliminar
                     </button>
                   )}
                 </div>
@@ -8501,7 +8515,7 @@ const cuantiaFincasParaEnvio =
         onClose={() =>
           setMostrarAgregarExpedientes(false)
         }
-        titulo="➕ Expedientes relacionados"
+        titulo="Expedientes relacionados"
         subtitulo={
           `Agrupación por NIF · ${valorVisible(
             expediente.nif_titular
@@ -8797,7 +8811,7 @@ const cuantiaFincasParaEnvio =
         onClose={() =>
           setMostrarObservaciones(false)
         }
-        titulo="💬 Observaciones"
+        titulo="Observaciones"
         subtitulo="Comentario y destino dentro del expediente"
         ancho="max-w-3xl"
         footer={
@@ -8818,7 +8832,7 @@ const cuantiaFincasParaEnvio =
                 (visionesComentario.actividad && !destinatarioObservacion)
               }
             >
-              {guardandoObservacion ? "Guardando…" : "💾 Guardar comentario"}
+              {guardandoObservacion ? "Guardando…" : <><MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar comentario</>}
             </Boton>
           </>
         }
@@ -8994,7 +9008,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarModalFacturaHonorarios}
         onClose={() => !guardandoFacturaHonorarios && setMostrarModalFacturaHonorarios(false)}
-        titulo="🧾 Factura de honorarios gestoría"
+        titulo="Factura de honorarios gestoría"
         subtitulo={`Expediente ${expediente?.id_expediente || ""} · Revisa los datos antes de registrar`}
         ancho="max-w-5xl"
         footer={
@@ -9003,10 +9017,10 @@ const cuantiaFincasParaEnvio =
             <div className="flex flex-wrap gap-2">
               {previsualizandoFacturaHonorarios && <Boton onClick={() => setPrevisualizandoFacturaHonorarios(false)} disabled={guardandoFacturaHonorarios}>← Editar datos</Boton>}
               {!previsualizandoFacturaHonorarios ? (
-                <Boton tipo="primary" onClick={() => setPrevisualizandoFacturaHonorarios(true)}>👁 Previsualizar factura</Boton>
+                <Boton tipo="primary" onClick={() => setPrevisualizandoFacturaHonorarios(true)}><MolsanIcon name="eye" size={14} tone="inherit" bare /> Previsualizar factura</Boton>
               ) : (
                 <Boton tipo="primary" onClick={confirmarFacturaHonorarios} disabled={guardandoFacturaHonorarios}>
-                  {guardandoFacturaHonorarios ? "Guardando…" : "💾 Guardar y facturar"}
+                  {guardandoFacturaHonorarios ? "Guardando…" : <><MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar y facturar</>}
                 </Boton>
               )}
             </div>
@@ -9148,7 +9162,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarModalDatosActividad}
         onClose={() => setMostrarModalDatosActividad(false)}
-        titulo={`☷ Datos de actividad · ${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"}`}
+        titulo={`Datos de actividad · ${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"}`}
         subtitulo={`Expediente ${expediente?.id_expediente || ""}. Solo se muestran los campos propios de esta actividad.`}
         ancho="max-w-4xl"
         footer={
@@ -9160,7 +9174,7 @@ const cuantiaFincasParaEnvio =
             <div className="flex gap-2">
               <Boton onClick={() => { setMostrarModalDatosActividad(false); setPestanaActividad("documentos"); }}>Cerrar</Boton>
               <Boton tipo="primary" onClick={guardarCamposActividad} disabled={guardandoActividad}>
-                {guardandoActividad ? "Guardando…" : "💾 Guardar datos"}
+                {guardandoActividad ? "Guardando…" : <><MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar datos</>}
               </Boton>
             </div>
           </div>
@@ -9253,7 +9267,7 @@ const cuantiaFincasParaEnvio =
                 </label>
               </div>
               <section className="mt-3 rounded-xl border border-slate-200 bg-white p-4">
-                <h4 className="mb-3 text-sm font-extrabold text-slate-800">📁 Repositorios digitales</h4>
+                <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="folder" size={17} tone="ocean" bare /> Repositorios digitales</h4>
                 <RepositorioDocumentosInline
                   expedienteId={expediente?.id_expediente || expediente?.id || id}
                   categorias={["Hoja de Encargo firmada", "Justificante de cancelación", "Nota simple registral"]}
@@ -9347,7 +9361,7 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "facturacion-cierre" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Cierre del expediente</h4>
+                <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboardList" size={17} tone="ocean" bare /> Datos · Cierre del expediente</h4>
                 <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {[
                     { key: "fecha_fin_actividad", label: "Fecha de cierre" },
@@ -9382,7 +9396,7 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "liquidacion-impuestos" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Liquidación de impuestos</h4>
+                  <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboardList" size={17} tone="ocean" bare /> Datos · Liquidación de impuestos</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                       const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
@@ -9416,7 +9430,7 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "tramitacion-inscripcion" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Tramitación inscripción</h4>
+                  <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboardList" size={17} tone="ocean" bare /> Datos · Tramitación inscripción</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                       const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
@@ -9518,7 +9532,7 @@ const cuantiaFincasParaEnvio =
                 disabled={registrandoSolicitudIntegracion || expedienteBloqueado}
                 className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {registrandoSolicitudIntegracion ? "Registrando solicitud…" : "📤 Enviar a ABSIS"}
+                {registrandoSolicitudIntegracion ? "Registrando solicitud…" : <><MolsanIcon name="upload" size={14} tone="inherit" bare /> Enviar a ABSIS</>}
               </button>
             </div>
             <p className="mt-2 text-[11px] leading-relaxed text-sky-900">

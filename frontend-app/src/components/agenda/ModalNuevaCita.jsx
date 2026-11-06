@@ -8,8 +8,6 @@ import {
 import useAccessibleDialog from "../ui/useAccessibleDialog";
 
 import AutocompleteNotario from "./AutocompleteNotario";
-import "../../css/ModalesHerramientasPremium.css";
-
 import { obtenerNotaria } from "../../api/ctn";
 
 import SelectSJ from "../ui/SelectSJ";

@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import {
   useEffect,
   useState,
@@ -17,8 +18,6 @@ import {
 import {
   getMaestros,
 } from "../../api/maestros";
-
-import "../../css/ComponentesAccesoPremium.css";
 
 /* ============================================================
    EMPLEADO PERFIL
@@ -588,7 +587,7 @@ export default function EmpleadoPerfil({
             text-4xl
             mb-3
           ">
-            👤
+            <MolsanIcon name="person" size={38} tone="ocean" />
           </div>
 
           <div className="
@@ -793,7 +792,7 @@ export default function EmpleadoPerfil({
                   justify-center
                   text-2xl
                 ">
-                  👤
+                  <MolsanIcon name="person" size={26} tone="ocean" />
                 </div>
 
               )}
@@ -991,22 +990,22 @@ export default function EmpleadoPerfil({
             [
               "basicos",
               "Datos básicos",
-              "👤",
+              "person",
             ],
             [
               "personales",
               "Datos personales",
-              "🏠",
+              "home",
             ],
             [
               "laborales",
               "Datos laborales",
-              "💼",
+              "briefcase",
             ],
             [
               "auditoria",
               "Auditoría",
-              "🛡️",
+              "shield",
             ],
           ].map(
             ([
@@ -1040,7 +1039,7 @@ export default function EmpleadoPerfil({
               >
 
                 <span>
-                  {icon}
+                  <MolsanIcon name={icon} size={16} tone="ocean" bare />
                 </span>
 
                 {label}
@@ -1254,7 +1253,7 @@ export default function EmpleadoPerfil({
                     justify-center
                     text-3xl
                   ">
-                    👤
+                    <MolsanIcon name="person" size={30} tone="ocean" />
                   </div>
 
                 )}

@@ -1,0 +1,225 @@
+/* MOLSAN ERP PREMIUM 2027 · GLOBAL CONSISTENCY
+   Responsabilidad: geometría del contenido, espaciado de rutas,
+   controles nativos, tablas heredadas y accesibilidad transversal.
+   Las cabeceras y tarjetas visuales se gobiernan en CanonicalVisual.
+   Las excepciones funcionales de cada módulo permanecen en sus hojas propias.
+*/
+
+/* Catálogos y Utilidades: el Layout ya aporta el gutter exterior. */
+.erp-route-content :where(.catalogos-premium-page, .utilidades-premium-page) {
+  padding: 0;
+  animation: none;
+}
+.erp-route-content :where(.catalogos-premium-page, .utilidades-premium-page) > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 20px;
+}
+
+/* Evita animaciones de entrada que hacían parpadear las cabeceras heredadas. */
+.erp-route-content :where(.catalogos-premium-page, .utilidades-premium-page) .molsan-page-header {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+/* Cabeceras de Catálogos, Utilidades y herramientas: sin animación de montaje.
+   Se neutraliza solo la entrada del shell/cabecera; no se tocan estados ni botones. */
+:where(.utilidades-premium-page,.catalogos-premium-page,.herramientas-subpagina-premium,.crear-noticia-premium).animate-fadeIn,
+:where(.utilidades-premium-page,.catalogos-premium-page,.herramientas-subpagina-premium,.crear-noticia-premium) :is(header,[data-page-header="true"],.molsan-page-header) {
+  animation: none;
+  opacity: 1;
+  transform: none;
+  filter: none;
+  backface-visibility: visible;
+  will-change: auto;
+}
+:where(.utilidades-premium-page,.catalogos-premium-page,.herramientas-subpagina-premium,.crear-noticia-premium) :is(header,[data-page-header="true"],.molsan-page-header)::before,
+:where(.utilidades-premium-page,.catalogos-premium-page,.herramientas-subpagina-premium,.crear-noticia-premium) :is(header,[data-page-header="true"],.molsan-page-header)::after {
+  animation: none;
+  transition: none;
+  opacity: 1;
+}
+
+/* Una sola caja de contenido para las rutas del ERP principal. */
+.erp-main-content,
+.erp-main-inner,
+.erp-route-content {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+}
+.erp-main-inner {
+  margin-inline: auto;
+  padding: 24px var(--molsan-content-gutter) var(--molsan-content-bottom);
+}
+.erp-route-content { display: flow-root; }
+
+/* Los módulos reciben el gutter del Layout, sin un segundo margen interior. */
+.erp-route-content > :where(
+  .cg-page, .cg-unified-workspace, .expedientes-listado-premium,
+  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .utilidades-premium-page, .honorarios-gestoria-premium, .empleados-premium-page,
+  .empleado-ficha-premium, .empleado-editar-premium, .maestros-premium-page,
+  .logs-premium-page, .seguridad-premium-page, .seguridad-subpagina-premium,
+  .notificaciones-premium-page, .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium, .informes-premium-page,
+  .mensajes-premium-page, .selector-modulos-premium, .ctn-workspace-premium,
+  .encargagest-workspace-premium, .molsan-intranet-page,
+  .provisiones-fondos-premium, .provisiones-fondos-page,
+  .herramientas-home-premium, .herramientas-subpagina-premium
+) {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  padding: 0;
+}
+
+/* Botón Volver insertado por Layout: secundario, sin crear otra cabecera. */
+.erp-route-content .molsan-page-back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 12px;
+  color: var(--molsan-primary, #064675);
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: var(--molsan-radius-control, 10px);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Controles nativos: no sobrescribe controles con clases de módulo. */
+.erp-route-content :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  select, textarea
+) {
+  max-width: 100%;
+  min-width: 0;
+  border-color: var(--molsan-border, #D8E4EC);
+  border-radius: var(--molsan-radius-control, 10px);
+}
+.erp-route-content :where(button, [role="button"]) { touch-action: manipulation; }
+.erp-route-content :where(button:not(.erp-card):not([class*="icon"]), .molsan-page-back-button) {
+  border-radius: var(--molsan-radius-control, 10px);
+}
+.erp-route-content :where(button, a, input, select, textarea, [role="button"]):focus-visible {
+  outline: 2px solid var(--molsan-primary, #064675);
+  outline-offset: 2px;
+}
+
+/* Tablas heredadas. MolsanDataTable mantiene su componente y ordenación propios. */
+.erp-main-content table:not(.molsan-table):not(.molsan-data-table) {
+  border-collapse: separate;
+  border-spacing: 0;
+  color: #173247;
+  font-variant-numeric: tabular-nums;
+}
+.erp-main-content table:not(.molsan-table):not(.molsan-data-table) thead th {
+  color: var(--molsan-primary, #064675);
+  background: var(--molsan-table-head, #EAF2F8);
+  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: normal;
+  text-transform: none;
+  vertical-align: middle;
+}
+.erp-main-content table:not(.molsan-table):not(.molsan-data-table) tbody td {
+  border-bottom: 1px solid #E8EFF4;
+  vertical-align: middle;
+}
+.erp-main-content table:not(.molsan-table):not(.molsan-data-table) tbody tr:last-child td {
+  border-bottom-color: transparent;
+}
+.erp-main-content table:not(.molsan-table):not(.molsan-data-table) tbody tr:hover {
+  background-color: var(--molsan-surface-soft, #F2F7FB);
+}
+.erp-main-content table:not(.molsan-table):not(.molsan-data-table) :is(th, td) { line-height: 1.45; }
+
+/* Inputs sin clase: los controles propios de módulo conservan sus dimensiones. */
+.erp-main-content :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="hidden"]):not([class]),
+  select:not([class]), textarea:not([class])
+) {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 8px 10px;
+  color: #173247;
+  background: #FFFFFF;
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: var(--molsan-radius-control, 11px);
+  font: inherit;
+}
+.erp-main-content :where(textarea:not([class])) { min-height: 96px; resize: vertical; }
+.erp-main-content :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="hidden"]):focus-visible,
+  select:focus-visible, textarea:focus-visible
+) {
+  outline: 3px solid rgba(6, 70, 117, .18);
+  outline-offset: 1px;
+  border-color: var(--molsan-primary, #064675);
+}
+.erp-main-content :where(input:disabled, select:disabled, textarea:disabled) {
+  color: #718696;
+  background: #F2F7FB;
+  cursor: not-allowed;
+}
+
+/* Portales independientes: mismo ancho exterior, sin márgenes heredados. */
+.erp-page.molsan-professional-shell,
+.ng-admin-notarias {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .erp-main-inner { padding-inline: var(--molsan-content-gutter-tablet); }
+}
+@media (max-width: 720px) {
+  .erp-main-inner { padding: 16px var(--molsan-content-gutter-mobile) 24px; }
+  .erp-route-content .molsan-page-header,
+  .erp-page.molsan-professional-shell > .molsan-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .erp-route-content .molsan-page-header__identity,
+  .erp-page.molsan-professional-shell .molsan-page-header__identity {
+    flex-basis: auto;
+    width: 100%;
+  }
+  .erp-route-content .molsan-page-header__actions,
+  .erp-page.molsan-professional-shell .molsan-page-header__actions {
+    justify-content: flex-start;
+    width: 100%;
+    margin-left: 0;
+  }
+  .erp-route-content .molsan-page-header__actions > :where(button, a),
+  .erp-page.molsan-professional-shell .molsan-page-header__actions > :where(button, a) {
+    flex: 0 1 auto;
+  }
+}
+
+/* Accesibilidad global: no forzar movimiento ni animaciones. */
+@media (prefers-reduced-motion: reduce) {
+  .erp-route-content *,
+  .erp-route-content *::before,
+  .erp-route-content *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Los botones Volver heredados se sustituyen por el único control del Layout. */
+.erp-route-content .molsan-page-back-legacy-hidden { display: none !important; }

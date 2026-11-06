@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
+import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
+import MolsanStatCard from "../../components/ui/MolsanStatCard";
 
 const fechaISOlocal = (fecha) => {
   const d = new Date(fecha);
@@ -55,36 +57,36 @@ export default function FichajesResumen({ recargar }) {
     }
   };
 
-  return <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-    <article className="rounded-2xl border border-blue-100 bg-blue-50/70 p-5">
-      <p className="text-sm font-semibold text-blue-800">Horas trabajadas · {horas?.anio || new Date().getFullYear()}</p>
-      <p className="mt-2 text-3xl font-extrabold text-slate-900">{horas?.horas_trabajadas ?? "—"} h</p>
-      <p className="mt-1 text-xs text-slate-500">Jornadas incompletas: {horas?.jornadas_incompletas ?? "—"}</p>
-      {horas?.aviso && <p className="mt-2 text-xs text-slate-600">{horas.aviso}</p>}
-    </article>
+  return <section className="grid grid-cols-1 gap-4 md:grid-cols-3" aria-label="Resumen de fichajes">
+    <MolsanStatCard
+      title={`Horas trabajadas · ${horas?.anio || new Date().getFullYear()}`}
+      value={`${horas?.horas_trabajadas ?? "—"} h`}
+      description={`Jornadas incompletas: ${horas?.jornadas_incompletas ?? "—"}${horas?.aviso ? ` · ${horas.aviso}` : ""}`}
+      icon="clock"
+      tone="ocean"
+      className="fichajes-horas-card"
+    />
 
-    <article className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5">
-      <p className="text-sm font-semibold text-emerald-800">Vacaciones · {vacaciones?.anio || new Date().getFullYear()}</p>
-      <div className="mt-3 grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
+    <MolsanPremiumCard icon="calendar" title={`Vacaciones · ${vacaciones?.anio || new Date().getFullYear()}`} className="fichajes-vacaciones-card">
+      <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
         <div><p className="text-xs text-slate-500">Asignados</p><p className="text-xl font-bold">{vacaciones?.dias_asignados ?? "—"}</p></div>
         <div><p className="text-xs text-slate-500">Disfrutados</p><p className="text-xl font-bold">{vacaciones?.dias_disfrutados ?? 0}</p></div>
         <div><p className="text-xs text-slate-500">Reservados</p><p className="text-xl font-bold">{vacaciones?.dias_reservados ?? 0}</p></div>
         <div><p className="text-xs text-slate-500">Disponibles</p><p className="text-xl font-bold">{vacaciones?.dias_restantes ?? "Pendiente"}</p></div>
       </div>
       {vacaciones?.aviso && <p className="mt-2 text-xs text-slate-600">{vacaciones.aviso}</p>}
-      {vacaciones?.registros?.length > 0 && <div className="mt-3 space-y-1 text-xs">{vacaciones.registros.map((v) => <p key={v.id} className="rounded-lg bg-white/70 p-2">{v.fecha_inicio} – {v.fecha_fin} · {v.dias} días · {v.estado}</p>)}</div>}
-    </article>
+      {vacaciones?.registros?.length > 0 && <div className="mt-3 space-y-1 text-xs">{vacaciones.registros.map((v) => <p key={v.id} className="rounded-lg bg-slate-50 p-2">{v.fecha_inicio} – {v.fecha_fin} · {v.dias} días · {v.estado}</p>)}</div>}
+    </MolsanPremiumCard>
 
-    <article className="rounded-2xl border border-violet-100 bg-violet-50/70 p-5">
-      <p className="text-sm font-semibold text-violet-800">Solicitar vacaciones</p>
-      <form className="mt-3 space-y-2" onSubmit={solicitar}>
+    <MolsanPremiumCard icon="calendar" title="Solicitar vacaciones" description="Selecciona el periodo y envía la solicitud para su aprobación." className="fichajes-solicitud-card">
+      <form className="space-y-2" onSubmit={solicitar}>
         <label className="block text-xs">Desde<input required type="date" value={desde} onChange={(e) => setDesde(e.target.value)} className="mt-1 w-full rounded-lg border p-2 text-sm" /></label>
         <label className="block text-xs">Hasta<input required type="date" min={desde} value={hasta} onChange={(e) => setHasta(e.target.value)} className="mt-1 w-full rounded-lg border p-2 text-sm" /></label>
         <button disabled={guardando || cargando} className="w-full rounded-lg bg-violet-700 px-3 py-2 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Enviando…" : "Enviar solicitud"}</button>
       </form>
       {cargando && <p className="mt-2 text-xs text-slate-500">Actualizando datos…</p>}
-    </article>
+    </MolsanPremiumCard>
 
-    {(error || mensaje) && <div className={error ? "md:col-span-3 rounded-xl bg-rose-50 p-3 text-sm text-rose-800" : "md:col-span-3 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800"}>{error || mensaje}</div>}
+    {(error || mensaje) && <div className="md:col-span-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800" role={error ? "alert" : "status"}>{error || mensaje}</div>}
   </section>;
 }

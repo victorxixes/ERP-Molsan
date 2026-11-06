@@ -1,9 +1,7 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useState } from "react";
 import { useUtilidades } from "../../hooks/useUtilidades";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
-
 /**
  * IMPORTAR CTN — MOLSAN ERP PREMIUM 2027
  */
@@ -74,7 +72,7 @@ export default function ImportarCTN() {
             >
 
               <span className="text-4xl">
-                {file ? "📊" : "📁"}
+                {file ? <MolsanIcon name="chart" size={20} tone="ocean" bare /> : <MolsanIcon name="folder" size={20} tone="ocean" bare />}
               </span>
 
               <span className="text-sm font-medium text-slate-700">

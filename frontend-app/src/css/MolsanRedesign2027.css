@@ -577,32 +577,6 @@
   text-wrap: pretty;
 }
 
-:where(
-  :is(.cg-page, .cg-unified-workspace),
-  .expedientes-listado-premium,
-  .agenda-premium-page,
-  .catalogos-premium-page,
-  .utilidades-premium-page,
-  .honorarios-gestoria-premium,
-  .empleados-premium-page,
-  .maestros-premium-page,
-  .logs-premium-page,
-  .seguridad-premium-page,
-  .seguridad-subpagina-premium,
-  .notificaciones-premium-page,
-  .panel-tecnico-premium,
-  .panel-tecnico-submodulo-premium,
-  .informes-premium-page,
-  .mensajes-premium-page,
-  .ctn-workspace-premium,
-  .encargagest-workspace-premium,
-  .molsan-intranet-page,
-  .provisiones-fondos-premium,
-  .provisiones-fondos-page,
-  .herramientas-subpagina-premium
-) :is(header, [data-page-header="true"]) {
-  min-width: 0;
-}
 
 /* Botones interactivos con estado hover y foco más evidente. */
 :where(
@@ -1492,13 +1466,6 @@ body {
   width: 100%;
 }
 
-.erp-main-inner {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 1920px;
-  margin-inline: auto;
-  padding: 24px clamp(12px, 1.6vw, 28px);
-}
 /*
  * Una sola fuente para el margen exterior de las páginas del ERP.
  * .erp-main-inner aporta el espacio de página; las raíces de cada módulo
@@ -1692,11 +1659,7 @@ body {
 }
 
 @media (max-width: 760px) {
-  .erp-main-inner {
-    padding: 14px 10px;
-  }
-
-  :where(
+:where(
     .cg-page, .cg-unified-workspace, .expedientes-page,
     .expedientes-listado-premium, .ficha-expediente-premium,
     .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
@@ -2790,72 +2753,4 @@ table :is(th, td) {
   box-shadow: 0 16px 44px rgba(25, 42, 70, .16) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-}
-
-
-/* Utilidades y Catálogos · evitar el parpadeo de cabeceras al montar subpáginas.
-   Se desactiva únicamente la animación de entrada del contenedor de página;
-   las animaciones funcionales de botones, indicadores y estados se conservan. */
-:where(
-  .utilidades-premium-page,
-  .catalogos-premium-page,
-  .herramientas-subpagina-premium,
-  .crear-noticia-premium
-).animate-fadeIn {
-  animation: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-}
-:where(
-  .utilidades-premium-page,
-  .catalogos-premium-page,
-  .herramientas-subpagina-premium,
-  .crear-noticia-premium
-).animate-fadeIn > header,
-:where(
-  .utilidades-premium-page,
-  .catalogos-premium-page,
-  .herramientas-subpagina-premium,
-  .crear-noticia-premium
-) > header.molsan-page-header {
-  animation: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  backface-visibility: hidden;
-}
-
-
-/* MOLSAN ERP PREMIUM 2027 · estabilización definitiva de cabeceras en subpáginas
-   Se aplica a cualquier nivel del árbol, no solo a un header hijo directo. */
-:where(
-  .utilidades-premium-page,
-  .catalogos-premium-page,
-  .herramientas-subpagina-premium,
-  .crear-noticia-premium
-) :is(header, [data-page-header="true"], .molsan-page-header) {
-  animation: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  backface-visibility: visible !important;
-  will-change: auto !important;
-}
-:where(
-  .utilidades-premium-page,
-  .catalogos-premium-page,
-  .herramientas-subpagina-premium,
-  .crear-noticia-premium
-) :is(header, [data-page-header="true"], .molsan-page-header).animate-fadeIn,
-:where(
-  .utilidades-premium-page,
-  .catalogos-premium-page,
-  .herramientas-subpagina-premium,
-  .crear-noticia-premium
-) :is(header, [data-page-header="true"], .molsan-page-header) .animate-fadeIn {
-  animation: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
 }

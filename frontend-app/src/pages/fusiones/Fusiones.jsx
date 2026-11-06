@@ -1,8 +1,6 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
-import "../../css/Fusiones.css";
-
 const ESTADOS = ["Pendiente", "En curso", "Aceptada", "Desestimada", "Facturadas"];
 
 function normalizarEstado(valor) {

@@ -1,9 +1,7 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState } from "react";
 import axios from "../../api/axios";
-import "../../css/ModalesHerramientasPremium.css";
-
-
 /**
  * ============================================================
  * IMPORTADOR ABSIS
@@ -205,7 +203,7 @@ export default function ImportadorAbsis() {
                             justify-center
                         "
                     >
-                        📥
+                        <MolsanIcon name="upload" size={24} tone="ocean" />
                     </div>
 
                     <div>
@@ -254,7 +252,7 @@ export default function ImportadorAbsis() {
                         "
                     >
 
-                        <span>📅</span>
+                        <MolsanIcon name="calendar" size={18} tone="ocean" bare />
 
                         <span>
                             Fecha de importación
@@ -334,7 +332,7 @@ export default function ImportadorAbsis() {
                         "
                     >
 
-                        <span>📊</span>
+                        <MolsanIcon name="chart" size={18} tone="ocean" bare />
 
                         <span>
                             Archivo Excel
@@ -394,7 +392,7 @@ export default function ImportadorAbsis() {
                                     transition
                                 "
                             >
-                                {file ? "📊" : "📄"}
+                                {file ? <MolsanIcon name="chart" size={22} tone="ocean" /> : <MolsanIcon name="file" size={22} tone="ocean" />}
                             </div>
 
 
@@ -579,7 +577,7 @@ export default function ImportadorAbsis() {
                                     gap-2
                                 "
                             >
-                                📥
+                                <MolsanIcon name="upload" size={15} tone="inherit" bare />
                                 Importar expedientes del día
                             </span>
 
@@ -652,7 +650,7 @@ export default function ImportadorAbsis() {
                                     gap-2
                                 "
                             >
-                                📅
+                                <MolsanIcon name="calendar" size={15} tone="inherit" bare />
                                 Importar fecha seleccionada
                             </span>
 
@@ -706,7 +704,7 @@ export default function ImportadorAbsis() {
                                 flex-shrink-0
                             "
                         >
-                            ⛔
+                            <MolsanIcon name="alert" size={18} tone="amber" bare />
                         </div>
 
 

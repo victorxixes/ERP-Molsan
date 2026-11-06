@@ -5,7 +5,6 @@ import MODULOS_ERP from "../config/modulos";
 import MolsanIcon from "../components/ui/MolsanIcon";
 import { API_BASE } from "../api/config";
 import { configurarSesionEncargaGest } from "../api/encargagest";
-import "../css/ModalesHerramientasPremium.css";
 
 const CATALOGO_MODULOS = Object.fromEntries(
   MODULOS_ERP.map((modulo) => [modulo.key, modulo])

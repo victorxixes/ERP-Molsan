@@ -1,10 +1,8 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
-
 const hoy = () => new Date().toLocaleDateString("sv-SE");
 const euros = (v) => Number(v || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
 const fecha = (v) => v ? String(v).slice(0, 10).split("-").reverse().join("/") : "—";
@@ -91,7 +89,7 @@ export default function ComplementosSaldo() {
       <div className="overflow-x-auto"><table className="w-full min-w-[1250px] border-collapse text-left text-sm">
         <thead className="bg-white text-[10px] uppercase tracking-wider text-slate-500"><tr>{["Expediente", "Provisionado", "Saldo disponible", "Fecha de petición", "Saldo a solicitar", "Motivo", "Acciones", "Estado"].map((n) => <th key={n} className="border-b border-slate-200 px-4 py-3.5 font-extrabold">{n}</th>)}</tr></thead>
         <tbody>{cargando ? <tr><td colSpan={8} className="px-5 py-14 text-center text-slate-500">Cargando solicitudes…</td></tr>
-          : items.length === 0 ? <tr><td colSpan={8} className="px-5 py-14 text-center"><div className="text-3xl">📋</div><p className="mt-2 font-bold text-slate-700">No hay solicitudes que mostrar</p><p className="mt-1 text-xs text-slate-500">Cuando se solicite un complemento desde la ficha de un expediente, aparecerá aquí.</p></td></tr>
+          : items.length === 0 ? <tr><td colSpan={8} className="px-5 py-14 text-center"><div><MolsanIcon name="clipboardList" size={34} tone="ocean" /></div><p className="mt-2 font-bold text-slate-700">No hay solicitudes que mostrar</p><p className="mt-1 text-xs text-slate-500">Cuando se solicite un complemento desde la ficha de un expediente, aparecerá aquí.</p></td></tr>
           : items.map((item) => { const cerrado = ["compensado", "cerrado"].includes(String(item.estado).toLowerCase()); return <tr key={item.id} className="border-b border-slate-100 last:border-0 hover:bg-blue-50/40">
             <td className="px-4 py-3.5"><Link to={item.expediente_id ? `/expedientes/${item.expediente_id}` : "/expedientes"} className="font-extrabold text-blue-700 hover:underline">{item.numero_expediente}</Link></td>
             <td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{euros(item.provisionado)}</td><td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{euros(item.saldo_disponible)}</td><td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{fecha(item.fecha_solicitud)}</td><td className="whitespace-nowrap px-4 py-3.5 font-extrabold tabular-nums text-slate-900">{euros(item.importe)}</td><td className="max-w-[280px] whitespace-normal px-4 py-3.5 text-slate-600">{item.motivo || item.observaciones || "—"}</td>

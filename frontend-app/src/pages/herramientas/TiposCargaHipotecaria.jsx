@@ -4,10 +4,6 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
-
-
 // ============================================================
 // CONFIGURACIÓN API
 // ============================================================

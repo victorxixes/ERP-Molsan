@@ -1,6 +1,5 @@
 import ModalEmpleado from "./empleados/ModalEmpleado";
 
-import "../css/LayoutPortalesPremium.css";
 export default function EmpleadoPerfilModal({
   id,
   onClose,

@@ -2,9 +2,6 @@ import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
-
 export default function AsignarExpedientesPromociones() {
   const [numero, setNumero] = useState("");
   const [tipos, setTipos] = useState([]);

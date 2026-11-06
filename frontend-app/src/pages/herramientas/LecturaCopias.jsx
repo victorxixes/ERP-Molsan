@@ -1,8 +1,7 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import "../../css/ModalesHerramientasPremium.css";
-
 const EJEMPLOS = [
   { expediente: "2026480925", fecha: "24/10/2026", contrato: "CT-2026-01842", finca: "Finca 1842 · Registro 3", observaciones: "Copia recibida; pendiente de validación" },
   { expediente: "2026481041", fecha: "24/10/2026", contrato: "CT-2026-01857", finca: "Finca 507 · Registro 1", observaciones: "Documento de ejemplo detectado" },
@@ -105,7 +104,7 @@ export default function LecturaCopias() {
             </thead>
             <tbody>
               {filas.length === 0 ? (
-                <tr><td colSpan={5} className="px-5 py-14 text-center"><div className="text-3xl">📄</div><p className="mt-2 font-bold text-slate-700">{procesando ? "Preparando resultados de ejemplo…" : "Todavía no hay resultados"}</p><p className="mt-1 text-xs text-slate-500">Selecciona una fecha y pulsa «Procesar» para ver la maqueta.</p></td></tr>
+                <tr><td colSpan={5} className="px-5 py-14 text-center"><div><MolsanIcon name="file" size={32} tone="ocean" /></div><p className="mt-2 font-bold text-slate-700">{procesando ? "Preparando resultados de ejemplo…" : "Todavía no hay resultados"}</p><p className="mt-1 text-xs text-slate-500">Selecciona una fecha y pulsa «Procesar» para ver la maqueta.</p></td></tr>
               ) : filas.map((fila, index) => (
                 <tr key={fila.expediente} className="border-b border-slate-100 align-top last:border-0 hover:bg-slate-50/70">
                   <td className="whitespace-nowrap px-4 py-4 font-extrabold text-blue-700">{fila.expediente}</td>

@@ -1,7 +1,5 @@
 import { useMemo } from "react";
 import { useNotificacionesStore } from "../../store/notificacionesStore";
-import "../../css/ComponentesOperativosPremium.css";
-
 /**
  * NotificacionesBadge — SJ‑2026 Premium
  * Indicador de notificaciones internas.

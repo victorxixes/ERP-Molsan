@@ -8,7 +8,6 @@ import Sidebar from "../../components/Sidebar";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
-import "../../css/NotarGest.css";
 import { formatEuro as euros } from "../../utils/formatters";
 
 const TOKEN_KEY = "notargest_token";
@@ -904,11 +903,11 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       </div>
     </section>}
     {(vista === "avisos_comentarios" || vista === "avisos_documentos") && <section className="ng-panel">
-      <div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista("inicio")}><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> Volver al inicio</button></div>
+      <div className="ng-panel-titulo"><h2>{titulo}</h2></div>
       {vista === "avisos_comentarios" ? (avisos.comentarios.length ? <div className="ng-documentos">{avisos.comentarios.map(o => <article className="ng-documento" key={o.id}><div><strong>Expediente {o.id_expediente} · {texto(o.solicitante)}</strong><p>{o.comentario}</p><small>{texto(o.oficina)} · {texto(o.fecha)} · {o.visibilidad}</small></div><button className="ng-boton-secundario" onClick={() => abrirExpediente({id_expediente:o.id_expediente})}><MolsanIcon name="arrowRight" size={20} tone="ocean" /> Abrir expediente</button></article>)}</div> : <p className="ng-mensaje">No hay observaciones visibles para la notaría.</p>) : (avisos.documentos.length ? <div className="ng-documentos">{avisos.documentos.map(d => <article className="ng-documento" key={d.id}><div><strong>Expediente {d.id_expediente} · {texto(d.solicitante)}</strong><p>{d.nombre}</p><small>{texto(d.oficina)} · {texto(d.categoria)} · Añadido: {texto(d.fecha_subida)}</small></div><button className="ng-boton-secundario" onClick={() => abrirExpediente({id_expediente:d.id_expediente})}><MolsanIcon name="arrowRight" size={20} tone="ocean" /> Abrir expediente</button></article>)}</div> : <p className="ng-mensaje">No hay documentos nuevos pendientes de revisar antes de la firma.</p>)}
     </section>}
     {vista === "firmas_urgentes" && <section className="ng-panel">
-      <div className="ng-panel-titulo"><div><h2>Firmas urgentes</h2><p>Expedientes marcados como urgentes desde la planificación de la firma.</p></div><button className="ng-volver" onClick={() => setVista("inicio")}><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> Volver al inicio</button></div>
+      <div className="ng-panel-titulo"><div><h2>Firmas urgentes</h2><p>Expedientes marcados como urgentes desde la planificación de la firma.</p></div></div>
       <div className="ng-tabla-contenedor">
         <MolsanDataTable
           rows={expedientes.filter(x => x.firma_urgente)}
@@ -932,7 +931,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       </div>
     </section>}
     {bandejas.some(b => b.id === vista) && <section className="ng-panel">
-      <div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista("inicio")}><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> Volver al inicio</button></div>
+      <div className="ng-panel-titulo"><h2>{titulo}</h2></div>
       <div className="ng-filtros"><label>Buscar<input value={busqueda} onChange={e => setBusqueda(e.target.value)} placeholder="Expediente, oficina, solicitante, protocolo…" /></label><span>{filas.length} registros</span></div>
       <div className="ng-tabla-contenedor">
         <MolsanDataTable
@@ -974,7 +973,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       </div>
     </section>}
     {esDetalle && <section className="ng-panel ng-ficha">
-      <div className="ng-panel-titulo ng-ficha-cabecera"><div><h2>{titulo}</h2><small>Ficha operativa del expediente · NotarGest</small></div><button className="ng-volver" onClick={() => setVista(vistaOrigenFicha.current || "inicio")}><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> Volver a la bandeja anterior</button></div>
+      <div className="ng-panel-titulo ng-ficha-cabecera"><div><h2>{titulo}</h2><small>Ficha operativa del expediente · NotarGest</small></div></div>
       {detalle.bloqueado && <div className="ng-alerta ng-bloqueo-expediente" role="alert"><span className="ng-alerta-icono" aria-hidden="true"><MolsanIcon name="alert" size={18} tone="amber" /></span><div><strong>EXPEDIENTE BLOQUEADO EN CANCELAGEST</strong><p>{texto(detalle.motivo_bloqueo_efectivo || detalle.motivo_bloqueo || "Este expediente está bloqueado. Consulta con gestión antes de continuar.")}</p></div></div>}
       <div className="ng-ficha-cuerpo ng-ficha-premium">
         <details className="ng-detalle-bloque ng-workflow ng-bloque-estado ng-acordeon-ficha">

@@ -1,3 +1,4 @@
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import {
   useState,
@@ -7,9 +8,6 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
-import "./SeguridadSubpaginasPremium.css";
-
-
 const API_URL =
   "https://agenda-intranet-b.onrender.com";
 
@@ -860,9 +858,7 @@ export default function SeguridadRolEditor() {
                   font-bold
                 "
               >
-                {modo === "crear"
-                  ? "+"
-                  : "✎"}
+                {modo === "crear" ? <MolsanIcon name="plus" size={20} tone="ocean" bare /> : <MolsanIcon name="pen" size={20} tone="ocean" bare />}
               </div>
 
 

@@ -5,8 +5,6 @@ import {
   useCallback,
 } from "react";
 
-import "./EmpleadoEditar.css";
-
 import {
   obtenerEmpleado,
   editarEmpleado,

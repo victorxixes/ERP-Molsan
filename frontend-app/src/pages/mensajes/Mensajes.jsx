@@ -5,8 +5,6 @@ import {
   useRef,
   useState,
 } from "react";
-import "../../css/ModalesHerramientasPremium.css";
-
 import {
   useMensajesStore,
 } from "../../store/mensajesStore";
@@ -19,6 +17,7 @@ import MensajeBubble from "../../components/mensajes/MensajeBubble";
 
 import MensajesHeader from "../../components/mensajes/MensajesHeader";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
 
 export default function Mensajes({
@@ -945,7 +944,7 @@ export default function Mensajes({
                     text-xl
                   "
                 >
-                  👥
+                  <MolsanIcon name="users" size={26} tone="ocean" />
                 </div>
 
                 <p
@@ -1295,7 +1294,7 @@ export default function Mensajes({
                     shadow-sm
                   "
                 >
-                  💬
+                  <MolsanIcon name="message" size={36} tone="ocean" />
                 </div>
 
 
@@ -1413,7 +1412,7 @@ export default function Mensajes({
                           shadow-sm
                         "
                       >
-                        💬
+                        <MolsanIcon name="message" size={28} tone="ocean" />
                       </div>
 
                       <p
@@ -1619,7 +1618,7 @@ export default function Mensajes({
                     title="Adjuntar archivo"
                   >
 
-                    📎
+                    <MolsanIcon name="attachment" size={20} tone="ocean" />
 
                     <input
                       type="file"
@@ -1737,7 +1736,7 @@ export default function Mensajes({
                     "
                     title="Enviar mensaje"
                   >
-                    ➤
+                    <MolsanIcon name="arrowRight" size={20} tone="inherit" />
                   </button>
 
                 </div>

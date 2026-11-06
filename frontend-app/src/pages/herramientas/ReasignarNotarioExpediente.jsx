@@ -4,8 +4,6 @@ import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
 import { enviarExpedienteANotario } from "../../api/expedientes";
-import "../../css/ModalesHerramientasPremium.css";
-
 export default function ReasignarNotarioExpediente() {
   const [numero, setNumero] = useState("");
   const [expediente, setExpediente] = useState(null);

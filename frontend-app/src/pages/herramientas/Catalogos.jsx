@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import "../../css/HerramientasPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import MolsanIcon from "../../components/ui/MolsanIcon";
 
@@ -8,17 +7,10 @@ import MolsanIcon from "../../components/ui/MolsanIcon";
  * Reúne las pantallas de mantenimiento de datos maestros existentes.
  * Cada tarjeta conserva la ruta y el origen de datos de su catálogo.
  */
-const ICONOS_CATALOGO = {
-  "🖋️": "pen", "✉️": "mail", "🔗": "link", "🏦": "bank",
-  "🏘️": "building", "🏛️": "courthouse", "🏢": "building",
-  "🧾": "receipt", "🧮": "calculator", "💶": "euro",
-  "🏠": "home", "🚚": "truck", "🕒": "clock",
-  "🗂️": "archive", "🗃️": "archive", "📋": "clipboardList",
-};
 
 const CATALOGOS = [
   {
-    icon: "🖋️",
+    icon: "pen",
     titulo: "Firmas y plantillas de email",
     descripcion: "Configura el pie corporativo y la firma automática vinculada a la ficha del empleado.",
     ruta: "/catalogos/firmas-email",
@@ -26,7 +18,7 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "✉️",
+    icon: "mail",
     titulo: "Correspondencia tipificada",
     descripcion: "Crea plantillas de email por proceso y genera mensajes con datos reales de la ficha del expediente.",
     ruta: "/catalogos/correspondencia-tipificada",
@@ -34,7 +26,7 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "🔗",
+    icon: "link",
     titulo: "Catálogo ABSIS",
     descripcion: "Estados de expediente, productos GTG, actividades, operaciones y defectos.",
     ruta: "/catalogos/absis",
@@ -42,35 +34,35 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "🏦",
+    icon: "bank",
     titulo: "Entidades bancarias",
     descripcion: "Entidades, códigos europeos, LEI, categorías y direcciones.",
     ruta: "/herramientas/entidades-bancarias",
     grupo: "Datos territoriales y entidades",
   },
   {
-    icon: "🏘️",
+    icon: "building",
     titulo: "Municipios",
     descripcion: "Comunidades autónomas, provincias y municipios.",
     ruta: "/herramientas/municipios",
     grupo: "Datos territoriales y entidades",
   },
   {
-    icon: "🏛️",
+    icon: "courthouse",
     titulo: "Registros de la propiedad",
     descripcion: "Datos y mantenimiento de los registros de la propiedad.",
     ruta: "/herramientas/registros-propiedad",
     grupo: "Datos territoriales y entidades",
   },
   {
-    icon: "🏢",
+    icon: "building",
     titulo: "Oficinas liquidadoras",
     descripcion: "Oficinas liquidadoras y sus datos asociados.",
     ruta: "/herramientas/oficinas-liquidadoras",
     grupo: "Datos territoriales y entidades",
   },
   {
-    icon: "🏢",
+    icon: "building",
     titulo: "Catálogo de oficinas",
     descripcion: "Busca oficinas e importa y actualiza sus datos desde tu Excel.",
     ruta: "/catalogos/oficinas",
@@ -78,7 +70,7 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "🧾",
+    icon: "receipt",
     titulo: "Tabla Provisiones de fondos",
     descripcion: "Configura importes de referencia y criterios iniciales de impuestos por operación y territorio.",
     ruta: "/catalogos/provisiones-fondos",
@@ -86,7 +78,7 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "🧮",
+    icon: "calculator",
     titulo: "Tipos impositivos",
     descripcion: "Gestiona tipos de IVA, IGIC y retenciones; crea, edita y desactiva porcentajes utilizados por las órdenes de pago.",
     ruta: "/catalogos/tipos-impositivos",
@@ -94,7 +86,7 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "💶",
+    icon: "euro",
     titulo: "Honorarios de gestoría",
     descripcion: "Tarifas con base imponible, IVA o IGIC y total calculado.",
     ruta: "/herramientas/honorarios-gestoria",
@@ -102,21 +94,21 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "🏠",
+    icon: "home",
     titulo: "Tipos de carga hipotecaria",
     descripcion: "Catálogo de tipos de carga hipotecaria.",
     ruta: "/herramientas/tipos-carga-hipotecaria",
     grupo: "Catálogos económicos",
   },
   {
-    icon: "🧾",
+    icon: "receipt",
     titulo: "Tipos de conceptos de gastos",
     descripcion: "Conceptos disponibles para clasificar gastos.",
     ruta: "/herramientas/tipos-concepto-gastos",
     grupo: "Catálogos económicos",
   },
   {
-    icon: "🚚",
+    icon: "truck",
     titulo: "Mensajería · Servicios y tarifas",
     descripcion: "Mantén el catálogo interno de servicios, tarifas, suplementos e impuestos de mensajería.",
     ruta: "/catalogos/mensajeria-servicios",
@@ -125,7 +117,7 @@ const CATALOGOS = [
     avisoConstruccion: true,
   },
   {
-    icon: "🕒",
+    icon: "clock",
     titulo: "Fichajes · Tipos de ausencia",
     descripcion: "Configura los motivos de ausencia y si cada uno requiere justificante.",
     ruta: "/catalogos/fichajes",
@@ -133,14 +125,14 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "🗂️",
+    icon: "archive",
     titulo: "Maestros generales",
     descripcion: "Acceso al catálogo general de datos maestros del ERP.",
     ruta: "/maestros",
     grupo: "Catálogos operativos",
   },
   {
-    icon: "🗃️",
+    icon: "archive",
     titulo: "Tipos de expediente",
     descripcion: "Mantén los tipos de expediente, incluidos los tipos históricos de provisiones fuera del circuito GTG.",
     ruta: "/herramientas/tipos-expediente",
@@ -148,7 +140,7 @@ const CATALOGOS = [
     destacado: true,
   },
   {
-    icon: "📋",
+    icon: "clipboardList",
     titulo: "Acciones del expediente",
     descripcion: "Acciones y actividades utilizadas en el circuito de expedientes.",
     ruta: "/herramientas/acciones-expediente",
@@ -191,7 +183,7 @@ export default function Catalogos() {
                 >
                   <div className="flex items-start gap-4">
                     <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl ${item.destacado ? "border-blue-200 bg-blue-100" : "border-slate-200 bg-slate-50"}`}>
-                      <MolsanIcon name={ICONOS_CATALOGO[item.icon] || "file"} size={30} tone="ocean" />
+                      <MolsanIcon name={item.icon || "file"} size={30} tone="ocean" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="text-base font-semibold text-slate-800">{item.titulo}</h3>

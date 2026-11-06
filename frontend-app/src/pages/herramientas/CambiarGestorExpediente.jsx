@@ -1,7 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useState } from "react";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 

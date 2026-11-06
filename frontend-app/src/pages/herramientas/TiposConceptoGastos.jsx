@@ -5,10 +5,6 @@ import React, {
   useState,
 } from "react";
 import axios from "../../api/axios";
-import "../../css/ModalesHerramientasPremium.css";
-import "../../css/CatalogosMaestrosPremium.css";
-
-
 // ============================================================
 // TIPOS DE CONCEPTO DE GASTOS
 // MOLSAN ERP — PREMIUM 2027

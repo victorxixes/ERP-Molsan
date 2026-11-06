@@ -95,9 +95,6 @@
 }
 
 @media (max-width: 760px) {
-  .erp-main-inner {
-    padding-inline: 12px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -771,35 +768,7 @@
     linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
   box-shadow: 0 22px 46px rgba(4,55,91,.22);
 }
-.molsan-page-header {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 100%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-  gap: 12px;
-  min-width: 0;
-  min-height: 74px;
-  margin: 0 0 16px;
-  padding: 10px 18px;
-  overflow: hidden;
-  color: #FFFFFF;
-  border: 1px solid rgba(255,255,255,.14);
-  border-radius: 16px;
-  background:
-    radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%),
-    linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
-  box-shadow: 0 12px 28px rgba(4,55,91,.18);
-  animation: none;
-  opacity: 1;
-  transform: none;
-  filter: none;
-}
-.selector-modulos-premium.workspace-premium .workspace-hero::after,
-.molsan-page-header::after {
+.selector-modulos-premium.workspace-premium .workspace-hero::after {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -808,143 +777,6 @@
   content: "";
   background: linear-gradient(90deg, #6CC5D9 0%, #8CB8D8 38%, rgba(255,255,255,.08) 100%);
   pointer-events: none;
-}
-.molsan-page-header__identity {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  flex: 1 1 auto;
-}
-.molsan-page-header__mark {
-  display: grid;
-  flex: 0 0 40px;
-  width: 40px;
-  height: 40px;
-  place-items: center;
-  color: #FFFFFF;
-  border: 1px solid rgba(255,255,255,.32);
-  border-radius: 10px;
-  background: rgba(255,255,255,.12);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
-  font-size: 14px;
-  font-weight: 850;
-}
-.molsan-page-header__eyebrow {
-  margin: 0 0 1px;
-  color: #C6DFEC;
-  font-size: 8.5px;
-  font-weight: 750;
-  letter-spacing: .14em;
-  line-height: 1.15;
-  text-transform: uppercase;
-}
-.molsan-page-header :is(h1, .molsan-page-header__title) {
-  margin: 0;
-  color: #FFFFFF;
-  font-size: clamp(21px, 1.9vw, 24px);
-  font-weight: 800;
-  letter-spacing: -.035em;
-  line-height: 1.05;
-}
-.molsan-page-header__description {
-  margin: 2px 0 0;
-  color: #C6DFEC;
-  font-size: 12px;
-  line-height: 1.3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.molsan-page-header__actions {
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-left: auto;
-}
-.molsan-page-header__actions > :is(button, a, span) {
-  border-color: rgba(255,255,255,.28);
-}
-@media (max-width: 760px) {
-  .molsan-page-header {
-    flex-wrap: wrap;
-    gap: 8px 12px;
-    padding: 10px 14px;
-  }
-  .molsan-page-header__mark {
-    flex-basis: 40px;
-    width: 40px;
-    height: 40px;
-    border-radius: 9px;
-    font-size: 14px;
-  }
-  .molsan-page-header__description {
-    display: block;
-    white-space: normal;
-    font-size: 11px;
-  }
-  .molsan-page-header__actions {
-    width: 100%;
-    margin-left: 0;
-    justify-content: flex-start;
-    align-items: center;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .molsan-page-header,
-  .molsan-page-header::after {
-    transition: none;
-    animation: none;
-  }
-}
-
-/* Compatibilidad de cabeceras heredadas: cualquier página que use la clase
-   común recibe la misma escala de icono, descripción y acciones. */
-.molsan-page-header p:not(.molsan-page-header__eyebrow) {
-  margin: 2px 0 0;
-  color: #C6DFEC;
-  font-size: 12px;
-  line-height: 1.3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.molsan-page-header :is(.w-12.h-12, .w-11.h-11, .w-14.h-14) {
-  display: grid;
-  flex: 0 0 40px;
-  width: 40px;
-  height: 40px;
-  place-items: center;
-  color: #FFFFFF;
-  border: 1px solid rgba(255,255,255,.32);
-  border-radius: 10px;
-  background: rgba(255,255,255,.12);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
-}
-.molsan-page-header :is(button, a) {
-  border-color: rgba(255,255,255,.32);
-  border-radius: 11px;
-  color: #FFFFFF;
-  background: rgba(255,255,255,.12);
-  box-shadow: none;
-}
-.molsan-page-header :is(button, a):hover:not(:disabled) {
-  border-color: rgba(255,255,255,.58);
-  color: #FFFFFF;
-  background: rgba(255,255,255,.2);
-  box-shadow: 0 5px 14px rgba(0,0,0,.12);
-  transform: translateY(-1px);
-}
-@media (max-width: 760px) {
-  .molsan-page-header :is(.w-12.h-12, .w-11.h-11, .w-14.h-14) {
-    flex-basis: 40px;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-  }
 }
 
 /* Superficies de modales: un mismo panel y cabecera en todos los módulos. */
@@ -965,28 +797,28 @@
 .ctn-modal-header,
 .eg-modal-header,
 .ag-resumen-modal-cabecera,
-.ng-modal > header {
+.ng-modal > header, .ng-resumen-expedientes-modal > header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
   padding: 16px 20px;
-  color: #064675;
-  border-bottom: 1px solid #D8E4EC;
-  background: #F2F7FB;
+  color:#FFFFFF;
+  border-bottom:1px solid rgba(255,255,255,.16);
+  background:radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%), linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
 }
-:is(.ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header) h2 {
+:is(.ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header, .ng-resumen-expedientes-modal > header) h2 {
   margin: 0;
-  color: #064675;
+  color:#FFFFFF;
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -.02em;
   line-height: 1.3;
 }
-:is(.ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header) p {
+:is(.ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera, .ng-modal > header, .ng-resumen-expedientes-modal > header) p {
   margin: 4px 0 0;
-  color: #617789;
+  color:#C6DFEC;
   font-size: 12px;
   line-height: 1.5;
 }
@@ -995,17 +827,15 @@
   .ctn-modal-header,
   .eg-modal-header,
   .ag-resumen-modal-cabecera,
-  .ng-modal > header { padding: 14px; gap: 10px; }
+  .ng-modal > header, .ng-resumen-expedientes-modal > header { padding: 14px; gap: 10px; }
 }
 
 .modal-sj { border:1px solid #D8E4EC; border-radius:18px; }
 
-
 /* ============================================================
-   MOLSAN ERP PREMIUM 2027 · TARJETA CORPORATIVA ÚNICA
-   Referencia visual: .workspace-app-card de Espacios de trabajo.
-   Se unifica la superficie; cada módulo conserva su layout,
-   padding interno, contenido, estados y comportamiento funcional.
+   MOLSAN ERP PREMIUM 2027 · SUPERFICIES DE CONTENIDO
+   Paneles de formularios, tablas y secciones; no son tarjetas de acceso.
+   Las tarjetas semánticas y sus acentos pertenecen a CanonicalVisual.
    ============================================================ */
 :is(
   .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
@@ -1017,19 +847,15 @@
   .panel-tecnico-premium, .seguridad-premium-page,
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
-  .erp-card, .erp-card-soft, .card-sj, .molsan-panel, .cg-panel, .cg-kpi,
-  .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
-  .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
-  .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
-  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .ctn-detalle-panel,
-  .ctn-detalle-info-card, .ctn-detalle-stat, .expedientes-panel,
-  .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
-  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
-  .panel-card, .ficha-panel, .ficha-seccion, .form-section,
-  .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-stat-card, .agenda-calendar-card, .agenda-list-table-wrap,
-  .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, :is(div, section, article)[class*="rounded-2xl"][class*="bg-white"], :is(div, section, article)[class*="rounded-xl"][class*="bg-white"], [data-panel="true"], [data-cg-panel="true"]
+  .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
+  .eg-modal-section, .ng-admin-global-resumen,
+  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
+  .expedientes-panel,
+  .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+  .section-card, .agenda-calendar-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .empleado-ficha-premium > section, .seguridad-premium-page > section, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, [data-panel="true"], [data-cg-panel="true"]
 ){
-  --molsan-card-accent: var(--molsan-primary, #064675);
   min-width: 0;
   border-radius: 21px;
   box-shadow: 0 9px 24px rgba(6, 50, 82, .065);
@@ -1038,7 +864,6 @@
     box-shadow .2s ease,
     border-color .2s ease,
     background-color .2s ease;
-  animation: molsan-premium-card-enter .42s both;
 }
 :is(
   .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
@@ -1050,26 +875,17 @@
   .panel-tecnico-premium, .seguridad-premium-page,
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
-  .erp-card, .erp-card-soft, .card-sj, .molsan-panel, .cg-panel, .cg-kpi,
-  .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
-  .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
-  .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
-  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .ctn-detalle-panel,
-  .ctn-detalle-info-card, .ctn-detalle-stat, .expedientes-panel,
-  .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
-  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
-  .panel-card, .ficha-panel, .ficha-seccion, .form-section,
-  .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-stat-card, .agenda-calendar-card, .agenda-list-table-wrap,
-  .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, :is(div, section, article)[class*="rounded-2xl"][class*="bg-white"], :is(div, section, article)[class*="rounded-xl"][class*="bg-white"], [data-panel="true"], [data-cg-panel="true"]
-):not([class*="bg-emerald"]):not([class*="bg-green"]):not([class*="bg-amber"]):not([class*="bg-yellow"]):not([class*="bg-rose"]):not([class*="bg-red"]):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-violet"]):not([class*="border-emerald"]):not([class*="border-green"]):not([class*="border-amber"]):not([class*="border-yellow"]):not([class*="border-rose"]):not([class*="border-red"]):not([class*="border-blue"]):not([class*="border-indigo"]):not([class*="border-violet"]):not([class*="bg-sky"]):not([class*="bg-cyan"]):not([class*="bg-teal"]):not([class*="bg-lime"]):not([class*="bg-orange"]):not([class*="bg-fuchsia"]):not([class*="bg-purple"]):not([class*="border-sky"]):not([class*="border-cyan"]):not([class*="border-teal"]):not([class*="border-lime"]):not([class*="border-orange"]):not([class*="border-fuchsia"]):not([class*="border-purple"]):not([style*="background"]) {
+  .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
+  .eg-modal-section, .ng-admin-global-resumen,
+  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
+  .expedientes-panel,
+  .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+  .section-card, .agenda-calendar-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .empleado-ficha-premium > section, .seguridad-premium-page > section, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, [data-panel="true"], [data-cg-panel="true"]
+) {
   border: 1px solid var(--molsan-border, #D8E4EC);
   background-color: #FFFFFF;
-  background-image:
-    linear-gradient(var(--molsan-card-accent), var(--molsan-card-accent)),
-    linear-gradient(150deg, #FFFFFF 0%, #FFFFFF 56%, #F7FAFC 100%);
-  background-size: 100% 4px, 100% 100%;
-  background-position: top left, top left;
-  background-repeat: no-repeat;
 }
 :is(
   .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
@@ -1081,36 +897,16 @@
   .panel-tecnico-premium, .seguridad-premium-page,
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
-  .erp-card, .erp-card-soft, .card-sj, .molsan-panel, .cg-panel, .cg-kpi,
-  .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
-  .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
-  .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section,
-  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .ctn-detalle-panel,
-  .ctn-detalle-info-card, .ctn-detalle-stat, .expedientes-panel,
-  .expediente-card, .expedientes-filter-panel, .expedientes-table-panel,
-  .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
-  .panel-card, .ficha-panel, .ficha-seccion, .form-section,
-  .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-stat-card, .agenda-calendar-card, .agenda-list-table-wrap,
-  .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .molsan-intranet-page article, .notificaciones-premium-page article, .notificaciones-premium-page [role="article"], .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .panel-tecnico-submodulo-premium article, .empleado-ficha-premium > section, .seguridad-premium-page > section, .seguridad-acceso, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, .ctn-portal-card, .ctn-portal-field-card, :is(div, section, article)[class*="rounded-2xl"][class*="bg-white"], :is(div, section, article)[class*="rounded-xl"][class*="bg-white"], [data-panel="true"], [data-cg-panel="true"]
+  .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
+  .eg-modal-section, .ng-admin-global-resumen,
+  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
+  .expedientes-panel,
+  .expedientes-filter-panel, .expedientes-table-panel,
+  .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+  .section-card, .agenda-calendar-card, .agenda-list-table-wrap,
+  .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .empleado-ficha-premium > section, .seguridad-premium-page > section, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, [data-panel="true"], [data-cg-panel="true"]
 ):hover {
   box-shadow: 0 19px 38px rgba(6, 50, 82, .13);
-}
-:is(
-  .erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
-  .apoderagest, .notargest, .encargagest, .ctn-listado-page,
-  .ctn-detalle-page, .expedientes-page, .expedientes-listado-premium,
-  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
-  .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
-  .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
-  .panel-tecnico-premium, .seguridad-premium-page,
-  .herramientas-subpagina-premium, .catalogos-maestros-premium
-) :is(.erp-card, .erp-card-soft, .cg-kpi, .ag-kpi, .ng-contador, .eg-kpi,
-     .dashboard-kpi, .stat-card, .kpi-card):is(a, button, [role="button"]):hover {
-  transform: translateY(-5px);
-}
-@keyframes molsan-premium-card-enter {
-  from { opacity: 0; transform: translateY(9px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 @media (prefers-reduced-motion: reduce) {
   :is(.erp-main-content, .erp-page, .cg-page, .cg-unified-workspace,
@@ -1120,21 +916,16 @@
     .utilidades-premium-page, .maestros-premium-page, .informes-premium-page,
     .mensajes-premium-page, .mensajeria, .provisiones-fondos-page,
     .panel-tecnico-premium, .seguridad-premium-page) :is(
-      .erp-card, .erp-card-soft, .card-sj, .molsan-panel, .cg-panel, .cg-kpi,
-      .cg-section, .cg-module-card, .ag-panel, .ag-kpi, .ag-card,
-      .ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .eg-panel,
-      .eg-kpi, .eg-card, .eg-directorio-card, .ctn-panel,
-      .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-modal-resumen-firmas > div, .accesos-notariales-resumen-card, .expedientes-panel, .expediente-card,
-      .pf-card, .dashboard-card, .dashboard-panel, .dashboard-kpi,
-      .panel-card, .ficha-panel, .ficha-seccion, .form-section,
-      .section-card, .stat-card, .kpi-card, .agenda-upcoming-card, .agenda-stat-card, .agenda-calendar-card, .agenda-list-table-wrap,
-      .logs-panel, .maestros-panel, :is(div, section, article)[class*="rounded-2xl"][class*="bg-white"], :is(div, section, article)[class*="rounded-xl"][class*="bg-white"]
+      .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel,
+      .ctn-panel,
+      .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .expedientes-panel, .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+      .section-card, .agenda-calendar-card, .agenda-list-table-wrap,
+      .logs-panel, .maestros-panel
     ) {
     animation: none;
     transition: none;
   }
 }
-
 
 /* Contenedor vertical común para todas las páginas y subpáginas del ERP. */
 .molsan-page-stack {
@@ -1146,7 +937,6 @@
 }
 .molsan-page-stack > * { min-width: 0; }
 
-
 /* Cabecera compacta de modal: no debe heredar la cabecera hero de página. */
 .molsan-modal-header {
   display: flex;
@@ -1156,11 +946,11 @@
   gap: 12px;
   min-width: 0;
   padding: 16px 20px;
-  color: var(--molsan-primary, #064675);
+  color:#FFFFFF;
   border: 0;
-  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
+  border-bottom:1px solid rgba(255,255,255,.16);
   border-radius: 20px 20px 0 0;
-  background: var(--molsan-surface-soft, #F2F7FB);
+  background:radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%), linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
   box-shadow: none;
 }
 .molsan-modal-header::after { display: none; }
@@ -1177,7 +967,6 @@
   border-radius: 14px;
   background: var(--molsan-surface-soft, #F2F7FB);
 }
-
 
 /* Cabeceras internas de tarjetas: misma jerarquía y banda azul hielo en todos los módulos. */
 :is(
@@ -1223,19 +1012,18 @@
   .eg-modal-section-heading h3, .molsan-section-header__title, .erp-card-title
 ) {
   margin: 0;
-  color: #064675;
+  color:#064675;
   font-size: 15px;
   font-weight: 800;
   letter-spacing: -.02em;
   line-height: 1.3;
 }
 
-
 /* Cabecera modal corporativa común para los distintos componentes heredados. */
 :is(
   .molsan-modal-header, .erp-modal-header, .modal-sj-header,
   .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
-  .ng-modal > header, .ctn-modal-panel > header,
+  .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
   .panel-modal-premium [role="dialog"] > header,
   .expediente-operativo-modal [role="dialog"] > header,
   .empleado-operativo-modal [role="dialog"] > header
@@ -1247,34 +1035,33 @@
   gap: 12px;
   min-width: 0;
   padding: 16px 20px;
-  color: #064675;
-  background: #F2F7FB;
+  color:#FFFFFF;
+  background:radial-gradient(circle at 86% 18%, rgba(116,199,219,.18), transparent 27%), linear-gradient(116deg, #032D4B 0%, #064675 54%, #0D638C 100%);
   border: 0;
-  border-bottom: 1px solid #D8E4EC;
+  border-bottom:1px solid rgba(255,255,255,.16);
   box-shadow: none;
   margin-bottom: 0;
 }
 :is(
   .molsan-modal-header, .erp-modal-header, .modal-sj-header,
   .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
-  .ng-modal > header, .ctn-modal-panel > header,
+  .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
   .panel-modal-premium [role="dialog"] > header,
   .expediente-operativo-modal [role="dialog"] > header,
   .empleado-operativo-modal [role="dialog"] > header
 ) :is(h1, h2, h3, p) {
-  color: #064675;
+  color:#FFFFFF;
 }
 @media (max-width: 640px) {
   :is(
     .molsan-modal-header, .erp-modal-header, .modal-sj-header,
     .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
-    .ng-modal > header, .ctn-modal-panel > header,
+    .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
     .panel-modal-premium [role="dialog"] > header,
     .expediente-operativo-modal [role="dialog"] > header,
     .empleado-operativo-modal [role="dialog"] > header
   ) { padding: 14px; gap: 10px; }
 }
-
 
 /* Encabezados de bloques de Provisiones: misma banda que el resto de tarjetas. */
 .provisiones-fondos-page :is(section, article) > :is(header, .mb-4.flex.items-center.justify-between) {
@@ -1293,13 +1080,6 @@
   font-size: 15px;
   font-weight: 800;
 }
-
-
-/* El stack común ya controla la separación bajo la cabecera hero. */
-.molsan-page-stack > .molsan-page-header {
-  margin-bottom: 0;
-}
-
 
 /* Base de botones corporativa: conserva variantes de color y tamaños funcionales. */
 :is(.erp-main-content, .apoderagest, .notargest, .encargagest, .cg-page) :is(
@@ -1341,30 +1121,6 @@
     transform .18s ease;
 }
 
-
-/* Glass Luxe Evolution · profundidad y presencia de la iconografía de cabecera */
-.molsan-page-header__mark {
-  display:inline-grid;
-  place-items:center;
-  border:1px solid rgba(190,214,230,.9);
-  border-radius:15px;
-  color:#064675;
-  background:radial-gradient(circle at 28% 20%,#fff 0%,#fff 16%,#EAF2F8 62%,#D9E9F3 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),0 5px 13px rgba(6,50,82,.12);
-  text-shadow:0 1px 1px rgba(6,70,117,.16);
-  transform:translateZ(0);
-  transition:transform .22s ease,box-shadow .22s ease;
-}
-.molsan-page-header:hover .molsan-page-header__mark {
-  transform:translateY(-1px) scale(1.035);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),0 8px 17px rgba(6,50,82,.16);
-}
-.molsan-page-header__mark :is(svg,img) { filter:drop-shadow(0 1px 1px rgba(6,70,117,.2)); }
-@media(prefers-reduced-motion:reduce) {
-  .molsan-page-header__mark { transition:none; }
-  .molsan-page-header:hover .molsan-page-header__mark { transform:none; }
-}
-
 /* Normalización transversal de botones heredados: conserva los colores de cada acción,
    pero comparte altura mínima, tipografía, radio, foco y respuesta táctil. */
 :is(.erp-main-content, .molsan-page, .apoderagest, .notargest, .encargagest, .cg-page)
@@ -1384,7 +1140,6 @@ button:not(.molsan-table-sort):focus-visible {
   :is(.erp-main-content, .molsan-page, .apoderagest, .notargest, .encargagest, .cg-page)
   button:not(.molsan-table-sort) { transition: none; }
 }
-
 
 /* MOLSAN ERP PREMIUM 2027 · Iconografía Glass Luxe
    Tratamiento volumétrico común para los pictogramas de Espacios de trabajo. */
@@ -1462,24 +1217,8 @@ button:not(.molsan-table-sort):focus-visible {
   .workspace-app-icon svg {
     transition: none !important;
   }
-  .workspace-app-card:hover .workspace-app-icon,
-  .workspace-app-card:hover .workspace-app-icon svg {
-    transform: none !important;
-  }
+  
 }
-
-
-/* Tonos semánticos de la iconografía MOLSAN compartida. */
-.molsan-icon-3d--ocean { color:#075783; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eaf5fa 48%,#cfe6f1 100%); border-color:#c7e1ee; }
-.molsan-icon-3d--emerald { color:#16745c; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eaf7f2 48%,#cceadd 100%); border-color:#c7e8dc; }
-.molsan-icon-3d--violet { color:#65509e; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#f1eefa 48%,#ded6f2 100%); border-color:#ddd5f1; }
-.molsan-icon-3d--amber { color:#96651b; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#fbf4e8 48%,#f0dfbd 100%); border-color:#eeddbd; }
-.molsan-icon-3d--cyan { color:#177a88; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eaf7f8 48%,#cce9eb 100%); border-color:#c9e8eb; }
-.molsan-icon-3d--indigo { color:#3e5f9f; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eef2fa 48%,#d5dff1 100%); border-color:#d4ddf0; }
-.molsan-icon-3d--slate { color:#536b7b; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#f2f7fb 48%,#dce7ee 100%); border-color:#d8e4ec; }
-.molsan-icon-3d--inherit { color:inherit; }
-.molsan-icon-3d svg { width:58%; height:58%; stroke:currentColor; stroke-width:1.85; }
-
 
 /* Pictogramas de la navegación principal: relieve compacto y contraste por estado. */
 .molsan-nav-icon-3d {
@@ -1535,6 +1274,7 @@ a[aria-current="page"] .molsan-nav-icon-3d {
 .molsan-icon-3d--cyan { color:#177a88; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eaf7f8 48%,#cce9eb 100%); border-color:#c9e8eb; }
 .molsan-icon-3d--indigo { color:#3e5f9f; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#eef2fa 48%,#d5dff1 100%); border-color:#d4ddf0; }
 .molsan-icon-3d--slate { color:#536b7b; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#f2f7fb 48%,#dce7ee 100%); border-color:#d8e4ec; }
+.molsan-icon-3d--rose { color:#A83D49; background:radial-gradient(circle at 28% 18%,#fff 0 10%,#FCEFF0 48%,#F2D5D8 100%); border-color:#EBC4C9; }
 @media (prefers-reduced-motion: reduce) { .molsan-icon-3d { transition:none; } }
 
 .molsan-icon-3d--bare {
@@ -1543,7 +1283,6 @@ a[aria-current="page"] .molsan-nav-icon-3d {
   box-shadow: none !important;
 }
 .molsan-icon-3d--bare svg { filter: none; }
-
 
 /* MOLSAN ERP PREMIUM 2027 · cierre real de portales MOLSAN
    Esta es la última hoja global que carga main.jsx: los ajustes de estos
@@ -1559,96 +1298,6 @@ a[aria-current="page"] .molsan-nav-icon-3d {
   background: #FFFFFF !important;
   box-shadow: 0 6px 18px rgba(6,50,82,.045) !important;
 }
-
-/* Utilidades, Catálogos y fichas: bloquear animación de entrada en la raíz,
-   cabecera, pseudoelementos y descendientes de cabecera. */
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium).animate-fadeIn,
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) header,
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) [data-page-header="true"],
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) .molsan-page-header {
-  animation: none !important;
-  transition: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  will-change: auto !important;
-}
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) header::before,
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) header::after,
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) .molsan-page-header::before,
-:where(.utilidades-premium-page, .catalogos-premium-page, .herramientas-subpagina-premium, .crear-noticia-premium) .molsan-page-header::after {
-  animation: none !important;
-  transition: none !important;
-  opacity: 1 !important;
-}
-
-
-/* CABECERA ESTABLE DE SUBPÁGINAS · CATÁLOGOS Y UTILIDADES
-   La cabecera queda fuera de las animaciones de contenido y conserva una
-   geometría fija mientras se actualizan formularios, tablas y tarjetas. */
-.erp-main-inner.molsan-tools-subpage .molsan-page-header:not(.molsan-page-back-fallback) {
-  box-sizing: border-box !important;
-  display: flex !important;
-  min-height: 60px !important;
-  height: 60px !important;
-  max-height: 64px !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  flex-wrap: nowrap !important;
-  gap: 12px !important;
-  margin: 0 0 16px !important;
-  padding: 5px 16px !important;
-  overflow: hidden !important;
-  animation: none !important;
-  transition: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  will-change: auto !important;
-}
-.erp-main-inner.molsan-tools-subpage .molsan-page-header::before,
-.erp-main-inner.molsan-tools-subpage .molsan-page-header::after,
-.erp-main-inner.molsan-tools-subpage .molsan-page-header * {
-  animation: none !important;
-  transition: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  will-change: auto !important;
-}
-.erp-main-inner.molsan-tools-subpage .molsan-page-header__identity {
-  min-width: 0 !important;
-  flex: 1 1 auto !important;
-}
-.erp-main-inner.molsan-tools-subpage .molsan-page-header__mark {
-  flex: 0 0 36px !important;
-  width: 36px !important;
-  height: 36px !important;
-}
-.erp-main-inner.molsan-tools-subpage .molsan-page-header__description {
-  overflow: hidden !important;
-  white-space: nowrap !important;
-  text-overflow: ellipsis !important;
-}
-@media (max-width: 760px) {
-  .erp-main-inner.molsan-tools-subpage .molsan-page-header:not(.molsan-page-back-fallback) {
-    min-height: 60px !important;
-    height: auto !important;
-    max-height: none !important;
-    flex-wrap: wrap !important;
-    gap: 8px 12px !important;
-    padding: 8px 12px !important;
-  }
-  .erp-main-inner.molsan-tools-subpage .molsan-page-header__description {
-    display: none !important;
-  }
-  .erp-main-inner.molsan-tools-subpage .molsan-page-header__actions {
-    flex: 0 0 auto !important;
-    width: auto !important;
-    margin-left: auto !important;
-  }
-}
-
 
 /* Navegación contextual común: destino explícito, bajo el título de página. */
 .molsan-page-back-link {
@@ -1677,79 +1326,6 @@ a[aria-current="page"] .molsan-nav-icon-3d {
   outline: 2px solid #064675;
   outline-offset: 2px;
 }
-
-/* Los pictogramas Molsan dentro de la marca de cabecera heredan el blanco
-   corporativo y no añaden una segunda placa sobre el recuadro del header. */
-.molsan-page-header__mark .molsan-icon-3d {
-  display: inline-grid;
-  width: 22px !important;
-  height: 22px !important;
-  color: #FFFFFF !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-.molsan-page-header__mark .molsan-icon-3d svg {
-  width: 100% !important;
-  height: 100% !important;
-  color: #FFFFFF !important;
-  filter: none !important;
-}
-
-
-/* Las acciones de cabecera conservan el color semántico de MolsanButton.
-   La regla general de enlaces/botones del hero solo se aplica a controles heredados. */
-.molsan-page-header .molsan-btn--primary {
-  color: #FFFFFF !important;
-  background: linear-gradient(135deg, #075487, #064675) !important;
-  border-color: #064675 !important;
-}
-.molsan-page-header .molsan-btn--secondary {
-  color: #064675 !important;
-  background: linear-gradient(145deg, #FFFFFF, #F2F7FB) !important;
-  border-color: #D8E4EC !important;
-}
-.molsan-page-header .molsan-btn--success {
-  color: #176B4B !important;
-  background: linear-gradient(145deg, #F3FBF6, #E6F4EB) !important;
-  border-color: #BFE2CC !important;
-}
-.molsan-page-header .molsan-btn--warning {
-  color: #8A620D !important;
-  background: linear-gradient(145deg, #FFFCF2, #FFF4D8) !important;
-  border-color: #EEDCA8 !important;
-}
-.molsan-page-header .molsan-btn--danger {
-  color: #FFFFFF !important;
-  background: #B42318 !important;
-  border-color: #B42318 !important;
-}
-.molsan-page-header .molsan-btn--excel {
-  color: #FFFFFF !important;
-  background: linear-gradient(135deg, #16845B, #11734E) !important;
-  border-color: #11734E !important;
-}
-.molsan-page-header .molsan-btn--success:hover:not(:disabled) {
-  color: #145A40 !important;
-  background: #DDF0E5 !important;
-  border-color: #9CCFB1 !important;
-}
-.molsan-page-header .molsan-btn--warning:hover:not(:disabled) {
-  color: #76520A !important;
-  background: #FCECC2 !important;
-  border-color: #E5CD88 !important;
-}
-.molsan-page-header .molsan-btn--danger:hover:not(:disabled) {
-  color: #FFFFFF !important;
-  background: #941B13 !important;
-}
-.molsan-page-header .molsan-btn--excel:hover:not(:disabled) {
-  color: #FFFFFF !important;
-  background: linear-gradient(135deg, #11734E, #0D6242) !important;
-  border-color: #0D6242 !important;
-}
-
 
 /* Márgenes exteriores uniformes para las páginas de herramientas.
    El Layout ya proporciona el espacio perimetral: los contenedores raíz

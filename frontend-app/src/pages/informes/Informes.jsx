@@ -5,8 +5,9 @@ import { API_BASE } from "../../api/config";
 import Chart from "chart.js/auto";
 import SelectSJ from "../../components/ui/SelectSJ";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
-import "../../css/ModalesHerramientasPremium.css";
-
+import MolsanPremiumCard from "../../components/ui/MolsanPremiumCard";
+import MolsanStatCard from "../../components/ui/MolsanStatCard";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 const MESES = [
   { value: 1, label: "Enero" },
   { value: 2, label: "Febrero" },
@@ -1344,7 +1345,7 @@ function InformeCitasApoderados() {
               text-blue-500
             "
           >
-            ⚙
+            <MolsanIcon name="settings" size={18} tone="ocean" bare />
           </div>
 
 
@@ -1526,7 +1527,7 @@ function InformeCitasApoderados() {
                   text-slate-400
                 "
               >
-                🔎
+                <MolsanIcon name="search" size={18} tone="ocean" bare />
               </span>
 
 
@@ -1582,7 +1583,7 @@ function InformeCitasApoderados() {
       >
 
         <KpiCard
-          icon="💻"
+          icon="monitor"
           titulo="Total VC"
           valor={totalVC}
           subtitulo="Videoconferencias"
@@ -1591,7 +1592,7 @@ function InformeCitasApoderados() {
 
 
         <KpiCard
-          icon="👤"
+          icon="person"
           titulo="Total Presencial"
           valor={totalPresencial}
           subtitulo="Citas presenciales"
@@ -1600,7 +1601,7 @@ function InformeCitasApoderados() {
 
 
         <KpiCard
-          icon="🚗"
+          icon="car"
           titulo="Km Totales"
           valor={totalKm.toFixed(1)}
           subtitulo="Kilómetros"
@@ -1609,7 +1610,7 @@ function InformeCitasApoderados() {
 
 
         <KpiCard
-          icon="📈"
+          icon="chart"
           titulo="Media Citas"
           valor={mediaCitas.toFixed(1)}
           subtitulo="Por apoderado"
@@ -1618,7 +1619,7 @@ function InformeCitasApoderados() {
 
 
         <KpiCard
-          icon="📍"
+          icon="pin"
           titulo="Media Km"
           valor={mediaKm.toFixed(1)}
           subtitulo="Por apoderado"
@@ -1703,7 +1704,7 @@ function InformeCitasApoderados() {
               gap-2
             "
           >
-            <span>📗</span>
+            <MolsanIcon name="book" size={16} tone="inherit" bare />
             Exportar Excel
           </button>
 
@@ -1728,7 +1729,7 @@ function InformeCitasApoderados() {
               gap-2
             "
           >
-            <span>📄</span>
+            <MolsanIcon name="file" size={16} tone="inherit" bare />
             Exportar PDF
           </button>
 
@@ -1892,7 +1893,7 @@ function InformeCitasApoderados() {
                         mb-2
                       "
                     >
-                      📭
+                      <MolsanIcon name="inbox" size={28} tone="ocean" />
                     </div>
 
 
@@ -2117,7 +2118,7 @@ function InformeCitasApoderados() {
               text-blue-500
             "
           >
-            📊
+            <MolsanIcon name="chart" size={20} tone="ocean" bare />
           </div>
 
 
@@ -2161,7 +2162,7 @@ function InformeCitasApoderados() {
           <GraficoCard
             titulo="Videoconferencias"
             descripcion="VC por apoderado"
-            icono="💻"
+            icono="monitor"
           >
 
             <canvas
@@ -2174,7 +2175,7 @@ function InformeCitasApoderados() {
           <GraficoCard
             titulo="Presencial"
             descripcion="Citas presenciales por apoderado"
-            icono="👤"
+            icono="person"
           >
 
             <canvas
@@ -2187,7 +2188,7 @@ function InformeCitasApoderados() {
           <GraficoCard
             titulo="Desplazamientos"
             descripcion="Kilómetros presenciales"
-            icono="🚗"
+            icono="car"
           >
 
             <canvas
@@ -2484,7 +2485,7 @@ function GraficoCard({
               justify-center
             "
           >
-            {icono}
+            <MolsanIcon name={icono} size={20} tone="ocean" />
           </div>
 
 
@@ -2546,31 +2547,31 @@ const APARTADOS_INFORMES = [
     key: "apoderados",
     titulo: "Informe citas apoderados",
     descripcion: "Citas presenciales, videoconferencias y desplazamientos.",
-    icono: "👥",
+    icono: "users",
   },
   {
     key: "firmas",
     titulo: "Informe firmas",
     descripcion: "Seguimiento de las firmas realizadas.",
-    icono: "✍️",
+    icono: "pen",
   },
   {
     key: "sla",
     titulo: "Informe SLA’s",
     descripcion: "Control de plazos por actividad y grupo de cancelación.",
-    icono: "⏱️",
+    icono: "timer",
   },
   {
     key: "facturacion",
     titulo: "Informes de facturación",
     descripcion: "Resumen de importes, facturas y estados.",
-    icono: "🧾",
+    icono: "receipt",
   },
   {
     key: "notarios",
     titulo: "Informes de notarios",
     descripcion: "Actividad y estadísticas por notario.",
-    icono: "🏛️",
+    icono: "courthouse",
   },
 ];
 
@@ -2666,16 +2667,14 @@ function SelectFiltroInforme({ label, value, onChange, children }) {
 
 function InformeKpi({ titulo, valor, subtitulo, icono }) {
   return (
-    <div className="rounded-2xl border border-white/80 bg-white/75 p-4 shadow-[0_8px_25px_rgba(55,85,120,0.07)] backdrop-blur-xl">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{titulo}</div>
-          <div className="mt-2 text-2xl font-bold tracking-tight text-slate-800">{valor}</div>
-          {subtitulo && <div className="mt-1 text-xs text-slate-400">{subtitulo}</div>}
-        </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-lg">{icono}</span>
-      </div>
-    </div>
+    <MolsanStatCard
+      title={titulo}
+      value={valor}
+      description={subtitulo}
+      icon={icono}
+      tone="ocean"
+      className="informe-kpi-card"
+    />
   );
 }
 
@@ -2702,7 +2701,7 @@ function AvisoInforme({ error }) {
 
 function PanelEstadoInforme({ loading, vacio, textoVacio = "No hay registros para los filtros seleccionados." }) {
   if (loading) return <div className="px-5 py-12 text-center text-sm text-slate-500">Consultando datos reales del ERP…</div>;
-  if (vacio) return <div className="px-5 py-12 text-center text-sm text-slate-500"><div className="mb-2 text-3xl">📭</div>{textoVacio}</div>;
+  if (vacio) return <div className="px-5 py-12 text-center text-sm text-slate-500"><div className="mb-2"><MolsanIcon name="inbox" size={34} tone="ocean" /></div>{textoVacio}</div>;
   return null;
 }
 
@@ -2860,11 +2859,11 @@ function InformeFirmas() {
         </div>
       )}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <InformeKpi icono="✍️" titulo="Firmas reales" valor={numeroInforme(resumen.total_firmas)} subtitulo="Expedientes con fecha de firma" />
-        <InformeKpi icono="💻" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
-        <InformeKpi icono="🏛️" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
-        <InformeKpi icono="❔" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} />
-        <InformeKpi icono="⏱️" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
+        <InformeKpi icono="pen" titulo="Firmas reales" valor={numeroInforme(resumen.total_firmas)} subtitulo="Expedientes con fecha de firma" />
+        <InformeKpi icono="monitor" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
+        <InformeKpi icono="courthouse" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
+        <InformeKpi icono="help" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} />
+        <InformeKpi icono="timer" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
       </div>
 
       <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
@@ -2873,7 +2872,7 @@ function InformeFirmas() {
       </section>
 
       <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Detalle de firmas</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(filas.length)} registros recibidos del backend. Puedes completar modalidad y fecha de envío desde la columna de acciones.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : "📗 Exportar Excel"}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">📄 Exportar PDF</button></div></div>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Detalle de firmas</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(filas.length)} registros recibidos del backend. Puedes completar modalidad y fecha de envío desde la columna de acciones.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : <><MolsanIcon name="book" size={14} tone="inherit" bare /> Exportar Excel</>}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"><MolsanIcon name="file" size={14} tone="inherit" bare /> Exportar PDF</button></div></div>
         {loading ? <PanelEstadoInforme loading /> : filas.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales para el periodo y los filtros seleccionados." /> : <div className="max-h-[700px] overflow-auto"><table className="w-full min-w-[1420px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{columnasPDF.map((c) => <th key={c.key} className="whitespace-nowrap px-4 py-3">{c.label}</th>)}<th className="whitespace-nowrap px-4 py-3">Acciones</th></tr></thead><tbody>{filas.map((f, i) => <Fragment key={f.id ?? `${f.id_expediente}-${i}`}>
           <tr className="border-t border-slate-100 hover:bg-blue-50/40">
             <td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td>
@@ -3060,12 +3059,12 @@ function InformeNotarios() {
       <AvisoInforme error={error} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-        <InformeKpi icono="✍️" titulo="Expedientes firmados" valor={numeroInforme(resumen.total_firmas)} subtitulo="Firmas reales en el periodo" />
-        <InformeKpi icono="🏛️" titulo="Notarios con actividad" valor={numeroInforme(resumen.total_notarios)} subtitulo="Con al menos una firma" />
-        <InformeKpi icono="💻" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
-        <InformeKpi icono="🤝" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
-        <InformeKpi icono="❔" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} subtitulo="Modalidad pendiente de confirmar" />
-        <InformeKpi icono="⏱️" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
+        <InformeKpi icono="pen" titulo="Expedientes firmados" valor={numeroInforme(resumen.total_firmas)} subtitulo="Firmas reales en el periodo" />
+        <InformeKpi icono="courthouse" titulo="Notarios con actividad" valor={numeroInforme(resumen.total_notarios)} subtitulo="Con al menos una firma" />
+        <InformeKpi icono="monitor" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
+        <InformeKpi icono="handshake" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
+        <InformeKpi icono="help" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} subtitulo="Modalidad pendiente de confirmar" />
+        <InformeKpi icono="timer" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
       </div>
 
       {(Number(resumen.sin_clasificar || 0) > 0 || Number(resumen.sin_notario_identificado || 0) > 0 || (Number(resumen.total_firmas || 0) > Number(resumen.firmas_con_tiempo_calculable || 0))) && (
@@ -3104,8 +3103,8 @@ function InformeNotarios() {
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4">
           <div><h3 className="font-bold text-slate-800">Resumen por notario</h3><p className="mt-1 text-xs text-slate-500">Incluye firmas por modalidad, media entre envío y firma, protocolo y tipos de operación.</p></div>
           <div className="flex flex-wrap gap-2">
-            <button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : "📗 Excel resumen"}</button>
-            <button type="button" disabled={loading || porNotario.length === 0} onClick={exportarResumenPDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">📄 PDF resumen</button>
+            <button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : <><MolsanIcon name="book" size={14} tone="inherit" bare /> Excel resumen</>}</button>
+            <button type="button" disabled={loading || porNotario.length === 0} onClick={exportarResumenPDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"><MolsanIcon name="file" size={14} tone="inherit" bare /> PDF resumen</button>
           </div>
         </div>
         {loading ? <PanelEstadoInforme loading /> : porNotario.length === 0 ? <PanelEstadoInforme vacio /> : (
@@ -3118,8 +3117,8 @@ function InformeNotarios() {
           <div><h3 className="font-bold text-slate-800">{grupoSeleccionado ? `Firmas de ${grupoSeleccionado.nombre_notario}` : "Detalle de firmas por notario"}</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(detalle.length)} expediente(s) con fecha de firma real. {grupoSeleccionado ? "Se ha filtrado el detalle por el notario seleccionado." : "Puedes seleccionar un notario en el ranking o en el resumen para acotar la lista."}</p></div>
           <div className="flex flex-wrap gap-2">
             {claveNotarioSeleccionado && <button type="button" onClick={() => setClaveNotarioSeleccionado("")} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Ver todos</button>}
-            <button type="button" disabled={loading || exportandoDetalle} onClick={exportarDetalleExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportandoDetalle ? "Exportando…" : "📗 Excel detalle"}</button>
-            <button type="button" disabled={loading || detalle.length === 0} onClick={exportarDetallePDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">📄 PDF detalle</button>
+            <button type="button" disabled={loading || exportandoDetalle} onClick={exportarDetalleExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportandoDetalle ? "Exportando…" : <><MolsanIcon name="book" size={14} tone="inherit" bare /> Excel detalle</>}</button>
+            <button type="button" disabled={loading || detalle.length === 0} onClick={exportarDetallePDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"><MolsanIcon name="file" size={14} tone="inherit" bare /> PDF detalle</button>
           </div>
         </div>
         {loading ? <PanelEstadoInforme loading /> : detalle.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales con los filtros seleccionados." /> : (
@@ -3186,9 +3185,9 @@ function InformeSLA() {
     <section className="space-y-5">
       <div className="flex justify-end"><button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">↻ Actualizar datos</button></div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-        <InformeKpi icono="📁" titulo="Expedientes" valor={numeroInforme(items.length)} subtitulo="Según el grupo y la búsqueda" />
-        <InformeKpi icono="⏱️" titulo="Duración global media" valor={mediaGlobal == null ? "—" : `${numeroInforme(mediaGlobal, 1)} días`} subtitulo={`${numeroInforme(globalesDentro)} dentro de plazo de ${numeroInforme(globalesEvaluables.length)} evaluables`} />
-        <InformeKpi icono="⚠️" titulo="Actividades fuera de plazo" valor={numeroInforme(fuera)} subtitulo={cumplimiento == null ? "Sin datos suficientes para calcular cumplimiento" : `${cumplimiento}% de cumplimiento en actividades con objetivo`} />
+        <InformeKpi icono="folder" titulo="Expedientes" valor={numeroInforme(items.length)} subtitulo="Según el grupo y la búsqueda" />
+        <InformeKpi icono="timer" titulo="Duración global media" valor={mediaGlobal == null ? "—" : `${numeroInforme(mediaGlobal, 1)} días`} subtitulo={`${numeroInforme(globalesDentro)} dentro de plazo de ${numeroInforme(globalesEvaluables.length)} evaluables`} />
+        <InformeKpi icono="alert" titulo="Actividades fuera de plazo" valor={numeroInforme(fuera)} subtitulo={cumplimiento == null ? "Sin datos suficientes para calcular cumplimiento" : `${cumplimiento}% de cumplimiento en actividades con objetivo`} />
       </div>
       <section className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.5fr)]">
@@ -3197,7 +3196,7 @@ function InformeSLA() {
             <option value="todos">Todos los grupos</option><option value="con-provision">Cancelaciones con provisión</option><option value="sin-provision">Cancelaciones sin provisión</option>
           </SelectFiltroInforme>
         </div>
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="text-xs text-slate-500">{numeroInforme(items.length)} expedientes · días naturales. Los expedientes Hipotecario y Crédito Stock quedan excluidos del SLA global.</p><button type="button" onClick={exportar} disabled={actividadesPlanas.length === 0} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">📊 Exportar Excel (CSV)</button></div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="text-xs text-slate-500">{numeroInforme(items.length)} expedientes · días naturales. Los expedientes Hipotecario y Crédito Stock quedan excluidos del SLA global.</p><button type="button" onClick={exportar} disabled={actividadesPlanas.length === 0} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"><MolsanIcon name="chart" size={14} tone="inherit" bare /> Exportar Excel (CSV)</button></div>
       </section>
       <AvisoInforme error={error} />
       <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
@@ -3384,30 +3383,30 @@ function InformeFacturacion() {
   const euros = (v) => Number(v || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
   const campo = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
   const grupos = [
-    { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "🏦", acento: "emerald" },
-    { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "📄", acento: "amber" },
-    { key: "otros", titulo: "Otros tipos de operación", descripcion: "Filas importadas cuyo TIPOOPERACION no es una cancelación", icono: "📋", acento: "blue" },
+    { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "bank", acento: "emerald" },
+    { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "file", acento: "amber" },
+    { key: "otros", titulo: "Otros tipos de operación", descripcion: "Filas importadas cuyo TIPOOPERACION no es una cancelación", icono: "clipboardList", acento: "blue" },
   ];
   const renderTarjetas = (grupo) => {
     const r = resumen(grupo.key);
     return (
     <section key={grupo.key} className="space-y-4 rounded-2xl border border-white/80 bg-white/55 p-4 shadow-sm backdrop-blur-xl sm:p-5">
         <div className="flex flex-wrap items-center gap-3">
-          <span className={"flex h-12 w-12 items-center justify-center rounded-xl text-2xl " + (grupo.acento === "emerald" ? "bg-emerald-50" : "bg-amber-50")}>{grupo.icono}</span>
+          <span className={"flex h-12 w-12 items-center justify-center rounded-xl text-2xl " + (grupo.acento === "emerald" ? "bg-emerald-50" : "bg-amber-50")}><MolsanIcon name={grupo.icono} size={28} tone="ocean" /></span>
           <div><h3 className="text-lg font-bold text-slate-800">{grupo.titulo}</h3><p className="text-xs text-slate-500">{grupo.descripcion}</p></div>
           <div className="ml-auto text-right"><div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Registros del periodo</div><div className="text-2xl font-extrabold text-slate-800">{loadingTarjetas ? "…" : numeroInforme(r.registros)}</div></div>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <InformeKpi titulo="Gastos Post Firma" valor={loadingTarjetas ? "…" : euros(r.total_gasto)} subtitulo={numeroInforme(r.registros) + " registros"} icono="🧾" />
-          <InformeKpi titulo="Base imponible" valor={loadingTarjetas ? "…" : euros(r.base_impuesto)} subtitulo="Base asociada al impuesto" icono="📑" />
-          <InformeKpi titulo="Base de retención" valor={loadingTarjetas ? "…" : euros(r.base_retencion)} subtitulo="Base sujeta a retención" icono="🧮" />
-          <InformeKpi titulo="Impuestos" valor={loadingTarjetas ? "…" : euros(r.total_impuesto)} subtitulo="Importe total de impuesto" icono="💶" />
+          <InformeKpi titulo="Gastos Post Firma" valor={loadingTarjetas ? "…" : euros(r.total_gasto)} subtitulo={numeroInforme(r.registros) + " registros"} icono="receipt" />
+          <InformeKpi titulo="Base imponible" valor={loadingTarjetas ? "…" : euros(r.base_impuesto)} subtitulo="Base asociada al impuesto" icono="files" />
+          <InformeKpi titulo="Base de retención" valor={loadingTarjetas ? "…" : euros(r.base_retencion)} subtitulo="Base sujeta a retención" icono="calculator" />
+          <InformeKpi titulo="Impuestos" valor={loadingTarjetas ? "…" : euros(r.total_impuesto)} subtitulo="Importe total de impuesto" icono="euro" />
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-emerald-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Cobrado</div><div className="mt-1 text-xl font-bold text-emerald-700">{loadingTarjetas ? "…" : euros(r.total_cobrado)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.cobrado)} registros</div></div>
-          <div className="rounded-2xl border border-amber-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Pendiente de cobro</div><div className="mt-1 text-xl font-bold text-amber-700">{loadingTarjetas ? "…" : euros(r.total_pendiente_cobro)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.pendiente_cobro)} registros</div></div>
-          <div className="rounded-2xl border border-slate-200 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Pendiente de factura</div><div className="mt-1 text-xl font-bold text-slate-700">{loadingTarjetas ? "…" : euros(r.total_pendiente_factura)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.pendiente_factura)} registros</div></div>
-          <div className="rounded-2xl border border-rose-100 bg-white/85 p-4"><div className="text-sm font-semibold text-slate-500">Importe con incidencias</div><div className="mt-1 text-xl font-bold text-rose-700">{loadingTarjetas ? "…" : euros(r.total_incidencias)}</div><div className="mt-1 text-xs text-slate-400">{numeroInforme(r.incidencias)} registros</div></div>
+          <MolsanStatCard title="Cobrado" value={loadingTarjetas ? "…" : euros(r.total_cobrado)} description={numeroInforme(r.cobrado) + " registros"} icon="check" tone="emerald" />
+          <MolsanStatCard title="Pendiente de cobro" value={loadingTarjetas ? "…" : euros(r.total_pendiente_cobro)} description={numeroInforme(r.pendiente_cobro) + " registros"} icon="clock" tone="amber" />
+          <MolsanStatCard title="Pendiente de factura" value={loadingTarjetas ? "…" : euros(r.total_pendiente_factura)} description={numeroInforme(r.pendiente_factura) + " registros"} icon="file" tone="slate" />
+          <MolsanStatCard title="Importe con incidencias" value={loadingTarjetas ? "…" : euros(r.total_incidencias)} description={numeroInforme(r.incidencias) + " registros"} icon="alert" tone="rose" />
         </div>
         <div className="flex justify-center border-t border-slate-100 pt-4">
           <button
@@ -3420,7 +3419,7 @@ function InformeFacturacion() {
             }}
             className={"inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white shadow-sm transition " + (grupo.acento === "emerald" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-amber-600 hover:bg-amber-700")}
           >
-            📊 Ver detalle y descargar Excel: {grupo.titulo}
+            <MolsanIcon name="chart" size={15} tone="ocean" bare /> Ver detalle y descargar Excel: {grupo.titulo}
           </button>
         </div>
       </section>
@@ -3534,7 +3533,7 @@ function InformeFacturacion() {
           <section role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-white/70 bg-white shadow-2xl">
             <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 px-5 py-4">
               <div><h2 id="modal-facturacion-titulo" className="text-xl font-bold text-slate-800">Detalle de facturación</h2><p className="mt-1 text-sm text-slate-500">Tabla Excel con los registros que cumplen los filtros seleccionados.</p></div>
-              <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">✕ Cerrar</button>
+              <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50"><MolsanIcon name="x" size={15} tone="ocean" bare /> Cerrar</button>
             </header>
             <form onSubmit={aplicar} className="grid grid-cols-1 gap-3 overflow-y-auto border-b border-slate-200 bg-slate-50/80 px-5 py-4 sm:grid-cols-2 xl:grid-cols-4">
               <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
@@ -3714,26 +3713,27 @@ export default function Informes() {
       {!claveApartado ? (
         <nav aria-label="Apartados de informes" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {APARTADOS_INFORMES.map((apartado) => (
-            <button
+            <MolsanPremiumCard
               key={apartado.key}
+              as="button"
               type="button"
+              icon={apartado.icono}
+              title={apartado.titulo}
+              description={apartado.descripcion}
+              className="informes-entry-card group"
               onClick={() => navigate(`/informes/${apartado.key}`)}
-              className="group flex min-h-[150px] items-start gap-4 rounded-2xl border border-white/80 bg-white/75 p-5 text-left shadow-[0_8px_25px_rgba(55,85,120,0.07)] backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-blue-300 hover:shadow-[0_14px_35px_rgba(55,85,120,0.13)] focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-2xl transition group-hover:bg-blue-100">{apartado.icono}</span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-base font-bold text-slate-800">{apartado.titulo}</span>
-                <span className="mt-2 block text-sm leading-relaxed text-slate-500">{apartado.descripcion}</span>
-                <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-blue-700">Abrir informe <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span></span>
+              <span className="inline-flex items-center gap-2 text-sm font-bold text-blue-700">
+                Abrir informe <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
               </span>
-            </button>
+            </MolsanPremiumCard>
           ))}
         </nav>
       ) : apartadoSeleccionado ? (
         renderInforme()
       ) : (
         <section className="rounded-2xl border border-white/80 bg-white/75 p-8 text-center shadow-sm">
-          <div className="text-3xl">📊</div>
+          <div><MolsanIcon name="chart" size={34} tone="ocean" /></div>
           <h2 className="mt-3 text-lg font-bold text-slate-800">Informe no encontrado</h2>
           <p className="mt-1 text-sm text-slate-500">El apartado solicitado no existe.</p>
           <button type="button" onClick={() => navigate("/informes")} className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Ver los cinco informes</button>

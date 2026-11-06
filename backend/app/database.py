@@ -39,14 +39,18 @@ else:
         database_host.endswith(".supabase.co")
         or database_host.endswith(".pooler.supabase.com")
     )
-    default_pool_size = "3" if is_supabase else "10"
-    default_max_overflow = "2" if is_supabase else "20"
+    # El backend atiende varias peticiones concurrentes del Dashboard y
+    # mantiene canales WebSocket. Cada petición autenticada puede necesitar
+    # una sesión para JWT y otra breve para auditoría; 3+2 agotaba el pool
+    # durante la carga inicial. Limitar el total a 10 conexiones por instancia.
+    default_pool_size = "5" if is_supabase else "10"
+    default_max_overflow = "5" if is_supabase else "20"
     engine = create_engine(
         DATABASE_URL,
         pool_pre_ping=True,
         pool_size=int(os.getenv("DB_POOL_SIZE", default_pool_size)),
         max_overflow=int(os.getenv("DB_MAX_OVERFLOW", default_max_overflow)),
-        pool_timeout=int(os.getenv("DB_POOL_TIMEOUT", "15")),
+        pool_timeout=int(os.getenv("DB_POOL_TIMEOUT", "30")),
         pool_recycle=int(os.getenv("DB_POOL_RECYCLE", "1800")),
     )
 

@@ -489,6 +489,7 @@ export default function App() {
             element={protegerModulo("expedientes", <FichaExpediente />)}
           />
 
+          {/* Demostración de la ficha: accesible sin expedientes importados y sin conexión a datos reales. */}
           <Route
             path="expedientes-demo-glass-luxe"
             element={<FichaExpedienteDemo />}

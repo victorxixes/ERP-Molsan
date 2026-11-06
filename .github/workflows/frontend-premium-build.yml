@@ -4,12 +4,16 @@ on:
   pull_request:
     branches:
       - release/molsan-premium-2027-candidate
+      - fix/molsan-premium-2027-global-ui
+      - integration/erp-molsan-supabase-ready
     paths:
       - "frontend-app/**"
       - ".github/workflows/frontend-premium-build.yml"
   push:
     branches:
       - fix/molsan-premium-2027-global-ui
+      - molsan-premium-2027-global-consistency
+      - molsan-premium-2027-page-gutters
 
 permissions:
   contents: read

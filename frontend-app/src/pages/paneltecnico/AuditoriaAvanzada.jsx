@@ -4,8 +4,6 @@ import {
   getAuditoria,
   getAuditoriaMetricas,
 } from "../../api/auditoria";
-import "./PanelTecnicoSubmodulos.css";
-
 /**
  * ============================================================
  * AUDITORÍA AVANZADA — MOLSAN ERP PREMIUM 2027

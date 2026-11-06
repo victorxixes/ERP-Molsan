@@ -1,8 +1,6 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { getLogs } from "../../api/logs";
-import "./PanelTecnicoSubmodulos.css";
-
 /**
  * ============================================================
  * LOGS TÉCNICOS — MOLSAN ERP PREMIUM 2027

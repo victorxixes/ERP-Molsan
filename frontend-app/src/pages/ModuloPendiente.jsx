@@ -1,7 +1,5 @@
 import { useNavigate } from "react-router-dom";
 
-import "../css/ComponentesAccesoPremium.css";
-
 export default function ModuloPendiente({ nombre }) {
   const navigate = useNavigate();
   const nombreNormalizado = String(nombre || "").trim().toLowerCase();

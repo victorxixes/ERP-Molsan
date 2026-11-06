@@ -2,7 +2,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import func, text
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
@@ -55,31 +55,13 @@ class TipoExpedienteResponse(BaseModel):
 
 
 def asegurar_catalogo_inicial(db: Session) -> None:
-    TipoExpediente.__table__.create(bind=db.get_bind(), checkfirst=True)
-    if db.query(TipoExpediente.id).first():
-        return
+    """Compatibilidad temporal: las peticiones HTTP no inicializan catálogos.
 
-    for item in TIPOS_INICIALES:
-        datos = dict(item)
-        identificador = datos.pop("id", None)
-        tipo = TipoExpediente(
-            id=identificador,
-            nombre=datos["nombre"],
-            grupo=datos["grupo"],
-            activo=True,
-        )
-        db.add(tipo)
-
-    db.flush()
-    # Los identificadores históricos 5–21 se conservan; el contador queda
-    # preparado para asignar el siguiente ID automáticamente en PostgreSQL.
-    if db.get_bind().dialect.name == "postgresql":
-        db.execute(text(
-            "SELECT setval(pg_get_serial_sequence('tipos_expediente', 'id'), "
-            "COALESCE((SELECT MAX(id) FROM tipos_expediente), 1), true)"
-        ))
-    db.commit()
-
+    El esquema se provisiona exclusivamente mediante migraciones Alembic.
+    Los registros iniciales se cargarán mediante una operación explícita y
+    controlada, nunca como efecto secundario de una consulta.
+    """
+    return None
 
 @router.get("", response_model=list[TipoExpedienteResponse])
 def listar_tipos_expediente(

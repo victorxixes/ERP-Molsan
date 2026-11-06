@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import "./CtnDetallePage.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -17,7 +16,6 @@ const dataDe = (r) => r?.data ?? r;
 
 export default function CtnDetallePage() {
   const params = useParams();
-  const navigate = useNavigate();
   const notariaId = params.id || params.notariaId;
 
   const [notaria, setNotaria] = useState(null);
@@ -151,7 +149,7 @@ export default function CtnDetallePage() {
   const modalidadTexto = modalModalidad === "VC" ? "Videoconferencia" : "Presencial";
 
   if (cargando) return <div className="ctn-detalle-page"><p>Cargando ficha CTN…</p></div>;
-  if (!notaria) return <div className="ctn-detalle-page"><p>{error || "No se ha encontrado el notario."}</p><button onClick={() => navigate(-1)}>Volver</button></div>;
+  if (!notaria) return <div className="ctn-detalle-page"><p>{error || "No se ha encontrado el notario."}</p></div>;
 
   return (
     <div className="ctn-detalle-page ctn-detalle-page--content">
@@ -161,9 +159,6 @@ export default function CtnDetallePage() {
         description={`Ficha CTN · NIF: ${valor(notaria.nif)} · Código: ${valor(notaria.codigo)}`}
         className="ctn-detalle-header"
       />
-      <div className="flex justify-end">
-        <button type="button" onClick={() => navigate(-1)}>Volver al listado</button>
-      </div>
 
       {error && <div role="alert" className="ctn-detalle-alert">{error}</div>}
 

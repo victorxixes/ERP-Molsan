@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { listarNotarios } from "../../api/notarios";
 import { useAuthStore } from "../../store/authStore";
-import "../../css/HerramientasPremium.css";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
 
 const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";

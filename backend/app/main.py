@@ -2977,56 +2977,86 @@ def verificar_base_datos_preview_inicio():
 
 # Se inserta después de registrar las demás tareas para ejecutarse la primera.
 app.router.on_startup.insert(0, verificar_base_datos_preview_inicio)
+# Bootstrap de administrador estrictamente opt-in y limitado a la API Preview.
+app.router.on_startup.insert(1, crear_administrador_preview)
 
 instrumentar_inicio_aplicacion()
 
 def proteger_esquema_publico_supabase_preview():
-    """Cierra el acceso directo de anon/authenticated a las tablas del ERP.
+    """Verifica la seguridad del esquema Preview sin ejecutar DDL en el arranque.
 
-    El backend sigue usando su autenticación JWT propia y conecta como rol
-    PostgreSQL de servidor. Ninguna tabla ERP se expone directamente al cliente
-    mediante la Data API de Supabase.
+    RLS y privilegios deben provisionarse mediante migraciones versionadas.
+    Este control es exclusivamente de lectura y falla de forma cerrada si la
+    postura de seguridad esperada no está aplicada.
     """
     if not _es_url_supabase_preview():
         return
 
-    with engine.begin() as conexion:
-        conexion.execute(text("""
-            DO $$
-            DECLARE tabla RECORD;
-            BEGIN
-                FOR tabla IN
-                    SELECT tablename
-                    FROM pg_tables
-                    WHERE schemaname = 'public'
-                LOOP
-                    EXECUTE format(
-                        'ALTER TABLE %I.%I ENABLE ROW LEVEL SECURITY',
-                        'public',
-                        tabla.tablename
-                    );
-                END LOOP;
-            END
-            $$;
-        """))
-        conexion.execute(text(
-            "REVOKE ALL ON ALL TABLES IN SCHEMA public FROM anon, authenticated"
-        ))
-        conexion.execute(text(
-            "REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM anon, authenticated"
-        ))
-        conexion.execute(text(
-            "ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public "
-            "REVOKE ALL ON TABLES FROM anon, authenticated"
-        ))
-        conexion.execute(text(
-            "ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public "
-            "REVOKE ALL ON SEQUENCES FROM anon, authenticated"
-        ))
+    with engine.connect() as conexion:
+        estado = conexion.execute(text("""
+            SELECT
+                count(*) AS total_tablas,
+                count(*) FILTER (WHERE NOT c.relrowsecurity) AS tablas_sin_rls
+            FROM pg_class c
+            JOIN pg_namespace n ON n.oid = c.relnamespace
+            WHERE n.nspname = 'public'
+              AND c.relkind IN ('r', 'p')
+        """)).first()
+
+        grants_publicos = conexion.execute(text("""
+            SELECT count(DISTINCT c.oid)
+            FROM pg_class c
+            JOIN pg_namespace n ON n.oid = c.relnamespace
+            CROSS JOIN LATERAL aclexplode(
+                COALESCE(
+                    c.relacl,
+                    acldefault(
+                        CASE WHEN c.relkind = 'S' THEN 'S'::"char" ELSE 'r'::"char" END,
+                        c.relowner
+                    )
+                )
+            ) acl
+            LEFT JOIN pg_roles grantee ON grantee.oid = acl.grantee
+            WHERE n.nspname = 'public'
+              AND c.relkind IN ('r', 'p', 'S')
+              AND (
+                  acl.grantee = 0
+                  OR grantee.rolname IN ('anon', 'authenticated')
+              )
+        """)).scalar() or 0
+
+        grants_por_defecto = conexion.execute(text("""
+            SELECT count(*)
+            FROM pg_default_acl d
+            JOIN pg_namespace n ON n.oid = d.defaclnamespace
+            CROSS JOIN LATERAL aclexplode(d.defaclacl) acl
+            LEFT JOIN pg_roles grantee ON grantee.oid = acl.grantee
+            WHERE n.nspname = 'public'
+              AND d.defaclobjtype IN ('r', 'S')
+              AND d.defaclrole = (
+                  SELECT oid FROM pg_roles WHERE rolname = current_user
+              )
+              AND (
+                  acl.grantee = 0
+                  OR grantee.rolname IN ('anon', 'authenticated')
+              )
+        """)).scalar() or 0
+
+    total_tablas = int(estado[0] or 0) if estado else 0
+    tablas_sin_rls = int(estado[1] or 0) if estado else 0
+    if total_tablas == 0 or tablas_sin_rls or grants_publicos or grants_por_defecto:
+        raise RuntimeError(
+            "Seguridad Supabase Preview no provisionada: "
+            f"tablas={total_tablas}, sin_RLS={tablas_sin_rls}, "
+            f"grants_publicos={grants_publicos}, "
+            f"grants_por_defecto={grants_por_defecto}. "
+            "Corregir mediante migración versionada; no se ejecuta DDL en runtime."
+        )
 
     print(
-        "[SUPABASE SECURITY] RLS activado en tablas públicas y privilegios "
-        "de anon/authenticated revocados; acceso ERP solo por backend.",
+        "[SUPABASE SECURITY] Verificación de solo lectura correcta: "
+        f"{total_tablas} tablas públicas con RLS y sin privilegios "
+        "para PUBLIC/anon/authenticated.",
         flush=True,
     )
 
