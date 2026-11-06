@@ -899,10 +899,6 @@ background:rgba(255,255,255,.22)}
   border-color:var(--molsan-prof-border);border-radius:12px;
 }
 
-.encargagest > header.ag-hero.molsan-page-header {
 
-  width: calc(100% - 32px);
-  margin: 24px 16px 16px;
-}
 
 
