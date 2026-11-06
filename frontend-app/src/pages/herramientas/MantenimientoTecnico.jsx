@@ -276,7 +276,7 @@ export default function MantenimientoTecnico() {
   }
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <main className="mantenimiento-tecnico-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <MolsanPageHeader
         mark="MT"
         title="Mantenimiento técnico"
