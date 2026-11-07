@@ -1883,3 +1883,15 @@ Se ha corregido MolsanRedesign2027.css para consumir el token dedicado y se ha a
 Commits: `ffd19bc2f83e2df9dc7cea9935131edb9e9dd503` y `757260390a7d2a4e49b156c40356fe7fd8f108d6`.
 
 Pendiente de comprobar tablas normales, sticky headers, tablas dentro de modales y las vistas responsive.
+
+## 55. Normalización de neutros heredados en CSS de módulos — 7 de noviembre de 2026
+
+La pasada por las 41 hojas CSS identificó varios fallbacks antiguos de texto secundario (#526176 y #64748b) y superficies neutrales (#f7f9fc, #f8fafc, #f5f7fb) en ApoderaGest, EncargaGest, CTN, Agenda, Seguridad, Maestros, Empleados, Herramientas, Cancelagest e index.css.
+
+Se han actualizado los usos neutrales y de texto a los tokens corporativos: texto secundario #617789, panel suave #F2F7FB, cabecera de tabla #EAF2F8 y borde #D8E4EC. Se han mantenido sin cambios los colores semánticos de éxito, error, advertencia y estados habilitado/deshabilitado. En CTN se ha distinguido expresamente el fondo de cabecera de tabla del fondo de hover y del fondo de controles.
+
+Archivos corregidos: ApoderaGest.css, EncargaGest.css, CtnListadoPage.css, CancelagestUnified.css, HerramientasPremium.css, MolsanRedesign2027.css, index.css, Agenda.css, EmpleadosListadoPremium.css, Maestros.css y SeguridadSubpaginasPremium.css.
+
+Commits representativos: `50c1ec15d770b5bb9ac38ff608258e862f34c267`, `7523f098ded1fa73d7e80bc74297ad71834df394`, `a3d94197f827bce1e3cb021289f77369eac5015f`, `ba9543816b3ee0e147421d25ceaeea0a48255223`, `cb520cf961fe57d919e0bdc26ec5772729c5493d`, `c7436274a3bce6503e60903feb2badb471aa4274`, `7fdadead7128ef68fb15407b267cb878817b0e4f`, `d56a691f4cc740e6fae6feba532f0cf09537ae48`, `ab0ef7fd52d5a6a0ba6b7871233b3c660c6f49fb`, `fe4e9ff7bf0997dcfe9502a0c29274b1fcd31d91`, `c935c0dcd2e77fd10c8f739f73d662eaf3a20477`, `5afbb60aa46a50fcbaf640eea18ef663ed88520a`.
+
+Esta pasada es estática. El build y el despliegue de Preview deben ejecutarse sobre el HEAD actualizado; la validación visual de las tablas, chips y estados continúa pendiente.
