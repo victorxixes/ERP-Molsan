@@ -31,7 +31,7 @@
 /* Los módulos reciben el gutter del Layout, sin un segundo margen interior. */
 .erp-route-content > :where(
   .cg-page, .cg-unified-workspace, .expedientes-listado-premium,
-  .ficha-expediente-premium, .agenda-premium-page, .catalogos-premium-page,
+  .ficha-expediente-premium, .agenda-premium-page, .control-apoderados-page, .catalogos-premium-page,
   .utilidades-premium-page, .honorarios-gestoria-premium, .empleados-premium-page,
   .empleado-ficha-premium, .empleado-editar-premium, .fichajes-premium-page, .maestros-premium-page,
   .logs-premium-page, .seguridad-premium-page, .seguridad-subpagina-premium,
