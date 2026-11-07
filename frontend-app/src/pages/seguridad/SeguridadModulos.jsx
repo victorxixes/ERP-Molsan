@@ -499,7 +499,7 @@ export default function SeguridadModulos() {
                           ${
                             activo
                               ? "bg-emerald-500"
-                              : "bg-slate-300"
+                              : "bg-[var(--molsan-border-strong)]"
                           }
                         `}
                       />
