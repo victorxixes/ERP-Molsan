@@ -2148,3 +2148,15 @@ Validación:
 - No se ha modificado producción ni el backend.
 
 La inspección visual autenticada de NotarGest y de los demás módulos sigue pendiente; no se declara cierre visual.
+
+
+## 74. Último ajuste de tokens de CancelaGest y despliegue actualizado — 7 de noviembre de 2026
+
+Se ha simplificado el fallback duplicado de `--molsan-text`, y se han normalizado el icono de flecha y el borde del icono de módulo a los tokens de texto secundario y borde. Se ha reducido también la precisión sobrante de un porcentaje en `color-mix`; se conservan los colores semánticos del estado de error y los acentos propios de las gráficas.
+
+- Build Vite: success para `e31cc6962bcd5f93de715c9f2899e6cc87d3f541`.
+- Validación Fichajes: success para el mismo commit.
+- Render Preview: deploy `dep-dbnk4ap5efls73bipa9g` en estado `live`, commit `e31cc6962bcd5f93de715c9f2899e6cc87d3f541`.
+- Producción y API siguen intactas.
+
+El Preview actual es el servicio `molsan-premium-2027-candidate-preview`; no debe confundirse con enlaces de Preview antiguos. La revisión visual autenticada sigue pendiente.
