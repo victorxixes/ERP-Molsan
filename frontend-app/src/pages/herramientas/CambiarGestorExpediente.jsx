@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
@@ -58,7 +59,7 @@ export default function CambiarGestorExpediente() {
 
   return (
     <div className="cambiar-gestor-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <MolsanPageHeader mark="UT" title="Cambiar gestor de expediente" description="Busca el expediente y reasígnalo manualmente. El cambio quedará registrado en el historial de gestores." actions={<Link to="/herramientas/utilidades" className="rounded-xl border border-[var(--molsan-border)] px-4 py-2 text-sm font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]">← Volver a Utilidades</Link>}/>
+      <MolsanPageHeader mark="UT" title="Cambiar gestor de expediente" description="Busca el expediente y reasígnalo manualmente. El cambio quedará registrado en el historial de gestores." actions={<Link to="/herramientas/utilidades" className="rounded-xl border border-[var(--molsan-border)] px-4 py-2 text-sm font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]"><MolsanIcon name="arrowLeft" size={13} bare /> Volver a Utilidades</Link>}/>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.85fr)]">
         <form onSubmit={consultar} className="rounded-3xl border border-[var(--molsan-border)] bg-white p-6 shadow-sm">
