@@ -1698,3 +1698,32 @@ La comparación es estática y exacta; no prueba equivalencia semántica entre s
 ### Estado de validación
 
 La corrección de iconografía está escrita en la rama de trabajo. Esta sección documenta un riesgo de compatibilidad y un plan de prueba; no afirma que la capa heredada esté ya retirada ni que la validación visual de Preview esté completada.
+
+
+## 43. Reconciliación del árbol completo, cascada de importación y build de la rama — 7 de noviembre de 2026
+
+### Inventario real del árbol
+
+Se ha consultado el árbol Git recursivo de molsan-premium-deep-cleanup-continuation. GitHub devuelve 241 archivos bajo frontend-app/src, con el siguiente desglose exacto: 143 JSX, 57 JS y 41 CSS. El árbol no está truncado. La cifra coincide con el inventario documentado anteriormente; no se ha usado el número de archivos modificados por el PR como sustituto del inventario total.
+
+### Cascada global de estilos
+
+Se ha leído main.jsx y se ha confirmado el orden de importación: index.css y tokens/design system primero; App; después MolsanFase3, molsan-module-styles y las hojas propias de ApoderaGest, EncargaGest y NotarGest; finalmente Redesign, Premium, Cards, Portal Profesional, Global Consistency, Glass Luxe y Canonical Visual. Canonical Visual es la última capa visual importada.
+
+Se identifica un frente de migración todavía abierto: index.css se describe expresamente como base heredada y mantiene bloques de compatibilidad SJ-2026 para layout, tarjetas, tablas, formularios, tabs y modales. Sus comentarios indican que se mantienen mientras existan consumidores legacy. No se elimina de forma global sin cruzar cada clase con JSX y comprobar que los estilos funcionales de esos consumidores ya están migrados.
+
+### Variantes de color detectadas
+
+Se ha realizado un muestreo de literales cromáticos en las 41 hojas CSS. Hay tonos antiguos slate/azul en varias hojas de módulos y portales (incluidas ApoderaGest.css, Cancelagest.css, CancelagestUnified.css, CtnListadoPage.css, EncargaGest.css, MolsanRedesign2027.css y SeguridadSubpaginasPremium.css). Parte de esos valores representa texto neutro o superficies heredadas; otros son estados semánticos de aprobación, error, advertencia, éxito, disponibilidad o riesgo. Por tanto, el mero hecho de no coincidir con los seis colores base no justifica sustituirlos todos.
+
+El siguiente criterio de normalización es: sustituir los tonos decorativos antiguos por tokens corporativos; mantener los colores de estado solo cuando su significado sea explícito y coherente; y no modificar colores de datos, estados o acciones destructivas sin revisar el componente que los produce.
+
+### Build verificado tras las últimas escrituras
+
+Para el HEAD 8353889c97fa37443460ba78956e6202910dc410, GitHub Actions ejecutó MOLSAN frontend premium build (run 42348344681). El job Vite production build terminó con success; tanto Install dependencies como Build frontend terminaron correctamente. La validación de Fichaje Molsan también terminó con success. El workflow supabase-schema-audit figura como failure separado y no forma parte de la compilación frontend; no se atribuye a este cambio de estilos.
+
+PR #411 continúa abierta y en Draft, con base fix/molsan-css-selector-audit-round1 y head molsan-premium-deep-cleanup-continuation. No se ha fusionado ni desplegado a producción.
+
+### Límite
+
+El árbol completo está reconciliado y el build del HEAD está correcto. Esto no equivale a una inspección semántica exhaustiva de cada regla CSS ni a validación visual autenticada de las 91 rutas/componentes, sus estados, modales y viewports. Esa comprobación continúa abierta y es condición para declarar la entrega visual cerrada.
