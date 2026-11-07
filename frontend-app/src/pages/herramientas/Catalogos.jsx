@@ -165,7 +165,7 @@ export default function Catalogos() {
         className="catalogos-page-header"
       />
 
-      <div className="rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 text-sm text-blue-900">
+      <div className="rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-4 py-3 text-sm text-[var(--molsan-primary)]">
         Los catálogos conservan sus datos y pantallas actuales. Esta sección los reúne en un único acceso para facilitar su mantenimiento.
       </div>
 
@@ -173,7 +173,7 @@ export default function Catalogos() {
         const items = CATALOGOS.filter((item) => item.grupo === grupo);
         return (
           <section key={grupo} className="space-y-3">
-            <h2 className="text-lg font-bold tracking-tight text-slate-800">{grupo}</h2>
+            <h2 className="text-lg font-bold tracking-tight text-[var(--molsan-text)]">{grupo}</h2>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {items.map((item) => (
                 <Link
