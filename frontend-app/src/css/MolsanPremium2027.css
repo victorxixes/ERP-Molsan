@@ -763,6 +763,7 @@
 /* Superficies de modales: un mismo panel y cabecera en todos los módulos. */
 .molsan-modal-panel,
 .ctn-modal-panel,
+.ctn-modal-dialog,
 .eg-modal-form,
 .ng-modal,
 .ag-resumen-modal,
@@ -772,6 +773,14 @@
   border-radius: var(--molsan-canon-card-radius, 20px);
   background: #FFFFFF;
   box-shadow: 0 18px 42px rgba(6,70,117,.12);
+}
+.ctn-modal-dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(1240px, 100%);
+  max-height: calc(100dvh - 44px);
+  min-height: 0;
+  overflow: hidden;
 }
 .molsan-modal-header,
 .ctn-modal-header,
@@ -804,6 +813,10 @@
   line-height: 1.5;
 }
 @media (max-width: 760px) {
+  .ctn-modal-dialog {
+    width: 100%;
+    max-height: calc(100dvh - 16px);
+  }
   .molsan-modal-header,
   .ctn-modal-header,
   .eg-modal-header,
