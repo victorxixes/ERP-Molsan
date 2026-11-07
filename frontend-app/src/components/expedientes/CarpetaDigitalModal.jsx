@@ -611,7 +611,7 @@ export default function CarpetaDigitalModal({
             <span className={`flex h-8 w-8 shrink-0 items-center justify-center ${cantidad ? "" : ""}`}>{cantidad}</span>
             <span className="min-w-0"><span className="block">{bloque.titulo}</span><span className="block truncate">{bloque.descripcion}</span></span>
           </span>
-          <span className="shrink-0">{modoActividad ? "‹" : abierto ? "⌃" : "⌄"}</span>
+          <span className="shrink-0">{modoActividad ? <MolsanIcon name="arrowLeft" size={14} bare /> : abierto ? <MolsanIcon name="arrowUp" size={14} bare /> : <MolsanIcon name="arrowDown" size={14} bare />}</span>
         </button>
         {abierto && <div className={"grid grid-cols-1 gap-2 p-2 sm:p-3" + (modoActividad ? "" : "sm:grid-cols-2 xl:grid-cols-4")}>{bloque.categorias.map(renderCategoria)}</div>}
       </section>
@@ -880,7 +880,7 @@ export default function CarpetaDigitalModal({
                 </div>
               ) : visorVisible ? renderVisor() : (
                 <div className="flex h-full min-h-[250px] flex-col items-center justify-center p-5">
-                  <span className="mb-3">▤</span>
+                  <span className="mb-3"><MolsanIcon name="file" size={24} bare /></span>
                   <p>El visor está oculto.</p>
                   <button type="button" onClick={() => setVisorVisible(true)} className="mt-3 px-3 py-2">Mostrar visor</button>
                 </div>
@@ -958,7 +958,7 @@ export default function CarpetaDigitalModal({
                           <span className={`flex h-8 w-8 shrink-0 items-center justify-center ${otrosCantidad ? "" : ""}`}>{otrosCantidad}</span>
                           <span><span className="block">Otros</span><span className="block">Documentación complementaria y comunicaciones.</span></span>
                         </span>
-                        <span>{otrosAbierto ? "⌃" : "⌄"}</span>
+                        <span>{otrosAbierto ? <MolsanIcon name="arrowUp" size={14} bare /> : <MolsanIcon name="arrowDown" size={14} bare />}</span>
                       </button>
                       {otrosAbierto && <div className="space-y-2 p-2">{CATEGORIAS_OTROS.map(renderCategoria)}</div>}
                     </section>
