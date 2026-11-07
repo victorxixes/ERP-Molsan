@@ -169,8 +169,8 @@
   box-shadow: 0 4px 12px rgba(24, 39, 75, .09);
 }
 :is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) table thead th {
-  background: var(--molsan-surface-soft, #F2F7FB);
-  color: var(--molsan-text-muted, #617789);
+  background: var(--molsan-table-head, #EAF2F8);
+  color: var(--molsan-text-secondary, #617789);
   font-size: .72rem;
   font-weight: 800;
   letter-spacing: .045em;
@@ -225,7 +225,7 @@
 .seguridad-usuarios-premium table { border-collapse:separate; border-spacing:0; }
 .seguridad-rol-editor-premium table thead th,
 .seguridad-usuarios-premium table thead th {
-  padding:.85rem 1rem; background: var(--molsan-page-bg, #FFFFFF); color:#617789; text-align:left;
+  padding:.85rem 1rem; background: var(--molsan-table-head, #EAF2F8); color:var(--molsan-text-secondary, #617789); text-align:left;
   font-size:.7rem; font-weight:800; letter-spacing:.055em; text-transform:uppercase;
   border-bottom:1px solid var(--molsan-border,#D8E4EC);
 }
