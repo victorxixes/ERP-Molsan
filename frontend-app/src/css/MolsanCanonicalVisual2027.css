@@ -455,3 +455,18 @@ body :where(
   font-weight: 500 !important;
   text-shadow: none !important;
 }
+
+/* Cabeceras de tabla: el token dedicado prevalece sobre fondos genéricos de panel. */
+:where(
+  .erp-app-shell,.erp-page,.apoderagest,.encargagest,.notargest,
+  .ctn-listado-page,.ctn-detalle-page,.expedientes-page,.expedientes-listado-premium,
+  .ficha-expediente-premium,.agenda-premium-page,.catalogos-premium-page,
+  .utilidades-premium-page,.maestros-premium-page,.informes-premium-page,
+  .mensajeria,.mensajes-premium-page,.seguridad-premium-page,
+  .panel-tecnico-premium,.provisiones-fondos-page,.molsan-intranet-page,
+  .dashboard-premium-page
+) table thead th {
+  color: var(--molsan-text-secondary, #617789) !important;
+  background-color: var(--molsan-table-head, #EAF2F8) !important;
+  border-bottom-color: var(--molsan-border, #D8E4EC) !important;
+}
