@@ -762,6 +762,7 @@
 
 /* Superficies de modales: un mismo panel y cabecera en todos los módulos. */
 .molsan-modal-panel,
+.molsan-modal__panel,
 .ctn-modal-panel,
 .ctn-modal-dialog,
 .eg-modal-form,
