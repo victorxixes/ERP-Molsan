@@ -2456,7 +2456,7 @@ export default function OficinasLiquidadoras() {
             role="dialog"
             aria-modal="true"
             aria-label="Formulario de oficina liquidadora"
-            className="
+            className="molsan-modal-panel 
               w-full
               max-w-4xl
               max-h-[92vh]
@@ -2828,7 +2828,7 @@ export default function OficinasLiquidadoras() {
             role="dialog"
             aria-modal="true"
             aria-label="Importar oficinas liquidadoras"
-            className="
+            className="molsan-modal-panel 
               w-full
               max-w-xl
               rounded-2xl
