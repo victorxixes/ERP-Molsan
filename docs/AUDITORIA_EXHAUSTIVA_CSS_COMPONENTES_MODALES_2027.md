@@ -1895,3 +1895,20 @@ Archivos corregidos: ApoderaGest.css, EncargaGest.css, CtnListadoPage.css, Cance
 Commits representativos: `50c1ec15d770b5bb9ac38ff608258e862f34c267`, `7523f098ded1fa73d7e80bc74297ad71834df394`, `a3d94197f827bce1e3cb021289f77369eac5015f`, `ba9543816b3ee0e147421d25ceaeea0a48255223`, `cb520cf961fe57d919e0bdc26ec5772729c5493d`, `c7436274a3bce6503e60903feb2badb471aa4274`, `7fdadead7128ef68fb15407b267cb878817b0e4f`, `d56a691f4cc740e6fae6feba532f0cf09537ae48`, `ab0ef7fd52d5a6a0ba6b7871233b3c660c6f49fb`, `fe4e9ff7bf0997dcfe9502a0c29274b1fcd31d91`, `c935c0dcd2e77fd10c8f739f73d662eaf3a20477`, `5afbb60aa46a50fcbaf640eea18ef663ed88520a`.
 
 Esta pasada es estática. El build y el despliegue de Preview deben ejecutarse sobre el HEAD actualizado; la validación visual de las tablas, chips y estados continúa pendiente.
+
+## 56. Retirada de compatibilidades SJ-2026 sin consumidores activos — 7 de noviembre de 2026
+
+Se ha cruzado el inventario de clases heredadas con las referencias del repositorio y se han retirado las reglas que solo existían en CSS y no tenían consumidores JSX activos:
+- `card-sj`, `card-sj-header`, `card-sj-footer`
+- `table-sj` y sus reglas de filas/celdas
+- `input-sj`, `select-sj`, `textarea-sj`, `label-sj`
+- `tabs-sj`, `tab-sj`
+- `modal-overlay-sj`, `modal-sj`, `modal-sj-header`, `modal-sj-footer`
+- `erp-table` y `erp-modal` / `erp-modal-header` / `erp-modal-panel`
+- estados `erp-warning`, `erp-danger` y `erp-info` sin consumidores detectados.
+
+Se han eliminado sus reglas en index.css y los overrides correspondientes de MolsanRedesign2027.css, MolsanPremium2027.css y MolsanCanonicalVisual2027.css. Se conservan `erp-page`, `erp-btn-*`, `erp-badge` y `erp-success`, que sí tienen consumidores activos en páginas de Seguridad, Expedientes y componentes de tabla. La limpieza no toca el sistema de modales vigente (`molsan-modal-panel`, `ctn-modal-panel`, `eg-modal-form`, `ng-modal`, etc.).
+
+Commits: `<commit>` (limpieza de index.css y Redesign), `bedded563e6f33ccfafdc19769ebd7b7e5513f5e`, `feae1107ca870cc814e8c9f63d48776785161b58`, `b6d021a00e9d7e2f79a0a3415c550c53d496ba8f`, `2dc6ab543e58f59481fe73775ec476178d9f9912`.
+
+El build de Vite debe confirmar que no quedan referencias dinámicas. La validación visual de formularios y modales modernos continúa pendiente.
