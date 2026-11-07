@@ -842,7 +842,7 @@
 ) :is(
   .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
    .ng-admin-global-resumen,
-  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
+  .ctn-panel,   .ctn-detalle-panel,
   .expedientes-panel,
   .expedientes-filter-panel, .expedientes-table-panel,
   .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
@@ -870,7 +870,7 @@
 ) :is(
   .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
    .ng-admin-global-resumen,
-  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
+  .ctn-panel,   .ctn-detalle-panel,
   .expedientes-panel,
   .expedientes-filter-panel, .expedientes-table-panel,
   .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
@@ -892,7 +892,7 @@
 ) :is(
   .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
    .ng-admin-global-resumen,
-  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
+  .ctn-panel,   .ctn-detalle-panel,
   .expedientes-panel,
   .expedientes-filter-panel, .expedientes-table-panel,
   .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
@@ -911,7 +911,7 @@
     .panel-tecnico-premium, .seguridad-premium-page) :is(
       .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel,
       .ctn-panel,
-      .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .expedientes-panel, .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+        .expedientes-panel, .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
       .section-card, .agenda-calendar-card,
       .logs-panel, .maestros-panel
     ) {
