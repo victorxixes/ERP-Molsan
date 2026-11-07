@@ -2750,7 +2750,7 @@ function ModalImportarExcel({
         role="dialog"
         aria-modal="true"
         aria-label="Importar entidades bancarias desde Excel"
-        className="
+        className="molsan-modal-panel 
           w-full
           max-w-2xl
           overflow-hidden
@@ -3370,7 +3370,7 @@ function ModalEntidadBancaria({
         role="dialog"
         aria-modal="true"
         aria-label="Formulario de entidad bancaria"
-        className="
+        className="molsan-modal-panel 
           w-full
           max-w-2xl
           overflow-hidden
