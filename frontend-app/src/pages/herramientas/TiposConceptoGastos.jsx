@@ -1171,7 +1171,7 @@ export default function TiposConceptoGastos() {
                     focus:border-[var(--molsan-border-strong)]
                     focus:bg-white
                     focus:ring-4
-                    focus:ring-blue-500/10
+                    focus:ring-[var(--molsan-primary)]/10
                   "
                 />
 
@@ -1220,7 +1220,7 @@ export default function TiposConceptoGastos() {
                   focus:border-[var(--molsan-border-strong)]
                   focus:bg-white
                   focus:ring-4
-                  focus:ring-blue-500/10
+                  focus:ring-[var(--molsan-primary)]/10
                 "
               >
 
@@ -1439,7 +1439,7 @@ export default function TiposConceptoGastos() {
                     rounded-full
                     border-2
                     border-[var(--molsan-border)]
-                    border-t-blue-600
+                    border-t-[var(--molsan-primary)]
                   "
                 />
 
@@ -1826,7 +1826,7 @@ export default function TiposConceptoGastos() {
                                 ${
                                   tipo.activo
                                     ? "bg-emerald-500"
-                                    : "bg-slate-400"
+                                    : "bg-[var(--molsan-text-secondary)]"
                                 }
                               `}
                             />
@@ -2365,7 +2365,7 @@ export default function TiposConceptoGastos() {
                     focus:border-[var(--molsan-border-strong)]
                     focus:bg-white
                     focus:ring-4
-                    focus:ring-blue-500/10
+                    focus:ring-[var(--molsan-primary)]/10
                   "
                 />
 
@@ -2443,7 +2443,7 @@ export default function TiposConceptoGastos() {
                     ${
                       activo
                         ? "bg-[var(--molsan-primary)]"
-                        : "bg-slate-300"
+                        : "bg-[var(--molsan-border-strong)]"
                     }
                   `}
                 >
@@ -2529,7 +2529,7 @@ export default function TiposConceptoGastos() {
                     font-semibold
                     text-white
                     shadow-lg
-                    shadow-blue-600/20
+                    shadow-[0_10px_24px_rgba(6,70,117,.18)]
                     transition-all
                     hover:bg-[var(--molsan-primary)]
                     disabled:cursor-not-allowed
