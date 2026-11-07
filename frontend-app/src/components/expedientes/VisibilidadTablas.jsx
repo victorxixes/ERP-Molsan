@@ -210,8 +210,8 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
                       const item = catalogo.columnas_excel.find((col) => col.key === key);
                       return <span key={key} className="inline-flex items-center gap-1 px-2 py-1">
                         {item?.label || key}
-                        <button type="button" aria-label={`Mover ${key} arriba`} disabled={index === 0} onClick={() => setColumnas((actual) => { const next = [...actual]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; return next; })} className="px-1">↑</button>
-                        <button type="button" aria-label={`Mover ${key} abajo`} disabled={index === columnas.length - 1} onClick={() => setColumnas((actual) => { const next = [...actual]; [next[index + 1], next[index]] = [next[index], next[index + 1]]; return next; })} className="px-1">↓</button>
+                        <button type="button" aria-label={`Mover ${key} arriba`} disabled={index === 0} onClick={() => setColumnas((actual) => { const next = [...actual]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; return next; })} className="px-1"><MolsanIcon name="arrowUp" size={12} bare /></button>
+                        <button type="button" aria-label={`Mover ${key} abajo`} disabled={index === columnas.length - 1} onClick={() => setColumnas((actual) => { const next = [...actual]; [next[index + 1], next[index]] = [next[index], next[index + 1]]; return next; })} className="px-1"><MolsanIcon name="arrowDown" size={12} bare /></button>
                       </span>;
                     })}
                   </div>
