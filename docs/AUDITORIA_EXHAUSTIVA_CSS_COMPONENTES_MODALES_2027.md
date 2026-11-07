@@ -1997,3 +1997,15 @@ Se ha incorporado `.ctn-modal-dialog` al contrato de superficie modal compartida
 Commits: `439df46ca76d8bdba549687abf441b573d0499ef` y `912551383f97d569fa77334d3b26a9935ed574f9`.
 
 Es una corrección basada en el contrato JSX/CSS, aún pendiente de build y verificación visual en escritorio y móvil.
+
+## 63. Unificación de cabeceras de modales compartidos — 7 de noviembre de 2026
+
+El cruce de los componentes de modal encontró dos convenciones activas para la cabecera: `.molsan-modal-header` y `.molsan-modal__header`. La primera recibía la normalización global; la segunda seguía dependiendo de utilidades Tailwind locales, aunque se usa en ModalEmpleado, CarpetaDigital, LiquidarExpediente y otros diálogos.
+
+Se han unificado ambas clases en los mismos selectores del contrato modal común: disposición flex, alineación, espaciado, padding, fondo blanco, ausencia de bandas y jerarquía de color. Se conserva el comportamiento funcional de cada diálogo, incluyendo scroll, pestañas, cierre y altura responsive.
+
+También se ha conectado la barra superior de cierre de EnviarANotarioModal a `.molsan-modal-header`, para que no conserve su borde inferior y fondo local como excepción.
+
+Commits: `a47c93724226591ad21b5db53580f13e6fc4b3e6` y `e718e13d9fe97acce170107ba6a02887dba04c87`.
+
+Pendiente comprobar visualmente los modales de Agenda, CTN, Enviar a notario, Carpeta digital, Liquidar expediente y Empleados en escritorio y móvil.
