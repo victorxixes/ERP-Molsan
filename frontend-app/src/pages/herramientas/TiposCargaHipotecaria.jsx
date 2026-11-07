@@ -1159,7 +1159,7 @@ export default function TiposCargaHipotecaria() {
             role="dialog"
             aria-modal="true"
             aria-label="Formulario de tipo de carga hipotecaria"
-            className="
+            className="molsan-modal-panel 
               w-full
               max-w-xl
               rounded-2xl
