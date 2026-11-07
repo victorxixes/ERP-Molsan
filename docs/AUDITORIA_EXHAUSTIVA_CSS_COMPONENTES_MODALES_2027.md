@@ -2246,3 +2246,19 @@ Se ha continuado la revisión estática sobre las páginas y componentes compart
 - Producción, API y bases de datos sin cambios.
 
 Sigue pendiente la inspección visual autenticada de todas las rutas y estados, la comprobación manual de modales/teclado/responsive y la validación funcional de CTN y portales. No se declara cierre global ni promoción a producción.
+
+
+
+## 79. Continuación de portales y Control de Fichajes — 7 de noviembre de 2026
+
+Se ha iniciado una nueva pasada sobre Cancelagest, EncargaGest, ApoderaGest, NotarGest y Control de Fichajes, contrastando las cabeceras comunes, los componentes de acceso y las superficies de sus páginas.
+
+- Confirmado el uso de `MolsanPageHeader` en ApoderaGest y EncargaGest; ambas cabeceras centralizan título, descripción, marca e incluso acciones donde corresponde.
+- En ApoderaGest se conserva el encabezado común y se identifican sus subcabeceras internas como encabezados de sección, no como duplicados de página. Los encabezados de impresión y los de diálogo permanecen diferenciados.
+- En EncargaGest se conserva la cabecera común para el portal interno/externo y la acción de cierre de sesión en el slot de acciones. Las cabeceras de perfil y de configuración de accesos son cabeceras de diálogo.
+- En Cancelagest se confirma el uso de `MolsanPageHeader`, iconografía `MolsanIcon` y tarjetas estadísticas comunes; sus clases `cg-*` conservan estilos propios del dashboard y deben seguir contrastándose con el sistema compartido.
+- Control de Fichajes: el botón de envío de solicitud de vacaciones que aún usaba el violeta Tailwind se ha migrado a los tokens `--molsan-primary` y `--molsan-primary-hover`, con foco visible y estado deshabilitado coherentes con el ERP. No se ha cambiado la lógica ni la petición de datos.
+
+### Estado de esta pasada
+
+La revisión continúa abierta. Esta actualización no acredita inspección visual autenticada ni pruebas manuales de todas las rutas, portales y modales. No se han cambiado permisos, operaciones de negocio, API, base de datos ni producción. El cambio de Control de Fichajes queda pendiente de build y despliegue de Preview antes de considerarlo validado.
