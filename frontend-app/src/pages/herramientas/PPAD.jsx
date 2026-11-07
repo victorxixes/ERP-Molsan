@@ -110,7 +110,7 @@ export default function PPAD() {
 
   return (
     <div className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <MolsanPageHeader mark="PP" title="Control de PPAD" description="Seguimiento de importes pendientes de compensar y compensados." actions={<Link to="/herramientas/utilidades" className="self-start rounded-xl border border-[var(--molsan-border)] px-4 py-2 text-sm font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]">← Volver a Utilidades</Link>}/>
+      <MolsanPageHeader mark="PP" title="Control de PPAD" description="Seguimiento de importes pendientes de compensar y compensados." actions={<Link to="/herramientas/utilidades" className="self-start rounded-xl border border-[var(--molsan-border)] px-4 py-2 text-sm font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]"><MolsanIcon name="arrowLeft" size={14} bare /> Volver a Utilidades</Link>}/>
 
       {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
       {mensaje && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{mensaje}</div>}
@@ -147,7 +147,7 @@ function TablaPPAD({ titulo, lista, tipo, busqueda, setBusqueda, compensar, acci
               className="min-w-0 rounded-xl border border-[var(--molsan-border-strong)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--molsan-border-strong)] focus:ring-2 focus:ring-[var(--molsan-primary-soft)] sm:w-72"
             />
             <button type="button" onClick={() => descargarExcel(tipo, busqueda)} className="rounded-xl border border-[var(--molsan-border-strong)] bg-[var(--molsan-primary-soft)] px-3 py-2 text-sm font-bold text-[var(--molsan-primary)] hover:bg-[var(--molsan-primary-soft)]">
-              ↓ Descargar Excel
+              <MolsanIcon name="download" size={14} bare /> Descargar Excel
             </button>
           </div>
         </div>
