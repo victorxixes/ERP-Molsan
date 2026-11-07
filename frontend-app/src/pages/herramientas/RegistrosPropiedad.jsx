@@ -2575,7 +2575,7 @@ export default function RegistrosPropiedad() {
                             <span
                               className="
                                 italic
-                                text-slate-300
+                                text-[var(--molsan-text-secondary)]/60
                               "
                             >
                               Sin registrar
@@ -2603,7 +2603,7 @@ export default function RegistrosPropiedad() {
                             <span
                               className="
                                 italic
-                                text-slate-300
+                                text-[var(--molsan-text-secondary)]/60
                               "
                             >
                               Sin dirección
