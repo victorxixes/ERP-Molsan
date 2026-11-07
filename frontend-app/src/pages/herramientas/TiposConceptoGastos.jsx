@@ -2192,7 +2192,7 @@ export default function TiposConceptoGastos() {
             role="dialog"
             aria-modal="true"
             aria-label="Formulario de concepto de gasto"
-            className="
+            className="molsan-modal-panel 
               w-full
               max-w-lg
               overflow-hidden
