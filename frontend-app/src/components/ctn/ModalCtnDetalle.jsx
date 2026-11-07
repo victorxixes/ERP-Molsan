@@ -9,6 +9,7 @@ import {
   desasociarNotarios,
 } from "../../api/ctn";
 import useAccessibleDialog from "../ui/useAccessibleDialog";
+import MolsanIcon from "../ui/MolsanIcon";
 import useSortableData from "../../hooks/useSortableData";
 import MolsanSortableTh from "../ui/MolsanSortableTh";
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
@@ -548,7 +549,7 @@ export default function ModalCtnDetalle({
                 target="_blank"
                 rel="noreferrer"
               >
-                Abrir en Google Maps ↗
+                <MolsanIcon name="pin" size={13} bare /> Abrir en Google Maps <MolsanIcon name="externalLink" size={12} bare />
               </a>
             </div>
           </>
