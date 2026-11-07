@@ -2053,3 +2053,19 @@ Se mantienen MutationObserver, el montaje dinámico del botón común, el destin
 Commit: `cda080ef0f1e18b29b96a15a0c3fa1fc8e5c49c7`.
 
 Pendiente comprobar cambios de ruta con carga diferida, subpáginas con y sin acciones, modales abiertos durante la navegación y anchuras móvil/tablet.
+
+## 68. Barrido adicional de paleta en CTN, portales, Seguridad y Expedientes — 7 de noviembre de 2026
+
+Se amplió el barrido de colores a las reglas efectivas de CTN y a los neutros locales de portales y subpáginas:
+- CtnListadoPage.css: normalizadas las cabeceras de la tabla principal y de las tablas del modal, texto de celdas, hover, bordes de tabla, campos, paginación y botones secundarios. Las cabeceras usan #EAF2F8; hover/superficie suave #F2F7FB; texto #617789; borde #D8E4EC.
+- CtnDetallePage.css: tabla de histórico y hover ajustados a los mismos tokens.
+- SeguridadSubpaginasPremium.css: reemplazados los neutros antiguos de fondos, bordes y texto; se conservan rojo/verde semánticos para error y éxito.
+- ApoderaGest.css, EncargaGest.css y NotarGest.css: fallbacks de texto principal #17243A alineados a #173247.
+- MolsanPremium2027.css: las cuatro superficies globales que aún usaban #C5D8E5 pasan al token #D8E4EC y el texto principal #17384D pasa a #173247.
+- ExpedientesListado.css: eliminado el último fallback #24324A detectado en el grupo de subpáginas revisado.
+
+El escaneo adicional de 11 hojas CSS de páginas técnicas (Expedientes, Ficha, Intranet, Logs, Maestros, Notificaciones, Panel Técnico, Provisiones y Empleados) no encontró otras coincidencias de la familia de neutros heredados revisada.
+
+Commits: `c826eff0adc3a2e52b71eb7d675f65676f5a70a4`, `fa2be814dae7ef81c7e5a140c0d4d91d3ba7ebaa`, `9e299053131c6a9cff7513fb3906ecfa8de458c6`, `36704f5e11e5dc11ffacf052b0c2b3e46f5fba99`, `e7c5fbd22f0352e84c3129ff09aecd6dfa4d6dd4`, `264345b9ae9ac71d038aaafceaab8e291c46c8d8`, `04f70a2fadc17d1c04b6b6dfea50dc214ba85c35`, `8da5851ef2e76c252d8460aaf14bad772ec9b6c2`.
+
+El build y el despliegue del HEAD más reciente deben confirmar estas correcciones antes de la validación visual.
