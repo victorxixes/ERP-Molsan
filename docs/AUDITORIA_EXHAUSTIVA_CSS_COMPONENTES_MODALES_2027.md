@@ -2187,3 +2187,16 @@ Este apartado actualiza las referencias históricas de cobertura de las primeras
 4. Corregir diferencias detectadas, repetir build y Preview, y solo entonces preparar la promoción secuencial de PRs.
 
 No se considera finalizada la auditoría global ni se autoriza inferir cierre visual a partir de build/deploy. Producción, API y datos permanecen intactos.
+
+
+## 76. Contraste estático de diálogos y ciclo de foco — 7 de noviembre de 2026
+
+Se ha contrastado el conjunto de ficheros JSX identificados por el marcado `role="dialog"` / `aria-modal="true"` en páginas y componentes: Sidebar, ModulosSelector, CTN detalle, NotarGest, ApoderaGest, EncargaGest, ControlApoderados, Catálogo ABSIS, Tipos de expediente, Informes, Mensajería Molsan, Mensajería Solicitudes, ExpedientesListado, ProvisionesFondosPage, ModalCtnDetalle, LiquidarExpedienteModal, ProvisionesModal, TraspasoSaldoPanel y CarpetaDigitalModal.
+
+En los 19 ficheros se ha confirmado importación/uso de `useAccessibleDialog` y correspondencia entre llamadas al hook y diálogos declarados. El hook común:
+- devuelve el foco al elemento anterior al cerrar;
+- lleva el foco al primer control disponible al abrir;
+- limita Escape y Tab al diálogo superior cuando hay diálogos anidados;
+- mantiene el foco dentro del diálogo y filtra controles ocultos/deshabilitados.
+
+No se ha cambiado lógica de formularios ni operaciones. Esta comprobación es estática: siguen pendientes las pruebas manuales reales de teclado, lectores de pantalla, scroll interno, cierre anidado y viewport móvil/tablet.
