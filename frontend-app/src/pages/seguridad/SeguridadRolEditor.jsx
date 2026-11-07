@@ -451,9 +451,7 @@ export default function SeguridadRolEditor() {
           "
         >
 
-          <span className="font-bold">
-            ✓
-          </span>
+          <span className="font-bold"><MolsanIcon name="check" size={13} tone="emerald" bare /></span>
 
           <span>
             {mensaje}
