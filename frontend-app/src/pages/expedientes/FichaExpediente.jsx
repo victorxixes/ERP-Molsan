@@ -797,7 +797,7 @@ function RepositorioDocumentosInline({ expedienteId, categorias = [], titulo = "
                   <div className="mt-1 space-y-1">
                     {documentosCategoria.map((doc) => (
                       <div key={doc.id} className="flex flex-wrap items-center gap-2">
-                        <span className="min-w-0 flex-1 break-words text-[11px] font-semibold text-emerald-700">✓ {doc.nombre_original || doc.nombre || "Documento guardado"}</span>
+                        <span className="min-w-0 flex-1 break-words text-[11px] font-semibold text-emerald-700"><MolsanIcon name="check" size={13} bare /> {doc.nombre_original || doc.nombre || "Documento guardado"}</span>
                         <button type="button" onClick={() => abrirDocumento(doc)} className="rounded-md px-2 py-1 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver</button>
                       </div>
                     ))}
@@ -4887,7 +4887,7 @@ async function descargarPDFCalificacion(defecto) {
               text-white
             "
           >
-            ← Expedientes
+            <MolsanIcon name="arrowLeft" size={14} bare /> Expedientes
           </Link>
         </div>
       </div>
@@ -5016,7 +5016,7 @@ const cuantiaFincasParaEnvio =
                           disabled={cargandoDocumentosCierre}
                           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
                         >
-                          {cargandoDocumentosCierre ? "Comprobando…" : "↻ Comprobar de nuevo"}
+                          {cargandoDocumentosCierre ? "Comprobando…" : <><MolsanIcon name="refresh" size={14} bare /> Comprobar de nuevo</>}
                         </button>
                       </div>
                       {cargandoDocumentosCierre && <p className="mt-3 text-xs text-slate-500">Actualizando datos documentales…</p>}
@@ -5218,7 +5218,7 @@ const cuantiaFincasParaEnvio =
                                     aria-label={"Ir a " + fase.label + ". " + (completa ? "Control superado" : pendientes.length + " tareas pendientes")}
                                   >
                                     <span className="flex items-center gap-3">
-                                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg ${completa ? "bg-emerald-100" : actual ? "bg-blue-100" : "bg-slate-100"}`}>{completa ? "✓" : <MolsanIcon name={fase.icono} size={20} tone="ocean" bare />}</span>
+                                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg ${completa ? "bg-emerald-100" : actual ? "bg-blue-100" : "bg-slate-100"}`}>{completa ? <MolsanIcon name="check" size={18} tone="emerald" bare /> : <MolsanIcon name={fase.icono} size={20} tone="ocean" bare />}</span>
                                       <span className="min-w-0 flex-1">
                                         <span className="block text-sm font-extrabold text-slate-800"><MolsanIcon name={fase.icono} size={16} tone="ocean" bare /> {fase.label}</span>
                                         <span className={`mt-1 block text-xs font-semibold ${completa ? "text-emerald-700" : actual ? "text-blue-700" : "text-amber-700"}`}>
@@ -5226,10 +5226,10 @@ const cuantiaFincasParaEnvio =
                                         </span>
                                       </span>
                                       <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-extrabold ${completa ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"}`}>
-                                        {completa ? "✓ Correcto" : pendientes.length + " pendiente(s)"}
+                                        {completa ? <><MolsanIcon name="check" size={12} bare /> Correcto</> : pendientes.length + " pendiente(s)"}
                                       </span>
                                     </span>
-                                    <span className="mt-2 block text-[10px] font-semibold text-slate-400 group-hover:text-indigo-600">Abrir actividad →</span>
+                                    <span className="mt-2 block text-[10px] font-semibold text-slate-400 group-hover:text-indigo-600">Abrir actividad <MolsanIcon name="arrowRight" size={12} bare /></span>
                                   </button>
                                 );
                               })}
@@ -5261,7 +5261,7 @@ const cuantiaFincasParaEnvio =
                                   <article key={fase.key} className={`min-w-0 rounded-xl border p-3 ${completa ? "border-emerald-200 bg-emerald-50/40" : actual ? "border-blue-200 bg-blue-50/40" : "border-slate-200 bg-white"}`}>
                                     <div className="flex items-center gap-3">
                                       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-extrabold ${completa ? "border-emerald-500 bg-emerald-500 text-white" : actual ? "border-blue-500 bg-white text-blue-700" : "border-slate-300 bg-white text-slate-400"}`}>
-                                        {completa ? "✓" : actual ? "●" : indice + 1}
+                                        {completa ? <MolsanIcon name="check" size={15} bare /> : actual ? <MolsanIcon name="activity" size={14} bare /> : indice + 1}
                                       </div>
                                       <div className="min-w-0 flex-1">
                                         <p className="text-xs font-bold text-slate-800"><MolsanIcon name={fase.icono} size={16} tone="ocean" bare /> {fase.label}</p>
@@ -5270,7 +5270,7 @@ const cuantiaFincasParaEnvio =
                                         </p>
                                       </div>
                                       <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${completa ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"}`}>
-                                        {completa ? "✓ Correcto" : `${pendientes.length} pendiente(s)`}
+                                        {completa ? <><MolsanIcon name="check" size={12} bare /> Correcto</> : `${pendientes.length} pendiente(s)`}
                                       </span>
                                       <button
                                         type="button"
@@ -5278,7 +5278,7 @@ const cuantiaFincasParaEnvio =
                                         onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, [fase.key]: !actuales[fase.key] }))}
                                         className="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50"
                                       >
-                                        {fasesCalidadColapsadas[fase.key] ? "＋ Mostrar" : "− Ocultar"}
+                                        {fasesCalidadColapsadas[fase.key] ? <><MolsanIcon name="plus" size={12} bare /> Mostrar</> : <><MolsanIcon name="minus" size={12} bare /> Ocultar</>}
                                       </button>
                                     </div>
                                     {!fasesCalidadColapsadas[fase.key] && (
@@ -5290,7 +5290,7 @@ const cuantiaFincasParaEnvio =
                                             title={check.ok ? "Correcto" : "Pendiente"}
                                             className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-black ${check.ok ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
                                           >
-                                            {check.ok ? "✓" : "✕"}
+                                            {check.ok ? <MolsanIcon name="check" size={12} bare /> : <MolsanIcon name="x" size={12} bare />}
                                           </span>
                                           <span className={check.ok ? "text-emerald-800" : "text-red-800"}>
                                             <strong>{check.etiqueta}:</strong> {check.ok ? "Correcto" : check.detalle}
@@ -5309,13 +5309,13 @@ const cuantiaFincasParaEnvio =
                                     <p className="text-xs font-bold text-slate-800">PPAD</p>
                                     <p className="mt-0.5 text-[10px] font-semibold text-violet-700">{cargandoPpad ? "Cargando registros…" : `${ppadItems.length} registro(s) · ${ppadItems.filter((item) => !item.compensado).length} pendiente(s)`}</p>
                                   </div>
-                                  <button type="button" aria-expanded={!fasesCalidadColapsadas.ppad} onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, ppad: !actuales.ppad }))} className="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50">{fasesCalidadColapsadas.ppad ? "＋ Mostrar" : "− Ocultar"}</button>
+                                  <button type="button" aria-expanded={!fasesCalidadColapsadas.ppad} onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, ppad: !actuales.ppad }))} className="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50">{fasesCalidadColapsadas.ppad ? <><MolsanIcon name="plus" size={12} bare /> Mostrar</> : <><MolsanIcon name="minus" size={12} bare /> Ocultar</>}</button>
                                 </div>
                                 {!fasesCalidadColapsadas.ppad && <div className="mt-2 space-y-1.5 border-t border-violet-200/70 pt-2">
                                   {errorPpad && <p role="alert" className="text-[10px] text-red-700">{errorPpad}</p>}
                                   {!cargandoPpad && !errorPpad && ppadItems.length === 0 && <p className="text-[11px] text-slate-500">No hay registros PPAD en este expediente.</p>}
                                   {ppadItems.map((item) => <div key={item.id} className="flex items-start justify-between gap-2 text-[11px]">
-                                    <span className="min-w-0 text-slate-700"><strong>{item.concepto || "PPAD"}</strong><span className="block text-[10px] text-slate-500">{item.compensado ? "✓ Compensado" : "◷ Pendiente"}{item.imputable_a || item.imputableA ? ` · ${item.imputable_a || item.imputableA}` : ""}</span></span>
+                                    <span className="min-w-0 text-slate-700"><strong>{item.concepto || "PPAD"}</strong><span className="block text-[10px] text-slate-500">{item.compensado ? <><MolsanIcon name="check" size={12} bare /> Compensado</> : <><MolsanIcon name="clock" size={12} bare /> Pendiente</>}{item.imputable_a || item.imputableA ? ` · ${item.imputable_a || item.imputableA}` : ""}</span></span>
                                     <span className="shrink-0 font-bold tabular-nums text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
                                   </div>)}
                                 </div>}
@@ -5327,7 +5327,7 @@ const cuantiaFincasParaEnvio =
                                     <p className="text-xs font-bold text-slate-800">Complementos de saldo</p>
                                     <p className="mt-0.5 text-[10px] font-semibold text-amber-800">{cargandoComplementosExpediente ? "Cargando solicitudes…" : `${complementosSaldoExpediente.length} solicitud(es) · ${complementosSaldoExpediente.filter((item) => !["compensado", "cerrado"].includes(String(item.estado || "").toLowerCase())).length} pendiente(s)`}</p>
                                   </div>
-                                  <button type="button" aria-expanded={!fasesCalidadColapsadas.complementos} onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, complementos: !actuales.complementos }))} className="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50">{fasesCalidadColapsadas.complementos ? "＋ Mostrar" : "− Ocultar"}</button>
+                                  <button type="button" aria-expanded={!fasesCalidadColapsadas.complementos} onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, complementos: !actuales.complementos }))} className="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50">{fasesCalidadColapsadas.complementos ? <><MolsanIcon name="plus" size={12} bare /> Mostrar</> : <><MolsanIcon name="minus" size={12} bare /> Ocultar</>}</button>
                                 </div>
                                 {!fasesCalidadColapsadas.complementos && <div className="mt-2 space-y-1.5 border-t border-amber-200/70 pt-2">
                                   {errorComplementosExpediente && <p role="alert" className="text-[10px] text-red-700">{errorComplementosExpediente}</p>}
@@ -5386,7 +5386,7 @@ const cuantiaFincasParaEnvio =
                 to="/expedientes"
                 className="inline-flex items-center text-[11px] font-bold text-blue-600 hover:text-blue-700"
               >
-                ← Expedientes
+                <MolsanIcon name="arrowLeft" size={14} bare /> Expedientes
               </Link>
             </div>
 
@@ -5399,7 +5399,7 @@ const cuantiaFincasParaEnvio =
           title={valorVisible(expediente.id_expediente)}
           description="Ficha completa del expediente · Datos, documentación y seguimiento."
           className="ficha-expediente-page-header"
-          actions={<Link to="/expedientes" className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]">← Expedientes</Link>}
+          actions={<Link to="/expedientes" className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]"><MolsanIcon name="arrowLeft" size={14} bare /> Expedientes</Link>}
         />
 
         {/* ===================================================
@@ -5901,7 +5901,7 @@ const cuantiaFincasParaEnvio =
                         </div>
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <button type="button" onClick={cargarGastosExpediente} disabled={cargandoGastos} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50">{cargandoGastos ? "Actualizando…" : "↻ Actualizar"}</button>
+                        <button type="button" onClick={cargarGastosExpediente} disabled={cargandoGastos} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50">{cargandoGastos ? "Actualizando…" : <><MolsanIcon name="refresh" size={14} bare /> Actualizar</>}</button>
                       </div>
                     </div>
                     <div className="p-4 sm:p-5">
@@ -6312,7 +6312,7 @@ const cuantiaFincasParaEnvio =
                   <h3 className="text-sm font-extrabold text-slate-800">Defectos registrales del expediente</h3>
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-[11px] font-medium text-slate-500">Detalle compartido con el alta de defectos</span>
-                    <Boton tipo="primary" onClick={() => { setDefectoEditandoId(null); setDefectoForm({ ...DEFECTO_VACIO }); setErrorDefecto(""); setMostrarDefecto(true); }}>＋ Alta defecto</Boton>
+                    <Boton tipo="primary" onClick={() => { setDefectoEditandoId(null); setDefectoForm({ ...DEFECTO_VACIO }); setErrorDefecto(""); setMostrarDefecto(true); }}><MolsanIcon name="plus" size={14} bare /> Alta defecto</Boton>
                   </div>
                 </div>
                 <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
@@ -6648,7 +6648,7 @@ const cuantiaFincasParaEnvio =
                             }}
                             className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-100"
                           >
-                            ＋ Adjuntar/ver PDF
+                            <MolsanIcon name="plus" size={14} bare /> Adjuntar/ver PDF
                           </button>
                         </div>
                       </article>
@@ -7053,7 +7053,7 @@ const cuantiaFincasParaEnvio =
                       </div>
                     </div>
                   )}
-                  {!mostrarFormularioPpad && <div className="flex justify-end"><Boton tipo="primary" onClick={abrirNuevoPpad}>＋ Añadir concepto PPAD</Boton></div>}
+                  {!mostrarFormularioPpad && <div className="flex justify-end"><Boton tipo="primary" onClick={abrirNuevoPpad}><MolsanIcon name="plus" size={14} bare /> Añadir concepto PPAD</Boton></div>}
                 </div>
               </section>
             </div>
@@ -7100,7 +7100,7 @@ const cuantiaFincasParaEnvio =
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <button type="button" onClick={() => abrirSolicitudFusion(finca)} disabled={!finca.registro} title={!finca.registro ? "Completa el registro de la finca para solicitar una fusión" : "Crear solicitud de fusión para este registro"} className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-1.5 text-[11px] font-bold text-violet-700 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50">
-                        <span aria-hidden="true">⇄</span> Fusión
+                        <MolsanIcon name="merge" size={14} bare /> Fusión
                       </button>
                       <button type="button" onClick={() => abrirFincas(finca)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700">Editar</button>
                       <button type="button" onClick={() => eliminarFinca(finca.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700">Eliminar</button>
@@ -7116,7 +7116,7 @@ const cuantiaFincasParaEnvio =
               ))}
             </div>
             <button type="button" onClick={() => abrirFincas()} className="mt-3 w-full rounded-xl border border-blue-100 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100">
-              ＋ Nueva finca
+              <MolsanIcon name="plus" size={14} bare /> Nueva finca
             </button>
           </Seccion>
         {/* OBSERVACIONES */}
@@ -7141,7 +7141,7 @@ const cuantiaFincasParaEnvio =
                   </div>
                   {observacionesExpediente[0].visibilidad === "Gestor" && (
                     <p className={`mt-2 text-[11px] font-semibold ${observacionesExpediente[0].estado_validacion === "Validada" ? "text-emerald-700" : "text-amber-700"}`}>
-                      {observacionesExpediente[0].estado_validacion === "Validada" ? "✓ Validada por el destinatario" : "⏳ Pendiente de validación del destinatario"}
+                      {observacionesExpediente[0].estado_validacion === "Validada" ? <><MolsanIcon name="check" size={12} bare /> Validada por el destinatario</> : <><MolsanIcon name="clock" size={12} bare /> Pendiente de validación del destinatario</>}
                     </p>
                   )}
                 </article>
@@ -7311,7 +7311,7 @@ const cuantiaFincasParaEnvio =
                             }}
                             className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700"
                           >
-                            ＋ Registrar gasto
+                            <MolsanIcon name="plus" size={14} bare /> Registrar gasto
                           </button>
                           <button
                             type="button"
@@ -7323,7 +7323,7 @@ const cuantiaFincasParaEnvio =
                             }}
                             className="inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-100"
                           >
-                            ＋ Solicitar complemento de saldo
+                            <MolsanIcon name="plus" size={14} bare /> Solicitar complemento de saldo
                           </button>
                         </div>
                         <div>
@@ -7637,7 +7637,7 @@ const cuantiaFincasParaEnvio =
                 <h3 className="text-sm font-bold text-slate-800">Histórico de emails</h3>
                 <p className="text-xs text-slate-500">Registro guardado en el sistema para este expediente.</p>
               </div>
-              <Boton onClick={cargarHistoricoReclamaciones} disabled={cargandoHistoricoReclamaciones}>{cargandoHistoricoReclamaciones ? "Actualizando…" : "↻ Actualizar"}</Boton>
+              <Boton onClick={cargarHistoricoReclamaciones} disabled={cargandoHistoricoReclamaciones}>{cargandoHistoricoReclamaciones ? "Actualizando…" : <><MolsanIcon name="refresh" size={14} bare /> Actualizar</>}</Boton>
             </div>
             {cargandoHistoricoReclamaciones ? <p className="p-4 text-sm text-slate-500">Cargando histórico…</p> : historicoReclamaciones.length === 0 ? <p className="p-4 text-sm text-slate-500">Todavía no hay correos registrados.</p> : (
               <div className="max-h-64 overflow-auto">
@@ -8360,7 +8360,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarFusion}
         onClose={() => { if (!guardandoFusion) setMostrarFusion(false); }}
-        titulo="⇄ Solicitud de fusión"
+        titulo="Solicitud de fusión"
         subtitulo={`Expediente ${expediente?.id_expediente || id} · Registro ${fincaFusion?.registro || "—"}`}
         ancho={["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) ? "max-w-7xl" : "max-w-4xl"}
         footer={
@@ -8607,7 +8607,7 @@ const cuantiaFincasParaEnvio =
                   !expedienteRelacionadoManual.trim()
                 }
               >
-                ＋ Agregar
+                <MolsanIcon name="plus" size={14} bare /> Agregar
               </Boton>
             </div>
 
@@ -9014,10 +9014,10 @@ const cuantiaFincasParaEnvio =
                     {observacion.visibilidad === "Gestor" && (
                       <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                         <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${observacion.estado_validacion === "Validada" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-800"}`}>
-                          {observacion.estado_validacion === "Validada" ? `✓ Validada por ${observacion.validado_por || "empleado destinatario"} · ${observacion.validado_en ? new Date(observacion.validado_en).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : ""}` : "⏳ Pendiente de validación"}
+                          {observacion.estado_validacion === "Validada" ? <><MolsanIcon name="check" size={12} bare /> Validada por {observacion.validado_por || "empleado destinatario"} · {observacion.validado_en ? new Date(observacion.validado_en).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : ""}</> : <><MolsanIcon name="clock" size={12} bare /> Pendiente de validación</>}
                         </span>
                         {Number(empleadoSesion?.id) === Number(observacion.empleado_destinatario_id) && observacion.estado_validacion !== "Validada" && (
-                          <button type="button" onClick={() => validarObservacionInterna(observacion)} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100">✓ Validar observación</button>
+                          <button type="button" onClick={() => validarObservacionInterna(observacion)} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100"><MolsanIcon name="check" size={13} bare /> Validar observación</button>
                         )}
                       </div>
                     )}
@@ -9046,7 +9046,7 @@ const cuantiaFincasParaEnvio =
           <div className="flex w-full flex-wrap justify-between gap-2">
             <Boton onClick={() => setMostrarModalFacturaHonorarios(false)} disabled={guardandoFacturaHonorarios}>Cancelar</Boton>
             <div className="flex flex-wrap gap-2">
-              {previsualizandoFacturaHonorarios && <Boton onClick={() => setPrevisualizandoFacturaHonorarios(false)} disabled={guardandoFacturaHonorarios}>← Editar datos</Boton>}
+              {previsualizandoFacturaHonorarios && <Boton onClick={() => setPrevisualizandoFacturaHonorarios(false)} disabled={guardandoFacturaHonorarios}><MolsanIcon name="arrowLeft" size={13} bare /> Editar datos</Boton>}
               {!previsualizandoFacturaHonorarios ? (
                 <Boton tipo="primary" onClick={() => setPrevisualizandoFacturaHonorarios(true)}><MolsanIcon name="eye" size={14} tone="inherit" bare /> Previsualizar factura</Boton>
               ) : (
@@ -9175,15 +9175,15 @@ const cuantiaFincasParaEnvio =
                   const completos = items.every((item) => item.ok);
                   return <>
                     <div className={`mb-3 rounded-lg border px-3 py-2 text-xs font-bold ${completos ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-amber-200 bg-amber-50 text-amber-800"}`}>
-                      {completos ? "✓ Checklist completo según datos/documentos encontrados" : `${items.filter((item) => item.ok).length} de ${items.length} comprobaciones completas`}
+                      {completos ? <><MolsanIcon name="check" size={13} bare /> Checklist completo según datos/documentos encontrados</> : `${items.filter((item) => item.ok).length} de ${items.length} comprobaciones completas`}
                     </div>
                     <div className="grid gap-2 sm:grid-cols-2">
-                      {items.map((item) => <div key={item.nombre} className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs ${item.ok ? "border-emerald-100 bg-emerald-50/60 text-emerald-800" : "border-slate-200 bg-slate-50 text-slate-600"}`}><span className="font-extrabold">{item.ok ? "✓" : "□"}</span><span>{item.nombre}</span></div>)}
+                      {items.map((item) => <div key={item.nombre} className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs ${item.ok ? "border-emerald-100 bg-emerald-50/60 text-emerald-800" : "border-slate-200 bg-slate-50 text-slate-600"}`}><span className="font-extrabold">{item.ok ? <MolsanIcon name="check" size={12} bare /> : <MolsanIcon name="clock" size={12} bare />}</span><span>{item.nombre}</span></div>)}
                     </div>
                   </>;
                 })()}
                 {errorDocumentosCierre && <p className="mt-2 text-xs text-red-700">No se ha podido verificar la carpeta digital completa; revisa antes de facturar.</p>}
-                <button type="button" onClick={cargarDocumentosCierre} disabled={cargandoDocumentosCierre} className="mt-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">{cargandoDocumentosCierre ? "Comprobando…" : "↻ Actualizar checklist"}</button>
+                <button type="button" onClick={cargarDocumentosCierre} disabled={cargandoDocumentosCierre} className="mt-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">{cargandoDocumentosCierre ? "Comprobando…" : <><MolsanIcon name="refresh" size={14} bare /> Actualizar checklist</>}</button>
               </section>
             </>
           )}
@@ -9362,7 +9362,7 @@ const cuantiaFincasParaEnvio =
               <div className="space-y-3">
                 <section className="min-w-0 rounded-xl border border-sky-200 bg-sky-50/70 p-4">
                   <div className="flex items-start gap-3">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-800" aria-hidden="true">⇧</span>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-800" aria-hidden="true"><MolsanIcon name="upload" size={20} tone="ocean" /></span>
                     <div>
                       <h4 className="text-sm font-extrabold text-sky-950">Información económica para enviar a ABSIS</h4>
                       <p className="mt-1 text-xs leading-relaxed text-sky-900">
@@ -9501,7 +9501,7 @@ const cuantiaFincasParaEnvio =
                   </div>
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-indigo-100 bg-indigo-50 p-3">
                   <p className="text-xs leading-relaxed text-indigo-900">Los datos del defecto se mantienen en un único registro. Usa el alta para crear o editar la información; esta actividad solo resume el estado guardado y no duplica campos editables.</p>
-                  <Boton tipo="primary" disabled={expedienteBloqueado} onClick={abrirDefecto}>＋ Alta defecto</Boton>
+                  <Boton tipo="primary" disabled={expedienteBloqueado} onClick={abrirDefecto}><MolsanIcon name="plus" size={14} bare /> Alta defecto</Boton>
                 </div>
                 {defectosRegistrados.length === 0 ? (
                   <p className="rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500">Todavía no hay defectos registrados para este expediente.</p>
