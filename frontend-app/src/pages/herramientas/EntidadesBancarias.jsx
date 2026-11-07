@@ -1595,7 +1595,7 @@ export default function EntidadesBancarias() {
                 inline-flex items-center justify-center gap-2 rounded-xl
                 border border-[var(--molsan-border)] bg-white px-4 py-2.5 text-sm font-semibold
                 text-[var(--molsan-text)] shadow-sm transition hover:border-[var(--molsan-primary)]
-                hover:bg-indigo-50 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-50
+                hover:bg-[var(--molsan-surface-soft)] hover:text-[var(--molsan-primary)] disabled:cursor-not-allowed disabled:opacity-50
               "
               title="Descargar el catálogo filtrado en Excel"
             >
@@ -1615,7 +1615,7 @@ export default function EntidadesBancarias() {
                 justify-center
                 gap-2
                 rounded-xl
-                bg-blue-600
+                bg-[var(--molsan-primary)]
                 px-5
                 py-2.5
                 text-sm
@@ -1624,7 +1624,7 @@ export default function EntidadesBancarias() {
                 shadow-[0_8px_20px_rgba(37,99,235,0.20)]
                 transition-all
                 hover:-translate-y-0.5
-                hover:bg-blue-700
+                hover:bg-[var(--molsan-primary)]
                 active:scale-[0.98]
               "
             >
@@ -1778,9 +1778,9 @@ export default function EntidadesBancarias() {
                   text-[var(--molsan-text)]
                   outline-none
                   transition
-                  focus:border-blue-400
+                  focus:border-[var(--molsan-primary)]
                   focus:ring-4
-                  focus:ring-blue-100
+                  focus:ring-[var(--molsan-primary)]/10
                 "
               />
 
@@ -1829,9 +1829,9 @@ export default function EntidadesBancarias() {
                 text-[var(--molsan-text)]
                 outline-none
                 transition
-                focus:border-blue-400
+                focus:border-[var(--molsan-primary)]
                 focus:ring-4
-                focus:ring-blue-100
+                focus:ring-[var(--molsan-primary)]/10
               "
             >
 
@@ -2005,7 +2005,7 @@ export default function EntidadesBancarias() {
                   rounded-full
                   border-2
                   border-[var(--molsan-border)]
-                  border-t-blue-500
+                  border-t-[var(--molsan-primary)]
                 "
               />
 
@@ -2104,7 +2104,7 @@ export default function EntidadesBancarias() {
                       text-[var(--molsan-text-secondary)]
                     "
                   >
-                    <button type="button" onClick={() => ordenarPor("codigo_europeo")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Código Europeo">
+                    <button type="button" onClick={() => ordenarPor("codigo_europeo")} className="inline-flex items-center gap-1.5 text-left hover:text-[var(--molsan-primary)]" title="Ordenar por Código Europeo">
                       Código Europeo
                       <span aria-hidden="true">{ordenColumna === "codigo_europeo" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
@@ -2124,7 +2124,7 @@ export default function EntidadesBancarias() {
                       text-[var(--molsan-text-secondary)]
                     "
                   >
-                    <button type="button" onClick={() => ordenarPor("lei")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por LEI">
+                    <button type="button" onClick={() => ordenarPor("lei")} className="inline-flex items-center gap-1.5 text-left hover:text-[var(--molsan-primary)]" title="Ordenar por LEI">
                       LEI
                       <span aria-hidden="true">{ordenColumna === "lei" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
@@ -2144,7 +2144,7 @@ export default function EntidadesBancarias() {
                       text-[var(--molsan-text-secondary)]
                     "
                   >
-                    <button type="button" onClick={() => ordenarPor("nombre")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Nombre">
+                    <button type="button" onClick={() => ordenarPor("nombre")} className="inline-flex items-center gap-1.5 text-left hover:text-[var(--molsan-primary)]" title="Ordenar por Nombre">
                       Nombre
                       <span aria-hidden="true">{ordenColumna === "nombre" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
@@ -2164,7 +2164,7 @@ export default function EntidadesBancarias() {
                       text-[var(--molsan-text-secondary)]
                     "
                   >
-                    <button type="button" onClick={() => ordenarPor("categoria")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Categoría">
+                    <button type="button" onClick={() => ordenarPor("categoria")} className="inline-flex items-center gap-1.5 text-left hover:text-[var(--molsan-primary)]" title="Ordenar por Categoría">
                       Categoría
                       <span aria-hidden="true">{ordenColumna === "categoria" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
@@ -2184,7 +2184,7 @@ export default function EntidadesBancarias() {
                       text-[var(--molsan-text-secondary)]
                     "
                   >
-                    <button type="button" onClick={() => ordenarPor("entidad_actual")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Entidad actual">
+                    <button type="button" onClick={() => ordenarPor("entidad_actual")} className="inline-flex items-center gap-1.5 text-left hover:text-[var(--molsan-primary)]" title="Ordenar por Entidad actual">
                       Entidad actual
                       <span aria-hidden="true">{ordenColumna === "entidad_actual" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
@@ -2203,7 +2203,7 @@ export default function EntidadesBancarias() {
                       text-[var(--molsan-text-secondary)]
                     "
                   >
-                    <button type="button" onClick={() => ordenarPor("direccion")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Dirección">
+                    <button type="button" onClick={() => ordenarPor("direccion")} className="inline-flex items-center gap-1.5 text-left hover:text-[var(--molsan-primary)]" title="Ordenar por Dirección">
                       Dirección
                       <span aria-hidden="true">{ordenColumna === "direccion" ? <MolsanIcon name={ordenAscendente ? "arrowUp" : "arrowDown"} size={13} tone="inherit" /> : <MolsanIcon name="arrowUpDown" size={13} tone="inherit" />}</span>
                     </button>
@@ -2243,9 +2243,9 @@ export default function EntidadesBancarias() {
                       className="
                         group
                         border-b
-                        border-slate-100
+                        border-[var(--molsan-border)]
                         transition-colors
-                        hover:bg-blue-50/40
+                        hover:bg-[var(--molsan-surface-soft)]
                       "
                     >
 
@@ -2264,14 +2264,14 @@ export default function EntidadesBancarias() {
                             inline-flex
                             rounded-lg
                             border
-                            border-indigo-100
-                            bg-indigo-50
+                            border-[var(--molsan-border)]
+                            bg-[var(--molsan-surface-soft)]
                             px-2.5
                             py-1
                             font-mono
                             text-xs
                             font-semibold
-                            text-indigo-700
+                            text-[var(--molsan-primary)]
                           "
                         >
                           {entidad.codigo_europeo}
@@ -2307,7 +2307,7 @@ export default function EntidadesBancarias() {
                           <span
                             className="
                               italic
-                              text-slate-300
+                              text-[var(--molsan-text-secondary)]/60
                             "
                           >
                             Sin LEI
@@ -2379,7 +2379,7 @@ export default function EntidadesBancarias() {
                       >
                         {entidad.entidad_actual_id
                           ? (nombreEntidadActual(entidad) || "Entidad no disponible")
-                          : <span className="italic text-slate-300">Sin cambio</span>}
+                          : <span className="italic text-[var(--molsan-text-secondary)]/60">Sin cambio</span>}
                       </td>
 
 
@@ -2401,7 +2401,7 @@ export default function EntidadesBancarias() {
                           <span
                             className="
                               italic
-                              text-slate-300
+                              text-[var(--molsan-text-secondary)]/60
                             "
                           >
                             Sin dirección
@@ -2450,9 +2450,9 @@ export default function EntidadesBancarias() {
                               bg-white
                               text-[var(--molsan-text-secondary)]
                               transition
-                              hover:border-blue-200
-                              hover:bg-blue-50
-                              hover:text-blue-600
+                              hover:border-[var(--molsan-primary)]
+                              hover:bg-[var(--molsan-surface-soft)]
+                              hover:text-[var(--molsan-primary)]
                             "
                           >
                             <MolsanIcon name="pen" size={15} tone="ocean" bare />
@@ -2767,7 +2767,7 @@ function ModalImportarExcel({
         <div
           className="
             border-b
-            border-slate-100
+            border-[var(--molsan-border)]
             bg-[var(--molsan-surface-soft)]/80
             px-6
             py-5
@@ -2814,7 +2814,7 @@ function ModalImportarExcel({
                   className="
                     text-lg
                     font-bold
-                    text-slate-800
+                    text-[var(--molsan-text)]
                   "
                 >
                   Importar entidades bancarias desde Excel
@@ -2853,7 +2853,7 @@ function ModalImportarExcel({
                 rounded-lg
                 text-[var(--molsan-text-secondary)]
                 transition
-                hover:bg-slate-100
+                hover:bg-[var(--molsan-surface-soft)]
                 hover:text-[var(--molsan-text)]
                 disabled:cursor-not-allowed
                 disabled:opacity-40
@@ -2877,8 +2877,8 @@ function ModalImportarExcel({
             className="
               rounded-2xl
               border
-              border-blue-100
-              bg-blue-50/70
+              border-[var(--molsan-border)]
+              bg-[var(--molsan-surface-soft)]
               px-4
               py-4
             "
@@ -2900,7 +2900,7 @@ function ModalImportarExcel({
                   className="
                     text-sm
                     font-semibold
-                    text-blue-800
+                    text-[var(--molsan-primary)]
                   "
                 >
                   Formato esperado
@@ -2912,7 +2912,7 @@ function ModalImportarExcel({
                     mt-1
                     text-xs
                     leading-5
-                    text-blue-700
+                    text-[var(--molsan-primary)]
                   "
                 >
                   El Excel debe contener las columnas
@@ -3160,7 +3160,7 @@ function ModalImportarExcel({
             justify-end
             gap-3
             border-t
-            border-slate-100
+            border-[var(--molsan-border)]
             px-6
             py-5
           "
@@ -3387,7 +3387,7 @@ function ModalEntidadBancaria({
         <div
           className="
             border-b
-            border-slate-100
+            border-[var(--molsan-border)]
             bg-[var(--molsan-surface-soft)]/70
             px-6
             py-5
@@ -3408,7 +3408,7 @@ function ModalEntidadBancaria({
                 className="
                   text-lg
                   font-bold
-                  text-slate-800
+                  text-[var(--molsan-text)]
                 "
               >
                 {modo ===
@@ -3448,7 +3448,7 @@ function ModalEntidadBancaria({
                 rounded-lg
                 text-[var(--molsan-text-secondary)]
                 transition
-                hover:bg-slate-100
+                hover:bg-[var(--molsan-surface-soft)]
                 hover:text-[var(--molsan-text)]
                 disabled:opacity-50
               "
@@ -3527,9 +3527,9 @@ function ModalEntidadBancaria({
                     text-[var(--molsan-text)]
                     outline-none
                     transition
-                    focus:border-blue-400
+                    focus:border-[var(--molsan-primary)]
                     focus:ring-4
-                    focus:ring-blue-100
+                    focus:ring-[var(--molsan-primary)]/10
                   "
                 />
 
@@ -3579,9 +3579,9 @@ function ModalEntidadBancaria({
                     text-[var(--molsan-text)]
                     outline-none
                     transition
-                    focus:border-blue-400
+                    focus:border-[var(--molsan-primary)]
                     focus:ring-4
-                    focus:ring-blue-100
+                    focus:ring-[var(--molsan-primary)]/10
                   "
                 />
 
@@ -3632,9 +3632,9 @@ function ModalEntidadBancaria({
                   text-[var(--molsan-text)]
                   outline-none
                   transition
-                  focus:border-blue-400
+                  focus:border-[var(--molsan-primary)]
                   focus:ring-4
-                  focus:ring-blue-100
+                  focus:ring-[var(--molsan-primary)]/10
                 "
               />
 
@@ -3684,9 +3684,9 @@ function ModalEntidadBancaria({
                   text-[var(--molsan-text)]
                   outline-none
                   transition
-                  focus:border-blue-400
+                  focus:border-[var(--molsan-primary)]
                   focus:ring-4
-                  focus:ring-blue-100
+                  focus:ring-[var(--molsan-primary)]/10
                 "
               />
 
@@ -3712,7 +3712,7 @@ function ModalEntidadBancaria({
               <select
                 value={formulario.entidad_actual_id}
                 onChange={(e) => cambiarCampo("entidad_actual_id", e.target.value)}
-                className="w-full rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-2.5 text-sm text-[var(--molsan-text)] outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                className="w-full rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-2.5 text-sm text-[var(--molsan-text)] outline-none transition focus:border-[var(--molsan-primary)] focus:ring-4 focus:ring-[var(--molsan-primary)]/10"
               >
                 <option value="">La misma entidad / no especificada</option>
                 {entidades
@@ -3769,9 +3769,9 @@ function ModalEntidadBancaria({
                   text-[var(--molsan-text)]
                   outline-none
                   transition
-                  focus:border-blue-400
+                  focus:border-[var(--molsan-primary)]
                   focus:ring-4
-                  focus:ring-blue-100
+                  focus:ring-[var(--molsan-primary)]/10
                 "
               />
 
@@ -3789,7 +3789,7 @@ function ModalEntidadBancaria({
               justify-end
               gap-3
               border-t
-              border-slate-100
+              border-[var(--molsan-border)]
               pt-5
             "
           >
@@ -3833,7 +3833,7 @@ function ModalEntidadBancaria({
                 justify-center
                 gap-2
                 rounded-xl
-                bg-blue-600
+                bg-[var(--molsan-primary)]
                 px-5
                 py-2.5
                 text-sm
@@ -3841,7 +3841,7 @@ function ModalEntidadBancaria({
                 text-white
                 shadow-sm
                 transition
-                hover:bg-blue-700
+                hover:bg-[var(--molsan-primary)]
                 disabled:cursor-not-allowed
                 disabled:opacity-60
               "
