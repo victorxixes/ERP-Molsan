@@ -1873,3 +1873,13 @@ Se ha reducido ese bloque a la responsabilidad estructural `min-width: 0`. Se el
 Commit: `c0d28a8b177c41a7d04becceaf3108ae8d03583f`.
 
 Debe verificarse en Preview que el bloque de paneles no recupere el radio/sombra antiguos al cambiar de ruta y que los KPI conserven su icono y acento.
+
+## 54. Token dedicado para cabeceras de tabla — 7 de noviembre de 2026
+
+La auditoría transversal de las 41 hojas CSS confirmó que la regla general de tablas estaba usando `--molsan-surface-soft` (#F2F7FB) para las cabeceras, aunque la paleta corporativa reserva `--molsan-table-head` (#EAF2F8) para esa función.
+
+Se ha corregido MolsanRedesign2027.css para consumir el token dedicado y se ha añadido una normalización final en MolsanCanonicalVisual2027.css para las cabeceras de tablas de los módulos y portales. Esta última fija texto secundario #617789, fondo #EAF2F8 y borde inferior #D8E4EC, sin cambiar las celdas ni la densidad de las tablas.
+
+Commits: `ffd19bc2f83e2df9dc7cea9935131edb9e9dd503` y `757260390a7d2a4e49b156c40356fe7fd8f108d6`.
+
+Pendiente de comprobar tablas normales, sticky headers, tablas dentro de modales y las vistas responsive.
