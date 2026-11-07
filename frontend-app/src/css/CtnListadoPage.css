@@ -85,14 +85,14 @@
 }
 
 .ctn-btn-secondary {
-  color: #34445b;
+  color: var(--molsan-text-secondary, #617789);
   background: #fff;
-  border-color: #d5dce7;
+  border-color: var(--molsan-border, #D8E4EC);
 }
 
 .ctn-btn-secondary:hover:not(:disabled) {
   background: var(--molsan-surface-soft, #F2F7FB);
-  border-color: #aebbd0;
+  border-color: #AFCFDF;
 }
 
 .ctn-btn-excel {
@@ -480,21 +480,21 @@
   gap: 10px;
   margin-bottom: 14px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e9edf3;
+  border-bottom: 1px solid var(--molsan-border, #D8E4EC);
 }
 
 .ctn-modal-seccion-titulo h3 {
   margin: 0;
-  color: #213650;
+  color: var(--molsan-primary, #064675);
   font-size: 14px;
   font-weight: 800;
 }
 
 .ctn-modal-seccion-titulo > span {
   padding: 4px 8px;
-  color: #526780;
-  background: #f0f4f9;
-  border: 1px solid #e0e7f0;
+  color: var(--molsan-text-secondary, #617789);
+  background: var(--molsan-surface-soft, #F2F7FB);
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: 6px;
   font-size: 10px;
   font-weight: 750;
