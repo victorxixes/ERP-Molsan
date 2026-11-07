@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 import React, {
   useEffect,
@@ -1221,7 +1222,7 @@ export default function TiposCargaHipotecaria() {
                   hover:bg-slate-50
                 "
               >
-                ×
+                <MolsanIcon name="x" size={18} bare />
               </button>
 
             </div>
