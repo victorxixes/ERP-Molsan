@@ -2223,3 +2223,26 @@ Se ha añadido `.molsan-modal__panel` como alias del panel canónico `.molsan-mo
 - Producción y API sin cambios.
 
 Sigue pendiente la prueba visual autenticada y la comprobación manual de interacción/responsive antes de cerrar la auditoría y promover a producción.
+
+
+## 78. Continuación de limpieza transversal y actualización de Preview — 7 de noviembre de 2026
+
+Se ha continuado la revisión estática sobre las páginas y componentes compartidos después de la pasada 77:
+
+- Herramientas: se han sustituido los últimos glifos de acción localizados en navegación, altas, exportación, movimientos del diseñador y acciones de plantillas por `MolsanIcon`. Se mantienen las flechas que expresan transiciones de proceso o intervalos de datos, no usadas como iconos de acción.
+- NotarGest: se han retirado los botones «Actualizar datos» de las dos cabeceras, manteniendo la navegación «Volver» del espacio de trabajo.
+- Provisiones de fondos: se han migrado los neutros y acentos azules heredados a tokens Molsan en la página, editor y previsualización; se conservan los colores semánticos de estados, avisos y errores. Se ha normalizado también el botón de añadir garantía.
+- Fichajes: el resumen interno utiliza tokens de texto y superficie Molsan; las vistas hijas mantienen su estructura dentro de la cabecera común del módulo.
+- Seguridad y mensajería: se han migrado los últimos colores de foco, selección y texto detectados a tokens corporativos.
+- Modales compartidos de expedientes: se han alineado los textos, botones neutros y acciones de cierre/alta con los tokens Molsan.
+- Contraste de páginas y componentes: 143/143 JSX de `frontend-app/src` inspeccionados en cuanto a referencias de icono/cabecera y restos cromáticos; los 41 CSS siguen importados (41/41, sin hojas huérfanas ni imports sin fichero). La inspección es estática y no sustituye el recorrido visual autenticado.
+
+### Validación y despliegue
+
+- Build frontend: success, run `42388800298`, commit `74afcf8f03bcee49fdacf742419b9a8cff7d9677`.
+- Validación Fichajes: success, run `42388802518`, mismo commit.
+- Render Preview: deploy `dep-dbnkl0rrjlhs7393pe70` en estado `live`, commit `74afcf8f03bcee49fdacf742419b9a8cff7d9677`.
+- Servicio actualizado: `molsan-premium-2027-candidate-preview` (https://molsan-premium-2027-candidate-preview.onrender.com).
+- Producción, API y bases de datos sin cambios.
+
+Sigue pendiente la inspección visual autenticada de todas las rutas y estados, la comprobación manual de modales/teclado/responsive y la validación funcional de CTN y portales. No se declara cierre global ni promoción a producción.
