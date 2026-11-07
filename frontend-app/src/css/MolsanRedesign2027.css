@@ -2470,7 +2470,7 @@ table :is(th, td) {
 :where(.empleados-listado-premium, .seguridad-usuarios-premium, .ctn-listado-page, .ctn-detalle-page)
   :is(th, thead) {
   color: var(--molsan-text-secondary, #617789);
-  background-color: var(--molsan-surface-soft, #F2F7FB);
+  background-color: var(--molsan-table-head, #EAF2F8);
   border-color: var(--molsan-border-light, #e8edf4);
 }
 
@@ -2583,7 +2583,7 @@ table :is(th, td) {
 :where(.expedientes-page, .agenda-premium-page, .ctn-detalle-page, .cg-page, .notargest, .apoderagest.notargest, .encargagest)
   :is(th, thead) {
   color: var(--molsan-text-secondary, #617789);
-  background-color: var(--molsan-surface-soft, #F2F7FB);
+  background-color: var(--molsan-table-head, #EAF2F8);
   border-color: var(--molsan-border-light, #e8edf4);
 }
 
