@@ -2250,7 +2250,7 @@ export default function OficinasLiquidadoras() {
                               transition
                             "
                           >
-                            ×
+                            <MolsanIcon name="x" size={18} bare />
                           </button>
 
                         </div>
@@ -2526,7 +2526,7 @@ export default function OficinasLiquidadoras() {
                   transition
                 "
               >
-                ×
+                <MolsanIcon name="x" size={18} bare />
               </button>
 
             </div>
@@ -2898,7 +2898,7 @@ export default function OficinasLiquidadoras() {
                   disabled:opacity-50
                 "
               >
-                ×
+                <MolsanIcon name="x" size={18} bare />
               </button>
 
             </div>
