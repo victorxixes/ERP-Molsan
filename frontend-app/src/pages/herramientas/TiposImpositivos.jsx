@@ -63,7 +63,7 @@ export default function TiposImpositivos() {
   };
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <main className="herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <MolsanPageHeader
         mark="IMP"
         title="Tipos impositivos"
