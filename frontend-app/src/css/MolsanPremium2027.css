@@ -782,7 +782,7 @@
   min-height: 0;
   overflow: hidden;
 }
-.molsan-modal-header,
+:is(.molsan-modal-header, .molsan-modal__header),
 .ctn-modal-header,
 .eg-modal-header,
 .ag-resumen-modal-cabecera,
@@ -817,7 +817,7 @@
     width: 100%;
     max-height: calc(100dvh - 16px);
   }
-  .molsan-modal-header,
+  :is(.molsan-modal-header, .molsan-modal__header),
   .ctn-modal-header,
   .eg-modal-header,
   .ag-resumen-modal-cabecera,
@@ -931,7 +931,7 @@
 .molsan-page-stack > * { min-width: 0; }
 
 /* Cabecera compacta de modal: no debe heredar la cabecera hero de página. */
-.molsan-modal-header {
+:is(.molsan-modal-header, .molsan-modal__header) {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -946,9 +946,9 @@
   background:#FFFFFF;
   box-shadow: none;
 }
-.molsan-modal-header::after { display: none; }
-.molsan-modal-header :is(h1, h2, h3) { color: #064675; }
-.molsan-modal-header :is(p, small) { color: #617789; }
+:is(.molsan-modal-header, .molsan-modal__header)::after { display: none; }
+:is(.molsan-modal-header, .molsan-modal__header) :is(h1, h2, h3) { color: #064675; }
+:is(.molsan-modal-header, .molsan-modal__header) :is(p, small) { color: #617789; }
 .molsan-page-toolbar {
   display: flex;
   align-items: center;
@@ -1016,7 +1016,7 @@
 
 /* Cabecera modal corporativa común para los distintos componentes heredados. */
 :is(
-  .molsan-modal-header, 
+  :is(.molsan-modal-header, .molsan-modal__header), 
   .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
   .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
   .panel-modal-premium [role="dialog"] > header,
@@ -1038,7 +1038,7 @@
   margin-bottom: 0;
 }
 :is(
-  .molsan-modal-header, 
+  :is(.molsan-modal-header, .molsan-modal__header), 
   .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
   .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
   .panel-modal-premium [role="dialog"] > header,
@@ -1049,7 +1049,7 @@
 }
 @media (max-width: 640px) {
   :is(
-    .molsan-modal-header, 
+    :is(.molsan-modal-header, .molsan-modal__header), 
     .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
     .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
     .panel-modal-premium [role="dialog"] > header,
