@@ -118,8 +118,8 @@
   min-height: 0;
   overflow: hidden;
   padding: 18px 24px;
-  color: #17384D;
-  border: 1.5px solid #C5D8E5;
+  color: var(--molsan-text, #173247);
+  border: 1.5px solid var(--molsan-border, #D8E4EC);
   border-radius: 22px;
   background: #FFFFFF;
   box-shadow: 0 7px 20px rgba(6,70,117,.09), 0 1px 3px rgba(6,50,82,.045);
@@ -159,7 +159,7 @@
   height: 40px;
   place-items: center;
   color: #064675;
-  border: 1px solid #C5D8E5;
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: 12px;
   background: #F2F7FB;
   box-shadow: 0 4px 12px rgba(6,70,117,.08);
@@ -416,7 +416,7 @@
   padding: 24px;
   text-align: left;
   color: var(--molsan-text);
-  border: 1.5px solid #C5D8E5;
+  border: 1.5px solid var(--molsan-border, #D8E4EC);
   border-radius: 21px;
   background: #FFFFFF;
   box-shadow: 0 7px 20px rgba(6,70,117,.09), 0 1px 3px rgba(6,50,82,.045);
@@ -743,8 +743,8 @@
   margin: 0 0 20px;
   padding: 18px 24px;
   overflow: hidden;
-  color: #17384D;
-  border: 1.5px solid #C5D8E5;
+  color: var(--molsan-text, #173247);
+  border: 1.5px solid var(--molsan-border, #D8E4EC);
   border-radius: 22px;
   background: #FFFFFF;
   box-shadow: 0 7px 20px rgba(6,70,117,.09), 0 1px 3px rgba(6,50,82,.045);
