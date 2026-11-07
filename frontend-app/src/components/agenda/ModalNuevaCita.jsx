@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import useAccessibleDialog from "../ui/useAccessibleDialog";
+import MolsanIcon from "../ui/MolsanIcon";
 
 import AutocompleteNotario from "./AutocompleteNotario";
 import { obtenerNotaria } from "../../api/ctn";
@@ -788,7 +789,7 @@ export default function ModalNuevaCita({
             "
             aria-label="Cerrar"
           >
-            ×
+            <MolsanIcon name="x" size={18} bare />
           </button>
 
         </div>
