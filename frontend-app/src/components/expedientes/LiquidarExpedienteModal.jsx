@@ -183,7 +183,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
                   <tr><td className="px-3 py-2">—</td><td className="px-3 py-2">Provisión de fondos inicial</td><td className="px-3 py-2">{dinero(importeInicial)}</td><td className="px-3 py-2">Provisión registrada</td></tr>
                   {filas.map((fila, idx) => <tr key={fila.id || idx}>
                     <td className="whitespace-nowrap px-3 py-2">{String(fila.fecha_pago || fila.fecha || fila.fecha_factura || "").slice(0,10) || "—"}</td>
-                    <td className="px-3 py-2 text-slate-700">{fila._tipo}</td>
+                    <td className="px-3 py-2 text-[var(--molsan-text-secondary)]">{fila._tipo}</td>
                     <td className="whitespace-nowrap px-3 py-2 text-right font-semibold">{dinero(fila._importeObligacion)}</td>
                     <td className="px-3 py-2"><span className={fila._estadoPago === "Pagado" ? "font-bold text-emerald-700" : fila._estadoPago === "Parcial" ? "font-bold text-blue-700" : "font-semibold text-amber-700"}>{fila._estadoPago}{fila._importePagado > 0 ? ` · ${dinero(fila._importePagado)}` : " · registrar desde Pagar"}</span></td>
                   </tr>)}
@@ -210,7 +210,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
                 <h3 className="text-sm font-extrabold text-slate-900"><MolsanIcon name="book" size={20} /> Cierre documental digital</h3>
-                <p className="mt-1 text-xs leading-5 text-slate-600">Genera una vista previa sin guardar. Tras revisarla, pulsa «Aceptar y guardar en Carpeta digital» para registrar el PDF en Expediente digital completo. Orden: Hoja de liquidación, Factura notario, Factura registro, Factura Honorarios gestoría, Copia simple, Justificación de cancelación, AJD / ITP y Hoja de inscripción.</p>
+                <p className="mt-1 text-xs leading-5 text-[var(--molsan-text-secondary)]">Genera una vista previa sin guardar. Tras revisarla, pulsa «Aceptar y guardar en Carpeta digital» para registrar el PDF en Expediente digital completo. Orden: Hoja de liquidación, Factura notario, Factura registro, Factura Honorarios gestoría, Copia simple, Justificación de cancelación, AJD / ITP y Hoja de inscripción.</p>
                 {cierreDocumental && <div className={`mt-3 rounded-lg border px-3 py-2 text-xs ${cierreDocumental.guardado ? "border-emerald-200 bg-white text-emerald-800" : "border-amber-200 bg-white text-amber-800"}`}>
                   <p className="font-extrabold">{cierreDocumental.mensaje || "PDF de cierre documental preparado."}</p>
                   <p className="mt-1">{Number(cierreDocumental.paginas || 0)} páginas · {Array.isArray(cierreDocumental.documentos_incluidos) ? cierreDocumental.documentos_incluidos.length : 0} documento(s).</p>
