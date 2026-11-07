@@ -190,7 +190,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
                   <p className="mt-1 max-w-3xl">Solo para expedientes relacionados con «Cancelación con provisión». Permite agrupar varios orígenes en un único receptor, verificar el importe manualmente y registrar el email al cliente.</p>
                 </div>
               </div>
-              <button type="button" onClick={() => setAbierto(false)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50"><MolsanIcon name="x" size={14} bare /> Cerrar</button>
+              <button type="button" onClick={() => setAbierto(false)} className="rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-xs font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]"><MolsanIcon name="x" size={14} bare /> Cerrar</button>
             </header>
             <div className="molsan-modal__body min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">
             {cargando && <p className="mb-3">Consultando expedientes relacionados…</p>}
