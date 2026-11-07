@@ -201,7 +201,7 @@ function BadgeAccion({
   ) {
 
     clases =
-      "bg-blue-50 text-blue-700 border-blue-200";
+      "bg-[var(--molsan-primary-soft)] text-[var(--molsan-primary)] border-[var(--molsan-border)]";
   }
 
 
