@@ -93,7 +93,7 @@
   font-variant-numeric: tabular-nums;
 }
 .erp-main-content table:not(.molsan-table):not(.molsan-data-table) thead th {
-  color: var(--molsan-primary, #064675);
+  color: var(--molsan-text-secondary, #617789);
   background: var(--molsan-table-head, #EAF2F8);
   border-bottom: 1px solid var(--molsan-border, #D8E4EC);
   font-size: 12px;
