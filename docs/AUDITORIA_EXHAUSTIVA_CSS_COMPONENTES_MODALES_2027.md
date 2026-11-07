@@ -1912,3 +1912,13 @@ Se han eliminado sus reglas en index.css y los overrides correspondientes de Mol
 Commits: `d1431868316b03641162366c6e752049d8238297` y `46c06200b87e208d256e55d306ca9aa6de4b6c51` (limpieza de index.css y Redesign), `bedded563e6f33ccfafdc19769ebd7b7e5513f5e`, `feae1107ca870cc814e8c9f63d48776785161b58`, `b6d021a00e9d7e2f79a0a3415c550c53d496ba8f`, `2dc6ab543e58f59481fe73775ec476178d9f9912`.
 
 El build de Vite debe confirmar que no quedan referencias dinámicas. La validación visual de formularios y modales modernos continúa pendiente.
+
+## 57. Normalización de la superficie modal común — 7 de noviembre de 2026
+
+Se ha unificado el panel exterior de los modales compartidos: borde `var(--molsan-border, #D8E4EC)`, radio `var(--molsan-canon-card-radius, 20px)`, fondo blanco y sombra más contenida `0 18px 42px rgba(6,70,117,.12)`. Se elimina el borde azul grisáceo #C5D8E5, el radio fijo de 22 px y la sombra excesiva anterior.
+
+La corrección se aplica en la regla común de MolsanPremium2027.css y en la normalización final de MolsanCanonicalVisual2027.css, manteniendo los overlays, estructura de cabecera, cuerpo, footer, focus y responsive. Los modales específicos siguen conservando sus clases funcionales.
+
+Commits: `8a1fbfe3ec77e02f563d532c844cd8dd640e62ab` y `519d59f30dac454b8a5858da50b8d1d4b6cc1c1c`.
+
+Pendiente validar visualmente modales de CTN, EncargaGest, NotarGest, ficha de expediente y empleados.
