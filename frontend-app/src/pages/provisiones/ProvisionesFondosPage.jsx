@@ -887,7 +887,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
 
     </Seccion>
     {emailDraft && <div ref={emailDialogRef} tabIndex={-1} className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="Enviar provisión por email">
-      <form onSubmit={enviarEmail} className="molsan-modal__panel max-h-[94vh] w-full max-w-3xl overflow-y-auto">
+      <form onSubmit={enviarEmail} className="molsan-modal-panel molsan-modal__panel max-h-[94vh] w-full max-w-3xl overflow-y-auto">
         <header className="molsan-modal-header flex items-start justify-between gap-4 border-0 bg-white px-5 py-5 sm:px-7">
           <div className="flex min-w-0 items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#C5D8E5] bg-[#F2F7FB] text-sm font-black tracking-tight text-[#064675] shadow-sm">M·</div>
