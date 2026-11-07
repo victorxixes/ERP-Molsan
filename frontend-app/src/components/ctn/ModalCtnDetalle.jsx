@@ -404,7 +404,7 @@ export default function ModalCtnDetalle({
           aria-label="Cerrar ficha"
           onClick={() => (onClose || onCerrar)?.()}
         >
-          ×
+          <MolsanIcon name="x" size={18} bare />
         </button>
       </header>
 
