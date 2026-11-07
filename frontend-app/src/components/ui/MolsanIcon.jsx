@@ -94,6 +94,7 @@ const PATHS = {
 };
 const ALIASES = {
   chat: "message",
+  "file-text": "file",
   cog: "settings",
   package: "archive",
   wrench: "tools",
