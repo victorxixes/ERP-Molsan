@@ -2573,7 +2573,7 @@ export default function ExpedientesListado() {
                 </div>
                 <div className="mt-3 font-bold text-[var(--erp-text)]">{estado.titulo}</div>
                 <div className="mt-1 text-xs text-[var(--erp-text-soft)]">Estado ABSIS: {estado.codigo}</div>
-                <div className="mt-2 text-xs font-semibold" style={{ color: activa ? estado.borde : "var(--erp-text-soft)" }}>{activa ? "Estado seleccionado · pulsa para quitar" : "Ver expedientes →"}</div>
+                <div className="mt-2 text-xs font-semibold" style={{ color: activa ? estado.borde : "var(--erp-text-soft)" }}>{activa ? "Estado seleccionado · pulsa para quitar" : <>Ver expedientes <MolsanIcon name="arrowRight" size={12} bare /></>}</div>
               </button>
             );
           })}
@@ -2640,7 +2640,7 @@ export default function ExpedientesListado() {
                   ) : null
                 )}
               </div>
-              <div className="mt-2 text-xs font-semibold" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text-soft)" }}>{activa ? "Actividad seleccionada · pulsa para quitar" : "Ver expedientes →"}</div>
+              <div className="mt-2 text-xs font-semibold" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text-soft)" }}>{activa ? "Actividad seleccionada · pulsa para quitar" : <>Ver expedientes <MolsanIcon name="arrowRight" size={12} bare /></>}</div>
             </button>;
           })}
         </div>
