@@ -2303,7 +2303,7 @@ const permisosDisponibles =
               className={`flex h-10 w-10 shrink-0 items-center justify-center ${preservarEstilosSidebar ? "" : "molsan-btn molsan-btn--ghost molsan-btn--icon"}`}
               aria-label="Cerrar"
             >
-              ×
+              <MolsanIcon name="x" size={18} bare />
             </button>
 
           </div>
