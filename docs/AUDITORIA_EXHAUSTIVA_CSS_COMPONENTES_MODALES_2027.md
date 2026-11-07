@@ -2019,3 +2019,13 @@ Tras unificar el contrato de cabeceras, se ha extendido el cruce a las clases de
 Commits: `3291c3bb7b6c85512db6e8c102569acc9eaf5bb8`, `acf1213492ae6695c223fc9163ebb26457c1a4c3`, `efba72ad87e0700bea320690fac2da4ad0fe2135`, `4e3d9b44df042ec28b6c074a52e41ccd766cfc1d`, `92d83c3dcb680272d8b0628693dc921a00032082`, `88604512c46ea562bb97c456b50866396b27e9a0`, `97c294105473a4e90f3dd560a30320fd4760abb6`.
 
 Pendiente build y comprobación visual de los formularios, errores, botones deshabilitados, scroll interno y comportamiento móvil.
+
+## 65. Eliminación de tarjetas anidadas dentro de la ficha modal CTN — 7 de noviembre de 2026
+
+La revisión del árbol JSX de `ModalCtnDetalle` confirmó que `.ctn-modal-seccion` agrupa contenido dentro del panel modal exterior. Su CSS local aún añadía a cada sección un segundo fondo blanco, borde, radio y sombra; el título de sección añadía además un separador horizontal. Esto producía tarjetas dentro del modal y líneas interiores.
+
+Se ha dejado `.ctn-modal-seccion` como bloque de contenido transparente, sin borde ni sombra, conservando padding y separación vertical. Se ha retirado el separador del encabezado de sección. Los chips de contexto y los datos conservan sus superficies suaves, pero consumen los tokens corporativos de texto, fondo y borde.
+
+Commit: `c2974deeb97d22a8f499847dfb5da56307c0fe7d`.
+
+Pendiente comprobar la ficha de notaría y la pestaña de ubicación en desktop y móvil, incluyendo scroll y tabla de asociaciones.
