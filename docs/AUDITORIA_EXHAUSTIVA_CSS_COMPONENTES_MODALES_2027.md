@@ -1623,3 +1623,14 @@ Se ha realizado una pasada adicional de relación CSS→JSX sobre los portales y
 - Se deja identificado el único candidato concreto de esta pasada: las dos clases de impresión de EncargaGest, pendientes de búsqueda en el conjunto completo de JSX y de comprobar cómo se activa la impresión.
 - No se han borrado selectores por coincidencia negativa parcial. La eliminación exige confirmar ausencia global de consumidor y revisar estados de impresión, modales y responsive.
 - Esta comprobación es estática y focalizada; no sustituye la inspección visual autenticada de Preview ni las pruebas interactivas de los modales.
+
+
+## 39. Eliminación de duplicidad en reglas de impresión de portales — 7 de noviembre de 2026
+
+Se ha contrastado el candidato de impresión de EncargaGest contra sus consumidores reales:
+
+- `molsan-print-encargos-lista` y `molsan-print-encargos-fichas` se activan dinámicamente desde `ApoderaGest.jsx` y sus reglas de visibilidad/raíz imprimible están centralizadas en `PortalProfesionalShared.css`, que importan ApoderaGest, NotarGest y EncargaGest.
+- `EncargaGest.css` repetía únicamente la ocultación global `visibility:hidden!important` para esos dos estados, creando una segunda fuente de control de impresión sin aportar comportamiento adicional.
+- Se han retirado solo esas dos reglas duplicadas de `EncargaGest.css`. Se conservan el formato A4 y los márgenes de página, así como `print-color-adjust: exact`. La visibilidad de la vista imprimible permanece en la hoja compartida.
+
+No se han eliminado las clases de impresión ni los selectores compartidos. La corrección es una deduplicación de cascada; requiere aún comprobación de impresión en navegador y no se considera validación visual completa.
