@@ -183,16 +183,16 @@ export default function CatalogoAbsis() {
       <section className="rounded-2xl border border-[var(--molsan-border)] bg-white p-4 shadow-sm sm:p-5">
         <label className="mb-2 block text-sm font-semibold text-[var(--molsan-text)]" htmlFor="absis-categoria">Lista que quieres gestionar</label>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <select id="absis-categoria" value={categoria} onChange={(e) => { setCategoria(e.target.value); setBusqueda(""); setMensaje(""); }} className="min-w-0 flex-1 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-3 text-sm focus:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-[var(--molsan-primary-soft)]">
+          <select id="absis-categoria" value={categoria} onChange={(e) => { setCategoria(e.target.value); setBusqueda(""); setMensaje(""); }} className="min-w-0 flex-1 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-3 text-sm focus:border-[var(--molsan-primary)] focus:outline-none focus:ring-4 focus:ring-[var(--molsan-primary-soft)]">
             {categorias.map((item) => <option key={item} value={item}>{item}</option>)}
           </select>
-          <button type="button" onClick={() => { setNombreNuevaLista(""); setError(""); setModalNuevaLista(true); }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-primary-soft)] focus:outline-none focus:ring-4 focus:ring-indigo-100"><MolsanIcon name="plus" size={15} tone="inherit" bare />Crear lista</button>
-          <button type="button" onClick={abrirNuevo} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--molsan-primary)] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--molsan-primary-hover)] focus:outline-none focus:ring-4 focus:ring-indigo-200">
+          <button type="button" onClick={() => { setNombreNuevaLista(""); setError(""); setModalNuevaLista(true); }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-primary-soft)] focus:outline-none focus:ring-4 focus:ring-[var(--molsan-primary)]/10"><MolsanIcon name="plus" size={15} tone="inherit" bare />Crear lista</button>
+          <button type="button" onClick={abrirNuevo} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--molsan-primary)] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--molsan-primary-hover)] focus:outline-none focus:ring-4 focus:ring-[var(--molsan-primary)]/10">
             <MolsanIcon name="plus" size={15} tone="ocean" bare /> Añadir entrada
           </button>
         </div>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <input type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar código, valor o descripción…" aria-label="Buscar en el catálogo seleccionado" className="w-full rounded-xl border border-[var(--molsan-border)] px-3 py-2.5 text-sm outline-none focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100 sm:max-w-md" />
+          <input type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar código, valor o descripción…" aria-label="Buscar en el catálogo seleccionado" className="w-full rounded-xl border border-[var(--molsan-border)] px-3 py-2.5 text-sm outline-none focus:border-[var(--molsan-primary)] focus:ring-4 focus:ring-[var(--molsan-primary)]/10 sm:max-w-md" />
           <p className="text-sm text-[var(--molsan-text-secondary)]">{visibles.length} entradas en esta lista</p>
         </div>
       </section>
@@ -231,7 +231,7 @@ export default function CatalogoAbsis() {
             </div>
             <div className="space-y-3 p-6">
               <label className="flex flex-col gap-1.5 text-sm font-medium text-[var(--molsan-text)]">Nombre de la lista
-                <input autoFocus value={nombreNuevaLista} onChange={(e) => setNombreNuevaLista(e.target.value)} maxLength={100} required placeholder="Ej. TIPOFACTURA" className="rounded-xl border border-[var(--molsan-border)] px-3 py-2.5 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100" />
+                <input autoFocus value={nombreNuevaLista} onChange={(e) => setNombreNuevaLista(e.target.value)} maxLength={100} required placeholder="Ej. TIPOFACTURA" className="rounded-xl border border-[var(--molsan-border)] px-3 py-2.5 outline-none focus:border-[var(--molsan-primary)] focus:ring-4 focus:ring-[var(--molsan-primary)]/10" />
               </label>
               {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
             </div>
