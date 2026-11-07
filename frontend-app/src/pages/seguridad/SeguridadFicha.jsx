@@ -228,7 +228,7 @@ function SeccionAcordeon({
             "
             aria-hidden="true"
           >
-            {abierto ? "▲" : "▼"}
+            {abierto ? <MolsanIcon name="arrowUp" size={12} bare /> : <MolsanIcon name="arrowDown" size={12} bare />}
           </span>
 
         </div>
@@ -2252,8 +2252,8 @@ const permisosGlobales =
                         aria-hidden="true"
                       >
                         {abierto
-                          ? "▲"
-                          : "▼"}
+                          ? <MolsanIcon name="arrowUp" size={12} bare />
+                          : <MolsanIcon name="arrowDown" size={12} bare />}
                       </span>
 
                     </div>
