@@ -828,12 +828,12 @@
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
   .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
-  .eg-modal-section, .ng-admin-global-resumen,
+   .ng-admin-global-resumen,
   .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
   .expedientes-panel,
   .expedientes-filter-panel, .expedientes-table-panel,
   .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
-  .section-card, .agenda-calendar-card, .agenda-list-table-wrap,
+  .section-card, .agenda-calendar-card, ,
   .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .empleado-ficha-premium > section, .seguridad-premium-page > section, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, [data-panel="true"], [data-cg-panel="true"]
 ){
   min-width: 0;
@@ -856,12 +856,12 @@
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
   .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
-  .eg-modal-section, .ng-admin-global-resumen,
+   .ng-admin-global-resumen,
   .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
   .expedientes-panel,
   .expedientes-filter-panel, .expedientes-table-panel,
   .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
-  .section-card, .agenda-calendar-card, .agenda-list-table-wrap,
+  .section-card, .agenda-calendar-card, ,
   .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .empleado-ficha-premium > section, .seguridad-premium-page > section, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, [data-panel="true"], [data-cg-panel="true"]
 ) {
   border: 1px solid var(--molsan-border, #D8E4EC);
@@ -878,12 +878,12 @@
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
   .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
-  .eg-modal-section, .ng-admin-global-resumen,
+   .ng-admin-global-resumen,
   .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
   .expedientes-panel,
   .expedientes-filter-panel, .expedientes-table-panel,
   .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
-  .section-card, .agenda-calendar-card, .agenda-list-table-wrap,
+  .section-card, .agenda-calendar-card, ,
   .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .empleado-ficha-premium > section, .seguridad-premium-page > section, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, [data-panel="true"], [data-cg-panel="true"]
 ):hover {
   box-shadow: 0 19px 38px rgba(6, 50, 82, .13);
@@ -899,7 +899,7 @@
       .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel,
       .ctn-panel,
       .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .expedientes-panel, .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
-      .section-card, .agenda-calendar-card, .agenda-list-table-wrap,
+      .section-card, .agenda-calendar-card, ,
       .logs-panel, .maestros-panel
     ) {
     animation: none;
