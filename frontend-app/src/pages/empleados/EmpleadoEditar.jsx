@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import {
   useEffect,
   useState,
@@ -462,7 +463,7 @@ export default function EmpleadoEditar({
         ">
 
           {guardado &&
-            "✓ Cambios guardados correctamente"}
+            <><MolsanIcon name="check" size={13} bare /> Cambios guardados correctamente</>}
 
         </div>
 
