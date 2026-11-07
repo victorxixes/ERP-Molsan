@@ -171,9 +171,13 @@
   place-items: center;
   color: var(--ng-primary);
   border: 1px solid #D8E4EC;
-  border-radius: 15px;
-  background: linear-gradient(145deg,#FFFFFF,#EAF2F8);
-  box-shadow: 0 5px 14px rgba(6,50,82,.09);
+  border-radius: 16px;
+  background: var(--ng-soft, #F2F7FB);
+  box-shadow: none;
+  transition: transform .24s ease, background .24s ease;
+}
+.ng-admin-notaria-card:hover .ng-admin-notaria-icono {
+  transform: translateY(-2px) scale(1.045);
 }
 .ng-admin-notaria-titulo { min-width: 0; color: var(--ng-primary); font-size: 13px; font-weight: 800; overflow-wrap: anywhere; }
 .ng-admin-metricas { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
