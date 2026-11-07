@@ -639,8 +639,8 @@ export default function EnviarANotarioModal({
       <div ref={dialogRef} tabIndex={inline ? undefined : -1} role={inline ? undefined : "dialog"} aria-modal={inline ? undefined : true} aria-label={inline ? undefined : "Envío de expediente a notario"} className={inline ? "flex w-full min-w-0 flex-col overflow-hidden" : "expediente-operativo-modal-panel flex h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] sm:h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-1.5rem)] sm:w-[calc(100vw-1.5rem)] max-w-[1750px] flex-col overflow-hidden"} onMouseDown={(event) => event.stopPropagation()}>
 
         {!inline && (
-          <div className="molsan-modal-header flex shrink-0 items-center justify-end border-b border-slate-200 bg-white px-5 py-3 sm:px-7">
-            <button type="button" disabled={loading} onClick={onClose} aria-label="Cerrar modal" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50"><MolsanIcon name="x" size={15} bare /></button>
+          <div className="molsan-modal-header flex shrink-0 items-center justify-end border-b border-[var(--molsan-border)] bg-white px-5 py-3 sm:px-7">
+            <button type="button" disabled={loading} onClick={onClose} aria-label="Cerrar modal" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[var(--molsan-text-secondary)] transition hover:bg-[var(--molsan-surface-soft)] hover:text-[var(--molsan-text-secondary)] disabled:opacity-50"><MolsanIcon name="x" size={15} bare /></button>
           </div>
         )}
 
@@ -785,7 +785,7 @@ export default function EnviarANotarioModal({
                       />
                     </div>
 
-                    <div className="sm:col-span-2 grid grid-cols-1 gap-3 border-t border-slate-200 pt-3 sm:grid-cols-2 xl:grid-cols-3">
+                    <div className="sm:col-span-2 grid grid-cols-1 gap-3 border-t border-[var(--molsan-border)] pt-3 sm:grid-cols-2 xl:grid-cols-3">
                       <CampoAutomatico label="Código CTN" valor={notario.codigo} />
                       <CampoAutomatico label="Teléfono" valor={notario.telefono} />
                       <CampoAutomatico label="Código postal" valor={notario.cp} />
