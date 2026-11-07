@@ -286,7 +286,7 @@ export default function CorrespondenciaTipificada() {
                 <td className="px-5 py-4 text-[var(--molsan-text-secondary)]">{item.categoria || "General"}</td>
                 <td className="max-w-[280px] px-5 py-4 text-[var(--molsan-text-secondary)]"><span className="block truncate" title={item.asunto || ""}>{item.asunto || "Sin asunto"}</span></td>
                 <td className="px-5 py-4"><span className={"inline-flex rounded-full px-2.5 py-1 text-xs font-bold " + (item.activo ? "bg-emerald-50 text-emerald-700" : "bg-[var(--molsan-table-head)] text-[var(--molsan-text-secondary)]")}>{item.activo ? "Activa" : "Inactiva"}</span></td>
-                <td className="px-5 py-4 text-right"><button type="button" onClick={() => editarPlantilla(item)} className="rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-primary-soft)] px-3 py-2 text-xs font-bold text-[var(--molsan-primary)] transition hover:bg-blue-100">↗ Acceder a la ficha</button></td>
+                <td className="px-5 py-4 text-right"><button type="button" onClick={() => editarPlantilla(item)} className="rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-primary-soft)] px-3 py-2 text-xs font-bold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-surface-soft)]">↗ Acceder a la ficha</button></td>
               </tr>)}</tbody>
             </table></div>
           )}
@@ -311,7 +311,7 @@ export default function CorrespondenciaTipificada() {
               {cargando ? <p className="p-4 text-center text-sm text-[var(--molsan-text-muted)]">Cargando plantillas…</p> :
                 plantillasFiltradas.length === 0 ? <p className="rounded-xl border border-dashed border-[var(--molsan-border)] p-4 text-center text-sm text-[var(--molsan-text-muted)]">No hay plantillas para este filtro. Crea una nueva para empezar.</p> :
                 plantillasFiltradas.map((item) => (
-                  <button key={item.id} type="button" onClick={() => editarPlantilla(item)} className={"w-full rounded-xl border p-3 text-left transition " + (plantillaId === item.id ? "border-blue-300 bg-[var(--molsan-primary-soft)]" : "border-[var(--molsan-border)] bg-white hover:border-[var(--molsan-border-strong)] hover:bg-[var(--molsan-surface-soft)]")}>
+                  <button key={item.id} type="button" onClick={() => editarPlantilla(item)} className={"w-full rounded-xl border p-3 text-left transition " + (plantillaId === item.id ? "border-[var(--molsan-border-strong)] bg-[var(--molsan-primary-soft)]" : "border-[var(--molsan-border)] bg-white hover:border-[var(--molsan-border-strong)] hover:bg-[var(--molsan-surface-soft)]")}>
                     <span className="flex items-start justify-between gap-2">
                       <span className="min-w-0">
                         <span className="block truncate text-sm font-bold text-[var(--molsan-primary)]">{item.nombre}</span>
@@ -339,7 +339,7 @@ export default function CorrespondenciaTipificada() {
                 <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Los marcadores se escriben con doble llave, por ejemplo {"{{solicitante.nombre}}"}.</p>
               </div>
               <label className="flex items-center gap-2 text-sm font-semibold text-[var(--molsan-text-secondary)]">
-                <input type="checkbox" checked={plantilla.activo} onChange={(e) => actualizar("activo", e.target.checked)} className="rounded border-[var(--molsan-border-strong)] text-[var(--molsan-primary)] focus:ring-blue-500" />
+                <input type="checkbox" checked={plantilla.activo} onChange={(e) => actualizar("activo", e.target.checked)} className="rounded border-[var(--molsan-border-strong)] text-[var(--molsan-primary)] focus:ring-[var(--molsan-primary)]/10" />
                 Plantilla activa
               </label>
             </div>
@@ -376,7 +376,7 @@ export default function CorrespondenciaTipificada() {
                 <span className="text-[11px] text-[var(--molsan-text-muted)]">{campos.length} campos disponibles</span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {campos.map((campo) => <button key={campo.clave} type="button" title={"Insertar " + campo.clave} onClick={() => insertarCampo(campo.clave)} className="rounded-lg border border-[var(--molsan-border)] bg-white px-2.5 py-1.5 text-xs font-semibold text-[var(--molsan-text-secondary)] hover:border-blue-300 hover:bg-[var(--molsan-primary-soft)] hover:text-[var(--molsan-primary)]">{campo.etiqueta}</button>)}
+                {campos.map((campo) => <button key={campo.clave} type="button" title={"Insertar " + campo.clave} onClick={() => insertarCampo(campo.clave)} className="rounded-lg border border-[var(--molsan-border)] bg-white px-2.5 py-1.5 text-xs font-semibold text-[var(--molsan-text-secondary)] hover:border-[var(--molsan-border-strong)] hover:bg-[var(--molsan-primary-soft)] hover:text-[var(--molsan-primary)]">{campo.etiqueta}</button>)}
               </div>
             </div>
 
