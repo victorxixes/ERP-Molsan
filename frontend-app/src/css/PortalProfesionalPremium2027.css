@@ -77,3 +77,76 @@
     animation-iteration-count: 1;
   }
 }
+
+/* Impresión corporativa de Agenda y ApoderaGest.
+   La visibilidad de impresión vive en esta capa compartida; no se duplica
+   en las hojas locales de cada portal. */
+.ag-print-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 9px 14px;
+  border: 1px solid var(--molsan-primary, #064675);
+  border-radius: 10px;
+  background: var(--molsan-primary, #064675);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ag-print-action-secundario {
+  background: #fff;
+  color: var(--molsan-primary, #064675);
+}
+.ag-print-tools { display:flex; flex-wrap:wrap; align-items:center; gap:9px; margin:12px 0 16px; }
+.ag-print-root { display:none; }
+.ag-print-header { padding:0 0 14px; margin-bottom:16px; border-bottom:2px solid var(--molsan-primary, #064675); }
+.ag-print-header h1 { margin:8px 0 4px; font-size:24px; color:#172b3a; }
+.ag-print-header p { margin:0; color:#617789; font-size:11px; }
+.ag-print-table { width:100%; border-collapse:collapse; font-size:10px; color:#172b3a; }
+.ag-print-table th { background:#EAF2F8; color:#064675; text-align:left; font-weight:800; }
+.ag-print-table th,.ag-print-table td { padding:7px 8px; border:1px solid #D8E4EC; vertical-align:top; }
+.ag-print-table td small { display:block; margin-top:3px; color:#617789; font-size:9px; }
+.ag-print-footer { margin-top:18px; padding-top:8px; border-top:1px solid #D8E4EC; color:#617789; font-size:9px; }
+.ag-print-fichas { display:none; }
+.ag-print-ficha { padding:0 0 20px; margin:0 0 24px; border-bottom:1px solid #D8E4EC; break-inside:avoid-page; page-break-inside:avoid; }
+.ag-print-ficha header { padding-bottom:10px; border-bottom:1px solid #D8E4EC; }
+.ag-print-ficha h2 { margin:8px 0 0; font-size:19px; color:#172b3a; }
+.ag-print-ficha h3 { margin:14px 0 7px; font-size:12px; color:#064675; }
+.ag-print-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:12px; }
+.ag-print-grid>div { padding:7px 9px; border:1px solid #D8E4EC; border-radius:5px; }
+.ag-print-grid small { display:block; margin-bottom:3px; color:#617789; font-size:9px; }
+.ag-print-grid strong { font-size:10px; color:#172b3a; overflow-wrap:anywhere; }
+
+@media print {
+  @page { size:A4 portrait; margin:12mm; }
+  body.molsan-print-agenda *,
+  body.molsan-print-encargos-lista *,
+  body.molsan-print-encargos-fichas * { visibility:hidden!important; }
+  body.molsan-print-agenda .ag-agenda-print-root,
+  body.molsan-print-agenda .ag-agenda-print-root *,
+  body.molsan-print-encargos-lista .ag-encargos-print-root,
+  body.molsan-print-encargos-lista .ag-encargos-print-root *,
+  body.molsan-print-encargos-fichas .ag-encargos-print-root,
+  body.molsan-print-encargos-fichas .ag-encargos-print-root * { visibility:visible!important; }
+  body.molsan-print-agenda .ag-agenda-print-root,
+  body.molsan-print-encargos-lista .ag-encargos-print-root,
+  body.molsan-print-encargos-fichas .ag-encargos-print-root {
+    display:block!important; position:absolute!important; inset:0 auto auto 0!important;
+    width:100%!important; max-width:none!important; padding:0!important; margin:0!important;
+    background:#fff!important; color:#111!important; border:0!important; border-radius:0!important;
+    box-shadow:none!important; overflow:visible!important; font-family:Arial,Helvetica,sans-serif!important;
+  }
+  body.molsan-print-encargos-lista .ag-print-fichas { display:none!important; }
+  body.molsan-print-encargos-fichas .ag-encargos-print-root>.ag-print-header,
+  body.molsan-print-encargos-fichas .ag-encargos-print-root>.ag-print-table { display:none!important; }
+  body.molsan-print-encargos-fichas .ag-print-fichas { display:block!important; }
+  body.molsan-print-encargos-fichas .ag-print-ficha { break-after:page; page-break-after:always; }
+  body.molsan-print-encargos-fichas .ag-print-ficha:last-child { break-after:auto; page-break-after:auto; }
+  .ag-print-table { font-size:9px!important; }
+  .ag-print-table th,.ag-print-table td { padding:5px 6px!important; }
+  * { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
+}
