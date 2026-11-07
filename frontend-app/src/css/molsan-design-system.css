@@ -256,7 +256,7 @@
 }
 
 .molsan-intranet-page table thead tr {
-  background: var(--molsan-surface-soft);
+  background: var(--molsan-table-head, #EAF2F8);
 }
 
 .molsan-intranet-page table thead th {
