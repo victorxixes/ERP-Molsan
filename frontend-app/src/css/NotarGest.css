@@ -513,8 +513,9 @@ margin:0;color:var(--molsan-prof-blue);font-weight:800}
 
 .notargest.ng-content .ng-tabla th,
 .notargest.ng-content .ng-panel table thead th {
-
-  color:var(--molsan-prof-blue);background:var(--molsan-prof-table);border-color:var(--molsan-prof-border);
+  color:var(--molsan-text-secondary, #617789);
+  background:var(--molsan-table-head, #EAF2F8);
+  border-color:var(--molsan-border, #D8E4EC);
 }
 
 .notargest.ng-content .ng-tabla td,
