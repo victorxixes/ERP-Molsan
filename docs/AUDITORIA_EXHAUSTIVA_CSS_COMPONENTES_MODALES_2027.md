@@ -2039,3 +2039,17 @@ Se han retirado tanto `.ctn-modal-seccion` como el selector redundante `.ctn-mod
 Commit: `b78960b452e479b96f064c4f9bc0cef58fdc3faf`.
 
 El cambio requiere build y comprobación visual del modal CTN para confirmar que no quedan separadores ni fondos anidados.
+
+## 67. Aislamiento de los observadores de cabecera y botón Volver — 7 de noviembre de 2026
+
+La revisión del consumidor común `Layout.jsx` confirmó el riesgo ya señalado en la sección 42: el segundo observador buscaba la primera `.molsan-page-header` en `.erp-main-inner`, ámbito que incluye overlays y nodos fuera del contenido de ruta. Una cabecera de diálogo podía convertirse accidentalmente en destino del botón «Volver» o impedir localizar la cabecera real.
+
+Se han aplicado dos restricciones:
+- Ambos observadores quedan limitados a `.erp-route-content`.
+- La búsqueda de cabeceras existentes y candidatas excluye expresamente elementos dentro de `role=dialog`, `aria-modal`, `.molsan-modal`, `.ng-modal` y `[data-modal]`. La búsqueda usa `querySelectorAll + find` para saltar candidatos excluidos y poder localizar la cabecera válida siguiente.
+
+Se mantienen MutationObserver, el montaje dinámico del botón común, el destino de navegación y la compatibilidad de las rutas heredadas. No se ha retirado la capa de compatibilidad sin pruebas de ruta.
+
+Commit: `cda080ef0f1e18b29b96a15a0c3fa1fc8e5c49c7`.
+
+Pendiente comprobar cambios de ruta con carga diferida, subpáginas con y sin acciones, modales abiertos durante la navegación y anchuras móvil/tablet.
