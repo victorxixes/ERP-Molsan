@@ -785,7 +785,7 @@ export default function ModalNuevaCita({
               flex items-center justify-center
               text-[var(--molsan-text-secondary)]
               hover:bg-[var(--molsan-surface-soft)]
-              hover:text-[var(--molsan-text)]
+              hover:text-[var(--molsan-primary)]
               transition
               disabled:opacity-40
             "
