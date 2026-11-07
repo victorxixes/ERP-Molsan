@@ -210,7 +210,7 @@ export default function Logs() {
         relative
         min-h-full
         space-y-6
-        text-slate-800
+        text-[var(--molsan-text)]
         
       "
     >
@@ -278,7 +278,7 @@ export default function Logs() {
               gap-3
               text-sm
               font-medium
-              text-slate-500
+              text-[var(--molsan-text-secondary)]
             "
           >
 
@@ -288,8 +288,8 @@ export default function Logs() {
                 w-5
                 rounded-full
                 border-2
-                border-slate-200
-                border-t-blue-500
+                border-[var(--molsan-border)]
+                border-t-[var(--molsan-primary)]
                 animate-spin
               "
             />
