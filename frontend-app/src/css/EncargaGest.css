@@ -1,6 +1,6 @@
 /* EncargaGest · MOLSAN ERP Premium 2027 / Glass Luxe */
 .encargagest {
-  --ag-muted: var(--molsan-text-muted, #64748b);
+  --ag-muted: var(--molsan-text-muted, #617789);
   --ag-line: var(--molsan-border, #D8E4EC);
   --ag-panel: var(--molsan-surface, #fff);
   --ag-blue: var(--molsan-primary, #064675);
@@ -93,14 +93,14 @@
   letter-spacing: -.7px;
   line-height: 1.2;
 }
-.eg-modal-heading p { margin: 0; color: var(--molsan-text-muted, #64748b); font-size: 12px; line-height: 1.55; }
+.eg-modal-heading p { margin: 0; color: var(--molsan-text-muted, #617789); font-size: 12px; line-height: 1.55; }
 .eg-modal-close {
   display: grid;
   flex: 0 0 38px;
   width: 38px;
   height: 38px;
   place-items: center;
-  color: var(--molsan-text-muted, #64748b);
+  color: var(--molsan-text-muted, #617789);
   background: var(--molsan-surface-soft, #F2F7FB);
   border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-control, 9px);
@@ -120,7 +120,7 @@
   align-items: center;
   gap: 9px;
   padding: 11px 13px;
-  color: var(--molsan-text-secondary, #526176);
+  color: var(--molsan-text-secondary, #617789);
   background: var(--molsan-surface-soft, #F2F7FB);
   border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-control, 9px);
@@ -457,18 +457,18 @@
 .encargagest .eg-directorio-contador strong { color:var(--molsan-primary, #064675); font-size:27px; line-height:1.1; font-weight:900; font-variant-numeric:tabular-nums; }
 .encargagest .eg-directorio-contador span { margin-top:4px; color:#8390a6; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
 .encargagest .eg-directorio-busqueda { display:flex; align-items:center; flex-wrap:wrap; gap:12px; padding:16px 26px; border:0; border-bottom:0; background:#FFFFFF; }
-.encargagest .eg-directorio-input-wrap { display:flex; align-items:center; gap:10px; flex:1 1 320px; min-width:180px; padding:0 13px; border:1px solid #dfe6f0; border-radius:12px; background:#fff; color:#6680ad; }
+.encargagest .eg-directorio-input-wrap { display:flex; align-items:center; gap:10px; flex:1 1 320px; min-width:180px; padding:0 13px; border:1px solid #D8E4EC; border-radius:12px; background:#fff; color:#617789; }
 .encargagest .eg-directorio-input-wrap > span { font-size:22px; line-height:1; }
-.encargagest .eg-directorio-input-wrap input { width:100%; min-width:0; padding:12px 0; border:0; outline:0; color:#263b5d; background:transparent; font-size:12px; box-shadow:none !important; }
-.encargagest .eg-directorio-alcance { display:flex; align-items:center; gap:8px; color:#435675; font-size:11px; font-weight:800; white-space:nowrap; }
+.encargagest .eg-directorio-input-wrap input { width:100%; min-width:0; padding:12px 0; border:0; outline:0; color:#172033; background:transparent; font-size:12px; box-shadow:none !important; }
+.encargagest .eg-directorio-alcance { display:flex; align-items:center; gap:8px; color:#617789; font-size:11px; font-weight:800; white-space:nowrap; }
 .encargagest .eg-directorio-alcance input { width:15px; height:15px; accent-color:var(--molsan-primary, #064675); }
-.encargagest .eg-directorio-global { padding:10px 12px; border:1px solid #dbe5f5; border-radius:10px; color:var(--molsan-primary, #064675); background:#f5f8ff; font-size:11px; font-weight:800; }
+.encargagest .eg-directorio-global { padding:10px 12px; border:1px solid #D8E4EC; border-radius:10px; color:var(--molsan-primary, #064675); background:#F2F7FB; font-size:11px; font-weight:800; }
 
 
 
 
 
-.encargagest .eg-directorio-estado { padding:5px 8px; border:1px solid #e3e8f0; border-radius:999px; color:#78859a; background:#f8fafc; font-size:9px; font-weight:900; white-space:nowrap; }
+.encargagest .eg-directorio-estado { padding:5px 8px; border:1px solid #D8E4EC; border-radius:999px; color:#617789; background:#F2F7FB; font-size:9px; font-weight:900; white-space:nowrap; }
 .encargagest .eg-directorio-estado.is-enabled { border-color:#bce8d3; color:#16774c; background:#effcf5; }
 
 
