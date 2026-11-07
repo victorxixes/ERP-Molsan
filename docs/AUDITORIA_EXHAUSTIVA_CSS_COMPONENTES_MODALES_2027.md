@@ -2135,3 +2135,16 @@ Commits de código de esta tanda: `0fa37ed`, `a63fbc1`, `53ef6b1`, `a6d58ea`, `4
 - La inspección visual autenticada de rutas, estados y responsive continúa pendiente: el navegador de consulta no puede abrir el dominio Render. Build y deploy correctos no se presentan como validación visual.
 - PR #411 continúa en Draft y sin merge. Producción, API y bases de datos no se han tocado.
 
+
+
+## 73. Retirada de toolbar heredida sin consumidor en NotarGest — 7 de noviembre de 2026
+
+La revisión de `NotarGest.jsx` confirma que las acciones de actualización están integradas en `MolsanPageHeader` y que no existe consumidor JSX de `.ng-page-toolbar`. Se ha eliminado ese bloque CSS y actualizado el comentario de responsabilidad. Se conserva `.ng-icono-girando` y su animación porque sí tiene consumidor en el estado de carga.
+
+Validación:
+- Build Vite: success en `b5cd3d0f1ac1fe1e2f0cfd2b6bd21932700dcaf2`.
+- Validación Fichajes: success en el mismo commit.
+- Render Preview: deploy `dep-dbnk2i8u01pc73cvvkug` en estado `live`, commit `b5cd3d0f1ac1fe1e2f0cfd2b6bd21932700dcaf2`.
+- No se ha modificado producción ni el backend.
+
+La inspección visual autenticada de NotarGest y de los demás módulos sigue pendiente; no se declara cierre visual.
