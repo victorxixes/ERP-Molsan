@@ -137,5 +137,5 @@ export default function ProcesoAbsis() {
 }
 
 function Kpi({ titulo, valor, icono, alerta = false }) {
-  return <div className={`rounded-2xl border p-4 shadow-sm ${alerta ? "border-rose-200 bg-rose-50/70" : "border-[var(--molsan-border)] bg-white"}`}><div className="flex items-start justify-between gap-2"><p className="text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">{titulo}</p><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/80 text-lg font-extrabold text-[var(--molsan-text-secondary)] shadow-sm">{icono}</span></div><p className="mt-3 text-2xl font-extrabold text-[var(--molsan-primary)]">{valor}</p></div>;
+  return <div className={`rounded-2xl border p-4 shadow-sm ${alerta ? "border-rose-200 bg-rose-50/70" : "border-[var(--molsan-border)] bg-white"}`}><div className="flex items-start justify-between gap-2"><p className="text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">{titulo}</p><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/80 text-[var(--molsan-text-secondary)] shadow-sm"><MolsanIcon name={icono} size={18} bare /></span></div><p className="mt-3 text-2xl font-extrabold text-[var(--molsan-primary)]">{valor}</p></div>;
 }
