@@ -114,7 +114,7 @@ export default function ImportarCTN() {
                 
               "
             >
-              <span>✓</span>
+              <span><MolsanIcon name="check" size={13} bare /></span>
 
               <div className="min-w-0">
 
@@ -204,7 +204,7 @@ export default function ImportarCTN() {
                     font-bold
                   "
                 >
-                  ✓
+                  <MolsanIcon name="check" size={14} bare />
                 </div>
 
                 <div>
