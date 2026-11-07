@@ -869,7 +869,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false, soloEditor
               <div className="text-right"><p className="text-xs font-semibold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Total de la garantía</p><p className="text-lg font-bold text-[var(--molsan-text)]">{dinero(totalConceptos(g))}</p></div>
             </div>
           </div>)}
-          <button type="button" onClick={() => setForm((f) => ({ ...f, garantias: [...f.garantias, vaciaGarantia()] }))} className={`${boton} border border-dashed border-[var(--molsan-border-strong)] bg-white text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]`}>＋ Añadir otra garantía / préstamo</button>
+          <button type="button" onClick={() => setForm((f) => ({ ...f, garantias: [...f.garantias, vaciaGarantia()] }))} className={`${boton} border border-dashed border-[var(--molsan-border-strong)] bg-white text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]`}><MolsanIcon name="plus" size={14} bare /> Añadir otra garantía / préstamo</button>
         </div>
       </Seccion>
 
