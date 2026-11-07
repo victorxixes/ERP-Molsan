@@ -3336,7 +3336,7 @@ export default function ExpedientesListado() {
 
       {mostrarAyudaControlPlazos && (
         <div className="fixed inset-0 z-[11000] flex items-center justify-center bg-slate-950/60 p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setMostrarAyudaControlPlazos(false); }}>
-          <section ref={ayudaPlazosDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="titulo-control-plazos" className="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+          <section ref={ayudaPlazosDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="titulo-control-plazos" className="molsan-modal-panel w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
             <header className="flex items-start justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
               <div>
                 <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Expedientes</p>
