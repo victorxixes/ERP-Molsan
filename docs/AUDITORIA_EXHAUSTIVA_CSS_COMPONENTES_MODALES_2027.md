@@ -2029,3 +2029,13 @@ Se ha dejado `.ctn-modal-seccion` como bloque de contenido transparente, sin bor
 Commit: `c2974deeb97d22a8f499847dfb5da56307c0fe7d`.
 
 Pendiente comprobar la ficha de notaría y la pestaña de ubicación en desktop y móvil, incluyendo scroll y tabla de asociaciones.
+
+## 66. Ajuste de especificidad para secciones internas del modal CTN — 7 de noviembre de 2026
+
+Al verificar la cascada completa después de retirar las tarjetas locales, se detectó que MolsanPremium2027.css aún contenía `.ctn-modal-seccion` en su selector genérico de superficies de contenido. Esa regla se carga después de CtnListadoPage.css y, por especificidad, podía volver a imponer borde y fondo sobre el reset local.
+
+Se han retirado tanto `.ctn-modal-seccion` como el selector redundante `.ctn-modal-panel .ctn-modal-seccion` de los grupos globales de superficie y movimiento. La sección de la ficha modal queda ahora gobernada por su regla estructural local: transparente, sin borde, sin sombra y con padding. El panel exterior del diálogo conserva la superficie modal canónica.
+
+Commit: `b78960b452e479b96f064c4f9bc0cef58fdc3faf`.
+
+El cambio requiere build y comprobación visual del modal CTN para confirmar que no quedan separadores ni fondos anidados.
