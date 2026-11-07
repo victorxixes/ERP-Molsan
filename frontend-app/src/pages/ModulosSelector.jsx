@@ -372,7 +372,7 @@ export default function ModulosSelector() {
             <div className="border-b border-slate-100 p-5">
               <label className="relative block">
                 <span className="sr-only">Buscar notaría</span>
-                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">⌕</span>
+                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400"><MolsanIcon name="search" size={16} bare /></span>
                 <input value={busquedaSoporte} onChange={(e) => setBusquedaSoporte(e.target.value)} autoFocus placeholder="Buscar por nombre, NIF, municipio o provincia…" className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm outline-none focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100" />
               </label>
             </div>
