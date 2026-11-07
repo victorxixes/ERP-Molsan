@@ -1042,7 +1042,7 @@ export default function EmpleadosListado({
               -translate-y-1/2
               text-[var(--erp-text-soft)]
             ">
-              ⌕
+              <MolsanIcon name="search" size={16} bare />
             </span>
 
             <input
@@ -1495,7 +1495,7 @@ export default function EmpleadosListado({
                   "
                   title="Cerrar"
                 >
-                  ×
+                  <MolsanIcon name="x" size={18} bare />
                 </button>
 
               </div>
