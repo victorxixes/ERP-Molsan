@@ -66,7 +66,7 @@ export default function ImportarCTN() {
                 px-5
                 cursor-pointer
                 transition-all
-                hover:border-blue-300
+                hover:border-[var(--molsan-primary)]
                 hover:bg-[var(--molsan-primary-soft)]
               "
             >
