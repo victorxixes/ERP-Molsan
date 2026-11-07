@@ -147,7 +147,7 @@
 :is(
   .encargagest .eg-modal-form, .encargagest .eg-modal-perfil,
   .notargest .ng-modal, .notargest .ng-resumen-expedientes-modal,
-  .molsan-modal__panel, .erp-modal-panel, .expediente-operativo-modal-panel,
+  .molsan-modal__panel, .expediente-operativo-modal-panel,
   .ctn-detalle-modal
 ) {
   color: #173247 !important;
@@ -214,7 +214,7 @@ body :where(
   :is(
     .encargagest .eg-modal-form, .encargagest .eg-modal-perfil,
     .notargest .ng-modal, .notargest .ng-resumen-expedientes-modal,
-    .molsan-modal__panel, .erp-modal-panel, .expediente-operativo-modal-panel,
+    .molsan-modal__panel, .expediente-operativo-modal-panel,
     .ctn-detalle-modal
   ) { border-radius: 18px !important; }
 }
