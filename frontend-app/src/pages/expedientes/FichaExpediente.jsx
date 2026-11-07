@@ -862,7 +862,7 @@ function EstadoBadge({
     "border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] text-[var(--molsan-primary)]";
 
   let punto =
-    "bg-[var(--molsan-text-secondary)]";
+    "bg-[var(--molsan-primary)]";
 
   if (positivo) {
     clases =
