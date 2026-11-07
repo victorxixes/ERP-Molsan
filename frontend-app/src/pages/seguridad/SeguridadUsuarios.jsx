@@ -1178,7 +1178,7 @@ export default function SeguridadUsuarios() {
                   </div>
                 ) : (
                   <div className="erp-empty-state">
-                    <div className="erp-empty-state-icon">◷</div>
+                    <div className="erp-empty-state-icon"><MolsanIcon name="clock" size={22} bare /></div>
                     <div>
                       <h3 className="erp-empty-state-title">Sin eventos de auditoría en la ficha</h3>
                       <p className="erp-empty-state-description">Cuando el backend devuelva eventos asociados a este empleado, aparecerán aquí. No se muestran eventos de otros usuarios para evitar mezclar historiales.</p>
