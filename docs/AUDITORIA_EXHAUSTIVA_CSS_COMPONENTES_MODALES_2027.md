@@ -1654,3 +1654,8 @@ Se ha corregido la brecha en la capa canónica de portales:
 - La rama de la PR #411 apunta al commit de código `8e795ec04189efdb296944832fc2fc92eb7a7ddc`.
 - El workflow de validación asociado al último commit se encontraba en cola al documentar esta sección; no se declara todavía como correcto.
 - Sigue pendiente abrir Preview en navegador y probar realmente la impresión de agenda, listado y fichas, además de la inspección visual de los portales y modales. Esta corrección estática no se presenta como prueba visual.
+
+
+### Ajuste final de la centralización de impresión
+
+Una segunda comprobación de las hojas realmente importadas desde `main.jsx` localizó reglas residuales de ocultación e impresión en `molsan-module-styles.css` y `EncargaGest.css`. Se han retirado esas duplicidades: `PortalProfesionalPremium2027.css` queda como única fuente de reglas de impresión de Agenda y ApoderaGest. Se conserva la impresión A4, el ajuste de color, la ocultación de la aplicación y la presentación exclusiva de la raíz imprimible. La hoja global de portales está importada desde `main.jsx`, por lo que no depende de imports dinámicos de una página.
