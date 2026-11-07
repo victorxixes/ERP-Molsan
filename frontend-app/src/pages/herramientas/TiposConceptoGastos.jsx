@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import React, {
   useEffect,
   useMemo,
@@ -720,7 +721,7 @@ export default function TiposConceptoGastos() {
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--molsan-primary)]">Plantilla documental vinculada</p>
               <h2 className="mt-1 text-lg font-extrabold text-[var(--molsan-primary)]">Factura de honorarios · Concepto ID 6</h2>
               <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">La plantilla Word se asocia exclusivamente al registro «honorarios gestoría» del catálogo. Se utiliza al pulsar «Guardar y facturar» en la FichaExpediente y nunca se adjunta a los emails.</p>
-              {plantillaFactura?.plantilla_cargada && <p className="mt-3 break-all text-sm font-semibold text-emerald-700">✓ Plantilla actual: {plantillaFactura.factura_nombre}</p>}
+              {plantillaFactura?.plantilla_cargada && <p className="mt-3 break-all text-sm font-semibold text-emerald-700"><MolsanIcon name="check" size={13} bare /> Plantilla actual: {plantillaFactura.factura_nombre}</p>}
               {plantillaFactura && <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Vinculación confirmada: ID {plantillaFactura.concepto_gasto_id} · {plantillaFactura.concepto_gasto}</p>}
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
