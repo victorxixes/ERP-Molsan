@@ -168,9 +168,9 @@
   min-width: 0;
   min-height: 38px;
   padding: 9px 11px;
-  color: #24344b;
+  color: var(--molsan-text, #173247);
   background: #fff;
-  border: 1px solid #d8e0eb;
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: 7px;
   font-family: inherit;
   font-size: 12px;
@@ -179,7 +179,7 @@
 
 .ctn-listado-page input::placeholder,
 .ctn-modal-overlay input::placeholder {
-  color: #a0aaba;
+  color: var(--molsan-text-secondary, #617789);
 }
 
 .ctn-filtros-acciones {
@@ -1019,7 +1019,7 @@
 }
 
 .ctn-modal-tabla td {
-  color: #3d4d63;
+  color: var(--molsan-text-secondary, #617789);
   border-bottom: 1px solid var(--molsan-border, #D8E4EC);
   padding: 11px 12px;
 }
@@ -1109,7 +1109,7 @@
 }
 
 .ctn-tabla td {
-  color: #3d4d63;
+  color: var(--molsan-text-secondary, #617789);
   border-bottom: 1px solid var(--molsan-border, #D8E4EC);
 }
 
@@ -1226,7 +1226,7 @@
 }
 
 .ctn-tabla td {
-  border-bottom-color: var(--molsan-border-light, #e8edf5);
+  border-bottom-color: var(--molsan-border, #D8E4EC);
 }
 
 .ctn-tabla tbody tr:hover td {
@@ -1248,7 +1248,7 @@
 .ctn-btn-secondary {
   color: var(--molsan-text, #173247);
   background: var(--molsan-surface, #fff);
-  border-color: var(--molsan-border-strong, #cbd5e1);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-control, 8px);
 }
 
