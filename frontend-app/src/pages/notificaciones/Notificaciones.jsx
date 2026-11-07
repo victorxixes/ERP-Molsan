@@ -86,7 +86,7 @@ export default function Notificaciones() {
  },
 
  noticia: {
- borde: "border-blue-200",
+ borde: "border-[var(--molsan-border-strong)]",
  fondo: "bg-[var(--molsan-primary-soft)]",
  icono: "bg-[var(--molsan-primary-soft)] border-[var(--molsan-border)] text-[var(--molsan-primary)]",
  barra: "bg-[var(--molsan-primary)]",
@@ -100,10 +100,10 @@ export default function Notificaciones() {
  },
 
  info: {
- borde: "border-sky-200",
- fondo: "bg-sky-50",
- icono: "bg-sky-50 border-sky-200 text-sky-600",
- barra: "bg-sky-500",
+ borde: "border-[var(--molsan-border-strong)]",
+ fondo: "bg-[var(--molsan-surface-soft)]",
+ icono: "bg-[var(--molsan-surface-soft)] border-[var(--molsan-border-strong)] text-[var(--molsan-primary)]",
+ barra: "bg-[var(--molsan-surface-soft)]0",
  },
 
  default: {
