@@ -600,11 +600,7 @@
 /* Cabecera gestionada exclusivamente por MolsanPageHeader + Glass Luxe. */
 
 /* Impresión de EncargaGest: conserva las clases de impresión existentes. */
-@media print {
-  @page { size:A4 portrait; margin:12mm; }
-  /* La visibilidad del documento de impresión se centraliza en PortalProfesionalShared.css. */
-  * { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
-}
+/* La impresión se centraliza en PortalProfesionalPremium2027.css. */
 .encargagest .eg-empty-mark {
   color:#064675;border:1.5px solid #C5D8E5;border-radius:16px;
   background:#F2F7FB;box-shadow:0 5px 14px rgba(6,70,117,.08);
