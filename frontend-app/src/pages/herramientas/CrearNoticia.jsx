@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState, useCallback, useMemo } from "react";
 import { useUtilidades } from "../../hooks/useUtilidades";
 
@@ -218,7 +219,7 @@ export default function CrearNoticia() {
                 
               "
             >
-              <span>✓</span>
+              <span><MolsanIcon name="check" size={13} bare /></span>
               <span>Noticia creada correctamente.</span>
             </div>
           )}
