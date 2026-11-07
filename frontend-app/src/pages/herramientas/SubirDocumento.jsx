@@ -284,7 +284,7 @@ export default function SubirDocumento() {
                 
               "
             >
-              <span>✓</span>
+              <span><MolsanIcon name="check" size={13} bare /></span>
               <span>Documento subido correctamente.</span>
             </div>
           )}
