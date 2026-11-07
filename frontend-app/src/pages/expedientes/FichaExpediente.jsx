@@ -6292,7 +6292,7 @@ const cuantiaFincasParaEnvio =
                   </div>
                   <div className="mt-4 flex flex-wrap justify-end gap-2">
                     <Boton onClick={() => guardarEstadoAbsis(false)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Guardando…" : <><MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar datos para integración</>}</Boton>
-                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : <><MolsanIcon name="mail" size={14} tone="inherit" bare /> Registrar solicitud pendiente</>}</Boton>
+                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? <><MolsanIcon name="check" size={13} bare /> Solicitud pendiente registrada</> : <><MolsanIcon name="mail" size={14} tone="inherit" bare /> Registrar solicitud pendiente</>}</Boton>
                   </div>
                   {estadoDocumentacionAbsis.solicitud_registrada_localmente && <p className="mt-2 text-right text-xs font-semibold text-amber-700">Pendiente de API externa; todavía no transmitida a ABSIS.</p>}
                 </section>
@@ -6944,7 +6944,7 @@ const cuantiaFincasParaEnvio =
                     </div>
                     <p className="mt-1 text-[10px] text-slate-600">Realizado por: <strong>{item.usuario_creador || "Usuario no registrado"}</strong>{item.fecha_creacion ? ` · ${formatearFecha(item.fecha_creacion)}` : ""}</p>
                     {item.compensado ? (
-                      <p className="mt-1 text-[11px] font-semibold text-emerald-700">✓ PPAD compensado{item.fecha_compensacion ? ` el ${formatearFecha(item.fecha_compensacion)}` : ""}.</p>
+                      <p className="mt-1 text-[11px] font-semibold text-emerald-700"><MolsanIcon name="check" size={12} bare /> PPAD compensado{item.fecha_compensacion ? ` el ${formatearFecha(item.fecha_compensacion)}` : ""}.</p>
                     ) : (
                       <p role="status" className="mt-1 flex items-center gap-1 text-[11px] font-bold text-amber-800"><MolsanIcon name="alert" size={13} tone="amber" bare /> PPAD pendiente de compensar.</p>
                     )}
@@ -7006,11 +7006,11 @@ const cuantiaFincasParaEnvio =
                       </div>
                       <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
                         {item.compensado ? (
-                          <span className="mr-auto rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-800">✓ COMPENSADO</span>
+                          <span className="mr-auto rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-800"><MolsanIcon name="check" size={12} bare /> COMPENSADO</span>
                         ) : (
                           <>
                             <Boton tipo="primary" onClick={() => compensarPpad(item)} disabled={guardandoPpad || !String(expediente?.fecha_firma || "").slice(0, 10)}>
-                              {guardandoPpad ? "Registrando…" : "✓ Compensar"}
+                              {guardandoPpad ? "Registrando…" : <><MolsanIcon name="check" size={13} bare /> Compensar</>}
                             </Boton>
                             {!String(expediente?.fecha_firma || "").slice(0, 10) && <span className="text-[10px] text-slate-500">Disponible tras informar la fecha de firma.</span>}
                           </>
