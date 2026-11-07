@@ -286,7 +286,7 @@ export default function CorrespondenciaTipificada() {
                 <td className="px-5 py-4 text-[var(--molsan-text-secondary)]">{item.categoria || "General"}</td>
                 <td className="max-w-[280px] px-5 py-4 text-[var(--molsan-text-secondary)]"><span className="block truncate" title={item.asunto || ""}>{item.asunto || "Sin asunto"}</span></td>
                 <td className="px-5 py-4"><span className={"inline-flex rounded-full px-2.5 py-1 text-xs font-bold " + (item.activo ? "bg-emerald-50 text-emerald-700" : "bg-[var(--molsan-table-head)] text-[var(--molsan-text-secondary)]")}>{item.activo ? "Activa" : "Inactiva"}</span></td>
-                <td className="px-5 py-4 text-right"><button type="button" onClick={() => editarPlantilla(item)} className="rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-primary-soft)] px-3 py-2 text-xs font-bold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-surface-soft)]">↗ Acceder a la ficha</button></td>
+                <td className="px-5 py-4 text-right"><button type="button" onClick={() => editarPlantilla(item)} className="rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-primary-soft)] px-3 py-2 text-xs font-bold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-surface-soft)]"><MolsanIcon name="externalLink" size={12} bare /> Acceder a la ficha</button></td>
               </tr>)}</tbody>
             </table></div>
           )}
