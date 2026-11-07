@@ -1128,7 +1128,7 @@ export default function SeguridadPermisos() {
                           `}
                         >
                           {completo
-                            ? "✓"
+                            ? <MolsanIcon name="check" size={15} tone="emerald" bare />
                             : <MolsanIcon name="key" size={15} tone="ocean" bare />}
                         </span>
 
