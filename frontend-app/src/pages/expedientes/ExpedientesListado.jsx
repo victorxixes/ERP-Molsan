@@ -3231,7 +3231,7 @@ export default function ExpedientesListado() {
                 style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)" }}
                 aria-label="Cerrar"
               >
-                ×
+                <MolsanIcon name="x" size={18} bare />
               </button>
             </div>
 
