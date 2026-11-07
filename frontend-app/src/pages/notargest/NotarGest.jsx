@@ -707,13 +707,13 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
               mark="NG"
               title="NotarGest"
               description="Visión global del trabajo notarial y detalle operativo de cada notaría habilitada."
-              actions={
-                <button type="button" className="ng-boton-secundario" onClick={actualizarDatosSidebar} disabled={cargandoSelectorNotaria} aria-live="polite">
-                  <MolsanIcon name="refresh" size={18} className={cargandoSelectorNotaria ? "ng-icono-girando" : ""} tone="ocean" />
-                  {cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
-                </button>
-              }
             />
+            <div className="ng-page-toolbar">
+              <button type="button" className="ng-boton-secundario" onClick={actualizarDatosSidebar} disabled={cargandoSelectorNotaria} aria-live="polite">
+                <MolsanIcon name="refresh" size={18} className={cargandoSelectorNotaria ? "ng-icono-girando" : ""} tone="ocean" />
+                {cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
+              </button>
+            </div>
             {cargandoSelectorNotaria && <p className="ng-mensaje">Calculando pendientes de las notarías…</p>}
             {!cargandoSelectorNotaria && notariasSeleccionables.length === 0 && <div className="ng-admin-vacio"><strong>No hay notarías habilitadas</strong><p>Activa el acceso NotarGest desde la ficha CTN de cada notaría.</p></div>}
             <section className="ng-admin-global-resumen" aria-label="Resumen global de todas las notarías">
@@ -824,16 +824,16 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       title="NotarGest"
       description="Centro de gestión notarial, firmas y seguimiento registral."
       
-      actions={
-        <>
-          {vista !== "inicio" && <button type="button" onClick={volverVistaAnterior} className="ng-boton-secundario"><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> {vista === "detalle" ? "Volver a la vista anterior" : "Volver al inicio"}</button>}
-          <button type="button" className="ng-boton-secundario" onClick={actualizarDatosSidebar} disabled={cargando || cargandoSelectorNotaria} aria-live="polite">
-            <MolsanIcon name="refresh" size={18} className={cargando || cargandoSelectorNotaria ? "ng-icono-girando" : ""} tone="ocean" />
-            {cargando || cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
-          </button>
-        </>
-      }
+      actions={vista !== "inicio" ? (
+        <button type="button" onClick={volverVistaAnterior} className="ng-boton-secundario"><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> {vista === "detalle" ? "Volver a la vista anterior" : "Volver al inicio"}</button>
+      ) : null}
     />
+    <div className="ng-page-toolbar">
+      <button type="button" className="ng-boton-secundario" onClick={actualizarDatosSidebar} disabled={cargando || cargandoSelectorNotaria} aria-live="polite">
+        <MolsanIcon name="refresh" size={18} className={cargando || cargandoSelectorNotaria ? "ng-icono-girando" : ""} tone="ocean" />
+        {cargando || cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
+      </button>
+    </div>
 
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
     {vista === "inicio" && <section className="ng-dashboard-analitica">
