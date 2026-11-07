@@ -2090,3 +2090,11 @@ Así la hoja local y la capa canónica expresan la misma presentación, sin depe
 Commits: `5a74482db1fb69b43fa485c5cfd3f0a253a07bd2`, `d67ccea60cdf0489227e40da050091675f2f07a0`, `8216e3a5a0565a18478a8cd0f962f8c940ba1967`.
 
 Pendiente de build y verificación visual de las tablas en los tres portales.
+
+## 71. Última normalización de cabeceras de tabla en Seguridad — 7 de noviembre de 2026
+
+La revisión de las hojas de página encontró dos reglas locales de Seguridad que todavía usaban superficie blanca o azul hielo genérico en los encabezados. Se han cambiado ambas variantes —subpáginas de roles/permisos y editor de roles/usuarios— al token dedicado #EAF2F8 y texto secundario #617789. No se han cambiado los colores de estados ni el hover de filas.
+
+Commit: `8665fc7dd13e09378332694b1d890b0ea35cbc60`.
+
+Pendiente validar tablas sticky y responsive en Seguridad y sus subpáginas.
