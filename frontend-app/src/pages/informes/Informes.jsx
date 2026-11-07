@@ -1191,7 +1191,7 @@ function InformeCitasApoderados() {
         informes-premium-page
         min-h-screen
         bg-white
-        text-slate-700
+        text-[var(--molsan-text)]
         p-4
         md:p-6
         space-y-6
@@ -1222,7 +1222,7 @@ function InformeCitasApoderados() {
             -right-24
             w-64
             h-64
-            bg-blue-300/20
+            bg-[var(--molsan-primary-soft)]
             rounded-full
             blur-3xl
             pointer-events-none
@@ -1271,8 +1271,8 @@ function InformeCitasApoderados() {
                 py-1.5
                 rounded-full
                 bg-white/80
-                border border-slate-200
-                text-slate-500
+                border border-[var(--molsan-border)]
+                text-[var(--molsan-text-secondary)]
                 text-xs
                 shadow-sm
               "
@@ -1283,7 +1283,7 @@ function InformeCitasApoderados() {
                   w-2
                   h-2
                   rounded-full
-                  bg-blue-400
+                  bg-[var(--molsan-primary)]
                 "
               />
 
@@ -1291,7 +1291,7 @@ function InformeCitasApoderados() {
 
               <strong
                 className="
-                  text-slate-700
+                  text-[var(--molsan-text)]
                 "
               >
                 {mesActual} {año}
@@ -1335,12 +1335,12 @@ function InformeCitasApoderados() {
               w-9
               h-9
               rounded-lg
-              bg-blue-50
-              border border-blue-100
+              bg-[var(--molsan-surface-soft)]
+              border border-[var(--molsan-border)]
               flex
               items-center
               justify-center
-              text-blue-500
+              text-[var(--molsan-primary)]
             "
           >
             <MolsanIcon name="settings" size={18} tone="ocean" bare />
@@ -1353,7 +1353,7 @@ function InformeCitasApoderados() {
               className="
                 text-lg
                 font-semibold
-                text-slate-800
+                text-[var(--molsan-text)]
               "
             >
               Filtros del informe
@@ -1362,7 +1362,7 @@ function InformeCitasApoderados() {
             <p
               className="
                 text-xs
-                text-slate-400
+                text-[var(--molsan-text-secondary)]
               "
             >
               Selecciona el periodo y filtra los resultados.
@@ -1395,7 +1395,7 @@ function InformeCitasApoderados() {
 
             <label
               className="
-                text-slate-500
+                text-[var(--molsan-text-secondary)]
                 text-xs
                 font-semibold
                 uppercase
@@ -1411,7 +1411,7 @@ function InformeCitasApoderados() {
               className="
                 rounded-xl
                 bg-white
-                border border-slate-200
+                border border-[var(--molsan-border)]
                 shadow-sm
               "
             >
@@ -1444,7 +1444,7 @@ function InformeCitasApoderados() {
 
             <label
               className="
-                text-slate-500
+                text-[var(--molsan-text-secondary)]
                 text-xs
                 font-semibold
                 uppercase
@@ -1461,17 +1461,17 @@ function InformeCitasApoderados() {
               className="
                 w-full
                 bg-white
-                border border-slate-200
+                border border-[var(--molsan-border)]
                 rounded-xl
                 px-3
                 py-2.5
-                text-slate-700
+                text-[var(--molsan-text)]
                 outline-none
                 transition
                 shadow-sm
-                focus:border-blue-400
+                focus:border-[var(--molsan-primary)]
                 focus:ring-2
-                focus:ring-blue-100
+                focus:ring-[var(--molsan-primary)]/10
               "
               value={año}
               onChange={(e) =>
@@ -1498,7 +1498,7 @@ function InformeCitasApoderados() {
 
             <label
               className="
-                text-slate-500
+                text-[var(--molsan-text-secondary)]
                 text-xs
                 font-semibold
                 uppercase
@@ -1522,7 +1522,7 @@ function InformeCitasApoderados() {
                   left-3
                   top-1/2
                   -translate-y-1/2
-                  text-slate-400
+                  text-[var(--molsan-text-secondary)]
                 "
               >
                 <MolsanIcon name="search" size={18} tone="ocean" bare />
@@ -1534,19 +1534,19 @@ function InformeCitasApoderados() {
                 className="
                   w-full
                   bg-white
-                  border border-slate-200
+                  border border-[var(--molsan-border)]
                   rounded-xl
                   pl-10
                   pr-4
                   py-2.5
-                  text-slate-700
-                  placeholder-slate-400
+                  text-[var(--molsan-text)]
+                  placeholder:text-[var(--molsan-text-secondary)]/60
                   outline-none
                   transition
                   shadow-sm
-                  focus:border-blue-400
+                  focus:border-[var(--molsan-primary)]
                   focus:ring-2
-                  focus:ring-blue-100
+                  focus:ring-[var(--molsan-primary)]/10
                 "
                 placeholder="Buscar por nombre..."
                 value={filtroNombre}
@@ -1652,7 +1652,7 @@ function InformeCitasApoderados() {
 
           <div
             className="
-              text-slate-700
+              text-[var(--molsan-text)]
               font-semibold
               text-sm
             "
@@ -1663,7 +1663,7 @@ function InformeCitasApoderados() {
 
           <div
             className="
-              text-slate-400
+              text-[var(--molsan-text-secondary)]
               text-xs
               mt-1
             "
@@ -1769,7 +1769,7 @@ function InformeCitasApoderados() {
               className="
                 text-xl
                 font-bold
-                text-slate-800
+                text-[var(--molsan-text)]
               "
             >
               Detalle por apoderado
@@ -1779,7 +1779,7 @@ function InformeCitasApoderados() {
             <p
               className="
                 text-xs
-                text-slate-400
+                text-[var(--molsan-text-secondary)]
                 mt-1
               "
             >
@@ -1794,10 +1794,10 @@ function InformeCitasApoderados() {
               px-3
               py-1.5
               rounded-lg
-              bg-blue-50
-              border border-blue-100
+              bg-[var(--molsan-surface-soft)]
+              border border-[var(--molsan-border)]
               text-xs
-              text-blue-600
+              text-[var(--molsan-primary)]
               font-medium
             "
           >
@@ -1816,15 +1816,15 @@ function InformeCitasApoderados() {
           <table
             className="
               w-full
-              text-slate-700
+              text-[var(--molsan-text)]
               text-sm
             "
           >
 
             <thead
               className="
-                bg-blue-50/70
-                border-b border-blue-100
+                bg-[var(--molsan-surface-soft)]
+                border-b border-[var(--molsan-border)]
               "
             >
 
@@ -1881,7 +1881,7 @@ function InformeCitasApoderados() {
                     className="
                       py-12
                       text-center
-                      text-slate-400
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
 
@@ -1898,7 +1898,7 @@ function InformeCitasApoderados() {
                     <div
                       className="
                         text-sm
-                        text-slate-500
+                        text-[var(--molsan-text-secondary)]
                       "
                     >
                       No hay datos para los filtros seleccionados.
@@ -1920,8 +1920,8 @@ function InformeCitasApoderados() {
                       }
                       className="
                         border-b
-                        border-slate-100
-                        hover:bg-blue-50/45
+                        border-[var(--molsan-border)]
+                        hover:bg-[var(--molsan-surface-soft)]
                         transition
                         group
                       "
@@ -1950,15 +1950,15 @@ function InformeCitasApoderados() {
                               w-8
                               h-8
                               rounded-lg
-                              bg-blue-50
-                              border border-blue-100
+                              bg-[var(--molsan-surface-soft)]
+                              border border-[var(--molsan-border)]
                               flex
                               items-center
                               justify-center
                               text-xs
-                              text-blue-600
+                              text-[var(--molsan-primary)]
                               font-semibold
-                              group-hover:bg-blue-100
+                              group-hover:bg-[var(--molsan-surface-soft)]
                               transition
                             "
                           >
@@ -1969,7 +1969,7 @@ function InformeCitasApoderados() {
                           <span
                             className="
                               font-semibold
-                              text-slate-700
+                              text-[var(--molsan-text)]
                             "
                           >
                             {row.nombre ||
@@ -1999,9 +1999,9 @@ function InformeCitasApoderados() {
                             px-2.5
                             py-1
                             rounded-lg
-                            bg-blue-50
-                            border border-blue-200
-                            text-blue-700
+                            bg-[var(--molsan-surface-soft)]
+                            border border-[var(--molsan-border-strong)]
+                            text-[var(--molsan-primary)]
                             font-semibold
                           "
                         >
@@ -2108,12 +2108,12 @@ function InformeCitasApoderados() {
               w-10
               h-10
               rounded-xl
-              bg-blue-50
-              border border-blue-100
+              bg-[var(--molsan-surface-soft)]
+              border border-[var(--molsan-border)]
               flex
               items-center
               justify-center
-              text-blue-500
+              text-[var(--molsan-primary)]
             "
           >
             <MolsanIcon name="chart" size={20} tone="ocean" bare />
@@ -2126,7 +2126,7 @@ function InformeCitasApoderados() {
               className="
                 text-xl
                 font-bold
-                text-slate-800
+                text-[var(--molsan-text)]
               "
             >
               Análisis gráfico
@@ -2136,7 +2136,7 @@ function InformeCitasApoderados() {
             <p
               className="
                 text-sm
-                text-slate-400
+                text-[var(--molsan-text-secondary)]
                 mt-1
               "
             >
@@ -2221,7 +2221,7 @@ function KpiCard({
   const fondos = {
 
     blue:
-      "bg-blue-50/80 border-blue-200",
+      "bg-[var(--molsan-surface-soft)] border-[var(--molsan-border-strong)]",
 
     green:
       "bg-emerald-50/80 border-emerald-200",
@@ -2241,7 +2241,7 @@ function KpiCard({
   const colores = {
 
     blue:
-      "text-blue-700",
+      "text-[var(--molsan-primary)]",
 
     green:
       "text-emerald-700",
@@ -2291,7 +2291,7 @@ function KpiCard({
               text-xs
               uppercase
               tracking-wide
-              text-slate-500
+              text-[var(--molsan-text-secondary)]
               font-semibold
             "
           >
@@ -2303,7 +2303,7 @@ function KpiCard({
             className="
               text-3xl
               font-bold
-              text-slate-800
+              text-[var(--molsan-text)]
               mt-2
             "
           >
@@ -2314,7 +2314,7 @@ function KpiCard({
           <p
             className="
               text-xs
-              text-slate-400
+              text-[var(--molsan-text-secondary)]
               mt-1
             "
           >
@@ -2375,10 +2375,10 @@ function ThOrden({
         py-3.5
         px-6
         font-semibold
-        text-blue-800/80
+        text-[var(--molsan-primary)]
         cursor-pointer
         select-none
-        hover:text-blue-900
+        hover:text-[var(--molsan-primary)]
         transition
         ${
           align === "center"
@@ -2408,8 +2408,8 @@ function ThOrden({
             transition
             ${
               activo
-                ? "text-blue-500"
-                : "text-blue-300"
+                ? "text-[var(--molsan-primary)]"
+                : "text-[var(--molsan-text-secondary)]/60"
             }
           `}
         >
@@ -2474,8 +2474,8 @@ function GraficoCard({
               w-9
               h-9
               rounded-lg
-              bg-blue-50
-              border border-blue-100
+              bg-[var(--molsan-surface-soft)]
+              border border-[var(--molsan-border)]
               flex
               items-center
               justify-center
@@ -2491,7 +2491,7 @@ function GraficoCard({
               className="
                 text-sm
                 font-semibold
-                text-slate-700
+                text-[var(--molsan-text)]
               "
             >
               {titulo}
@@ -2501,7 +2501,7 @@ function GraficoCard({
             <p
               className="
                 text-xs
-                text-slate-400
+                text-[var(--molsan-text-secondary)]
                 mt-0.5
               "
             >
@@ -2646,8 +2646,8 @@ function descargarBlobInforme(blob, nombre) {
 function CampoFiltroInforme({ label, value, onChange, type = "text", placeholder = "" }) {
   return (
     <label className="block min-w-0">
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</span>
-      <input type={type} value={value ?? ""} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[var(--molsan-text-secondary)]">{label}</span>
+      <input type={type} value={value ?? ""} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} className="w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-text)] outline-none transition focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary)]/10" />
     </label>
   );
 }
@@ -2655,8 +2655,8 @@ function CampoFiltroInforme({ label, value, onChange, type = "text", placeholder
 function SelectFiltroInforme({ label, value, onChange, children }) {
   return (
     <label className="block min-w-0">
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</span>
-      <select value={value ?? ""} onChange={(e) => onChange(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">{children}</select>
+      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[var(--molsan-text-secondary)]">{label}</span>
+      <select value={value ?? ""} onChange={(e) => onChange(e.target.value)} className="w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-text)] outline-none transition focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary)]/10">{children}</select>
     </label>
   );
 }
@@ -2696,8 +2696,8 @@ function AvisoInforme({ error }) {
 }
 
 function PanelEstadoInforme({ loading, vacio, textoVacio = "No hay registros para los filtros seleccionados." }) {
-  if (loading) return <div className="px-5 py-12 text-center text-sm text-slate-500">Consultando datos reales del ERP…</div>;
-  if (vacio) return <div className="px-5 py-12 text-center text-sm text-slate-500"><div className="mb-2"><MolsanIcon name="inbox" size={34} tone="ocean" /></div>{textoVacio}</div>;
+  if (loading) return <div className="px-5 py-12 text-center text-sm text-[var(--molsan-text-secondary)]">Consultando datos reales del ERP…</div>;
+  if (vacio) return <div className="px-5 py-12 text-center text-sm text-[var(--molsan-text-secondary)]"><div className="mb-2"><MolsanIcon name="inbox" size={34} tone="ocean" /></div>{textoVacio}</div>;
   return null;
 }
 
@@ -2829,7 +2829,7 @@ function InformeFirmas() {
       
 
       <form onSubmit={aplicar} className="rounded-2xl border border-[#C5D8E5] bg-white p-5 shadow-sm  md:p-6">
-        <div className="mb-4 flex items-center justify-between gap-3"><div><h3 className="font-bold text-slate-800">Filtros del informe</h3><p className="mt-1 text-xs text-slate-500">El periodo se aplica a la fecha real de firma.</p></div><button type="button" onClick={limpiar} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Restablecer</button></div>
+        <div className="mb-4 flex items-center justify-between gap-3"><div><h3 className="font-bold text-[var(--molsan-text)]">Filtros del informe</h3><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">El periodo se aplica a la fecha real de firma.</p></div><button type="button" onClick={limpiar} className="rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2 text-xs font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]">Restablecer</button></div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <CampoFiltroInforme label="Fecha firma desde" type="date" value={filtros.fecha_desde} onChange={(v) => cambiar("fecha_desde", v)} />
           <CampoFiltroInforme label="Fecha firma hasta" type="date" value={filtros.fecha_hasta} onChange={(v) => cambiar("fecha_hasta", v)} />
@@ -2839,7 +2839,7 @@ function InformeFirmas() {
           <CampoFiltroInforme label="Apoderado" value={filtros.apoderado} onChange={(v) => cambiar("apoderado", v)} placeholder="Nombre del apoderado" />
           <div className="sm:col-span-2"><CampoFiltroInforme label="Buscar expediente, titular, solicitante o protocolo" value={filtros.q} onChange={(v) => cambiar("q", v)} placeholder="N.º expediente, NIF, titular…" /></div>
         </div>
-        <div className="mt-4 flex flex-wrap justify-end gap-3"><button type="submit" className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">Aplicar filtros</button></div>
+        <div className="mt-4 flex flex-wrap justify-end gap-3"><button type="submit" className="rounded-xl bg-[var(--molsan-primary)] px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[var(--molsan-primary)]">Aplicar filtros</button></div>
       </form>
 
       <AvisoInforme error={error} />
@@ -2863,16 +2863,16 @@ function InformeFirmas() {
       </div>
 
       <section className="overflow-hidden rounded-2xl border border-[#C5D8E5] bg-white shadow-sm ">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b-0 px-5 py-4"><div><h3 className="font-bold text-slate-800">Resumen por tipo de operación</h3><p className="mt-1 text-xs text-slate-500">Conteo de firmas reales y días medios cuando existen fecha de envío y de firma.</p></div><span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{periodo}</span></div>
-        {loading ? <PanelEstadoInforme loading /> : datos.por_tipo_operacion.length === 0 ? <PanelEstadoInforme vacio /> : <div className="overflow-x-auto"><table className="w-full min-w-[650px] text-sm"><thead className="bg-blue-50/70 text-xs uppercase tracking-wide text-blue-800/80"><tr><th className="px-5 py-3 text-left">Tipo de operación</th><th className="px-5 py-3 text-right">Firmas</th><th className="px-5 py-3 text-right">VC</th><th className="px-5 py-3 text-right">Presencial</th><th className="px-5 py-3 text-right">Media días</th></tr></thead><tbody>{datos.por_tipo_operacion.map((f, i) => <tr key={`${f.tipo_operacion}-${i}`} className="border-t border-slate-100 hover:bg-blue-50/40"><td className="px-5 py-3 font-medium text-slate-700">{f.tipo_operacion}</td><td className="px-5 py-3 text-right font-semibold">{numeroInforme(f.total_firmas)}</td><td className="px-5 py-3 text-right">{numeroInforme(f.vc)}</td><td className="px-5 py-3 text-right">{numeroInforme(f.presencial)}</td><td className="px-5 py-3 text-right text-blue-700">{f.media_dias == null ? "—" : `${numeroInforme(f.media_dias, 1)} días`}</td></tr>)}</tbody></table></div>}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b-0 px-5 py-4"><div><h3 className="font-bold text-[var(--molsan-text)]">Resumen por tipo de operación</h3><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Conteo de firmas reales y días medios cuando existen fecha de envío y de firma.</p></div><span className="rounded-lg bg-[var(--molsan-surface-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--molsan-primary)]">{periodo}</span></div>
+        {loading ? <PanelEstadoInforme loading /> : datos.por_tipo_operacion.length === 0 ? <PanelEstadoInforme vacio /> : <div className="overflow-x-auto"><table className="w-full min-w-[650px] text-sm"><thead className="bg-[var(--molsan-surface-soft)] text-xs uppercase tracking-wide text-[var(--molsan-primary)]"><tr><th className="px-5 py-3 text-left">Tipo de operación</th><th className="px-5 py-3 text-right">Firmas</th><th className="px-5 py-3 text-right">VC</th><th className="px-5 py-3 text-right">Presencial</th><th className="px-5 py-3 text-right">Media días</th></tr></thead><tbody>{datos.por_tipo_operacion.map((f, i) => <tr key={`${f.tipo_operacion}-${i}`} className="border-t border-[var(--molsan-border)] hover:bg-[var(--molsan-surface-soft)]"><td className="px-5 py-3 font-medium text-[var(--molsan-text)]">{f.tipo_operacion}</td><td className="px-5 py-3 text-right font-semibold">{numeroInforme(f.total_firmas)}</td><td className="px-5 py-3 text-right">{numeroInforme(f.vc)}</td><td className="px-5 py-3 text-right">{numeroInforme(f.presencial)}</td><td className="px-5 py-3 text-right text-[var(--molsan-primary)]">{f.media_dias == null ? "—" : `${numeroInforme(f.media_dias, 1)} días`}</td></tr>)}</tbody></table></div>}
       </section>
 
       <section className="overflow-hidden rounded-2xl border border-[#C5D8E5] bg-white shadow-sm ">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b-0 px-5 py-4"><div><h3 className="font-bold text-slate-800">Detalle de firmas</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(filas.length)} registros recibidos del backend. Puedes completar modalidad y fecha de envío desde la columna de acciones.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : <><MolsanIcon name="book" size={14} tone="inherit" bare /> Exportar Excel</>}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"><MolsanIcon name="file" size={14} tone="inherit" bare /> Exportar PDF</button></div></div>
-        {loading ? <PanelEstadoInforme loading /> : filas.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales para el periodo y los filtros seleccionados." /> : <div className="max-h-[700px] overflow-auto"><table className="w-full min-w-[1420px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{columnasPDF.map((c) => <th key={c.key} className="whitespace-nowrap px-4 py-3">{c.label}</th>)}<th className="whitespace-nowrap px-4 py-3">Acciones</th></tr></thead><tbody>{filas.map((f, i) => <Fragment key={f.id ?? `${f.id_expediente}-${i}`}>
-          <tr className="border-t border-slate-100 hover:bg-blue-50/40">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b-0 px-5 py-4"><div><h3 className="font-bold text-[var(--molsan-text)]">Detalle de firmas</h3><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">{numeroInforme(filas.length)} registros recibidos del backend. Puedes completar modalidad y fecha de envío desde la columna de acciones.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : <><MolsanIcon name="book" size={14} tone="inherit" bare /> Exportar Excel</>}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"><MolsanIcon name="file" size={14} tone="inherit" bare /> Exportar PDF</button></div></div>
+        {loading ? <PanelEstadoInforme loading /> : filas.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales para el periodo y los filtros seleccionados." /> : <div className="max-h-[700px] overflow-auto"><table className="w-full min-w-[1420px] text-sm"><thead className="sticky top-0 z-10 bg-[var(--molsan-surface-soft)] text-left text-xs uppercase tracking-wide text-[var(--molsan-primary)]"><tr>{columnasPDF.map((c) => <th key={c.key} className="whitespace-nowrap px-4 py-3">{c.label}</th>)}<th className="whitespace-nowrap px-4 py-3">Acciones</th></tr></thead><tbody>{filas.map((f, i) => <Fragment key={f.id ?? `${f.id_expediente}-${i}`}>
+          <tr className="border-t border-[var(--molsan-border)] hover:bg-[var(--molsan-surface-soft)]">
             <td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td>
-            <td className="px-4 py-3 font-semibold text-blue-700">{f.id_expediente || "—"}</td>
+            <td className="px-4 py-3 font-semibold text-[var(--molsan-primary)]">{f.id_expediente || "—"}</td>
             <td className="max-w-[240px] px-4 py-3">{f.nombre_titular || "—"}</td>
             <td className="px-4 py-3">{f.tipo_operacion || "—"}</td>
             <td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span className="font-semibold text-amber-700">Sin clasificar</span>}</td>
@@ -2881,15 +2881,15 @@ function InformeFirmas() {
             <td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td>
             <td className="px-4 py-3 text-right">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td>
             <td className="px-4 py-3">{f.protocolo || "—"}</td>
-            <td className="whitespace-nowrap px-4 py-3"><button type="button" onClick={() => String(editandoId) === String(f.id_expediente) ? setEditandoId("") : iniciarEdicionFirma(f)} className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">{String(editandoId) === String(f.id_expediente) ? "Cancelar" : (f.modalidad === "SIN_CLASIFICAR" || !f.fecha_envio ? "Completar datos" : "Editar datos")}</button></td>
+            <td className="whitespace-nowrap px-4 py-3"><button type="button" onClick={() => String(editandoId) === String(f.id_expediente) ? setEditandoId("") : iniciarEdicionFirma(f)} className="rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-xs font-semibold text-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]">{String(editandoId) === String(f.id_expediente) ? "Cancelar" : (f.modalidad === "SIN_CLASIFICAR" || !f.fecha_envio ? "Completar datos" : "Editar datos")}</button></td>
           </tr>
           {String(editandoId) === String(f.id_expediente) && (
-            <tr key={`${f.id_expediente}-editar`} className="border-t border-blue-100 bg-blue-50/60">
+            <tr key={`${f.id_expediente}-editar`} className="border-t border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)]">
               <td colSpan={11} className="px-4 py-4">
-                <div className="grid grid-cols-1 items-end gap-3 rounded-xl border border-blue-100 bg-white p-4 md:grid-cols-[minmax(220px,1fr)_minmax(220px,1fr)_auto]">
-                  <label className="block min-w-0"><span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Fecha real de envío al notario</span><input type="date" max={String(f.fecha_firma || "").slice(0, 10)} value={edicionFirma.fecha_envio} disabled={guardandoDatosFirma} onChange={(e) => setEdicionFirma((actual) => ({ ...actual, fecha_envio: e.target.value }))} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" /></label>
-                  <label className="block min-w-0"><span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Modalidad real de firma</span><select value={edicionFirma.modalidad} disabled={guardandoDatosFirma} onChange={(e) => setEdicionFirma((actual) => ({ ...actual, modalidad: e.target.value }))} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"><option value="SIN_CLASIFICAR">Sin clasificar</option><option value="VC">Videoconferencia</option><option value="PRESENCIAL">Presencial</option></select><span className="mt-1 block text-[11px] text-slate-400">Selecciona solo la modalidad confirmada para esta firma.</span></label>
-                  <div className="flex flex-wrap gap-2"><button type="button" disabled={guardandoDatosFirma} onClick={() => guardarDatosFirma(f)} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{guardandoDatosFirma ? "Guardando…" : "Guardar datos"}</button><button type="button" disabled={guardandoDatosFirma} onClick={() => setEditandoId("")} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50">Cancelar</button></div>
+                <div className="grid grid-cols-1 items-end gap-3 rounded-xl border border-[var(--molsan-border)] bg-white p-4 md:grid-cols-[minmax(220px,1fr)_minmax(220px,1fr)_auto]">
+                  <label className="block min-w-0"><span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Fecha real de envío al notario</span><input type="date" max={String(f.fecha_firma || "").slice(0, 10)} value={edicionFirma.fecha_envio} disabled={guardandoDatosFirma} onChange={(e) => setEdicionFirma((actual) => ({ ...actual, fecha_envio: e.target.value }))} className="w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary)]/10" /></label>
+                  <label className="block min-w-0"><span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Modalidad real de firma</span><select value={edicionFirma.modalidad} disabled={guardandoDatosFirma} onChange={(e) => setEdicionFirma((actual) => ({ ...actual, modalidad: e.target.value }))} className="w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary)]/10"><option value="SIN_CLASIFICAR">Sin clasificar</option><option value="VC">Videoconferencia</option><option value="PRESENCIAL">Presencial</option></select><span className="mt-1 block text-[11px] text-[var(--molsan-text-secondary)]">Selecciona solo la modalidad confirmada para esta firma.</span></label>
+                  <div className="flex flex-wrap gap-2"><button type="button" disabled={guardandoDatosFirma} onClick={() => guardarDatosFirma(f)} className="rounded-xl bg-[var(--molsan-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--molsan-primary)] disabled:opacity-50">{guardandoDatosFirma ? "Guardando…" : "Guardar datos"}</button><button type="button" disabled={guardandoDatosFirma} onClick={() => setEditandoId("")} className="rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)] disabled:opacity-50">Cancelar</button></div>
                 </div>
               </td>
             </tr>
@@ -3037,8 +3037,8 @@ function InformeNotarios() {
 
       <form onSubmit={aplicar} className="rounded-2xl border border-[#C5D8E5] bg-white p-5 shadow-sm  md:p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div><h3 className="font-bold text-slate-800">Filtros del informe</h3><p className="mt-1 text-xs text-slate-500">Las fechas se aplican a la firma realizada, no a las citas previstas de Agenda.</p></div>
-          <button type="button" onClick={limpiar} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Restablecer</button>
+          <div><h3 className="font-bold text-[var(--molsan-text)]">Filtros del informe</h3><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Las fechas se aplican a la firma realizada, no a las citas previstas de Agenda.</p></div>
+          <button type="button" onClick={limpiar} className="rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2 text-xs font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]">Restablecer</button>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <CampoFiltroInforme label="Fecha firma desde" type="date" value={filtros.fecha_desde} onChange={(v) => cambiar("fecha_desde", v)} />
@@ -3049,7 +3049,7 @@ function InformeNotarios() {
           <CampoFiltroInforme label="Apoderado" value={filtros.apoderado} onChange={(v) => cambiar("apoderado", v)} placeholder="Nombre del apoderado" />
           <div className="sm:col-span-2"><CampoFiltroInforme label="Búsqueda general" value={filtros.q} onChange={(v) => cambiar("q", v)} placeholder="Expediente, titular, solicitante, protocolo u oficina" /></div>
         </div>
-        <div className="mt-4 flex flex-wrap justify-end gap-3"><button type="submit" className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">Aplicar filtros</button></div>
+        <div className="mt-4 flex flex-wrap justify-end gap-3"><button type="submit" className="rounded-xl bg-[var(--molsan-primary)] px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[var(--molsan-primary)]">Aplicar filtros</button></div>
       </form>
 
       <AvisoInforme error={error} />
@@ -3076,19 +3076,19 @@ function InformeNotarios() {
 
       <section className="overflow-hidden rounded-2xl border border-[#C5D8E5] bg-white shadow-sm ">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b-0 px-5 py-4">
-          <div><h3 className="font-bold text-slate-800">Ranking de actividad por notario</h3><p className="mt-1 text-xs text-slate-500">Los primeros puestos se ordenan por número de expedientes firmados en el periodo.</p></div>
-          <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{periodo}</span>
+          <div><h3 className="font-bold text-[var(--molsan-text)]">Ranking de actividad por notario</h3><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Los primeros puestos se ordenan por número de expedientes firmados en el periodo.</p></div>
+          <span className="rounded-lg bg-[var(--molsan-surface-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--molsan-primary)]">{periodo}</span>
         </div>
         {loading ? <PanelEstadoInforme loading /> : topNotarios.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas de notarios para este periodo y filtros." /> : (
           <div className="space-y-4 p-5">
             {topNotarios.map((fila, indice) => (
-              <button key={fila.clave_notario} type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === fila.clave_notario ? "" : fila.clave_notario)} className={`w-full rounded-xl border p-3 text-left transition hover:border-blue-200 hover:bg-blue-50/40 ${claveNotarioSeleccionado === fila.clave_notario ? "border-blue-300 bg-blue-50" : "border-slate-100 bg-white"}`}>
+              <button key={fila.clave_notario} type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === fila.clave_notario ? "" : fila.clave_notario)} className={`w-full rounded-xl border p-3 text-left transition hover:border-[var(--molsan-border-strong)] hover:bg-[var(--molsan-surface-soft)] ${claveNotarioSeleccionado === fila.clave_notario ? "border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)]" : "border-[var(--molsan-border)] bg-white"}`}>
                 <div className="mb-2 flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-blue-700">{indice + 1}</span><span className="min-w-0"><span className="block truncate text-sm font-semibold text-slate-800">{fila.nombre_notario}</span><span className="block text-xs text-slate-400">{fila.nif_notario || "NIF no informado"}</span></span></div>
-                  <span className="shrink-0 text-lg font-bold text-slate-800">{numeroInforme(fila.total_firmas)}</span>
+                  <div className="flex min-w-0 items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--molsan-surface-soft)] text-xs font-bold text-[var(--molsan-primary)]">{indice + 1}</span><span className="min-w-0"><span className="block truncate text-sm font-semibold text-[var(--molsan-text)]">{fila.nombre_notario}</span><span className="block text-xs text-[var(--molsan-text-secondary)]">{fila.nif_notario || "NIF no informado"}</span></span></div>
+                  <span className="shrink-0 text-lg font-bold text-[var(--molsan-text)]">{numeroInforme(fila.total_firmas)}</span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-blue-500 transition-all" style={{ width: `${Math.min(100, Math.max(0, (Number(fila.total_firmas || 0) / maxFirmasNotario) * 100))}%` }} /></div>
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-500"><span>VC: <strong className="text-slate-700">{numeroInforme(fila.vc)}</strong></span><span>Presencial: <strong className="text-slate-700">{numeroInforme(fila.presencial)}</strong></span><span>Sin clasificar: <strong className="text-slate-700">{numeroInforme(fila.sin_clasificar)}</strong></span><span>Última firma: <strong className="text-slate-700">{fechaInformeVisible(fila.ultima_firma)}</strong></span></div>
+                <div className="h-2 overflow-hidden rounded-full bg-[var(--molsan-surface-soft)]"><div className="h-full rounded-full bg-[var(--molsan-surface-soft)]0 transition-all" style={{ width: `${Math.min(100, Math.max(0, (Number(fila.total_firmas || 0) / maxFirmasNotario) * 100))}%` }} /></div>
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[var(--molsan-text-secondary)]"><span>VC: <strong className="text-[var(--molsan-text)]">{numeroInforme(fila.vc)}</strong></span><span>Presencial: <strong className="text-[var(--molsan-text)]">{numeroInforme(fila.presencial)}</strong></span><span>Sin clasificar: <strong className="text-[var(--molsan-text)]">{numeroInforme(fila.sin_clasificar)}</strong></span><span>Última firma: <strong className="text-[var(--molsan-text)]">{fechaInformeVisible(fila.ultima_firma)}</strong></span></div>
               </button>
             ))}
           </div>
@@ -3097,28 +3097,28 @@ function InformeNotarios() {
 
       <section className="overflow-hidden rounded-2xl border border-[#C5D8E5] bg-white shadow-sm ">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b-0 px-5 py-4">
-          <div><h3 className="font-bold text-slate-800">Resumen por notario</h3><p className="mt-1 text-xs text-slate-500">Incluye firmas por modalidad, media entre envío y firma, protocolo y tipos de operación.</p></div>
+          <div><h3 className="font-bold text-[var(--molsan-text)]">Resumen por notario</h3><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Incluye firmas por modalidad, media entre envío y firma, protocolo y tipos de operación.</p></div>
           <div className="flex flex-wrap gap-2">
             <button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : <><MolsanIcon name="book" size={14} tone="inherit" bare /> Excel resumen</>}</button>
             <button type="button" disabled={loading || porNotario.length === 0} onClick={exportarResumenPDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"><MolsanIcon name="file" size={14} tone="inherit" bare /> PDF resumen</button>
           </div>
         </div>
         {loading ? <PanelEstadoInforme loading /> : porNotario.length === 0 ? <PanelEstadoInforme vacio /> : (
-          <div className="max-h-[620px] overflow-auto"><table className="w-full min-w-[1400px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr><th className="whitespace-nowrap px-4 py-3">Notario</th><th className="whitespace-nowrap px-4 py-3">NIF</th><th className="whitespace-nowrap px-4 py-3 text-right">Firmados</th><th className="whitespace-nowrap px-4 py-3 text-right">VC</th><th className="whitespace-nowrap px-4 py-3 text-right">Presencial</th><th className="whitespace-nowrap px-4 py-3 text-right">Sin clasificar</th><th className="whitespace-nowrap px-4 py-3 text-right">Con protocolo</th><th className="whitespace-nowrap px-4 py-3 text-right">Media días</th><th className="whitespace-nowrap px-4 py-3">Última firma</th><th className="whitespace-nowrap px-4 py-3">Operaciones</th><th className="whitespace-nowrap px-4 py-3">Detalle</th></tr></thead><tbody>{porNotario.map((f) => <tr key={f.clave_notario} className={`border-t border-slate-100 hover:bg-blue-50/40 ${claveNotarioSeleccionado === f.clave_notario ? "bg-blue-50/70" : ""}`}><td className="px-4 py-3 font-semibold text-slate-800">{f.nombre_notario}</td><td className="whitespace-nowrap px-4 py-3 text-slate-500">{f.nif_notario || "—"}</td><td className="px-4 py-3 text-right font-bold">{numeroInforme(f.total_firmas)}</td><td className="px-4 py-3 text-right text-blue-700">{numeroInforme(f.vc)}</td><td className="px-4 py-3 text-right text-emerald-700">{numeroInforme(f.presencial)}</td><td className="px-4 py-3 text-right text-amber-700">{numeroInforme(f.sin_clasificar)}</td><td className="px-4 py-3 text-right">{numeroInforme(f.con_protocolo)}</td><td className="px-4 py-3 text-right">{f.media_dias_envio_firma == null ? "—" : numeroInforme(f.media_dias_envio_firma, 1)}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.ultima_firma)}</td><td className="px-4 py-3" title={(f.tipos_operacion || []).join(", ")}>{numeroInforme(f.numero_tipos_operacion)}</td><td className="px-4 py-3"><button type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === f.clave_notario ? "" : f.clave_notario)} className="whitespace-nowrap rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">{claveNotarioSeleccionado === f.clave_notario ? "Ocultar" : "Ver firmas"}</button></td></tr>)}</tbody></table></div>
+          <div className="max-h-[620px] overflow-auto"><table className="w-full min-w-[1400px] text-sm"><thead className="sticky top-0 z-10 bg-[var(--molsan-surface-soft)] text-left text-xs uppercase tracking-wide text-[var(--molsan-primary)]"><tr><th className="whitespace-nowrap px-4 py-3">Notario</th><th className="whitespace-nowrap px-4 py-3">NIF</th><th className="whitespace-nowrap px-4 py-3 text-right">Firmados</th><th className="whitespace-nowrap px-4 py-3 text-right">VC</th><th className="whitespace-nowrap px-4 py-3 text-right">Presencial</th><th className="whitespace-nowrap px-4 py-3 text-right">Sin clasificar</th><th className="whitespace-nowrap px-4 py-3 text-right">Con protocolo</th><th className="whitespace-nowrap px-4 py-3 text-right">Media días</th><th className="whitespace-nowrap px-4 py-3">Última firma</th><th className="whitespace-nowrap px-4 py-3">Operaciones</th><th className="whitespace-nowrap px-4 py-3">Detalle</th></tr></thead><tbody>{porNotario.map((f) => <tr key={f.clave_notario} className={`border-t border-[var(--molsan-border)] hover:bg-[var(--molsan-surface-soft)] ${claveNotarioSeleccionado === f.clave_notario ? "bg-[var(--molsan-surface-soft)]" : ""}`}><td className="px-4 py-3 font-semibold text-[var(--molsan-text)]">{f.nombre_notario}</td><td className="whitespace-nowrap px-4 py-3 text-[var(--molsan-text-secondary)]">{f.nif_notario || "—"}</td><td className="px-4 py-3 text-right font-bold">{numeroInforme(f.total_firmas)}</td><td className="px-4 py-3 text-right text-[var(--molsan-primary)]">{numeroInforme(f.vc)}</td><td className="px-4 py-3 text-right text-emerald-700">{numeroInforme(f.presencial)}</td><td className="px-4 py-3 text-right text-amber-700">{numeroInforme(f.sin_clasificar)}</td><td className="px-4 py-3 text-right">{numeroInforme(f.con_protocolo)}</td><td className="px-4 py-3 text-right">{f.media_dias_envio_firma == null ? "—" : numeroInforme(f.media_dias_envio_firma, 1)}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.ultima_firma)}</td><td className="px-4 py-3" title={(f.tipos_operacion || []).join(", ")}>{numeroInforme(f.numero_tipos_operacion)}</td><td className="px-4 py-3"><button type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === f.clave_notario ? "" : f.clave_notario)} className="whitespace-nowrap rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-xs font-semibold text-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]">{claveNotarioSeleccionado === f.clave_notario ? "Ocultar" : "Ver firmas"}</button></td></tr>)}</tbody></table></div>
         )}
       </section>
 
       <section className="overflow-hidden rounded-2xl border border-[#C5D8E5] bg-white shadow-sm ">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b-0 px-5 py-4">
-          <div><h3 className="font-bold text-slate-800">{grupoSeleccionado ? `Firmas de ${grupoSeleccionado.nombre_notario}` : "Detalle de firmas por notario"}</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(detalle.length)} expediente(s) con fecha de firma real. {grupoSeleccionado ? "Se ha filtrado el detalle por el notario seleccionado." : "Puedes seleccionar un notario en el ranking o en el resumen para acotar la lista."}</p></div>
+          <div><h3 className="font-bold text-[var(--molsan-text)]">{grupoSeleccionado ? `Firmas de ${grupoSeleccionado.nombre_notario}` : "Detalle de firmas por notario"}</h3><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">{numeroInforme(detalle.length)} expediente(s) con fecha de firma real. {grupoSeleccionado ? "Se ha filtrado el detalle por el notario seleccionado." : "Puedes seleccionar un notario en el ranking o en el resumen para acotar la lista."}</p></div>
           <div className="flex flex-wrap gap-2">
-            {claveNotarioSeleccionado && <button type="button" onClick={() => setClaveNotarioSeleccionado("")} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Ver todos</button>}
+            {claveNotarioSeleccionado && <button type="button" onClick={() => setClaveNotarioSeleccionado("")} className="rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2 text-xs font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]">Ver todos</button>}
             <button type="button" disabled={loading || exportandoDetalle} onClick={exportarDetalleExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportandoDetalle ? "Exportando…" : <><MolsanIcon name="book" size={14} tone="inherit" bare /> Excel detalle</>}</button>
             <button type="button" disabled={loading || detalle.length === 0} onClick={exportarDetallePDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"><MolsanIcon name="file" size={14} tone="inherit" bare /> PDF detalle</button>
           </div>
         </div>
         {loading ? <PanelEstadoInforme loading /> : detalle.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales con los filtros seleccionados." /> : (
-          <div className="max-h-[650px] overflow-auto"><table className="w-full min-w-[1250px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr><th className="whitespace-nowrap px-4 py-3">Fecha firma</th><th className="whitespace-nowrap px-4 py-3">N.º expediente</th><th className="whitespace-nowrap px-4 py-3">Titular</th><th className="whitespace-nowrap px-4 py-3">Tipo operación</th><th className="whitespace-nowrap px-4 py-3">Modalidad</th><th className="whitespace-nowrap px-4 py-3">Notario</th><th className="whitespace-nowrap px-4 py-3">Apoderado</th><th className="whitespace-nowrap px-4 py-3">Fecha envío</th><th className="whitespace-nowrap px-4 py-3 text-right">Días envío-firma</th><th className="whitespace-nowrap px-4 py-3">Protocolo</th><th className="whitespace-nowrap px-4 py-3">Oficina</th></tr></thead><tbody>{detalle.map((f, i) => <tr key={f.id ?? `${f.id_expediente}-${i}`} className="border-t border-slate-100 hover:bg-blue-50/40"><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td><td className="px-4 py-3 font-semibold text-blue-700">{f.id_expediente || "—"}</td><td className="px-4 py-3">{f.nombre_titular || "—"}</td><td className="px-4 py-3">{f.tipo_operacion || "—"}</td><td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span className="font-semibold text-amber-700">Sin clasificar</span>}</td><td className="px-4 py-3">{f.nombre_notario || "—"}</td><td className="px-4 py-3">{f.apoderado || "—"}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td><td className="px-4 py-3 text-right">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td><td className="px-4 py-3">{f.protocolo || "—"}</td><td className="px-4 py-3">{f.oficina || "—"}</td></tr>)}</tbody></table></div>
+          <div className="max-h-[650px] overflow-auto"><table className="w-full min-w-[1250px] text-sm"><thead className="sticky top-0 z-10 bg-[var(--molsan-surface-soft)] text-left text-xs uppercase tracking-wide text-[var(--molsan-primary)]"><tr><th className="whitespace-nowrap px-4 py-3">Fecha firma</th><th className="whitespace-nowrap px-4 py-3">N.º expediente</th><th className="whitespace-nowrap px-4 py-3">Titular</th><th className="whitespace-nowrap px-4 py-3">Tipo operación</th><th className="whitespace-nowrap px-4 py-3">Modalidad</th><th className="whitespace-nowrap px-4 py-3">Notario</th><th className="whitespace-nowrap px-4 py-3">Apoderado</th><th className="whitespace-nowrap px-4 py-3">Fecha envío</th><th className="whitespace-nowrap px-4 py-3 text-right">Días envío-firma</th><th className="whitespace-nowrap px-4 py-3">Protocolo</th><th className="whitespace-nowrap px-4 py-3">Oficina</th></tr></thead><tbody>{detalle.map((f, i) => <tr key={f.id ?? `${f.id_expediente}-${i}`} className="border-t border-[var(--molsan-border)] hover:bg-[var(--molsan-surface-soft)]"><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td><td className="px-4 py-3 font-semibold text-[var(--molsan-primary)]">{f.id_expediente || "—"}</td><td className="px-4 py-3">{f.nombre_titular || "—"}</td><td className="px-4 py-3">{f.tipo_operacion || "—"}</td><td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span className="font-semibold text-amber-700">Sin clasificar</span>}</td><td className="px-4 py-3">{f.nombre_notario || "—"}</td><td className="px-4 py-3">{f.apoderado || "—"}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td><td className="px-4 py-3 text-right">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td><td className="px-4 py-3">{f.protocolo || "—"}</td><td className="px-4 py-3">{f.oficina || "—"}</td></tr>)}</tbody></table></div>
         )}
       </section>
     </section>
@@ -3179,7 +3179,7 @@ function InformeSLA() {
 
   return (
     <section className="space-y-5">
-      <div className="flex justify-end"><button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"><MolsanIcon name="refresh" size={14} tone="inherit" /> Actualizar datos</button></div>
+      <div className="flex justify-end"><button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2 text-xs font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]"><MolsanIcon name="refresh" size={14} tone="inherit" /> Actualizar datos</button></div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         <InformeKpi icono="folder" titulo="Expedientes" valor={numeroInforme(items.length)} subtitulo="Según el grupo y la búsqueda" />
         <InformeKpi icono="timer" titulo="Duración global media" valor={mediaGlobal == null ? "—" : `${numeroInforme(mediaGlobal, 1)} días`} subtitulo={`${numeroInforme(globalesDentro)} dentro de plazo de ${numeroInforme(globalesEvaluables.length)} evaluables`} />
@@ -3192,16 +3192,16 @@ function InformeSLA() {
             <option value="todos">Todos los grupos</option><option value="con-provision">Cancelaciones con provisión</option><option value="sin-provision">Cancelaciones sin provisión</option>
           </SelectFiltroInforme>
         </div>
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="text-xs text-slate-500">{numeroInforme(items.length)} expedientes · días naturales. Los expedientes Hipotecario y Crédito Stock quedan excluidos del SLA global.</p><button type="button" onClick={exportar} disabled={actividadesPlanas.length === 0} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"><MolsanIcon name="chart" size={14} tone="inherit" bare /> Exportar Excel (CSV)</button></div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="text-xs text-[var(--molsan-text-secondary)]">{numeroInforme(items.length)} expedientes · días naturales. Los expedientes Hipotecario y Crédito Stock quedan excluidos del SLA global.</p><button type="button" onClick={exportar} disabled={actividadesPlanas.length === 0} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"><MolsanIcon name="chart" size={14} tone="inherit" bare /> Exportar Excel (CSV)</button></div>
       </section>
       <AvisoInforme error={error} />
       <section className="overflow-hidden rounded-2xl border border-[#C5D8E5] bg-white shadow-sm ">
-        <div className="border-b-0 px-5 py-4"><h3 className="font-bold text-slate-800">SLA global por circuito</h3><p className="mt-1 text-xs text-slate-500">Desde el inicio registrado de la primera actividad hasta el fin de Cierre del expediente. Gestión económica utiliza el objetivo global como referencia propia.</p></div>
-        {loading ? <PanelEstadoInforme loading /> : items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay expedientes que coincidan con los filtros." /> : <div className="max-h-[520px] overflow-auto"><table className="w-full min-w-[1050px] text-sm"><thead className="sticky top-0 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{["Expediente","Titular","Grupo","Entidad","Días globales","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{items.map((item) => <Fragment key={item.id}><tr className="border-t border-slate-100 hover:bg-blue-50/40"><td className="px-4 py-3 font-semibold text-blue-700">{item.id_expediente || "—"}</td><td className="px-4 py-3">{item.titular || "—"}</td><td className="px-4 py-3">{item.grupo}</td><td className="px-4 py-3">{item.entidad}</td><td className="px-4 py-3 text-right">{item.dias_global == null ? "—" : numeroInforme(item.dias_global)}</td><td className="px-4 py-3 text-right">{item.excluido_global ? "Excluido" : `${item.objetivo_global} días`}</td><td className="px-4 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${item.estado_global === "Dentro de plazo" ? "bg-emerald-50 text-emerald-700" : item.estado_global === "Fuera de plazo" ? "bg-rose-50 text-rose-700" : item.estado_global === "Excluido" ? "bg-slate-100 text-slate-500" : "bg-amber-50 text-amber-700"}`}>{item.estado_global}</span><button type="button" onClick={() => setExpandido((v) => v === String(item.id) ? "" : String(item.id))} className="ml-3 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700">{expandido === String(item.id) ? "Ocultar actividades" : "Ver actividades"}</button></td></tr>{expandido === String(item.id) && <tr><td colSpan={7} className="bg-slate-50/70 px-4 py-4"><div className="overflow-x-auto rounded-xl border border-slate-200 bg-white"><table className="w-full min-w-[950px] text-xs"><thead className="bg-slate-50 text-left text-slate-600"><tr>{["Actividad","Inicio","Fin","Duración","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-3 py-2.5">{x}</th>)}</tr></thead><tbody>{item.actividades.map((a) => <tr key={a.actividad_key} className="border-t border-slate-100"><td className="px-3 py-2.5 font-semibold">{a.actividad}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_inicio)}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_fin)}</td><td className="px-3 py-2.5">{a.dias == null ? "—" : `${a.dias} días`}</td><td className="px-3 py-2.5">{a.objetivo_dias == null ? "Sin objetivo" : `${a.objetivo_dias} días`}</td><td className="px-3 py-2.5">{a.estado}</td></tr>)}</tbody></table></div></td></tr>}</Fragment>)}</tbody></table></div>}
+        <div className="border-b-0 px-5 py-4"><h3 className="font-bold text-[var(--molsan-text)]">SLA global por circuito</h3><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Desde el inicio registrado de la primera actividad hasta el fin de Cierre del expediente. Gestión económica utiliza el objetivo global como referencia propia.</p></div>
+        {loading ? <PanelEstadoInforme loading /> : items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay expedientes que coincidan con los filtros." /> : <div className="max-h-[520px] overflow-auto"><table className="w-full min-w-[1050px] text-sm"><thead className="sticky top-0 bg-[var(--molsan-surface-soft)] text-left text-xs uppercase tracking-wide text-[var(--molsan-primary)]"><tr>{["Expediente","Titular","Grupo","Entidad","Días globales","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{items.map((item) => <Fragment key={item.id}><tr className="border-t border-[var(--molsan-border)] hover:bg-[var(--molsan-surface-soft)]"><td className="px-4 py-3 font-semibold text-[var(--molsan-primary)]">{item.id_expediente || "—"}</td><td className="px-4 py-3">{item.titular || "—"}</td><td className="px-4 py-3">{item.grupo}</td><td className="px-4 py-3">{item.entidad}</td><td className="px-4 py-3 text-right">{item.dias_global == null ? "—" : numeroInforme(item.dias_global)}</td><td className="px-4 py-3 text-right">{item.excluido_global ? "Excluido" : `${item.objetivo_global} días`}</td><td className="px-4 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${item.estado_global === "Dentro de plazo" ? "bg-emerald-50 text-emerald-700" : item.estado_global === "Fuera de plazo" ? "bg-rose-50 text-rose-700" : item.estado_global === "Excluido" ? "bg-[var(--molsan-surface-soft)] text-[var(--molsan-text-secondary)]" : "bg-amber-50 text-amber-700"}`}>{item.estado_global}</span><button type="button" onClick={() => setExpandido((v) => v === String(item.id) ? "" : String(item.id))} className="ml-3 rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-2.5 py-1.5 text-xs font-semibold text-[var(--molsan-primary)]">{expandido === String(item.id) ? "Ocultar actividades" : "Ver actividades"}</button></td></tr>{expandido === String(item.id) && <tr><td colSpan={7} className="bg-[var(--molsan-surface-soft)] px-4 py-4"><div className="overflow-x-auto rounded-xl border border-[var(--molsan-border)] bg-white"><table className="w-full min-w-[950px] text-xs"><thead className="bg-[var(--molsan-surface-soft)] text-left text-[var(--molsan-text-secondary)]"><tr>{["Actividad","Inicio","Fin","Duración","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-3 py-2.5">{x}</th>)}</tr></thead><tbody>{item.actividades.map((a) => <tr key={a.actividad_key} className="border-t border-[var(--molsan-border)]"><td className="px-3 py-2.5 font-semibold">{a.actividad}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_inicio)}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_fin)}</td><td className="px-3 py-2.5">{a.dias == null ? "—" : `${a.dias} días`}</td><td className="px-3 py-2.5">{a.objetivo_dias == null ? "Sin objetivo" : `${a.objetivo_dias} días`}</td><td className="px-3 py-2.5">{a.estado}</td></tr>)}</tbody></table></div></td></tr>}</Fragment>)}</tbody></table></div>}
       </section>
       <section className="overflow-hidden rounded-2xl border border-[#C5D8E5] bg-white shadow-sm ">
-        <div className="border-b-0 px-5 py-4"><h3 className="font-bold text-slate-800">Expedientes por actividad</h3><p className="mt-1 text-xs text-slate-500">Medias, objetivos y número de incumplimientos por actividad para los expedientes filtrados.</p></div>
-        {loading ? <PanelEstadoInforme loading /> : <div className="overflow-x-auto"><table className="w-full min-w-[800px] text-sm"><thead className="bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{["Actividad","Objetivo","Con fechas","Duración media","Dentro de plazo","Fuera de plazo"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{resumenActividades.map((a) => <tr key={a.key} className="border-t border-slate-100"><td className="px-4 py-3 font-semibold">{a.label}</td><td className="px-4 py-3">{a.objetivo === "global" ? "40 / 70 días según grupo" : a.objetivo == null ? "Sin objetivo SLA" : `${a.objetivo} días`}</td><td className="px-4 py-3 text-right">{numeroInforme(a.medidas)}</td><td className="px-4 py-3 text-right">{a.media == null ? "—" : `${numeroInforme(a.media, 1)} días`}</td><td className="px-4 py-3 text-right text-emerald-700">{numeroInforme(a.cumplen)}</td><td className="px-4 py-3 text-right text-rose-700">{numeroInforme(a.incumplen)}</td></tr>)}</tbody></table></div>}
+        <div className="border-b-0 px-5 py-4"><h3 className="font-bold text-[var(--molsan-text)]">Expedientes por actividad</h3><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Medias, objetivos y número de incumplimientos por actividad para los expedientes filtrados.</p></div>
+        {loading ? <PanelEstadoInforme loading /> : <div className="overflow-x-auto"><table className="w-full min-w-[800px] text-sm"><thead className="bg-[var(--molsan-surface-soft)] text-left text-xs uppercase tracking-wide text-[var(--molsan-primary)]"><tr>{["Actividad","Objetivo","Con fechas","Duración media","Dentro de plazo","Fuera de plazo"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{resumenActividades.map((a) => <tr key={a.key} className="border-t border-[var(--molsan-border)]"><td className="px-4 py-3 font-semibold">{a.label}</td><td className="px-4 py-3">{a.objetivo === "global" ? "40 / 70 días según grupo" : a.objetivo == null ? "Sin objetivo SLA" : `${a.objetivo} días`}</td><td className="px-4 py-3 text-right">{numeroInforme(a.medidas)}</td><td className="px-4 py-3 text-right">{a.media == null ? "—" : `${numeroInforme(a.media, 1)} días`}</td><td className="px-4 py-3 text-right text-emerald-700">{numeroInforme(a.cumplen)}</td><td className="px-4 py-3 text-right text-rose-700">{numeroInforme(a.incumplen)}</td></tr>)}</tbody></table></div>}
       </section>
     </section>
   );
@@ -3379,7 +3379,7 @@ function InformeFacturacion() {
 
   const resumen = (modalidad) => resumenFacturacionPorTipo(datosTarjetas.filter((fila) => fila.tipo_cancelacion === modalidad));
   const euros = (v) => Number(v || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
-  const campo = "block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
+  const campo = "block w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-text)] outline-none focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary)]/10";
   const grupos = [
     { key: "con_provision", titulo: "Cancelación con provisión", descripcion: "TIPOOPERACION: CANCELACIÓN / CANCELACIÓN CON PROVISIÓN", icono: "bank", acento: "emerald" },
     { key: "sin_provision", titulo: "Cancelación sin provisión", descripcion: "TIPOOPERACION: CANCELACIÓN SIN PROVISIÓN", icono: "file", acento: "amber" },
@@ -3391,8 +3391,8 @@ function InformeFacturacion() {
     <section key={grupo.key} className="space-y-4 rounded-2xl border border-[#C5D8E5] bg-white p-4 shadow-sm  sm:p-5">
         <div className="flex flex-wrap items-center gap-3">
           <span className={"flex h-12 w-12 items-center justify-center rounded-xl text-2xl " + (grupo.acento === "emerald" ? "bg-emerald-50" : "bg-amber-50")}><MolsanIcon name={grupo.icono} size={28} tone="ocean" /></span>
-          <div><h3 className="text-lg font-bold text-slate-800">{grupo.titulo}</h3><p className="text-xs text-slate-500">{grupo.descripcion}</p></div>
-          <div className="ml-auto text-right"><div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Registros del periodo</div><div className="text-2xl font-extrabold text-slate-800">{loadingTarjetas ? "…" : numeroInforme(r.registros)}</div></div>
+          <div><h3 className="text-lg font-bold text-[var(--molsan-text)]">{grupo.titulo}</h3><p className="text-xs text-[var(--molsan-text-secondary)]">{grupo.descripcion}</p></div>
+          <div className="ml-auto text-right"><div className="text-xs font-semibold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Registros del periodo</div><div className="text-2xl font-extrabold text-[var(--molsan-text)]">{loadingTarjetas ? "…" : numeroInforme(r.registros)}</div></div>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <InformeKpi titulo="Gastos Post Firma" valor={loadingTarjetas ? "…" : euros(r.total_gasto)} subtitulo={numeroInforme(r.registros) + " registros"} icono="receipt" />
@@ -3406,7 +3406,7 @@ function InformeFacturacion() {
           <MolsanStatCard title="Pendiente de factura" value={loadingTarjetas ? "…" : euros(r.total_pendiente_factura)} description={numeroInforme(r.pendiente_factura) + " registros"} icon="file" tone="slate" />
           <MolsanStatCard title="Importe con incidencias" value={loadingTarjetas ? "…" : euros(r.total_incidencias)} description={numeroInforme(r.incidencias) + " registros"} icon="alert" tone="rose" />
         </div>
-        <div className="flex justify-center border-t border-slate-100 pt-4">
+        <div className="flex justify-center border-t border-[var(--molsan-border)] pt-4">
           <button
             type="button"
             onClick={() => {
@@ -3433,14 +3433,14 @@ function InformeFacturacion() {
       </div>
       <div className="rounded-2xl border border-[#C5D8E5] bg-white p-5 shadow-[0_6px_18px_rgba(6,70,117,0.08)] ">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div><h2 className="text-xl font-bold text-slate-800">Informes de facturación</h2><p className="mt-1 text-sm text-slate-500">Indicadores de Post Firma por tipo de operación y por estado original de ABSIS. El periodo se filtra por FPAGO.</p></div>
-          <button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"><MolsanIcon name="refresh" size={15} tone="inherit" /> Actualizar</button>
+          <div><h2 className="text-xl font-bold text-[var(--molsan-text)]">Informes de facturación</h2><p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Indicadores de Post Firma por tipo de operación y por estado original de ABSIS. El periodo se filtra por FPAGO.</p></div>
+          <button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--molsan-text)] hover:bg-[var(--molsan-surface-soft)]"><MolsanIcon name="refresh" size={15} tone="inherit" /> Actualizar</button>
         </div>
         <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
-          <label className="text-xs font-semibold text-slate-600">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
+          <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
+          <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
         </div>
-        <p className="mt-2 text-xs text-slate-500">Por defecto se muestran todos los registros Post Firma importados. Puedes limitar el informe a un periodo seleccionando las fechas; las tarjetas se actualizarán automáticamente.</p>
+        <p className="mt-2 text-xs text-[var(--molsan-text-secondary)]">Por defecto se muestran todos los registros Post Firma importados. Puedes limitar el informe a un periodo seleccionando las fechas; las tarjetas se actualizarán automáticamente.</p>
       </div>
 
       <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
@@ -3451,10 +3451,10 @@ function InformeFacturacion() {
       <section className="rounded-2xl border border-[#C5D8E5] bg-white p-5 shadow-sm ">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h3 className="text-lg font-bold text-slate-800">Seguimiento por estado ABSIS</h3>
-            <p className="mt-1 text-sm text-slate-500">Desglose de las filas Post Firma que cumplen el concepto y beneficiario seleccionados, agrupadas por el ESTADO original del Excel.</p>
+            <h3 className="text-lg font-bold text-[var(--molsan-text)]">Seguimiento por estado ABSIS</h3>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Desglose de las filas Post Firma que cumplen el concepto y beneficiario seleccionados, agrupadas por el ESTADO original del Excel.</p>
           </div>
-          <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{loadingTarjetas ? "Actualizando…" : numeroInforme(datosTarjetas.length) + " registros analizados"}</span>
+          <span className="rounded-lg bg-[var(--molsan-surface-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--molsan-primary)]">{loadingTarjetas ? "Actualizando…" : numeroInforme(datosTarjetas.length) + " registros analizados"}</span>
         </div>
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {ESTADOS_ABSIS_INFORME.map((estadoInfo) => {
@@ -3463,8 +3463,8 @@ function InformeFacturacion() {
             const acento = estadoInfo.color === "emerald" ? "border-emerald-200 bg-emerald-50/70 text-emerald-800"
               : estadoInfo.color === "rose" ? "border-rose-200 bg-rose-50/70 text-rose-800"
               : estadoInfo.color === "amber" ? "border-amber-200 bg-amber-50/70 text-amber-800"
-              : estadoInfo.color === "blue" ? "border-blue-200 bg-blue-50/70 text-blue-800"
-              : "border-slate-200 bg-slate-50 text-slate-800";
+              : estadoInfo.color === "blue" ? "border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] text-[var(--molsan-primary)]"
+              : "border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] text-[var(--molsan-text)]";
             return (
               <button key={estadoInfo.codigo} type="button" disabled={loadingTarjetas} onClick={() => {
                 const siguiente = { ...filtros, modalidad: "todas", estado: estadoInfo.codigo };
@@ -3495,25 +3495,25 @@ function InformeFacturacion() {
             return a[0].localeCompare(b[0], "es");
           });
           return loadingTarjetas ? (
-            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-500">Cargando estados ABSIS…</div>
+            <div className="mt-4 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4 text-sm text-[var(--molsan-text-secondary)]">Cargando estados ABSIS…</div>
           ) : listaEstados.length === 0 ? (
-            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-500">No hay registros para el periodo seleccionado.</div>
+            <div className="mt-4 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4 text-sm text-[var(--molsan-text-secondary)]">No hay registros para el periodo seleccionado.</div>
           ) : (
-            <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200">
+            <div className="mt-4 overflow-x-auto rounded-xl border border-[var(--molsan-border)]">
               <table className="w-full min-w-[640px] text-left text-sm">
-                <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-4 py-3">ESTADO (Excel ABSIS)</th><th className="px-4 py-3 text-right">Registros</th><th className="px-4 py-3 text-right">Importe IMPGASTO</th><th className="px-4 py-3 text-right">Consulta</th></tr></thead>
+                <thead className="bg-[var(--molsan-surface-soft)] text-xs uppercase tracking-wide text-[var(--molsan-text-secondary)]"><tr><th className="px-4 py-3">ESTADO (Excel ABSIS)</th><th className="px-4 py-3 text-right">Registros</th><th className="px-4 py-3 text-right">Importe IMPGASTO</th><th className="px-4 py-3 text-right">Consulta</th></tr></thead>
                 <tbody className="divide-y divide-slate-100">
                   {listaEstados.map(([estado, dato]) => (
-                    <tr key={estado} className="hover:bg-blue-50/50">
-                      <td className="px-4 py-3 font-semibold text-slate-700">{estado}</td>
+                    <tr key={estado} className="hover:bg-[var(--molsan-surface-soft)]">
+                      <td className="px-4 py-3 font-semibold text-[var(--molsan-text)]">{estado}</td>
                       <td className="px-4 py-3 text-right tabular-nums">{numeroInforme(dato.filas)}</td>
                       <td className="px-4 py-3 text-right tabular-nums">{euros(dato.importe)}</td>
-                      <td className="px-4 py-3 text-right">{estado === "(vacío)" ? <span className="text-xs text-slate-400">Sin código</span> : <button type="button" onClick={() => {
+                      <td className="px-4 py-3 text-right">{estado === "(vacío)" ? <span className="text-xs text-[var(--molsan-text-secondary)]">Sin código</span> : <button type="button" onClick={() => {
                         const siguiente = { ...filtros, modalidad: "todas", estado };
                         setFiltros(siguiente);
                         setAplicados(siguiente);
                         setModalAbierto(true);
-                      }} className="rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-50">Ver registros</button>}</td>
+                      }} className="rounded-lg border border-[var(--molsan-border-strong)] bg-white px-3 py-1.5 text-xs font-bold text-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]">Ver registros</button>}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -3521,7 +3521,7 @@ function InformeFacturacion() {
             </div>
           );
         })()}
-        <p className="mt-3 text-xs leading-5 text-slate-500">Las tarjetas muestran los ocho códigos acordados de ESTADO. Los códigos originales se conservan; los valores vacíos o desconocidos siguen apareciendo en el desglose inferior. PAG_RETRO no se contabiliza como cobro efectivo. La consulta no modifica datos.</p>
+        <p className="mt-3 text-xs leading-5 text-[var(--molsan-text-secondary)]">Las tarjetas muestran los ocho códigos acordados de ESTADO. Los códigos originales se conservan; los valores vacíos o desconocidos siguen apareciendo en el desglose inferior. PAG_RETRO no se contabiliza como cobro efectivo. La consulta no modifica datos.</p>
       </section>
 
       <AvisoInforme error={error} />
@@ -3529,31 +3529,31 @@ function InformeFacturacion() {
       {modalAbierto && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-5" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
           <section ref={modalFacturacionRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="modal-facturacion-titulo" className="molsan-modal-panel flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-white/70 bg-white shadow-2xl">
-            <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 px-5 py-4">
-              <div><h2 id="modal-facturacion-titulo" className="text-xl font-bold text-slate-800">Detalle de facturación</h2><p className="mt-1 text-sm text-slate-500">Tabla Excel con los registros que cumplen los filtros seleccionados.</p></div>
-              <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50"><MolsanIcon name="x" size={15} tone="ocean" bare /> Cerrar</button>
+            <header className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--molsan-border)] px-5 py-4">
+              <div><h2 id="modal-facturacion-titulo" className="text-xl font-bold text-[var(--molsan-text)]">Detalle de facturación</h2><p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Tabla Excel con los registros que cumplen los filtros seleccionados.</p></div>
+              <button type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar ventana" className="rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]"><MolsanIcon name="x" size={15} tone="ocean" bare /> Cerrar</button>
             </header>
-            <form onSubmit={aplicar} className="grid grid-cols-1 gap-3 overflow-y-auto border-b border-slate-200 bg-slate-50/80 px-5 py-4 sm:grid-cols-2 xl:grid-cols-4">
-              <label className="text-xs font-semibold text-slate-600">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
-              <label className="text-xs font-semibold text-slate-600">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
-              <label className="text-xs font-semibold text-slate-600">Clasificación<select className={campo} value={filtros.modalidad} onChange={(e) => cambiar("modalidad", e.target.value)}><option value="todas">Todas</option><option value="con_provision">Cancelación con provisión</option><option value="sin_provision">Cancelación sin provisión</option><option value="otros">Otros tipos de operación</option></select></label>
-              <label className="text-xs font-semibold text-slate-600">Tipo operación<input className={campo} value={filtros.tipo_operacion || ""} onChange={(e) => cambiar("tipo_operacion", e.target.value)} placeholder="Filtrar operación" /></label>
-              <label className="text-xs font-semibold text-slate-600">Estado ABSIS<input className={campo} value={filtros.estado || ""} onChange={(e) => cambiar("estado", e.target.value)} placeholder="Filtrar estado" /></label>
-              <label className="text-xs font-semibold text-slate-600">Estado justificante<input className={campo} value={filtros.estado_justificante || ""} onChange={(e) => cambiar("estado_justificante", e.target.value)} placeholder="Filtrar justificante" /></label>
-              <label className="text-xs font-semibold text-slate-600">Situación económica<select className={campo} value={filtros.situacion} onChange={(e) => cambiar("situacion", e.target.value)}><option value="">Todas</option><option value="cobrado">Cobrado (estado ABSIS)</option><option value="pendiente_cobro">Pendiente de cobro</option><option value="pendiente_factura">Pendiente de factura</option><option value="incidencia">Con incidencia</option></select></label>
-              <label className="text-xs font-semibold text-slate-600">Buscar expediente / factura<input className={campo} value={filtros.q || ""} onChange={(e) => cambiar("q", e.target.value)} placeholder="Nº expediente, IDGASTO o factura" /></label>
+            <form onSubmit={aplicar} className="grid grid-cols-1 gap-3 overflow-y-auto border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)]/80 px-5 py-4 sm:grid-cols-2 xl:grid-cols-4">
+              <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Fecha desde<input className={campo} type="date" value={filtros.fecha_desde} onChange={(e) => cambiar("fecha_desde", e.target.value)} /></label>
+              <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Fecha hasta<input className={campo} type="date" value={filtros.fecha_hasta} onChange={(e) => cambiar("fecha_hasta", e.target.value)} /></label>
+              <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Clasificación<select className={campo} value={filtros.modalidad} onChange={(e) => cambiar("modalidad", e.target.value)}><option value="todas">Todas</option><option value="con_provision">Cancelación con provisión</option><option value="sin_provision">Cancelación sin provisión</option><option value="otros">Otros tipos de operación</option></select></label>
+              <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Tipo operación<input className={campo} value={filtros.tipo_operacion || ""} onChange={(e) => cambiar("tipo_operacion", e.target.value)} placeholder="Filtrar operación" /></label>
+              <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Estado ABSIS<input className={campo} value={filtros.estado || ""} onChange={(e) => cambiar("estado", e.target.value)} placeholder="Filtrar estado" /></label>
+              <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Estado justificante<input className={campo} value={filtros.estado_justificante || ""} onChange={(e) => cambiar("estado_justificante", e.target.value)} placeholder="Filtrar justificante" /></label>
+              <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Situación económica<select className={campo} value={filtros.situacion} onChange={(e) => cambiar("situacion", e.target.value)}><option value="">Todas</option><option value="cobrado">Cobrado (estado ABSIS)</option><option value="pendiente_cobro">Pendiente de cobro</option><option value="pendiente_factura">Pendiente de factura</option><option value="incidencia">Con incidencia</option></select></label>
+              <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Buscar expediente / factura<input className={campo} value={filtros.q || ""} onChange={(e) => cambiar("q", e.target.value)} placeholder="Nº expediente, IDGASTO o factura" /></label>
               <div className="flex flex-wrap items-center gap-2 sm:col-span-2 xl:col-span-4">
-                <button type="submit" className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">Aplicar filtros</button>
-                <button type="button" onClick={exportar} disabled={exportando} className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50 disabled:opacity-50">{exportando ? "Exportando…" : <><MolsanIcon name="download" size={15} tone="inherit" /> Descargar Excel</>}</button>
-                <span className="text-xs text-slate-500">La selección de fechas también actualiza las tarjetas del informe.</span>
+                <button type="submit" className="rounded-xl bg-[var(--molsan-primary)] px-4 py-2.5 text-sm font-bold text-white hover:bg-[var(--molsan-primary)]">Aplicar filtros</button>
+                <button type="button" onClick={exportar} disabled={exportando} className="rounded-xl border border-[var(--molsan-border-strong)] bg-white px-4 py-2.5 text-sm font-bold text-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)] disabled:opacity-50">{exportando ? "Exportando…" : <><MolsanIcon name="download" size={15} tone="inherit" /> Descargar Excel</>}</button>
+                <span className="text-xs text-[var(--molsan-text-secondary)]">La selección de fechas también actualiza las tarjetas del informe.</span>
               </div>
             </form>
             <div className="flex-1 overflow-auto">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3"><div className="text-sm font-semibold text-slate-700">{loading ? "Consultando registros…" : numeroInforme(datos.items.length) + " registros encontrados"}</div><div className="text-xs text-slate-500">Filtro del informe: CONCEPTOGASTO = HONORARIOS GESTORÍA y BENEFICIARIO = *MOLSAN. IDPAGO sigue desconectado.</div></div>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--molsan-border)] px-5 py-3"><div className="text-sm font-semibold text-[var(--molsan-text)]">{loading ? "Consultando registros…" : numeroInforme(datos.items.length) + " registros encontrados"}</div><div className="text-xs text-[var(--molsan-text-secondary)]">Filtro del informe: CONCEPTOGASTO = HONORARIOS GESTORÍA y BENEFICIARIO = *MOLSAN. IDPAGO sigue desconectado.</div></div>
               {loading ? <PanelEstadoInforme loading /> : datos.items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay filas Post Firma para los filtros seleccionados." /> : (
                 <div className="max-h-[58vh] overflow-auto"><table className="min-w-[2600px] w-full text-left text-xs">
-                  <thead className="sticky top-0 z-10 bg-slate-100 text-slate-600"><tr>{COLUMNAS_POSTFIRMA.map((h, i) => <th key={h + "-" + i} className="whitespace-nowrap px-3 py-3 font-bold">{h}</th>)}</tr></thead>
-                  <tbody className="divide-y divide-slate-100">{datos.items.map((fila, i) => <tr key={(fila.id_gasto_absis || fila.id_expediente || "registro") + "-" + i} className="hover:bg-blue-50/50">{COLUMNAS_POSTFIRMA.map((h, j) => <td key={h + "-" + j} className="whitespace-nowrap px-3 py-3">{valorColumnaPostFirma(fila, h)}</td>)}</tr>)}</tbody>
+                  <thead className="sticky top-0 z-10 bg-[var(--molsan-surface-soft)] text-[var(--molsan-text-secondary)]"><tr>{COLUMNAS_POSTFIRMA.map((h, i) => <th key={h + "-" + i} className="whitespace-nowrap px-3 py-3 font-bold">{h}</th>)}</tr></thead>
+                  <tbody className="divide-y divide-slate-100">{datos.items.map((fila, i) => <tr key={(fila.id_gasto_absis || fila.id_expediente || "registro") + "-" + i} className="hover:bg-[var(--molsan-surface-soft)]">{COLUMNAS_POSTFIRMA.map((h, j) => <td key={h + "-" + j} className="whitespace-nowrap px-3 py-3">{valorColumnaPostFirma(fila, h)}</td>)}</tr>)}</tbody>
                 </table></div>
               )}
             </div>
@@ -3605,12 +3605,12 @@ function InformeHistoricoPostFirma() {
   };
   return (
     <section className="space-y-4 rounded-2xl border border-[#C5D8E5] bg-white p-5 shadow-[0_10px_35px_rgba(55,85,120,0.08)]">
-      <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="text-xl font-bold text-slate-800">Histórico bruto Post Firma</h2><p className="mt-1 max-w-3xl text-sm text-slate-500">Consulta las filas originales por fichero y mes. No vincula expedientes, no modifica Gestión económica y no consolida movimientos.</p></div><button type="button" onClick={actualizar} disabled={cargandoCargas} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"><MolsanIcon name="refresh" size={15} tone="inherit" /> Actualizar cargas</button></div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"><label className="text-xs font-semibold text-slate-600 sm:col-span-2">Fichero importado<select value={cargaSeleccionada} onChange={(e)=>{setCargaSeleccionada(e.target.value);setOffset(0);}} className="mt-1 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700" disabled={cargandoCargas||!cargas.length}>{!cargas.length&&<option value="">No hay cargas disponibles</option>}{cargas.map((c)=><option key={c.id} value={String(c.id)}>{c.nombre_archivo} · carga #{c.id} · {c.filas_guardadas} filas</option>)}</select></label><div className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs font-semibold text-slate-500">Filas Excel</p><p className="mt-1 text-xl font-bold text-slate-800">{cargaActual?.filas_excel??"—"}</p></div><div className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs font-semibold text-slate-500">Filas guardadas</p><p className="mt-1 text-xl font-bold text-slate-800">{cargaActual?.filas_guardadas??"—"}</p></div></div>
-      {cargaActual&&<p className="break-all text-xs text-slate-500">Fecha de carga: {cargaActual.fecha_carga||"—"} · SHA-256: {cargaActual.sha256||"—"}</p>}{error&&<p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white"><div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3"><div><h3 className="font-bold text-slate-800">Filas originales</h3><p className="text-xs text-slate-500">Columnas dinámicas del Excel, incluida TIPOCONCEPTO cuando exista.</p></div><span className="text-sm font-semibold text-slate-600">{total.toLocaleString("es-ES")} filas</span></div>
-      {cargandoCargas||cargandoFilas?<p className="p-8 text-center text-sm text-slate-500">Cargando histórico…</p>:!cargaSeleccionada?<p className="p-8 text-center text-sm text-slate-500">Todavía no hay ficheros Post Firma importados.</p>:<div className="max-h-[58vh] overflow-auto"><table className="min-w-max w-full text-left text-xs"><thead className="sticky top-0 z-10 bg-slate-100 text-slate-600"><tr><th className="whitespace-nowrap px-3 py-3 font-bold">Fila Excel</th>{columnas.map((c,i)=><th key={String(c)+"-"+i} className="whitespace-nowrap px-3 py-3 font-bold">{c||"(columna sin título)"}</th>)}</tr></thead><tbody className="divide-y divide-slate-100">{registros.map((fila)=><tr key={fila.id} className="hover:bg-blue-50/50"><td className="whitespace-nowrap px-3 py-2 text-slate-500">{fila.numero_fila}</td>{columnas.map((c,i)=><td key={String(c)+"-"+i} className="max-w-xs whitespace-nowrap px-3 py-2">{mostrarValor(fila.datos?.[c])}</td>)}</tr>)}{!registros.length&&<tr><td colSpan={Math.max(columnas.length+1,1)} className="px-4 py-8 text-center text-slate-500">Esta carga no contiene filas con datos.</td></tr>}</tbody></table></div>}
-      {cargaSeleccionada&&<div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-4 py-3"><p className="text-xs text-slate-500">Mostrando {total?offset+1:0}–{Math.min(offset+registros.length,total)} de {total.toLocaleString("es-ES")}</p><div className="flex gap-2"><button type="button" disabled={offset===0||cargandoFilas} onClick={()=>setOffset((v)=>Math.max(0,v-limite))} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold disabled:opacity-40">Anterior</button><button type="button" disabled={offset+limite>=total||cargandoFilas} onClick={()=>setOffset((v)=>v+limite)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold disabled:opacity-40">Siguiente</button></div></div>}
+      <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="text-xl font-bold text-[var(--molsan-text)]">Histórico bruto Post Firma</h2><p className="mt-1 max-w-3xl text-sm text-[var(--molsan-text-secondary)]">Consulta las filas originales por fichero y mes. No vincula expedientes, no modifica Gestión económica y no consolida movimientos.</p></div><button type="button" onClick={actualizar} disabled={cargandoCargas} className="rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--molsan-text)] hover:bg-[var(--molsan-surface-soft)] disabled:opacity-50"><MolsanIcon name="refresh" size={15} tone="inherit" /> Actualizar cargas</button></div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"><label className="text-xs font-semibold text-[var(--molsan-text-secondary)] sm:col-span-2">Fichero importado<select value={cargaSeleccionada} onChange={(e)=>{setCargaSeleccionada(e.target.value);setOffset(0);}} className="mt-1 block w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-text)]" disabled={cargandoCargas||!cargas.length}>{!cargas.length&&<option value="">No hay cargas disponibles</option>}{cargas.map((c)=><option key={c.id} value={String(c.id)}>{c.nombre_archivo} · carga #{c.id} · {c.filas_guardadas} filas</option>)}</select></label><div className="rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3"><p className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Filas Excel</p><p className="mt-1 text-xl font-bold text-[var(--molsan-text)]">{cargaActual?.filas_excel??"—"}</p></div><div className="rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3"><p className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Filas guardadas</p><p className="mt-1 text-xl font-bold text-[var(--molsan-text)]">{cargaActual?.filas_guardadas??"—"}</p></div></div>
+      {cargaActual&&<p className="break-all text-xs text-[var(--molsan-text-secondary)]">Fecha de carga: {cargaActual.fecha_carga||"—"} · SHA-256: {cargaActual.sha256||"—"}</p>}{error&&<p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
+      <div className="overflow-hidden rounded-xl border border-[var(--molsan-border)] bg-white"><div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--molsan-border)] px-4 py-3"><div><h3 className="font-bold text-[var(--molsan-text)]">Filas originales</h3><p className="text-xs text-[var(--molsan-text-secondary)]">Columnas dinámicas del Excel, incluida TIPOCONCEPTO cuando exista.</p></div><span className="text-sm font-semibold text-[var(--molsan-text-secondary)]">{total.toLocaleString("es-ES")} filas</span></div>
+      {cargandoCargas||cargandoFilas?<p className="p-8 text-center text-sm text-[var(--molsan-text-secondary)]">Cargando histórico…</p>:!cargaSeleccionada?<p className="p-8 text-center text-sm text-[var(--molsan-text-secondary)]">Todavía no hay ficheros Post Firma importados.</p>:<div className="max-h-[58vh] overflow-auto"><table className="min-w-max w-full text-left text-xs"><thead className="sticky top-0 z-10 bg-[var(--molsan-surface-soft)] text-[var(--molsan-text-secondary)]"><tr><th className="whitespace-nowrap px-3 py-3 font-bold">Fila Excel</th>{columnas.map((c,i)=><th key={String(c)+"-"+i} className="whitespace-nowrap px-3 py-3 font-bold">{c||"(columna sin título)"}</th>)}</tr></thead><tbody className="divide-y divide-slate-100">{registros.map((fila)=><tr key={fila.id} className="hover:bg-[var(--molsan-surface-soft)]"><td className="whitespace-nowrap px-3 py-2 text-[var(--molsan-text-secondary)]">{fila.numero_fila}</td>{columnas.map((c,i)=><td key={String(c)+"-"+i} className="max-w-xs whitespace-nowrap px-3 py-2">{mostrarValor(fila.datos?.[c])}</td>)}</tr>)}{!registros.length&&<tr><td colSpan={Math.max(columnas.length+1,1)} className="px-4 py-8 text-center text-[var(--molsan-text-secondary)]">Esta carga no contiene filas con datos.</td></tr>}</tbody></table></div>}
+      {cargaSeleccionada&&<div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--molsan-border)] px-4 py-3"><p className="text-xs text-[var(--molsan-text-secondary)]">Mostrando {total?offset+1:0}–{Math.min(offset+registros.length,total)} de {total.toLocaleString("es-ES")}</p><div className="flex gap-2"><button type="button" disabled={offset===0||cargandoFilas} onClick={()=>setOffset((v)=>Math.max(0,v-limite))} className="rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm font-semibold disabled:opacity-40">Anterior</button><button type="button" disabled={offset+limite>=total||cargandoFilas} onClick={()=>setOffset((v)=>v+limite)} className="rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm font-semibold disabled:opacity-40">Siguiente</button></div></div>}
       </div>
     </section>
   );
@@ -3654,12 +3654,12 @@ function ApartadoInformePendiente({ apartado }) {
     <section className="overflow-hidden rounded-2xl border border-[#C5D8E5] bg-white shadow-[0_6px_18px_rgba(6,70,117,0.08)] ">
       <div className="border-b-0 px-6 py-5">
         <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] text-xl">
             {apartado.icono}
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-800">{detalle.encabezado}</h2>
-            <p className="mt-1 text-sm leading-relaxed text-slate-500">{detalle.descripcion}</p>
+            <h2 className="text-xl font-bold text-[var(--molsan-text)]">{detalle.encabezado}</h2>
+            <p className="mt-1 text-sm leading-relaxed text-[var(--molsan-text-secondary)]">{detalle.descripcion}</p>
           </div>
         </div>
       </div>
@@ -3671,9 +3671,9 @@ function ApartadoInformePendiente({ apartado }) {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {detalle.indicadores.map((indicador) => (
-            <div key={indicador.titulo} className="rounded-xl border border-slate-200 bg-white p-4">
-              <div className="text-sm font-bold text-slate-700">{indicador.titulo}</div>
-              <p className="mt-2 text-sm leading-relaxed text-slate-500">{indicador.texto}</p>
+            <div key={indicador.titulo} className="rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+              <div className="text-sm font-bold text-[var(--molsan-text)]">{indicador.titulo}</div>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--molsan-text-secondary)]">{indicador.texto}</p>
             </div>
           ))}
         </div>
@@ -3699,7 +3699,7 @@ export default function Informes() {
   };
 
   return (
-    <div className="informes-premium-page herramientas-subpagina-premium min-h-screen space-y-5 bg-white p-4 text-slate-700 md:p-6">
+    <div className="informes-premium-page herramientas-subpagina-premium min-h-screen space-y-5 bg-white p-4 text-[var(--molsan-text)] md:p-6">
       <MolsanPageHeader
         mark="INF"
         title={apartadoSeleccionado ? apartadoSeleccionado.titulo : "Informes"}
@@ -3721,7 +3721,7 @@ export default function Informes() {
               className="informes-entry-card group"
               onClick={() => navigate(`/informes/${apartado.key}`)}
             >
-              <span className="inline-flex items-center gap-2 text-sm font-bold text-blue-700">
+              <span className="inline-flex items-center gap-2 text-sm font-bold text-[var(--molsan-primary)]">
                 Abrir informe <MolsanIcon name="arrowRight" size={16} tone="inherit" />
               </span>
             </MolsanPremiumCard>
@@ -3732,9 +3732,9 @@ export default function Informes() {
       ) : (
         <section className="rounded-2xl border border-[#C5D8E5] bg-white p-8 text-center shadow-sm">
           <div><MolsanIcon name="chart" size={34} tone="ocean" /></div>
-          <h2 className="mt-3 text-lg font-bold text-slate-800">Informe no encontrado</h2>
-          <p className="mt-1 text-sm text-slate-500">El apartado solicitado no existe.</p>
-          <button type="button" onClick={() => navigate("/informes")} className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Ver los cinco informes</button>
+          <h2 className="mt-3 text-lg font-bold text-[var(--molsan-text)]">Informe no encontrado</h2>
+          <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">El apartado solicitado no existe.</p>
+          <button type="button" onClick={() => navigate("/informes")} className="mt-4 rounded-xl bg-[var(--molsan-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--molsan-primary)]">Ver los cinco informes</button>
         </section>
       )}
     </div>
