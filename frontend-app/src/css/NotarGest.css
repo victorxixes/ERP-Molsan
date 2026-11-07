@@ -52,17 +52,7 @@
 .ng-icono-girando { display:inline-block; animation:ng-girar 1s linear infinite; }
 @keyframes ng-girar { to { transform:rotate(360deg); } }
 
-/* Las acciones de actualización quedan fuera de la cabecera corporativa. */
-.ng-page-toolbar {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-@media (max-width: 720px) {
-  .ng-page-toolbar { justify-content: flex-start; }
-}
+/* Las acciones de actualización se integran en MolsanPageHeader. */
 
 /* Cabecera gestionada por PortalProfesionalPremium2027.css. */
 /* Dashboard: métricas y paneles */
