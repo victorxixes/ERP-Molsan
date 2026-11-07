@@ -44,8 +44,10 @@ export default function Layout() {
     let finalizado = false;
     const aplicar = () => {
       if (finalizado) return true;
-      if (contenedor.querySelector(".molsan-page-header")) return true;
-      const encontrada = contenedor.querySelector([
+      const cabeceraExistente = Array.from(contenedor.querySelectorAll(".molsan-page-header"))
+        .find((elemento) => !elemento.closest('[role="dialog"], [aria-modal="true"], .molsan-modal, .ng-modal, [data-modal]'));
+      if (cabeceraExistente) return true;
+      const candidatas = Array.from(contenedor.querySelectorAll([
         ":scope > header",
         ":scope > main > header",
         ":scope > div > header",
@@ -55,7 +57,10 @@ export default function Layout() {
         ".herramienta-operativa-premium > header",
         ".herramientas-subpagina-premium > header",
       ].join(", "));
-      if (!encontrada || encontrada.closest('[role="dialog"], [aria-modal="true"], .molsan-modal, .ng-modal')) return false;
+      const encontrada = candidatas.find((elemento) =>
+        !elemento.closest('[role="dialog"], [aria-modal="true"], .molsan-modal, .ng-modal, [data-modal]')
+      );
+      if (!encontrada) return false;
       encontrada.classList.add("molsan-page-header", "molsan-page-header--legacy");
       return true;
     };
@@ -76,14 +81,16 @@ export default function Layout() {
   useLayoutEffect(() => {
     setCabeceraSubpagina(null);
     if (!esSubpagina) return undefined;
-    const contenedor = document.querySelector(".erp-main-inner");
+    const contenedor = document.querySelector(".erp-route-content");
     if (!contenedor) return undefined;
 
     let observador = null;
     let finalizado = false;
     const localizarCabecera = () => {
       if (finalizado) return true;
-      const encontrada = contenedor.querySelector(".molsan-page-header");
+      const encontrada = Array.from(contenedor.querySelectorAll(".molsan-page-header")).find((elemento) =>
+        !elemento.closest('[role="dialog"], [aria-modal="true"], .molsan-modal, .ng-modal, [data-modal]')
+      );
       if (!encontrada) return false;
 
       const esControlVolver = (elemento) => {
