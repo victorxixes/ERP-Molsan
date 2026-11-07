@@ -2191,9 +2191,9 @@ No se considera finalizada la auditoría global ni se autoriza inferir cierre vi
 
 ## 76. Contraste estático de diálogos y ciclo de foco — 7 de noviembre de 2026
 
-Se ha contrastado el conjunto de ficheros JSX identificados por el marcado `role="dialog"` / `aria-modal="true"` en páginas y componentes: Sidebar, ModulosSelector, CTN detalle, NotarGest, ApoderaGest, EncargaGest, ControlApoderados, Catálogo ABSIS, Tipos de expediente, Informes, Mensajería Molsan, Mensajería Solicitudes, ExpedientesListado, ProvisionesFondosPage, ModalCtnDetalle, LiquidarExpedienteModal, ProvisionesModal, TraspasoSaldoPanel y CarpetaDigitalModal.
+Se ha contrastado el conjunto de ficheros JSX identificados por el marcado `role="dialog"` / `aria-modal="true"` en páginas y componentes: Sidebar, ModulosSelector, CTN detalle, NotarGest, ApoderaGest, EncargaGest, ControlApoderados, Catálogo ABSIS, Tipos de expediente, Informes, Mensajería Molsan, Mensajería Solicitudes, ExpedientesListado, ProvisionesFondosPage, ModalCtnDetalle, LiquidarExpedienteModal, ProvisionesModal, TraspasoSaldoPanel, CarpetaDigitalModal y VisibilidadTablas.
 
-En los 19 ficheros se ha confirmado importación/uso de `useAccessibleDialog` y correspondencia entre llamadas al hook y diálogos declarados. El hook común:
+En los 20 ficheros se ha confirmado importación/uso de `useAccessibleDialog` y correspondencia entre llamadas al hook y diálogos declarados. El hook común:
 - devuelve el foco al elemento anterior al cerrar;
 - lleva el foco al primer control disponible al abrir;
 - limita Escape y Tab al diálogo superior cuando hay diálogos anidados;
