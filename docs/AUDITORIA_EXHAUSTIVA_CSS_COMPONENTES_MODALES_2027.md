@@ -1803,3 +1803,19 @@ Se mantienen flechas en frases que expresan una relación textual o un flujo de 
 
 ### Estado
 Las sustituciones son cambios estáticos revisados sobre los componentes citados. La compilación completa del último HEAD y la inspección visual autenticada de los controles en Preview siguen pendientes; esta sección no las da por superadas.
+
+## 48. Normalización adicional de iconos en Herramientas, Mensajería y componentes — 7 de noviembre de 2026
+
+La revisión de caracteres de interfaz ha encontrado y corregido pictogramas Unicode residuales que todavía se utilizaban como controles o iconos en varias subpáginas. Se han sustituido por MolsanIcon en:
+- Herramientas: retorno a Utilidades/Catálogos, paginación de Municipios y Registros de la Propiedad, exportación y métricas de Proceso ABSIS, confirmaciones de importación ABSIS/CTN, alta de noticia, subida de documentos, paginación Post Firma, acciones de Complementos de saldo y Correspondencia tipificada.
+- Proceso ABSIS y Complementos de saldo: sus componentes KPI ya renderizan iconos mediante MolsanIcon, en vez de imprimir el nombre o el carácter recibido como texto.
+- Empleados: confirmaciones de guardado.
+- Componentes de Expedientes: transferencia de saldo y reordenación de columnas.
+- CTN y tablas compartidas: icono de mapa externo e indicadores de ordenación.
+- Seguridad y selector de módulos: ordenación, confirmaciones y navegación contextual.
+
+Se conservan flechas que expresan una relación dentro de una frase o dato (por ejemplo, «origen → destino», una ruta de navegación escrita en ayuda o el paso entre dos hitos), porque no actúan como iconos ni controles.
+
+Commits de esta pasada: `61e494dc15aa8a920e31a946683bc2ad8bb7dd9e`, `95bc7190bea662867432b0de56f743e99f29e677`, `66e9f9798ce70491847b91488b15f12e06ab6293`, `92a7d8cea730f8c473be5a79b573113acd6f360f`, `4656bf3b7928dc6101a16d43a6aa0be5997b9c34`, `d32d540291b05cb368bfddc5a03957fcdea6be71`, `4dfc554ab6c43b27e88c246c85b5910f2ac6624c`, `8e3affb0eb897192bb05ee9c7d8ff859bbc0e4e5`, `56f53f2ae35f61e453aed5079504f92ebe4aaf34`, `b35cb691cf2cf6af9f6b6c5a73a66730ef8b8da6`, `6b209b66806c5db35e3dee453c11c11511663bbc`, `e56094442802ead07b4d5d4e3e534293ccd9ae31`, `246a032e2ff030e225e956e6dc7ba3072f9a4c7b`, `0b7453cd9a9c0178e3ceb9965cb2b7828e211511`, `e2b58b40359f10b8ead629812c4be0e760ca121d`, `8bd20316c26a83ae16faca0e22b656f41d182551`, `f444ea9ae15adcb8a9f9c3a4f6052977320d00f9`, `fe8983be88f6ea5409bdbef5f162e28cb32d8dfe`, `4b269ab31b2bf654b4a0fc2f4dbab4d086e03cd3`, `179bdd74d0989a245d62f02ddc9b52437772c7fd` y `dd4165f4dbaa07b576c16f2aa37c1f44ec603a02`.
+
+El código de esta tanda queda pendiente de build y despliegue de Preview. La validación visual autenticada sigue abierta.
