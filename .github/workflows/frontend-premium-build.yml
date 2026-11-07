@@ -15,6 +15,7 @@ on:
       - fix/molsan-premium-2027-global-ui
       - molsan-premium-2027-global-consistency
       - molsan-premium-2027-page-gutters
+      - molsan-premium-deep-cleanup-continuation
 
 permissions:
   contents: read
