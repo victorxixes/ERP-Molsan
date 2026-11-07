@@ -128,8 +128,8 @@
 }
 
 :where(.apoderagest, .notargest, .encargagest) :where(table thead th) {
-  color: var(--molsan-blue, #064675);
-  background: var(--molsan-table-head, #eaf2f8);
+  color: var(--molsan-text-secondary, #617789);
+  background: var(--molsan-table-head, #EAF2F8);
   border-bottom: 1px solid var(--molsan-border, #d8e4ec);
   font-size: var(--molsan-font-size-xs, .75rem);
   font-weight: 650;
