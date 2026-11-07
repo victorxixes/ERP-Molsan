@@ -42,7 +42,7 @@
   gap: 16px !important;
   flex-wrap: wrap !important;
   color: var(--molsan-canon-header-text) !important;
-  border: 1.5px solid #C5D8E5 !important;
+  border: 1.5px solid var(--molsan-border, #D8E4EC) !important;
   border-radius: 18px !important;
   background: #FFFFFF !important;
   box-shadow: 0 7px 20px rgba(6,70,117,.09), 0 1px 3px rgba(6,50,82,.045) !important;
@@ -87,7 +87,7 @@
 .notargest.ng-content .ng-dashboard-grafico,.ng-admin-notaria-card) {
   position: relative !important;
   overflow: hidden;
-  border: 1.5px solid #C5D8E5 !important;
+  border: 1.5px solid var(--molsan-border, #D8E4EC) !important;
   border-top: 4px solid #6CC5D9 !important;
   border-radius: var(--molsan-canon-card-radius) !important;
   background: #FFFFFF !important;
@@ -235,7 +235,7 @@ body :where(
 ) :where(section.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]):not([role="status"]):not([role="alert"]):not([aria-live]), section[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]):not([role="status"]):not([role="alert"]):not([aria-live]), section[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]):not([role="status"]):not([role="alert"]):not([aria-live]), div[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]):not([role="status"]):not([role="alert"]):not([aria-live]), div[class*="rounded-[26px]"].border:not([role="dialog"]):not([class*="modal"]):not([role="status"]):not([role="alert"]):not([aria-live]), article.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]):not([role="status"]):not([role="alert"]):not([aria-live]), article[class*="rounded-[24px]"].border:not([role="dialog"]):not([class*="modal"]):not([role="status"]):not([role="alert"]):not([aria-live]), div.rounded-2xl.border:not([role="dialog"]):not([class*="modal"]):not([role="status"]):not([role="alert"]):not([aria-live])) {
   position: relative;
   min-width: 0;
-  border: 1.5px solid #C5D8E5 !important;
+  border: 1.5px solid var(--molsan-border, #D8E4EC) !important;
   border-top: 4px solid #6CC5D9 !important;
   border-radius: var(--molsan-canon-card-radius) !important;
   background: #FFFFFF !important;
