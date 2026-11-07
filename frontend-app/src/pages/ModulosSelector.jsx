@@ -393,7 +393,7 @@ export default function ModulosSelector() {
                           <strong className="block truncate text-sm text-slate-900">{n.nombre || n.nombre_completo || ("Notaría " + n.id)}</strong>
                           <span className="mt-1 block text-xs text-slate-500">{[n.nif, n.municipio, n.provincia].filter(Boolean).join(" · ") || "Datos adicionales no disponibles"}</span>
                         </span>
-                        <span className="shrink-0 text-xs font-bold text-blue-700">{abriendoNotaria === n.id ? "Abriendo…" : "Acceder →"}</span>
+                        <span className="shrink-0 text-xs font-bold text-blue-700">{abriendoNotaria === n.id ? "Abriendo…" : <>Acceder <MolsanIcon name="arrowRight" size={12} bare /></>}</span>
                       </button>
                     </li>
                   ))}
