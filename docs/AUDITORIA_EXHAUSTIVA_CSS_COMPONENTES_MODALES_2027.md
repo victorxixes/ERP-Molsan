@@ -2077,3 +2077,16 @@ El build de Vite detectó un paréntesis de cierre ausente en la expresión `Arr
 Se corrigió el cierre de la expresión en `caa3be72ec126049f96fc08637c1fc48a9891439`. El workflow **MOLSAN frontend premium build** #42371102007 ha terminado con resultado `success` para ese commit.
 
 El siguiente despliegue debe usar el HEAD posterior a esta corrección. La validación visual autenticada sigue pendiente; la compilación correcta no sustituye esa comprobación.
+
+## 70. Reconciliación de la última cascada de tablas en los portales — 7 de noviembre de 2026
+
+Una nueva lectura de las reglas al final de las hojas locales encontró overrides heredados que aún declaraban azul corporativo como texto de cabecera de tabla, aunque la capa canónica posterior lo corregía por especificidad/importancia. Se han corregido también las fuentes locales para que no dependan de ese override final:
+- ApoderaGest: `.ag-panel table thead th` usa texto secundario #617789, fondo #EAF2F8 y borde #D8E4EC; las celdas usan el borde corporativo.
+- EncargaGest: tablas de panel y directorio usan los mismos tokens en encabezados y celdas; se elimina la última referencia a `--molsan-prof-blue` para el texto de cabecera.
+- NotarGest: la regla final de `.ng-tabla th` y tablas de panel se ha reconciliado en la sección 63 con los mismos tokens.
+
+Así la hoja local y la capa canónica expresan la misma presentación, sin depender de una regla `!important` de rescate.
+
+Commits: `5a74482db1fb69b43fa485c5cfd3f0a253a07bd2`, `d67ccea60cdf0489227e40da050091675f2f07a0`, `8216e3a5a0565a18478a8cd0f962f8c940ba1967`.
+
+Pendiente de build y verificación visual de las tablas en los tres portales.
