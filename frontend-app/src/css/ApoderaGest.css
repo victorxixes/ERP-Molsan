@@ -107,7 +107,7 @@
   width: 100%;
   min-width: 0;
   padding: 9px 0;
-  color: #17243A;
+  color: #173247;
   background: transparent;
   border: 0;
   outline: none;
@@ -261,7 +261,7 @@
 
 }
 .apoderagest .ag-encargo-subpanel{min-width:0;padding:14px;border:1px solid #D8E4EC;border-radius:12px;background:#F2F7FB}
-.apoderagest .ag-encargo-subpanel h4{margin:0 0 12px;color:#17243A;font-size:13px;font-weight:850}
+.apoderagest .ag-encargo-subpanel h4{margin:0 0 12px;color:#173247;font-size:13px;font-weight:850}
 .apoderagest .ag-firmar-panel>p{margin:-4px 0 12px;color:#617789;font-size:12px}
 .apoderagest .ag-firmar-controles{display:grid;grid-template-columns:minmax(180px,.65fr) minmax(220px,1fr) auto;align-items:end;gap:12px}
 .apoderagest .ag-firmar-controles label{display:grid;gap:6px;color:#617789;font-size:11px;font-weight:800}
@@ -278,11 +278,11 @@
 
 .apoderagest .ag-grupo-notario{overflow:hidden}
 .apoderagest .ag-notario-grupo-trigger{min-height:70px;padding:15px 18px;background:#FFFFFF;border:0}
-.apoderagest .ag-notario-grupo-info strong{color:#17243A;font-size:13px;font-weight:850}
+.apoderagest .ag-notario-grupo-info strong{color:#173247;font-size:13px;font-weight:850}
 .apoderagest .ag-notario-grupo-info small{color:#617789;font-size:10px}
 .apoderagest .ag-ficha-bloque-heading{display:flex;flex-direction:column;gap:4px;margin:0 0 14px;padding-bottom:0;border:0}
 .apoderagest .ag-ficha-bloque-heading>span{color:#617789;font-size:9px;font-weight:850;letter-spacing:.12em}
-.apoderagest .ag-ficha-bloque-heading h4{margin:0;color:#17243A;font-size:14px;font-weight:850;letter-spacing:-.2px}
+.apoderagest .ag-ficha-bloque-heading h4{margin:0;color:#173247;font-size:14px;font-weight:850;letter-spacing:-.2px}
 .apoderagest .ag-ficha-bloque-heading p{margin:3px 0 0;color:#617789;font-size:10px;line-height:1.5}
 
 
@@ -293,7 +293,7 @@
 .apoderagest .ag-carpeta-apoderado-cabecera{display:flex;align-items:center;gap:10px;margin-bottom:9px}
 .apoderagest .ag-carpeta-apoderado-icono{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border:1px solid #dbe5fa;border-radius:10px;background:var(--molsan-primary-soft, #EAF2F8);color:#064675;font-size:19px}
 .apoderagest .ag-carpeta-apoderado-cabecera>div{display:grid;gap:3px;min-width:0}
-.apoderagest .ag-carpeta-apoderado-cabecera strong{color:#17243A;font-size:12px;font-weight:850}
+.apoderagest .ag-carpeta-apoderado-cabecera strong{color:#173247;font-size:12px;font-weight:850}
 .apoderagest .ag-carpeta-apoderado-cabecera small{color:#617789;font-size:10px}
 
 
@@ -329,7 +329,7 @@
   line-height: 1.55;
 }
 .apoderagest .ag-notario-linea-unica > strong{
-  color: #17243A;
+  color: #173247;
   font-size: 13px;
   font-weight: 850;
   white-space: nowrap;
@@ -381,7 +381,7 @@
 
 }
 .apoderagest{
-  --ag-ink: var(--molsan-text, #17243a);
+  --ag-ink: var(--molsan-text, #173247);
   --ag-muted: var(--molsan-text-muted, #617789);
   --ag-line: var(--molsan-border, #D8E4EC);
   --ag-panel: var(--molsan-surface, #fff);
@@ -393,7 +393,7 @@
   min-height: 0;
   padding: 0;
   overflow: visible;
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   background: transparent;
   border: 0;
   border-radius: 0;
@@ -442,7 +442,7 @@
 .apoderagest .ag-visor-inline{min-width:0;min-height:190px;border:1px solid #D8E4EC;border-radius:12px;background:#F2F7FB;overflow:hidden}
 .apoderagest .ag-visor-inline-vacio{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px;text-align:center;color:#617789}
 .apoderagest .ag-visor-inline-vacio>span{font-size:28px;color:#064675}
-.apoderagest .ag-visor-inline-vacio strong{font-size:12px;color:#17243A}
+.apoderagest .ag-visor-inline-vacio strong{font-size:12px;color:#173247}
 .apoderagest .ag-visor-inline-vacio p{max-width:320px;margin:0;font-size:11px;line-height:1.5}
 .apoderagest .ag-carpeta-apoderado>summary{list-style:none;cursor:pointer}
 .apoderagest .ag-carpeta-apoderado>summary::-webkit-details-marker{display:none}
@@ -465,10 +465,10 @@
 .apoderagest .ag-print-header{padding:0 0 14px;margin-bottom:16px;border-bottom:2px solid #263e70}
 .apoderagest .ag-print-header>strong,
 .apoderagest .ag-print-ficha header>strong{font-size:10px;letter-spacing:1.3px;color:var(--molsan-primary, #064675)}
-.apoderagest .ag-print-header h1{margin:8px 0 4px;font-size:24px;color:#17243a}
+.apoderagest .ag-print-header h1{margin:8px 0 4px;font-size:24px;color:#173247}
 .apoderagest .ag-print-header p{margin:0;color:#617789;font-size:11px}
 .apoderagest .ag-print-table{width:100%;border-collapse:collapse;font-size:10px;color:#1f2937}
-.apoderagest .ag-print-table th{background:#F2F7FB;color:#17243A;text-align:left;font-weight:800}
+.apoderagest .ag-print-table th{background:#F2F7FB;color:#173247;text-align:left;font-weight:800}
 .apoderagest .ag-print-table th,
 .apoderagest .ag-print-table td{padding:7px 8px;border:1px solid #D8E4EC;vertical-align:top}
 .apoderagest .ag-print-table td small{display:block;margin-top:3px;color:#617789;font-size:9px}
@@ -477,8 +477,8 @@
 .apoderagest .ag-print-ficha{padding:0 0 20px;margin:0 0 24px;border-bottom:1px solid #D8E4EC;break-inside:avoid-page;page-break-inside:avoid}
 .apoderagest .ag-print-ficha header{padding-bottom:10px;border-bottom:1px solid #D8E4EC}
 .apoderagest .ag-print-ficha header span{float:right;font-size:9px;font-weight:800;letter-spacing:1px;color:#617789}
-.apoderagest .ag-print-ficha h2{margin:8px 0 0;font-size:19px;color:#17243a}
-.apoderagest .ag-print-ficha h3{margin:14px 0 7px;font-size:12px;color:#17243A}
+.apoderagest .ag-print-ficha h2{margin:8px 0 0;font-size:19px;color:#173247}
+.apoderagest .ag-print-ficha h3{margin:14px 0 7px;font-size:12px;color:#173247}
 @media print{
 body.molsan-print-agenda  .apoderagest .ag-agenda-print-root,
 body.molsan-print-agenda  .apoderagest .ag-agenda-print-root *,
@@ -539,7 +539,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   min-width: 0;
   border-color: var(--molsan-border-strong, #B8CBD9);
   border-radius: var(--molsan-radius-control, 9px);
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   font: inherit;
   box-shadow: none;
   transition: border-color .16s ease, box-shadow .16s ease;
