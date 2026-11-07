@@ -1462,7 +1462,7 @@ export default function TiposConceptoGastos() {
               className="
                 min-w-full
                 divide-y
-                divide-slate-200
+                divide-[var(--molsan-border)]
               "
             >
 
@@ -1542,7 +1542,7 @@ export default function TiposConceptoGastos() {
               <tbody
                 className="
                   divide-y
-                  divide-slate-100
+                  divide-[var(--molsan-border-light)]
                 "
               >
 
