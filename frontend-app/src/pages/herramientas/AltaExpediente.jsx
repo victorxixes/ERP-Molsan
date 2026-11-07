@@ -127,7 +127,7 @@ export default function AltaExpediente() {
     }
   }
 
-  return <main className="min-h-full space-y-6 bg-[var(--molsan-surface-soft)] p-4 sm:p-6 lg:p-8">
+  return <main className="herramientas-subpagina-premium min-h-full space-y-6 bg-[var(--molsan-surface-soft)] p-4 sm:p-6 lg:p-8">
     <MolsanPageHeader mark="UT" title="Alta de expediente" description="Crea un expediente manual con facturación, contrato, múltiples fincas, hipotecas y notaría CTN." actions={<button type="button" onClick={() => navigate("/herramientas/utilidades")} className={botonSecundario}><MolsanIcon name="arrowLeft" size={15} tone="inherit" bare />Volver a Utilidades</button>}/>
 
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
