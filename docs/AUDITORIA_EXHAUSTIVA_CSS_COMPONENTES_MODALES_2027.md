@@ -1855,3 +1855,11 @@ El estilo exterior de estos paneles pasa a tener una única fuente: MolsanCanoni
 Commit: `a6cf08c6866cd9cdb35be7efe016ef15e1e74b6d`.
 
 Pendiente validar visualmente el resumen de actividad, próximas citas, grupo de encargos y el panel de tabla para asegurar que el borde y la franja superior no desplazan contenido ni alteran el scroll.
+
+## 52. Normalización del bloque de icono de ficha de notaría — 7 de noviembre de 2026
+
+El icono principal de cada tarjeta de notaría en NotarGest conservaba un degradado y una sombra propios, distintos del bloque de icono plano azul hielo del patrón corporativo. Se ha normalizado a fondo `#F2F7FB`, borde corporativo existente, radio de 16 px y sin sombra adicional; se mantiene tamaño y se añade un desplazamiento/escala hover sutil.
+
+Commit: `cb2b32c3c440745aab16dac442eed942829ddc7a`.
+
+Pendiente comprobar visualmente la tarjeta de notaría en desktop y móvil junto con el hover de la tarjeta exterior.
