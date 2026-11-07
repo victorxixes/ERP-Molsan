@@ -135,10 +135,10 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2">
-                          <button type="button" onClick={() => abrirModal(empleado, "ficha")} className="whitespace-nowrap rounded-lg border border-[var(--molsan-border-strong)] bg-white px-3 py-2 text-xs font-bold text-[var(--molsan-text)] transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700">
+                          <button type="button" onClick={() => abrirModal(empleado, "ficha")} className="whitespace-nowrap rounded-lg border border-[var(--molsan-border-strong)] bg-white px-3 py-2 text-xs font-bold text-[var(--molsan-text)] transition hover:border-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)] hover:text-[var(--molsan-primary)]">
                             Abrir ficha
                           </button>
-                          <button type="button" onClick={() => abrirModal(empleado, "configuracion")} className="whitespace-nowrap rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white transition hover:bg-blue-700">
+                          <button type="button" onClick={() => abrirModal(empleado, "configuracion")} className="whitespace-nowrap rounded-lg bg-[var(--molsan-primary)] px-3 py-2 text-xs font-bold text-white transition hover:bg-[var(--molsan-primary)]">
                             Ir a configuración
                           </button>
                         </div>
