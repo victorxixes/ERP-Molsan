@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 const COLUMNAS = [
@@ -161,7 +162,7 @@ export default function CatalogoOficinas() {
           <label className="block w-full md:max-w-xl">
             <span className="sr-only">Buscar por código, nombre, dirección, población o datos territoriales</span>
             <div className="flex items-center gap-2 rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 focus-within:border-[var(--molsan-border-strong)] focus-within:ring-2 focus-within:ring-[var(--molsan-primary-soft)]">
-              <span aria-hidden="true">⌕</span>
+              <span aria-hidden="true"><MolsanIcon name="search" size={15} bare /></span>
               <input value={busqueda} onChange={(evento) => { setBusqueda(evento.target.value); setPagina(0); }} placeholder="Código, nombre, dirección, población, provincia, DT, DG o DAN…" className="w-full bg-transparent text-sm outline-none" />
               {busqueda && <button type="button" onClick={() => { setBusqueda(""); setPagina(0); }} className="text-xs font-semibold text-[var(--molsan-primary)]">Limpiar</button>}
             </div>
