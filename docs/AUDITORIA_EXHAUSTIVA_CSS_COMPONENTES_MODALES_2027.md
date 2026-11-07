@@ -1736,3 +1736,27 @@ La revisión de la cascada de MolsanCanonicalVisual2027.css encontró una regla 
 Se ha sustituido el color literal y su -webkit-text-fill-color por var(--molsan-canon-header-muted, #617789), y se ha corregido el comentario para reflejar la superficie blanca. Se conservan los selectores de compatibilidad para subtítulos heredados, la opacidad, visibilidad, peso tipográfico y ausencia de sombra.
 
 Commit de código: 11e1c72f87d3236d425a0cc100413b39cfdcc9f9. Requiere nuevo build y actualización del Preview después de la corrección; la inspección visual de cabeceras en navegador sigue pendiente.
+
+## 45. Corrección de token efectivo, catálogo de iconos y aislamiento de alertas — 7 de noviembre de 2026
+
+### Token de subtítulo: corrección en la fuente
+La pasada anterior cambió la regla consumidora de MolsanCanonicalVisual2027.css para leer `--molsan-canon-header-muted`, pero el token seguía definido en molsan-tokens.css como `#496B82`. La variable tenía precedencia sobre el fallback `#617789`, por lo que la corrección no era efectiva por sí sola. Se ha corregido la definición raíz del token a `#617789`, manteniendo una única fuente semántica y evitando un override adicional.
+
+### Iconografía de navegación
+Se ha contrastado el catálogo MolsanIcon con los nombres literales utilizados en los componentes JSX y con los nombres dinámicos de los elementos de navegación. EncargaGestWorkspace enviaba `file-text` a Sidebar; ese nombre no tenía alias en MolsanIcon y caía en el pictograma genérico `activity`. Se ha añadido el alias `file-text: file`, sin alterar el contrato de navegación ni las acciones.
+
+### Cabeceras de NotarGest
+Las acciones «Actualizar datos» estaban dentro de las cabeceras principales de los dos modos de NotarGest (administración global y portal de notaría). Se han movido a una barra de acciones inmediatamente posterior a la cabecera. Se mantiene la función de actualización, el estado disabled, el indicador de carga y el texto accesible. La cabecera queda reservada al título, descripción y navegación contextual «Volver» cuando procede.
+
+### Alertas y avisos frente a tarjetas
+La regla de compatibilidad de tarjetas Tailwind en MolsanCanonicalVisual2027.css podía clasificar como tarjeta ordinaria un `section.rounded-2xl.border` con `role="status"` o `role="alert"`. Se han excluido expresamente los elementos con roles status/alert y los que llevan aria-live de las tres reglas genéricas de tarjeta, incluida la variante hover y la normalización de cabeceras internas. Así se evita que un aviso semántico pierda su tratamiento de estado y se convierta en una tarjeta de navegación.
+
+### Commits de código
+- `299eff61c1e3bd6367c86acfd5192ff484da958c`: token efectivo de subtítulo a #617789.
+- `9562cb45d34c13eedec50bda9f425ffb77ba2a01`: alias file-text a pictograma file.
+- `ebcb5cb5a19b3d8dc7d92498329f9f5e73d27162`: acciones de actualización fuera de cabeceras NotarGest.
+- `2c7649fa5fe1c161a71f39e1b57d71f0ed7f79ad`: barra de acciones NotarGest y adaptación responsive.
+- `acfa962f3944a2dc128277634fa63e883b5c64fb`: exclusión de avisos y alertas de la normalización genérica de tarjetas.
+
+### Validación pendiente
+Estas son correcciones estáticas de código. Deben pasar por build y despliegue de Preview, y después por navegación visual autenticada para comprobar las dos variantes de NotarGest, el icono de navegación de EncargaGest y que los avisos mantienen sus colores semánticos. No se afirma que esa inspección visual esté completada.
