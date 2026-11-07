@@ -1949,3 +1949,22 @@ Se han corregido inconsistencias concretas que seguían visibles en los JSX de N
 - Se conserva la lógica funcional, endpoints, estados, operaciones, permisos y responsive.
 
 Esta pasada es estática. Requiere build sobre el nuevo HEAD y contraste visual autenticado de los tres portales, especialmente cabeceras con acciones, bandejas, tarjetas, tablas, formularios y modales.
+
+## 60. Reconciliación de bordes canónicos y última cascada de cabeceras de tabla — 7 de noviembre de 2026
+
+La lectura conjunta de los tokens y de las reglas efectivas de las 41 hojas CSS encontró dos restos de divergencia respecto de la paleta corporativa:
+- El token `--molsan-card-border` seguía en #C5D8E5, y la capa canónica repetía ese literal en cabeceras, tarjetas y tarjetas Tailwind heredadas.
+- Aunque la última capa ya fijaba #EAF2F8 en varias tablas, capas anteriores conservaban fondos #F2F7FB, #F3F6FB o #EEF3FA para cabeceras. También había una regla específica del Design System para las tablas de ApoderaGest, NotarGest y EncargaGest con #52617A.
+
+Correcciones:
+- `--molsan-card-border` ahora referencia `--molsan-border` (#D8E4EC).
+- Las tres superficies de cabecera/tarjeta de MolsanCanonicalVisual2027.css consumen el mismo token de borde.
+- Las cabeceras de tabla del Design System, incluidos los encabezados de la intranet, usan `--molsan-table-head` (#EAF2F8) y `--molsan-text-secondary` (#617789).
+- MolsanRedesign2027.css se ha reconciliado en las variantes de CancelaGest, páginas técnicas, CTN, portales, Expedientes y Empleados. Los fondos de hover de filas permanecen como superficie suave; no se han convertido en cabeceras.
+- Los bordes y sombras de controles y modales no se han sustituido indiscriminadamente: mantienen sus tokens de control y profundidad.
+
+El escaneo estático de las 41 hojas CSS no encuentra ya las familias de fallback antiguas revisadas (#526176, #64748b, #718096, #475569, #f8fafc, #f1f5f9, #e2e8f0 y #f7f9fc). Esto no significa que se hayan eliminado todos los colores literales: permanecen acentos y colores semánticos de éxito, advertencia, error, prioridad y estados, que no deben convertirse en neutros.
+
+Commits de código: `9c21da4fdc32cc34efb5e127d32435922315968b`, `ed27fa84e921d2754f07d0365af40c212a923e23`, `4fc91d213363b482d78a9eb124bd3e279348a020`, `fcd1a0e3355894727ff07e75f3b9cc5a43a7e9ba`, `19455f1678e99b44833285794446c077d60d4265`, `24b25cdf1b266864db1e8ca654fe324d2214a73d`.
+
+La validación visual de cabeceras normales, sticky, portales, modales y tablas responsive sigue pendiente. El build y el despliegue del nuevo HEAD deben confirmarse antes de pasar a navegación autenticada.
