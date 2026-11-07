@@ -580,7 +580,7 @@
 .encargagest .eg-directorio-busqueda { border-color:var(--eg-border) !important; }
 .encargagest .eg-directorio-input-wrap { border-color:var(--eg-border) !important; border-radius:11px !important; color:var(--eg-blue) !important; }
 .encargagest .eg-directorio-input-wrap > span { font-size:inherit !important; }
-.encargagest .eg-directorio-tabla thead th { color:var(--eg-blue) !important; background:#EAF2F8 !important; border-color:var(--eg-border) !important; }
+.encargagest .eg-directorio-tabla thead th { color:var(--molsan-text-secondary, #617789) !important; background:var(--molsan-table-head, #EAF2F8) !important; border-color:var(--molsan-border, #D8E4EC) !important; }
 .encargagest .eg-directorio-tabla tbody td { border-color:var(--eg-border) !important; }
 .encargagest .eg-directorio-gestionar { background:var(--eg-blue) !important; }
 .encargagest .eg-directorio-habilitar,.encargagest .eg-directorio-global { color:var(--eg-blue) !important; border-color:var(--eg-border) !important; background:var(--eg-soft) !important; }
