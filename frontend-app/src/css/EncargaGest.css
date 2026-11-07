@@ -602,8 +602,7 @@
 /* Impresión de EncargaGest: conserva las clases de impresión existentes. */
 @media print {
   @page { size:A4 portrait; margin:12mm; }
-  body.molsan-print-encargos-lista *,
-  body.molsan-print-encargos-fichas * { visibility:hidden!important; }
+  /* La visibilidad del documento de impresión se centraliza en PortalProfesionalShared.css. */
   * { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
 }
 .encargagest .eg-empty-mark {
