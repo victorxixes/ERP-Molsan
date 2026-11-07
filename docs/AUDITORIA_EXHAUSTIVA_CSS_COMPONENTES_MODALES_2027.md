@@ -1770,3 +1770,36 @@ Se han retirado únicamente esos dos contenedores internos de los siete grupos d
 Commit: `e87b71fe32be19b17c3717c2182bbe77813265a1`.
 
 La comprobación es estática. Queda verificar en Preview que cada notaría tenga una sola tarjeta exterior, que los contadores interiores no reciban bordes/franjas adicionales y que el bloque general conserve su jerarquía.
+
+## 47. Segunda pasada de iconografía funcional y controles de tabla — 7 de noviembre de 2026
+
+Se ha extendido el contraste de iconografía a páginas y componentes de Expedientes, CTN, Catálogos, Mensajería, Provisiones, Seguridad, Empleados y componentes compartidos. Se han sustituido caracteres Unicode que actuaban como controles o pictogramas por MolsanIcon, manteniendo textos, handlers, estados y accesibilidad.
+
+### Correcciones aplicadas
+- Se amplía MolsanIcon con el glifo semántico `minus` y el alias `file-text` → `file`.
+- CTN: indicadores de ordenación, exportación Excel y estados de habilitación usan MolsanIcon.
+- Expedientes: ficha, checklist, fases, compensaciones PPAD, refresco, fusión, adjuntos, navegación y acciones de creación/edición usan iconos Molsan.
+- Listado de expedientes: flechas de acceso a filtros rápidos sustituidas por arrowRight.
+- Catálogo de entidades bancarias: paginación con arrowLeft/arrowRight.
+- Mensajería: confirmaciones del catálogo, navegación de solicitudes y acceso a mapas con check, arrowRight, pin y externalLink.
+- Provisiones: controles de ajuste fino con arrowUp/arrowDown/arrowLeft/arrowRight.
+- Seguridad: ordenación de logs y roles, confirmaciones de permisos/roles y enlaces a auditoría/logs con iconos canónicos.
+- Empleados: confirmaciones de guardado con check.
+- Componentes compartidos: tabla de datos con indicadores de ordenación Molsan; detalle CTN con enlace a Google Maps; traspasos de saldo con icono merge; ordenación manual de columnas con flechas Molsan.
+- Selector de módulos: acceso a NotarGest con arrowRight.
+
+Se mantienen flechas en frases que expresan una relación textual o un flujo de datos (por ejemplo, «Utilidades → Municipios», «Origen → destino» o el intervalo entre dos hitos); no son controles ni pictogramas.
+
+### Commits representativos
+- `6f56f21c3bf5ddb50a53fca646c6ad98ad830ab5`: glifo minus.
+- `71fb9dbdb38634280a84cddb1fb795f345231933`: iconografía CTN.
+- `4eecf6a3a27dd58cc8ed6f2bf6f00f4e323df25a` y `a49445e8ef7f6801b1ef68e3bd816b545e968278`: iconografía de ficha de expediente.
+- `38ed5bd3834fd65e706585c53d43bdd3e7f0dfb4`: flechas de navegación del listado.
+- `518c282986f8d9dc618a74cff71d18452df7f9d4`: paginación del catálogo bancario.
+- `f444ea9ae15adcb8a9f9c3a4f6052977320d00f9`: acciones de mapas en Mensajería.
+- `00359242f16c707e1e044b55c16ec83310d4c00a`: controles de Provisiones.
+- `961be42fb0b3d69b8b224f7a1847afb5055f2f7f`, `65f8270c59463b4837d59d778ac1de8cdcb52f21`, `f80fbf53821884620eab67743989f0ddf97c08b3`, `406ba953c89707e2d4aa75b63d81f54eb2b1edd7`: iconografía de Seguridad.
+- `fe8983be88f6ea5409bdbef5f162e28cb32d8dfe`, `4b269ab31b2bf654b4a0fc2f4dbab4d086e03cd3`, `179bdd74d0989a245d62f02ddc9b52437772c7fd`, `dd4165f4dbaa07b576c16f2aa37c1f44ec603a02`: componentes compartidos de CTN, tablas y Expedientes.
+
+### Estado
+Las sustituciones son cambios estáticos revisados sobre los componentes citados. La compilación completa del último HEAD y la inspección visual autenticada de los controles en Preview siguen pendientes; esta sección no las da por superadas.
