@@ -176,7 +176,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
           onClick={() => setAbierto(true)}
           className="inline-flex items-center gap-2 px-3 py-2"
         >
-          <span aria-hidden="true">⇄</span> Gestionar traspaso
+          <MolsanIcon name="merge" size={16} bare /> Gestionar traspaso
       </button>
 
       {abierto && (
@@ -184,7 +184,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
           <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="modal-traspaso-saldo-titulo" className="molsan-modal__panel my-auto max-h-[92vh] w-full max-w-5xl">
             <header className="molsan-modal__header flex flex-wrap items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center">⇄</span>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center"><MolsanIcon name="merge" size={20} bare /></span>
                 <div>
                   <h3 id="modal-traspaso-saldo-titulo">Control de traspasos de saldo</h3>
                   <p className="mt-1 max-w-3xl">Solo para expedientes relacionados con «Cancelación con provisión». Permite agrupar varios orígenes en un único receptor, verificar el importe manualmente y registrar el email al cliente.</p>
