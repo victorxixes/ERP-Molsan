@@ -4,7 +4,7 @@
   /* Vidrio y superficies compartidas */
   --molsan-glass-border: rgba(6,70,117,.14);
   --molsan-glass-shadow: 0 8px 22px rgba(6,70,117,.075);
-  --molsan-card-border: #C5D8E5;
+  --molsan-card-border: var(--molsan-border, #D8E4EC);
   --molsan-card-shadow: 0 7px 20px rgba(6,70,117,.09);
   --molsan-card-shadow-hover: 0 12px 26px rgba(6,70,117,.13);
   /* Geometría canónica de cabeceras, controles y contenido */
