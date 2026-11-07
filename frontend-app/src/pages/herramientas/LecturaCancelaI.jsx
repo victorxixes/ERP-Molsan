@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export default function LecturaCancelaI() {
   return (
     <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <MolsanPageHeader mark="CI" title="Lectura Cancela I" description="Pantalla inicial del módulo para la lectura de información procedente de Cancela I." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline"><MolsanIcon name="arrowLeft" size={13} bare /> Volver a Utilidades</Link>}/>
+      <MolsanPageHeader mark="CI" title="Lectura Cancela I" description="Pantalla inicial del módulo para la lectura de información procedente de Cancela I." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-[var(--molsan-primary)] hover:underline"><MolsanIcon name="arrowLeft" size={13} bare /> Volver a Utilidades</Link>}/>
       <section className="rounded-3xl border border-amber-200 bg-amber-50/50 p-6 sm:p-8">
         <div className="flex items-start gap-4">
           <span aria-hidden="true"><MolsanIcon name="tools" size={32} tone="ocean" /></span>
