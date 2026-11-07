@@ -87,8 +87,8 @@ export default function ProcesoAbsis() {
       </div>
 
     <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-      <Kpi titulo="Expedientes enviados al ABSIS" valor={totalEnvios} icono="↗" />
-      <Kpi titulo="Errores detectados" valor={totalErrores} icono="!" alerta />
+      <Kpi titulo="Expedientes enviados al ABSIS" valor={totalEnvios} icono="upload" />
+      <Kpi titulo="Errores detectados" valor={totalErrores} icono="alert" alerta />
       <Kpi titulo="Tipos de actividad" valor={actividades.length} icono="clipboardList" />
     </section>
 
@@ -115,7 +115,7 @@ export default function ProcesoAbsis() {
         <div className="border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-5">
           <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
             <div><p className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--molsan-primary)]">Listado de actividad</p><h2 className="mt-1 text-lg font-extrabold text-[var(--molsan-primary)]">{tipoSeleccionado || "Todos los envíos"}</h2><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Filtra, revisa incidencias y gestiona cada envío.</p></div>
-            <button onClick={exportarExcel} disabled={exportando} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Preparando…" : "↓ Descargar Excel"}</button>
+            <button onClick={exportarExcel} disabled={exportando} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Preparando…" : <><MolsanIcon name="download" size={14} bare /> Descargar Excel</>}</button>
           </div>
           <label className="mt-4 block"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Buscar en el listado</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Expediente, ID, IDAbsis, tipo o incidencia…" className="w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[var(--molsan-border-strong)] focus:ring-4 focus:ring-[var(--molsan-primary-soft)]" /></label>
         </div>
