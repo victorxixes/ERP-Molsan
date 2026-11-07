@@ -1599,3 +1599,27 @@ El commit posterior de documentación no cambia código ejecutable. Se observan 
 - Build: correcto en el último commit de código.
 - Pendiente externo: navegación visual autenticada y responsive en Render Preview. No se afirma que el aspecto final esté validado en navegador.
 - PR #411 continúa abierta y en Draft; no se fusiona ni se despliega a producción sin revisión visual y aprobación.
+
+
+## 38. Cruce focalizado de selectores CSS y consumidores JSX — 7 de noviembre de 2026
+
+Se ha realizado una pasada adicional de relación CSS→JSX sobre los portales y varias familias técnicas, buscando también consumidores fuera del JSX principal de cada módulo. El objetivo es distinguir selectores realmente huérfanos de selectores compartidos, utilidades de impresión y clases generadas por componentes comunes.
+
+### Portales profesionales
+
+- **ApoderaGest:** los seis nombres que no aparecían en el JSX principal se han localizado en sus consumidores reales: `ag-print-footer`, `molsan-print-agenda` y `ag-agenda-print-root` en `Agenda.jsx`; `molsan-icon-3d` en `MolsanIcon.jsx`; `molsan-stat-card` en `MolsanStatCard.jsx`. No se retiran.
+- **NotarGest:** el único selector no localizado en el JSX principal, `molsan-icon-3d`, pertenece al componente compartido `MolsanIcon.jsx`. El resto de selectores examinados tiene consumidor en `NotarGest.jsx`.
+- **EncargaGest:** `molsan-icon-3d` se resuelve en `MolsanIcon.jsx` y `encargagest-workspace-premium` en `EncargaGestWorkspace.jsx`. Permanecen como candidatos de comprobación global `molsan-print-encargos-lista` y `molsan-print-encargos-fichas`: aparecen en reglas `@media print` de `EncargaGest.css`, pero no en los dos JSX principales consultados. No se eliminan hasta descartar consumidores indirectos o activación dinámica fuera de esos archivos.
+
+### Módulos técnicos y subpáginas
+
+- **Catálogos/Maestros:** seis clases que inicialmente no aparecían en el subconjunto de páginas inspeccionado se han localizado en sus consumidores: `correspondencia-tipificada-premium`, `importar-ctn-premium`, `subir-documento-premium`, `cambiar-gestor-premium`, `tipos-concepto-gastos-premium` y `utilidades-premium-page`. No eran reglas huérfanas; el CSS agrupa varias subpáginas.
+- **Panel Técnico:** `panel-tecnico-premium` se consume en `PanelTecnico.jsx`; `panel-tecnico-submodulo-premium` en las cuatro subpáginas de Auditoría avanzada, Logs avanzados, Monitor Realtime y Monitor de sistema. `overflow-x-auto` aparece en las subpáginas que necesitan tablas desplazables. No se detecta selector huérfano en el conjunto contrastado.
+- **Expedientes:** la hoja de listado utiliza un grupo semántico `:is(.text-red-600, .text-red-700, .text-rose-600, .text-rose-700)` para mantener el peso de los mensajes de error. `text-rose-600` no aparece en los JSX seleccionados; no se elimina porque forma parte de una regla de compatibilidad para variantes de color y no de un bloque visual autónomo. La hoja de ficha no presenta clases sin consumidor en el conjunto de ficha y modales contrastado.
+
+### Resultado y límites
+
+- Se han resuelto falsos positivos causados por consumidores en páginas hermanas, componentes compartidos y subpáginas.
+- Se deja identificado el único candidato concreto de esta pasada: las dos clases de impresión de EncargaGest, pendientes de búsqueda en el conjunto completo de JSX y de comprobar cómo se activa la impresión.
+- No se han borrado selectores por coincidencia negativa parcial. La eliminación exige confirmar ausencia global de consumidor y revisar estados de impresión, modales y responsive.
+- Esta comprobación es estática y focalizada; no sustituye la inspección visual autenticada de Preview ni las pruebas interactivas de los modales.
