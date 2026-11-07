@@ -1987,3 +1987,13 @@ En sentido inverso, `.ctn-detalle-panel` sí es un panel de contenido real de la
 Commits de código: `c2fe1803b6515e6cc755eda13e86b98da70d81cd`, `414de17188770ca1b5d7f004659504e0f3b6ff3b`, `b33b846492b87d1938d5e8597efb8b345082bcd8`, `dd565990ecf2a7dbedc4f5ab1e3adeebded0ad79`, `a41fa3a3cfd512b8510f6b52d443c7681e05bc14`, `9ddb45dcb40415d8b2b46678196a519aa82943aa`.
 
 La revisión sigue siendo estática. Se debe confirmar que el build del nuevo HEAD pasa y comprobar visualmente el modal de EncargaGest, la ficha CTN, la cabecera de Agenda y la tabla de citas en escritorio y móvil.
+
+## 62. Recuperación del panel modal de detalle CTN — 7 de noviembre de 2026
+
+El contraste entre `ModalCtnDetalle.jsx`, las hojas globales y CtnListadoPage.css reveló que el diálogo usa `molsan-modal molsan-modal--lg ctn-modal-dialog`, pero la capa común solo estilaba `.molsan-modal-panel` y `.ctn-modal-panel`. La clase real `.ctn-modal-dialog` no estaba incluida en ninguna de esas superficies y, además, MolsanFase3 la excluía indirectamente de la normalización genérica por llevar `role=dialog` y `.molsan-modal`.
+
+Se ha incorporado `.ctn-modal-dialog` al contrato de superficie modal compartida (borde, radio, fondo blanco y sombra) y se ha definido su geometría funcional: columna flex, ancho máximo 1240 px, altura limitada al viewport y scroll delegado al cuerpo del modal. En móvil ocupa el ancho disponible y respeta el margen de 8 px del overlay. La cabecera sigue usando la regla accesible común y el contenido conserva sus pestañas y scroll.
+
+Commits: `439df46ca76d8bdba549687abf441b573d0499ef` y `912551383f97d569fa77334d3b26a9935ed574f9`.
+
+Es una corrección basada en el contrato JSX/CSS, aún pendiente de build y verificación visual en escritorio y móvil.
