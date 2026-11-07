@@ -1003,7 +1003,7 @@
 
 /* Cabecera modal corporativa común para los distintos componentes heredados. */
 :is(
-  .molsan-modal-header, .erp-modal-header,
+  .molsan-modal-header, 
   .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
   .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
   .panel-modal-premium [role="dialog"] > header,
@@ -1025,7 +1025,7 @@
   margin-bottom: 0;
 }
 :is(
-  .molsan-modal-header, .erp-modal-header,
+  .molsan-modal-header, 
   .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
   .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
   .panel-modal-premium [role="dialog"] > header,
@@ -1036,7 +1036,7 @@
 }
 @media (max-width: 640px) {
   :is(
-    .molsan-modal-header, .erp-modal-header,
+    .molsan-modal-header, 
     .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
     .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
     .panel-modal-premium [role="dialog"] > header,
