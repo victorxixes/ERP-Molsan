@@ -2009,3 +2009,13 @@ También se ha conectado la barra superior de cierre de EnviarANotarioModal a `.
 Commits: `a47c93724226591ad21b5db53580f13e6fc4b3e6` y `e718e13d9fe97acce170107ba6a02887dba04c87`.
 
 Pendiente comprobar visualmente los modales de Agenda, CTN, Enviar a notario, Carpeta digital, Liquidar expediente y Empleados en escritorio y móvil.
+
+## 64. Limpieza de neutros locales en modales operativos — 7 de noviembre de 2026
+
+Tras unificar el contrato de cabeceras, se ha extendido el cruce a las clases de presentación del cuerpo de los modales:
+- Agenda / ModalNuevaCita: panel y cabecera pasan a las clases compartidas `molsan-modal__panel` y `molsan-modal-header`. Los textos, bordes y superficies Slate del formulario se han sustituido por tokens Molsan; se conservan los colores de error y los acentos funcionales.
+- CarpetaDigitalModal, LiquidarExpedienteModal, ProvisionesModal y EnviarANotarioModal: se han reemplazado los neutros Slate de texto, bordes y fondos por `--molsan-text`, `--molsan-text-secondary`, `--molsan-border` y `--molsan-surface-soft`. Se conserva el fondo oscuro del overlay, los colores semánticos y las acciones.
+
+Commits: `3291c3bb7b6c85512db6e8c102569acc9eaf5bb8`, `acf1213492ae6695c223fc9163ebb26457c1a4c3`, `efba72ad87e0700bea320690fac2da4ad0fe2135`, `4e3d9b44df042ec28b6c074a52e41ccd766cfc1d`, `92d83c3dcb680272d8b0628693dc921a00032082`, `88604512c46ea562bb97c456b50866396b27e9a0`, `97c294105473a4e90f3dd560a30320fd4760abb6`.
+
+Pendiente build y comprobación visual de los formularios, errores, botones deshabilitados, scroll interno y comportamiento móvil.
