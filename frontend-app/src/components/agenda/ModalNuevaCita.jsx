@@ -870,8 +870,8 @@ export default function ModalNuevaCita({
                   shadow-sm
                   focus:outline-none
                   focus:ring-2
-                  focus:ring-blue-500/20
-                  focus:border-blue-400
+                  focus:ring-[var(--molsan-primary)]/10
+                  focus:border-[var(--molsan-primary)]
                   disabled:bg-[var(--molsan-surface-soft)]
                   disabled:text-[var(--molsan-text-secondary)]
                 "
@@ -922,8 +922,8 @@ export default function ModalNuevaCita({
                   shadow-sm
                   focus:outline-none
                   focus:ring-2
-                  focus:ring-blue-500/20
-                  focus:border-blue-400
+                  focus:ring-[var(--molsan-primary)]/10
+                  focus:border-[var(--molsan-primary)]
                   disabled:bg-[var(--molsan-surface-soft)]
                   disabled:text-[var(--molsan-text-secondary)]
                 "
@@ -1038,8 +1038,8 @@ export default function ModalNuevaCita({
             <div
               className="
                 rounded-2xl
-                border border-blue-100
-                bg-blue-50/60
+                border border-[var(--molsan-border)]
+                bg-[var(--molsan-surface-soft)]
                 p-4
               "
             >
@@ -1098,7 +1098,7 @@ export default function ModalNuevaCita({
                       notarioSeleccionado.tipo_firma ===
                       "Videoconferencia"
                         ? "bg-purple-100 text-purple-700"
-                        : "bg-sky-100 text-sky-700"
+                        : "bg-[var(--molsan-surface-soft)] text-[var(--molsan-primary)]"
                     }
                   `}
                 >
@@ -1421,8 +1421,8 @@ export default function ModalNuevaCita({
                 resize-none
                 focus:outline-none
                 focus:ring-2
-                focus:ring-blue-500/20
-                focus:border-blue-400
+                focus:ring-[var(--molsan-primary)]/10
+                focus:border-[var(--molsan-primary)]
                 disabled:bg-[var(--molsan-surface-soft)]
                 disabled:text-[var(--molsan-text-secondary)]
               "
@@ -1530,8 +1530,8 @@ export default function ModalNuevaCita({
                 className="
                   px-5 py-2
                   rounded-xl
-                  bg-blue-600
-                  hover:bg-blue-700
+                  bg-[var(--molsan-primary)]
+                  hover:bg-[var(--molsan-primary)]
                   text-white
                   font-medium
                   shadow-sm
