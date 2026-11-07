@@ -719,14 +719,14 @@ export default function ModalNuevaCita({
         className="
           molsan-modal__panel
           bg-white
-          border border-slate-200
+          border border-[var(--molsan-border)]
           rounded-2xl
           shadow-2xl
           w-full
           max-w-2xl
           max-h-[92vh]
           overflow-y-auto
-          text-slate-800
+          text-[var(--molsan-text)]
         "
         onMouseDown={(e) =>
           e.stopPropagation()
@@ -742,7 +742,7 @@ export default function ModalNuevaCita({
             molsan-modal-header
             sticky top-0 z-20
             bg-white/95 backdrop-blur-xl
-            border-b border-slate-200
+            border-b border-[var(--molsan-border)]
             px-6 py-4
             flex items-start justify-between
             gap-4
@@ -756,7 +756,7 @@ export default function ModalNuevaCita({
               className="
                 text-xl
                 font-bold
-                text-slate-800
+                text-[var(--molsan-text)]
               "
             >
               {titulo}
@@ -765,7 +765,7 @@ export default function ModalNuevaCita({
             <p
               className="
                 text-sm
-                text-slate-500
+                text-[var(--molsan-text-secondary)]
                 mt-1
               "
             >
@@ -783,9 +783,9 @@ export default function ModalNuevaCita({
               w-9 h-9
               rounded-xl
               flex items-center justify-center
-              text-slate-500
-              hover:bg-slate-100
-              hover:text-slate-800
+              text-[var(--molsan-text-secondary)]
+              hover:bg-[var(--molsan-surface-soft)]
+              hover:text-[var(--molsan-text)]
               transition
               disabled:opacity-40
             "
@@ -847,7 +847,7 @@ export default function ModalNuevaCita({
                   mb-1.5
                   text-sm
                   font-medium
-                  text-slate-700
+                  text-[var(--molsan-text-secondary)]
                 "
               >
                 Hora inicio
@@ -863,17 +863,17 @@ export default function ModalNuevaCita({
                   w-full
                   min-h-[42px]
                   bg-white
-                  border border-slate-300
+                  border border-[var(--molsan-border)]
                   rounded-xl
                   px-3 py-2
-                  text-slate-700
+                  text-[var(--molsan-text-secondary)]
                   shadow-sm
                   focus:outline-none
                   focus:ring-2
                   focus:ring-blue-500/20
                   focus:border-blue-400
-                  disabled:bg-slate-100
-                  disabled:text-slate-400
+                  disabled:bg-[var(--molsan-surface-soft)]
+                  disabled:text-[var(--molsan-text-secondary)]
                 "
                 value={
                   form.hora_inicio
@@ -899,7 +899,7 @@ export default function ModalNuevaCita({
                   mb-1.5
                   text-sm
                   font-medium
-                  text-slate-700
+                  text-[var(--molsan-text-secondary)]
                 "
               >
                 Hora fin
@@ -915,17 +915,17 @@ export default function ModalNuevaCita({
                   w-full
                   min-h-[42px]
                   bg-white
-                  border border-slate-300
+                  border border-[var(--molsan-border)]
                   rounded-xl
                   px-3 py-2
-                  text-slate-700
+                  text-[var(--molsan-text-secondary)]
                   shadow-sm
                   focus:outline-none
                   focus:ring-2
                   focus:ring-blue-500/20
                   focus:border-blue-400
-                  disabled:bg-slate-100
-                  disabled:text-slate-400
+                  disabled:bg-[var(--molsan-surface-soft)]
+                  disabled:text-[var(--molsan-text-secondary)]
                 "
                 value={
                   form.hora_fin
@@ -955,7 +955,7 @@ export default function ModalNuevaCita({
                   mb-1.5
                   text-sm
                   font-medium
-                  text-slate-700
+                  text-[var(--molsan-text-secondary)]
                 "
               >
                 Tipo de cita
@@ -1004,7 +1004,7 @@ export default function ModalNuevaCita({
                     mb-1.5
                     text-sm
                     font-medium
-                    text-slate-700
+                    text-[var(--molsan-text-secondary)]
                   "
                 >
                   Notario
@@ -1059,7 +1059,7 @@ export default function ModalNuevaCita({
                   <h3
                     className="
                       font-semibold
-                      text-slate-800
+                      text-[var(--molsan-text)]
                     "
                   >
                     {
@@ -1073,7 +1073,7 @@ export default function ModalNuevaCita({
                   <p
                     className="
                       text-xs
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                       mt-0.5
                     "
                   >
@@ -1118,7 +1118,7 @@ export default function ModalNuevaCita({
                   gap-x-6
                   gap-y-2
                   text-xs
-                  text-slate-600
+                  text-[var(--molsan-text-secondary)]
                 "
               >
 
@@ -1126,7 +1126,7 @@ export default function ModalNuevaCita({
 
                   <strong
                     className="
-                      text-slate-700
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     NIF:
@@ -1144,7 +1144,7 @@ export default function ModalNuevaCita({
 
                   <strong
                     className="
-                      text-slate-700
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Teléfono:
@@ -1162,7 +1162,7 @@ export default function ModalNuevaCita({
 
                   <strong
                     className="
-                      text-slate-700
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Provincia:
@@ -1180,7 +1180,7 @@ export default function ModalNuevaCita({
 
                   <strong
                     className="
-                      text-slate-700
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Municipio:
@@ -1198,7 +1198,7 @@ export default function ModalNuevaCita({
 
                   <strong
                     className="
-                      text-slate-700
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     CP:
@@ -1216,7 +1216,7 @@ export default function ModalNuevaCita({
 
                   <strong
                     className="
-                      text-slate-700
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Distancia:
@@ -1240,7 +1240,7 @@ export default function ModalNuevaCita({
 
                   <strong
                     className="
-                      text-slate-700
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Apoderado:
@@ -1262,7 +1262,7 @@ export default function ModalNuevaCita({
 
                   <strong
                     className="
-                      text-slate-700
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Dirección:
@@ -1287,7 +1287,7 @@ export default function ModalNuevaCita({
                     h-44
                     mt-4
                     rounded-xl
-                    border border-slate-200
+                    border border-[var(--molsan-border)]
                   "
                   loading="lazy"
                   src={`https://www.google.com/maps?q=${encodeURIComponent(
@@ -1324,7 +1324,7 @@ export default function ModalNuevaCita({
                     mb-1.5
                     text-sm
                     font-medium
-                    text-slate-700
+                    text-[var(--molsan-text-secondary)]
                   "
                 >
                   Tipo de firma
@@ -1335,11 +1335,11 @@ export default function ModalNuevaCita({
                 className="
                   w-full
                   min-h-[42px]
-                  bg-slate-100
-                  border border-slate-200
+                  bg-[var(--molsan-surface-soft)]
+                  border border-[var(--molsan-border)]
                   rounded-xl
                   px-3 py-2
-                  text-slate-600
+                  text-[var(--molsan-text-secondary)]
                 "
                 value={
                   form.tipo_firma ||
@@ -1358,7 +1358,7 @@ export default function ModalNuevaCita({
                   mb-1.5
                   text-sm
                   font-medium
-                  text-slate-700
+                  text-[var(--molsan-text-secondary)]
                 "
               >
                 Apoderado
@@ -1369,11 +1369,11 @@ export default function ModalNuevaCita({
                 className="
                   w-full
                   min-h-[42px]
-                  bg-slate-100
-                  border border-slate-200
+                  bg-[var(--molsan-surface-soft)]
+                  border border-[var(--molsan-border)]
                   rounded-xl
                   px-3 py-2
-                  text-slate-600
+                  text-[var(--molsan-text-secondary)]
                 "
                 value={
                   form.apoderado_visible ||
@@ -1399,7 +1399,7 @@ export default function ModalNuevaCita({
                 mb-1.5
                 text-sm
                 font-medium
-                text-slate-700
+                text-[var(--molsan-text-secondary)]
               "
             >
               Observaciones
@@ -1413,18 +1413,18 @@ export default function ModalNuevaCita({
               className="
                 w-full
                 bg-white
-                border border-slate-300
+                border border-[var(--molsan-border)]
                 rounded-xl
                 px-3 py-2
-                text-slate-700
+                text-[var(--molsan-text-secondary)]
                 shadow-sm
                 resize-none
                 focus:outline-none
                 focus:ring-2
                 focus:ring-blue-500/20
                 focus:border-blue-400
-                disabled:bg-slate-100
-                disabled:text-slate-400
+                disabled:bg-[var(--molsan-surface-soft)]
+                disabled:text-[var(--molsan-text-secondary)]
               "
               rows={4}
               value={
@@ -1449,8 +1449,8 @@ export default function ModalNuevaCita({
 
         <div
           className="
-            border-t border-slate-200
-            bg-slate-50/80
+            border-t border-[var(--molsan-border)]
+            bg-[var(--molsan-surface-soft)]/80
             px-6 py-4
             flex flex-col-reverse
             sm:flex-row
@@ -1506,9 +1506,9 @@ export default function ModalNuevaCita({
                 px-4 py-2
                 rounded-xl
                 bg-white
-                border border-slate-300
-                text-slate-700
-                hover:bg-slate-50
+                border border-[var(--molsan-border)]
+                text-[var(--molsan-text-secondary)]
+                hover:bg-[var(--molsan-surface-soft)]
                 transition
                 disabled:opacity-50
               "
