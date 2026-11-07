@@ -79,7 +79,7 @@
 
 /* Tarjetas funcionales: mismo acento superior, acabado, iconografía y hover cromático.
    No se aplica a bloques de contenido, formularios ni paneles de calendario. */
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
+:where(.erp-card,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
 .agenda-upcoming-card,.ag-panel,.eg-directorio,.ng-admin-global-resumen,.ag-grupo-notario,.ag-grupo-apoderado,.ag-carpeta-apoderado,
 .ng-admin-individual-panel,
@@ -95,7 +95,7 @@
   transition: transform .2s cubic-bezier(.2,.75,.25,1),border-color .2s ease,
     box-shadow .2s ease !important;
 }
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
+:where(.erp-card,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
 .agenda-upcoming-card,.ag-panel,.eg-directorio,.ng-admin-global-resumen,.ag-grupo-notario,.ag-grupo-apoderado,.ag-carpeta-apoderado,
 .ng-admin-individual-panel,
@@ -107,7 +107,7 @@
   background: #FFFFFF !important;
   box-shadow: 0 16px 34px rgba(6,70,117,.15) !important;
 }
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
+:where(.erp-card,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
 .agenda-upcoming-card,.ag-panel,.eg-directorio,.ng-admin-global-resumen,.ag-grupo-notario,.ag-grupo-apoderado,.ag-carpeta-apoderado,
 .ng-admin-individual-panel,
@@ -116,7 +116,7 @@
 :where(.molsan-icon-3d,.molsan-icon-wrap) {
   transition: transform .23s ease,background .23s ease,box-shadow .23s ease !important;
 }
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
+:where(.erp-card,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
 .agenda-upcoming-card,.ag-panel,.eg-directorio,.ng-admin-global-resumen,.ag-grupo-notario,.ag-grupo-apoderado,.ag-carpeta-apoderado,
 .ng-admin-individual-panel,
@@ -126,7 +126,7 @@
   transform: translateY(-2px) scale(1.045) !important;
 }
 
-:where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
+:where(.erp-card,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
 .agenda-upcoming-card,.ag-panel,.eg-directorio,.ng-admin-global-resumen,.ag-grupo-notario,.ag-grupo-apoderado,.ag-carpeta-apoderado,
 .ng-admin-individual-panel,
@@ -388,7 +388,7 @@ body :where(
   }
 }
 @media(prefers-reduced-motion:reduce) {
-  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
+  :where(.erp-card,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
 .agenda-upcoming-card,.ag-panel,.eg-directorio,.ng-admin-global-resumen,.ag-grupo-notario,.ag-grupo-apoderado,.ag-carpeta-apoderado,
 .ng-admin-individual-panel,
@@ -397,7 +397,7 @@ body :where(
   :where(.erp-app-shell,.erp-route-content,.apoderagest,.encargagest,.notargest) * {
     transition-duration: .01ms !important;
   }
-  :where(.erp-card,.card-sj,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
+  :where(.erp-card,.dashboard-kpi,.agenda-stat-card,.erp-card-soft,.cg-module-card,
 .accesos-notariales-resumen-card,.ctn-modal-resumen-firmas > div,.ctn-detalle-stat,.stat-card,.kpi-card,
 .agenda-upcoming-card,.ag-panel,.eg-directorio,.ng-admin-global-resumen,.ag-grupo-notario,.ag-grupo-apoderado,.ag-carpeta-apoderado,
 .ng-admin-individual-panel,
