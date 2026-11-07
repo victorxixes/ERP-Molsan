@@ -2201,7 +2201,7 @@ body {
 ) {
   padding: 11px 12px;
   color: var(--molsan-text-secondary);
-  background: var(--molsan-surface-soft);
+  background: var(--molsan-table-head, #EAF2F8);
   border-bottom: 1px solid var(--molsan-border);
   font-size: 12px;
   font-weight: 750;
