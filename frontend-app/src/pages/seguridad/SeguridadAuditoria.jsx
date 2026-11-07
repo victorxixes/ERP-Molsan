@@ -707,7 +707,7 @@ function ModalDetalle({
             "
             aria-label="Cerrar"
           >
-            ×
+            <MolsanIcon name="x" size={18} bare />
           </button>
 
         </div>
