@@ -67,7 +67,7 @@ export default function CambiarGestorExpediente() {
           <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Introduce el número exactamente como aparece en la ficha del expediente.</p>
           <label className="mt-5 block text-sm font-semibold text-[var(--molsan-text)]" htmlFor="numero-expediente">Número de expediente</label>
           <div className="mt-2 flex flex-col gap-3 sm:flex-row">
-            <input id="numero-expediente" value={numero} onChange={(e) => { setNumero(e.target.value); setExpediente(null); setMensaje(""); }} placeholder="Ej. 2026/000123" className="min-w-0 flex-1 rounded-xl border border-[var(--molsan-border-strong)] px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-[var(--molsan-primary-soft)]" />
+            <input id="numero-expediente" value={numero} onChange={(e) => { setNumero(e.target.value); setExpediente(null); setMensaje(""); }} placeholder="Ej. 2026/000123" className="min-w-0 flex-1 rounded-xl border border-[var(--molsan-border-strong)] px-4 py-3 text-sm outline-none focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary-soft)]" />
             <button type="submit" disabled={consultando} className="rounded-xl bg-[var(--molsan-primary)] px-5 py-3 text-sm font-semibold text-white disabled:opacity-60">{consultando ? "Buscando…" : "Consultar"}</button>
           </div>
           {expediente && <div className="mt-5 rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-primary-soft)] p-4">
@@ -82,7 +82,7 @@ export default function CambiarGestorExpediente() {
           <h2 className="text-lg font-bold text-[var(--molsan-primary)]">2. Seleccionar nuevo gestor</h2>
           <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">La reasignación afecta al gestor responsable del expediente; no cambia el apoderado ni el notario.</p>
           <label className="mt-5 block text-sm font-semibold text-[var(--molsan-text)]" htmlFor="gestor-destino">Gestor de destino</label>
-          <select id="gestor-destino" value={gestorId} onChange={(e) => setGestorId(e.target.value)} disabled={cargandoGestores || !expediente} className="mt-2 w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-[var(--molsan-primary-soft)] disabled:bg-[var(--molsan-table-head)]">
+          <select id="gestor-destino" value={gestorId} onChange={(e) => setGestorId(e.target.value)} disabled={cargandoGestores || !expediente} className="mt-2 w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-4 py-3 text-sm outline-none focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary-soft)] disabled:bg-[var(--molsan-table-head)]">
             <option value="">{cargandoGestores ? "Cargando gestores…" : "Selecciona un gestor"}</option>
             {gestores.map((gestor) => <option key={gestor.id} value={gestor.id}>{gestor.nombre}{gestor.usuario ? ` · ${gestor.usuario}` : ""}</option>)}
           </select>
