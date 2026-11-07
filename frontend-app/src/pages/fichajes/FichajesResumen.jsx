@@ -69,13 +69,13 @@ export default function FichajesResumen({ recargar }) {
 
     <MolsanPremiumCard icon="calendar" title={`Vacaciones · ${vacaciones?.anio || new Date().getFullYear()}`} className="fichajes-vacaciones-card">
       <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
-        <div><p className="text-xs text-slate-500">Asignados</p><p className="text-xl font-bold">{vacaciones?.dias_asignados ?? "—"}</p></div>
-        <div><p className="text-xs text-slate-500">Disfrutados</p><p className="text-xl font-bold">{vacaciones?.dias_disfrutados ?? 0}</p></div>
-        <div><p className="text-xs text-slate-500">Reservados</p><p className="text-xl font-bold">{vacaciones?.dias_reservados ?? 0}</p></div>
-        <div><p className="text-xs text-slate-500">Disponibles</p><p className="text-xl font-bold">{vacaciones?.dias_restantes ?? "Pendiente"}</p></div>
+        <div><p className="text-xs text-[var(--molsan-text-secondary)]">Asignados</p><p className="text-xl font-bold">{vacaciones?.dias_asignados ?? "—"}</p></div>
+        <div><p className="text-xs text-[var(--molsan-text-secondary)]">Disfrutados</p><p className="text-xl font-bold">{vacaciones?.dias_disfrutados ?? 0}</p></div>
+        <div><p className="text-xs text-[var(--molsan-text-secondary)]">Reservados</p><p className="text-xl font-bold">{vacaciones?.dias_reservados ?? 0}</p></div>
+        <div><p className="text-xs text-[var(--molsan-text-secondary)]">Disponibles</p><p className="text-xl font-bold">{vacaciones?.dias_restantes ?? "Pendiente"}</p></div>
       </div>
-      {vacaciones?.aviso && <p className="mt-2 text-xs text-slate-600">{vacaciones.aviso}</p>}
-      {vacaciones?.registros?.length > 0 && <div className="mt-3 space-y-1 text-xs">{vacaciones.registros.map((v) => <p key={v.id} className="rounded-lg bg-slate-50 p-2">{v.fecha_inicio} – {v.fecha_fin} · {v.dias} días · {v.estado}</p>)}</div>}
+      {vacaciones?.aviso && <p className="mt-2 text-xs text-[var(--molsan-text-secondary)]">{vacaciones.aviso}</p>}
+      {vacaciones?.registros?.length > 0 && <div className="mt-3 space-y-1 text-xs">{vacaciones.registros.map((v) => <p key={v.id} className="rounded-lg bg-[var(--molsan-surface-soft)] p-2">{v.fecha_inicio} – {v.fecha_fin} · {v.dias} días · {v.estado}</p>)}</div>}
     </MolsanPremiumCard>
 
     <MolsanPremiumCard icon="calendar" title="Solicitar vacaciones" description="Selecciona el periodo y envía la solicitud para su aprobación." className="fichajes-solicitud-card">
@@ -84,7 +84,7 @@ export default function FichajesResumen({ recargar }) {
         <label className="block text-xs">Hasta<input required type="date" min={desde} value={hasta} onChange={(e) => setHasta(e.target.value)} className="mt-1 w-full rounded-lg border p-2 text-sm" /></label>
         <button disabled={guardando || cargando} className="w-full rounded-lg bg-violet-700 px-3 py-2 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Enviando…" : "Enviar solicitud"}</button>
       </form>
-      {cargando && <p className="mt-2 text-xs text-slate-500">Actualizando datos…</p>}
+      {cargando && <p className="mt-2 text-xs text-[var(--molsan-text-secondary)]">Actualizando datos…</p>}
     </MolsanPremiumCard>
 
     {(error || mensaje) && <div className="md:col-span-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800" role={error ? "alert" : "status"}>{error || mensaje}</div>}
