@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 const ACTIVIDADES = [
@@ -62,7 +63,7 @@ export default function CambiosActividadAbsis() {
 
   return (
     <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <MolsanPageHeader mark="AB" title="Cambios de actividad ABSIS" description="Busca un expediente, selecciona la actividad de destino y registra la solicitud. La conexión y la confirmación de ABSIS se implementarán más adelante por informática." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-[var(--molsan-primary)] hover:underline">← Volver a Utilidades</Link>}/>
+      <MolsanPageHeader mark="AB" title="Cambios de actividad ABSIS" description="Busca un expediente, selecciona la actividad de destino y registra la solicitud. La conexión y la confirmación de ABSIS se implementarán más adelante por informática." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-[var(--molsan-primary)] hover:underline"><MolsanIcon name="arrowLeft" size={13} bare /> Volver a Utilidades</Link>}/>
 
       <section className="rounded-3xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm sm:p-6">
         <h2 className="text-base font-extrabold text-[var(--molsan-primary)]">1. Buscar expediente</h2>
