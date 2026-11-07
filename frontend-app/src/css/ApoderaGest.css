@@ -621,10 +621,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   min-height:92px;
   margin:0 0 18px;
   padding:17px 20px;
-  border:1px solid #D8E4EC;
-  border-radius:18px;
-  background:#FFFFFF;
-  box-shadow:0 6px 18px rgba(6,50,82,.045);
 }
 .apoderagest .ag-titulo-seccion.ag-panel-resumen-heading h2{ margin-top:3px; }
 .apoderagest .ag-titulo-seccion.ag-panel-resumen-heading p{ color:#617789; }
@@ -633,12 +629,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 
 .apoderagest .ag-dashboard-inferior-grid > *{
   min-width: 0;
-  border-color: var(--molsan-border, #D8E4EC);
-  border-radius: var(--molsan-radius-card, 14px);
-  box-shadow: var(--molsan-shadow-card, 0 6px 18px rgba(6,50,82,.045));
-}
-.apoderagest .ag-panel{
-  background: var(--molsan-surface, #FFFFFF);
 }
 .apoderagest .ag-panel-cabecera,
 .apoderagest .ag-titulo-seccion{
@@ -722,11 +712,9 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   color:var(--molsan-text-secondary,#617789);
   font-size:12px;
 }
-.apoderagest .ag-panel-resumen-heading{
+ .apoderagest .ag-panel-resumen-heading{
   min-height:88px;
   margin:0;
-  border-radius:var(--molsan-radius-card,14px);
-  box-shadow:var(--molsan-shadow-card,0 6px 18px rgba(6,50,82,.045));
 }
 .apoderagest .ag-grid-kpi{
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -737,12 +725,6 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 .apoderagest .ag-dashboard-inferior-grid{
   gap:16px;
   margin-top:0;
-}
-.apoderagest .ag-panel-proximas{
-  border:1px solid var(--molsan-border,#D8E4EC);
-  border-radius:var(--molsan-radius-card,14px);
-  background:var(--molsan-surface,#FFFFFF);
-  box-shadow:var(--molsan-shadow-card,0 6px 18px rgba(6,50,82,.045));
 }
 .apoderagest .ag-panel-cabecera{
   display:flex;
@@ -993,10 +975,9 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 }
 
 
-.apoderagest .ag-panel {
-
-  min-width:0;border:1px solid var(--molsan-prof-border);border-radius:18px;
-  background:#fff;box-shadow:var(--molsan-prof-shadow);overflow:hidden;
+ .apoderagest .ag-panel {
+  min-width:0;
+  overflow:hidden;
 }
 
 .apoderagest .ag-panel-cabecera,
