@@ -3,6 +3,7 @@ import axios from "../../api/axios";
 import { listarNotarios } from "../../api/notarios";
 import { useAuthStore } from "../../store/authStore";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
@@ -86,7 +87,7 @@ function SelectorUbicacion({ titulo, valor, onChange, notarias, registros, munic
         <input className={inputClass + " mt-1.5"} value={busqueda || valor.busqueda} onChange={(e) => { const texto = e.target.value; setBusqueda(texto); onChange({ ...valor, busqueda: texto, referencia_id: "" }); }} placeholder={valor.tipo === "Notaria" ? "Nombre, apellidos, NIF, código o población…" : "Nombre del registro, registrador o población…"} />
       </label>
       {busqueda && <div className="max-h-44 overflow-y-auto rounded-xl border border-slate-200 bg-white">{filtradas.map((item) => <button type="button" key={item.id} onClick={() => elegir(item)} className="block w-full border-b border-slate-100 px-3 py-2.5 text-left text-sm last:border-b-0 hover:bg-blue-50"><span className="block font-semibold text-slate-800">{valor.tipo === "Notaria" ? (item.nombre_completo || [item.nombre, item.apellidos].filter(Boolean).join(" ")) : item.registro_propiedad}</span><span className="block text-xs text-slate-500">{[item.direccion, item.cp || item.codigo_postal, item.municipio || item.poblacion, item.provincia].filter(Boolean).join(" · ") || "Sin dirección en el catálogo"}</span></button>)}{!filtradas.length && <p className="p-3 text-sm text-slate-500">No hay coincidencias en el catálogo.</p>}</div>}
-      {valor.referencia_id && <p className="text-xs font-semibold text-emerald-700">✓ Datos cargados desde el catálogo. Puedes revisar la dirección.</p>}
+      {valor.referencia_id && <p className="text-xs font-semibold text-emerald-700"><MolsanIcon name="check" size={12} bare /> Datos cargados desde el catálogo. Puedes revisar la dirección.</p>}
     </>}
     <div className="grid gap-3 sm:grid-cols-2">
       <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 sm:col-span-2">Dirección
@@ -259,7 +260,7 @@ export default function MensajeriaSolicitudes() {
                 <span className="text-slate-600"><span className="font-bold text-slate-700">Prioridad:</span> {s.prioridad || "Normal"}</span>
               </div>
               <div className="mt-4 flex items-center justify-between gap-3">
-                <span className="text-xs font-bold text-blue-700">Ver estado y comunicación</span><span className="flex h-8 w-8 items-center justify-center rounded-full border border-blue-100 text-blue-700 transition group-hover:bg-blue-700 group-hover:text-white">→</span>
+                <span className="text-xs font-bold text-blue-700">Ver estado y comunicación</span><span className="flex h-8 w-8 items-center justify-center rounded-full border border-blue-100 text-blue-700 transition group-hover:bg-blue-700 group-hover:text-white"><MolsanIcon name="arrowRight" size={15} bare /></span>
               </div>
             </div>
           </button>;
