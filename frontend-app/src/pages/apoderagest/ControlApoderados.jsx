@@ -138,7 +138,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     } catch (e) { setError(e?.response?.data?.detail || "No se ha podido descargar la factura."); }
   };
 
-  return <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+  return <div className="erp-page control-apoderados-page w-full min-w-0 space-y-6">
     <MolsanPageHeader
       mark="AP"
       title={admin ? "Control Apoderados" : "Mi actividad y liquidaciones"}
