@@ -213,7 +213,7 @@ export default function Verifacti() {
         </main>
       </div>
       <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--molsan-border)] pt-4 text-xs text-[var(--molsan-text-muted)]">
-        <span>Verifacti · Panel de control MOLSAN ERP</span><Link to="/herramientas/utilidades" className="font-semibold text-[var(--molsan-primary)] hover:text-[var(--molsan-primary)]">← Volver a Utilidades</Link>
+        <span>Verifacti · Panel de control MOLSAN ERP</span><Link to="/herramientas/utilidades" className="font-semibold text-[var(--molsan-primary)] hover:text-[var(--molsan-primary)]"><MolsanIcon name="arrowLeft" size={13} bare /> Volver a Utilidades</Link>
       </footer>
     </div>
   );
