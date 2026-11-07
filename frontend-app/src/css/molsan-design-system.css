@@ -92,8 +92,8 @@
 .ag-tabla th,
 .ng-tabla th,
 .encargagest .eg-directorio-tabla th {
-  color: #52617a;
-  background: var(--molsan-surface-soft);
+  color: var(--molsan-text-secondary, #617789);
+  background: var(--molsan-table-head, #EAF2F8);
   border-bottom: 1px solid var(--molsan-border);
   font-size: 12px;
   font-weight: 700;
