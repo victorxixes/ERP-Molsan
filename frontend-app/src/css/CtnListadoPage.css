@@ -1219,7 +1219,7 @@
 
 .ctn-tabla th {
   color: var(--molsan-text-secondary, #617789);
-  background: var(--molsan-surface-soft, #EAF2F8);
+  background: var(--molsan-table-head, #EAF2F8);
   border-bottom-color: var(--molsan-border, #D8E4EC);
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -1230,7 +1230,7 @@
 }
 
 .ctn-tabla tbody tr:hover td {
-  background: var(--molsan-surface-soft, #EAF2F8);
+  background: var(--molsan-surface-soft, #F2F7FB);
 }
 
 .ctn-btn-primary {
@@ -1254,7 +1254,7 @@
 
 .ctn-btn-secondary:hover:not(:disabled) {
   color: var(--molsan-primary, #064675);
-  background: var(--molsan-surface-soft, #EAF2F8);
+  background: var(--molsan-surface-soft, #F2F7FB);
   border-color: var(--molsan-primary, #064675);
 }
 
