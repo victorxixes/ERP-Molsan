@@ -232,7 +232,7 @@ export default function MensajeriaSolicitudes() {
       </form>
       <section className="rounded-2xl border border-[var(--molsan-border)] bg-white shadow-sm">
         <div className="border-b border-[var(--molsan-border)] p-5"><h2 className="text-lg font-bold text-[var(--molsan-text)]">Mis encargos</h2><p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">El sistema genera automáticamente un ID único para cada encargo.</p></div>
-        {cargando ? <p className="p-5 text-sm text-[var(--molsan-text-secondary)]">Cargando encargos…</p> : !solicitudes.length ? <p className="p-8 text-center text-sm text-[var(--molsan-text-secondary)]">Todavía no has creado encargos de mensajería.</p> : <div className="divide-y divide-slate-100">{solicitudes.map((s) => {
+        {cargando ? <p className="p-5 text-sm text-[var(--molsan-text-secondary)]">Cargando encargos…</p> : !solicitudes.length ? <p className="p-8 text-center text-sm text-[var(--molsan-text-secondary)]">Todavía no has creado encargos de mensajería.</p> : <div className="divide-y divide-[var(--molsan-border)]">{solicitudes.map((s) => {
           const origenFicha = desglosarUbicacion(s.origen);
           const destinoFicha = desglosarUbicacion(s.destino);
           return <button key={s.id} onClick={() => abrirSeguimiento(s)} className="group block w-full border-b border-[var(--molsan-border)] p-4 text-left transition last:border-b-0 hover:bg-[var(--molsan-surface-soft)] sm:p-5">
