@@ -155,7 +155,7 @@
   flex-direction: column;
   gap: 6px;
   min-width: 0;
-  color: #526176;
+  color: #617789;
   font-size: 11px;
   font-weight: 700;
 }
@@ -287,7 +287,7 @@
 .ctn-tabla td {
   padding: 12px 13px;
   color: #33435a;
-  border-bottom: 1px solid #edf0f5;
+  border-bottom: 1px solid #D8E4EC;
   vertical-align: middle;
   white-space: nowrap;
 }
@@ -421,7 +421,7 @@
 /* ENCABEZADO BLANCO: nombre y datos con contraste */
 
 .ctn-modal-eyebrow {
-  color: #64748b;
+  color: #617789;
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 1.5px;
@@ -435,9 +435,9 @@
   width: 36px;
   height: 36px;
   padding: 0;
-  color: #334155;
-  background: #f8fafc;
-  border: 1px solid #dbe3ed;
+  color: #617789;
+  background: #F2F7FB;
+  border: 1px solid #D8E4EC;
   border-radius: 9px;
   font-size: 25px;
   line-height: 1;
@@ -516,8 +516,8 @@
   min-width: 0;
   min-height: 65px;
   padding: 11px 12px;
-  background: #f8fafc;
-  border: 1px solid #edf0f5;
+  background: #F2F7FB;
+  border: 1px solid #D8E4EC;
   border-radius: 8px;
 }
 
@@ -701,7 +701,7 @@
 .ctn-modal-tabla td {
   padding: 11px 12px;
   color: #3d4d63;
-  border-bottom: 1px solid #edf0f5;
+  border-bottom: 1px solid #D8E4EC;
   vertical-align: middle;
 }
 
@@ -1218,8 +1218,8 @@
 }
 
 .ctn-tabla th {
-  color: var(--molsan-text-secondary, #526176);
-  background: var(--molsan-surface-soft, #f5f7fb);
+  color: var(--molsan-text-secondary, #617789);
+  background: var(--molsan-surface-soft, #EAF2F8);
   border-bottom-color: var(--molsan-border, #D8E4EC);
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -1230,7 +1230,7 @@
 }
 
 .ctn-tabla tbody tr:hover td {
-  background: var(--molsan-surface-soft, #f5f7fb);
+  background: var(--molsan-surface-soft, #EAF2F8);
 }
 
 .ctn-btn-primary {
@@ -1254,7 +1254,7 @@
 
 .ctn-btn-secondary:hover:not(:disabled) {
   color: var(--molsan-primary, #064675);
-  background: var(--molsan-surface-soft, #f5f7fb);
+  background: var(--molsan-surface-soft, #EAF2F8);
   border-color: var(--molsan-primary, #064675);
 }
 
