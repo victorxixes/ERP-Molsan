@@ -1152,7 +1152,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
             role="dialog"
             aria-modal="true"
             aria-label="Notificaciones"
-            className="
+            className="molsan-modal-panel 
               relative
               w-full
               max-w-[900px]
