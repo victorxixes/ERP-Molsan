@@ -1634,3 +1634,23 @@ Se ha contrastado el candidato de impresión de EncargaGest contra sus consumido
 - Se han retirado solo esas dos reglas duplicadas de `EncargaGest.css`. Se conservan el formato A4 y los márgenes de página, así como `print-color-adjust: exact`. La visibilidad de la vista imprimible permanece en la hoja compartida.
 
 No se han eliminado las clases de impresión ni los selectores compartidos. La corrección es una deduplicación de cascada; requiere aún comprobación de impresión en navegador y no se considera validación visual completa.
+
+
+## 40. Centralización y recuperación de estilos de impresión — 7 de noviembre de 2026
+
+La reconciliación del árbol de la rama mostró que la antigua hoja `PortalProfesionalShared.css` ya no existe en esta rama y que la hoja activa es `PortalProfesionalPremium2027.css`. Los portales importan esta última desde `main.jsx`. La antigua lógica de impresión compartida no se había trasladado a la hoja activa.
+
+Se ha corregido la brecha en la capa canónica de portales:
+
+- Se han centralizado en `PortalProfesionalPremium2027.css` los estilos de impresión de Agenda y ApoderaGest, con la paleta Molsan para los controles de impresión y formato documental blanco/A4.
+- Se conservan los tres modos de impresión: agenda, listado de encargos y fichas detalladas.
+- Se asegura que el contenido imprimible sea visible y que el resto de la aplicación quede oculto durante la impresión.
+- Se ha añadido la clase `ag-print-ficha` a cada artículo de ficha para que las reglas de salto de página se apliquen al elemento real del JSX.
+- Se ha retirado de `EncargaGest.css` la regla local duplicada de ocultación, manteniendo allí los márgenes A4 y la impresión de colores. La gestión de visibilidad queda centralizada.
+
+### Verificación y límites
+
+- Los ficheros modificados se han recuperado de nuevo desde GitHub tras escritura.
+- La rama de la PR #411 apunta al commit de código `8e795ec04189efdb296944832fc2fc92eb7a7ddc`.
+- El workflow de validación asociado al último commit se encontraba en cola al documentar esta sección; no se declara todavía como correcto.
+- Sigue pendiente abrir Preview en navegador y probar realmente la impresión de agenda, listado y fichas, además de la inspección visual de los portales y modales. Esta corrección estática no se presenta como prueba visual.
