@@ -2539,7 +2539,7 @@ function ModalImportarExcel({
         role="dialog"
         aria-modal="true"
         aria-label="Importar municipios desde Excel"
-        className="
+        className="molsan-modal-panel 
           w-full
           max-w-2xl
           overflow-hidden
@@ -3170,7 +3170,7 @@ function ModalMunicipio({
         role="dialog"
         aria-modal="true"
         aria-label="Formulario de municipio"
-        className="
+        className="molsan-modal-panel 
           w-full
           max-w-xl
           overflow-hidden
