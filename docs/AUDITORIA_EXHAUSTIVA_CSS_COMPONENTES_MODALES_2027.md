@@ -1670,3 +1670,31 @@ Se ha repetido el cruce estático de selectores en las diez hojas globales activ
 - Se mantienen los selectores repetidos dentro de una misma hoja cuando son capas responsive, estados o refinamientos posteriores de cascada; no se borran automáticamente por igualdad textual sin analizar orden, media queries y especificidad.
 
 La comparación es estática y exacta; no prueba equivalencia semántica entre selectores distintos ni sustituye una inspección de cascada en navegador.
+
+
+## 42. Normalización de iconografía y auditoría de compatibilidad de cabeceras — 7 de noviembre de 2026
+
+### Corrección aplicada
+
+- frontend-app/src/layout/Layout.jsx: el botón común de retorno de subpágina utilizaba el carácter Unicode «←». Se ha sustituido por MolsanIcon name="arrowLeft", manteniendo el texto visible «Volver», el aria-label, el destino de navegación y la inserción del botón mediante portal.
+- Commit de la corrección: 40d6ec6c3e16b09a28fd599782c5d2e0374ef80b.
+
+### Riesgos estructurales identificados que no se eliminan sin prueba de consumidores
+
+- Layout.jsx conserva dos efectos de compatibilidad: uno detecta cabeceras estructurales heredadas y les añade las clases molsan-page-header y molsan-page-header--legacy; otro localiza la cabecera de subpágina, oculta controles «Volver» antiguos y monta el control común en su zona de acciones.
+- Ambos efectos utilizan MutationObserver para cubrir páginas que renderizan su cabecera de forma asíncrona. El primer efecto se desactiva cuando encuentra una cabecera Premium o una cabecera estructural heredada; el segundo se desactiva al localizar la primera .molsan-page-header.
+- La detección de cabecera heredada utiliza selectores estructurales y selectores específicos de herramientas. Aunque excluye diálogos en el elemento finalmente seleccionado, todavía requiere comprobar en cada ruta que el selector no alcance un encabezado interno de una sección, un panel o una vista hija.
+- El segundo efecto consulta .molsan-page-header en todo .erp-main-inner; no limita la búsqueda a .erp-route-content ni exige que la cabecera pertenezca al nivel principal de la página. En rutas con más de una cabecera Premium, la primera coincidencia del DOM podría ser una cabecera secundaria. No se cambia esta lógica sin inventariar las rutas y validar sus estructuras reales.
+- El botón de retorno se monta en .molsan-page-header__actions cuando existe; si no, se monta en el propio header. Se debe confirmar que no desplace acciones, no se duplique y no quede fuera del orden visual esperado en páginas con acciones propias.
+
+### Pruebas pendientes para retirar la compatibilidad heredada
+
+1. Inventariar por ruta la existencia y posición DOM de MolsanPageHeader, headers estructurales y acciones de retorno heredadas.
+2. Verificar las rutas principales y subpáginas de Expedientes, Agenda, CTN, Fusiones, Provisiones, Mensajería, Informes, Catálogos, Maestros, Herramientas y Seguridad.
+3. Probar carga inicial y render asíncrono, navegación entre rutas sin recarga, retorno al módulo padre, modales abiertos y cierre de modales.
+4. Confirmar ausencia de parpadeo, doble cabecera, doble botón, botones ocultos que sigan ocupando espacio y desplazamientos de las acciones.
+5. Solo después de esa matriz se podrá retirar MutationObserver y la capa legacy sin arriesgar páginas que todavía dependan de ella.
+
+### Estado de validación
+
+La corrección de iconografía está escrita en la rama de trabajo. Esta sección documenta un riesgo de compatibilidad y un plan de prueba; no afirma que la capa heredada esté ya retirada ni que la validación visual de Preview esté completada.
