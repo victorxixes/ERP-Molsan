@@ -56,7 +56,7 @@ export default function Layout() {
         ":scope > main > div > header",
         ".herramienta-operativa-premium > header",
         ".herramientas-subpagina-premium > header",
-      ].join(", "));
+      ].join(", ")));
       const encontrada = candidatas.find((elemento) =>
         !elemento.closest('[role="dialog"], [aria-modal="true"], .molsan-modal, .ng-modal, [data-modal]')
       );
