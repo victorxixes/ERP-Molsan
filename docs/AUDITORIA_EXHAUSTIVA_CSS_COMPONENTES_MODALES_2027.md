@@ -1863,3 +1863,13 @@ El icono principal de cada tarjeta de notaría en NotarGest conservaba un degrad
 Commit: `cb2b32c3c440745aab16dac442eed942829ddc7a`.
 
 Pendiente comprobar visualmente la tarjeta de notaría en desktop y móvil junto con el hover de la tarjeta exterior.
+
+## 53. Eliminación del override tardío de paneles ApoderaGest en MolsanPremium2027.css — 7 de noviembre de 2026
+
+La auditoría de las 41 hojas CSS encontró un segundo override que podía neutralizar la normalización recién aplicada: MolsanPremium2027.css cargaba más tarde que ApoderaGest.css y definía con `!important` borde, radio, fondo y sombra para `.ag-panel`, KPIs y paneles del dashboard. Aunque MolsanCanonicalVisual2027.css es la última hoja, esa regla tardía tenía mayor especificidad que los selectores `:where()` canónicos.
+
+Se ha reducido ese bloque a la responsabilidad estructural `min-width: 0`. Se eliminan sus propiedades visuales duplicadas y se deja la superficie exterior bajo la hoja canónica. Las tarjetas KPI mantienen la presentación del componente MolsanStatCard.
+
+Commit: `c0d28a8b177c41a7d04becceaf3108ae8d03583f`.
+
+Debe verificarse en Preview que el bloque de paneles no recupere el radio/sombra antiguos al cambiar de ruta y que los KPI conserven su icono y acento.
