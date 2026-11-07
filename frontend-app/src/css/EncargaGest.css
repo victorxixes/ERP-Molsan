@@ -690,13 +690,15 @@
 
 .encargagest .eg-panel table thead th,
 .encargagest .eg-directorio-tabla thead th {
-
-  color:var(--molsan-prof-blue);background:var(--molsan-prof-table);border-color:var(--molsan-prof-border);
+  color:var(--molsan-text-secondary, #617789);
+  background:var(--molsan-table-head, #EAF2F8);
+  border-color:var(--molsan-border, #D8E4EC);
 }
 
 .encargagest .eg-panel table td,
 .encargagest .eg-directorio-tabla td {
-border-color:var(--molsan-prof-border)}
+  border-color:var(--molsan-border, #D8E4EC);
+}
 
 .encargagest .eg-directorio-input-wrap {
 display:flex;align-items:center;gap:9px;min-width:0}
