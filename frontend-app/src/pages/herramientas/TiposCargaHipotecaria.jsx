@@ -1282,7 +1282,7 @@ export default function TiposCargaHipotecaria() {
                     text-[var(--molsan-text)]
                     outline-none
                     focus:ring-2
-                    focus:ring-blue-500
+                    focus:ring-[var(--molsan-primary)]/10
                   "
                 />
 
