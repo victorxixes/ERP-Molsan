@@ -1760,3 +1760,13 @@ La regla de compatibilidad de tarjetas Tailwind en MolsanCanonicalVisual2027.css
 
 ### Validación pendiente
 Estas son correcciones estáticas de código. Deben pasar por build y despliegue de Preview, y después por navegación visual autenticada para comprobar las dos variantes de NotarGest, el icono de navegación de EncargaGest y que los avisos mantienen sus colores semánticos. No se afirma que esa inspección visual esté completada.
+
+## 46. Eliminación de tarjetas anidadas en el detalle individual de NotarGest — 7 de noviembre de 2026
+
+La revisión del árbol real de NotarGest encontró que la lista global de tarjetas de MolsanCanonicalVisual2027.css aplicaba borde, franja superior, sombra y hover tanto a `.ng-admin-notaria-card` como a sus descendientes estructurales `.ng-admin-resumen` y `.ng-admin-resumen-principal`. Esto podía producir tarjetas dentro de tarjetas y líneas interiores en el resumen de cada notaría, contrario al patrón visual acordado.
+
+Se han retirado únicamente esos dos contenedores internos de los siete grupos de selectores compartidos (base, hover, iconografía, focus y compatibilidad). Se conserva el estilo de la tarjeta real `.ng-admin-notaria-card` y del bloque exterior `.ng-admin-individual-panel`, que contiene el título «Detalle por notaría / Situación individual» y el conjunto de fichas.
+
+Commit: `e87b71fe32be19b17c3717c2182bbe77813265a1`.
+
+La comprobación es estática. Queda verificar en Preview que cada notaría tenga una sola tarjeta exterior, que los contadores interiores no reciban bordes/franjas adicionales y que el bloque general conserve su jerarquía.
