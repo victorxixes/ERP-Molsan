@@ -50,7 +50,7 @@ function Panel({ title, description, children, action }) {
 }
 
 function Metric({ icon, label, value, hint }) {
-  return <div className="herramientas-subpagina-premium rounded-2xl border border-[var(--molsan-border)] bg-white p-4">
+  return <div className="rounded-2xl border border-[var(--molsan-border)] bg-white p-4">
     <div className="flex items-center justify-between"><span className="text-xs font-semibold uppercase tracking-wide text-[var(--molsan-text-secondary)]">{label}</span><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--molsan-table-head)]"><MolsanIcon name={icon} size={20} tone="ocean" /></span></div>
     <div className="mt-3 text-xl font-bold text-[var(--molsan-primary)]">{value}</div><p className="mt-1 text-xs text-[var(--molsan-text-muted)]">{hint}</p>
   </div>;
@@ -89,7 +89,7 @@ export default function Verifacti() {
   }
 
   return (
-    <div className="verifacti-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
+    <div className="herramientas-subpagina-premium verifacti-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
       <MolsanPageHeader mark="VF" title="Verifacti" description="Panel de control de facturación electrónica y registros VERI*FACTU." />
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[245px_minmax(0,1fr)]">
