@@ -232,7 +232,7 @@ export default function Fichajes({ modo = "empleado" }) {
     : [{ id: "resumen", label: "Resumen de marcajes" }, { id: "calendario", label: "Calendario mensual" }, { id: "documentos", label: "Documentos" }, { id: "personal", label: "Información personal" }, { id: "ausencias", label: "Solicitudes de ausencia" }, { id: "compensaciones", label: "Festivos y compensaciones" }];
 
   return (
-    <main className="fichajes-premium-page mx-auto w-full max-w-[1500px] space-y-6 p-4 text-[var(--erp-text)] sm:p-6">
+    <main className="erp-page fichajes-premium-page w-full min-w-0 space-y-6 text-[var(--erp-text)]">
       <MolsanPageHeader
         mark="FIC"
         title={esAdminVista ? "Control de Fichajes" : "Fichaje Molsan"}
