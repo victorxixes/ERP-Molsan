@@ -1922,3 +1922,15 @@ La corrección se aplica en la regla común de MolsanPremium2027.css y en la nor
 Commits: `8a1fbfe3ec77e02f563d532c844cd8dd640e62ab` y `519d59f30dac454b8a5858da50b8d1d4b6cc1c1c`.
 
 Pendiente validar visualmente modales de CTN, EncargaGest, NotarGest, ficha de expediente y empleados.
+
+## 58. Contraste de cabeceras de las 98 páginas JSX — 7 de noviembre de 2026
+
+Se ha revisado el inventario de las 98 páginas JSX de frontend buscando uso de MolsanPageHeader y cabeceras estructurales alternativas. No se han encontrado cabeceras de página independientes que sigan usando un encabezado heredado en lugar de MolsanPageHeader.
+
+Las dos coincidencias sin MolsanPageHeader son contextuales, no cabeceras de página:
+- ModulosSelector: encabezado de un diálogo de acceso de soporte.
+- FestivosCompensaciones: encabezado de sección interna dentro de la página de Fichajes.
+
+Se conserva la compatibilidad MutationObserver de Layout.jsx hasta completar la navegación visual y las rutas con renderizado asíncrono; no se elimina a ciegas porque puede seguir atendiendo contenido dinámico o diálogos no incluidos en el inventario de páginas.
+
+La revisión es estática de los 98 archivos. No sustituye el contraste visual de dimensiones, márgenes, parpadeo, acciones y responsive.
