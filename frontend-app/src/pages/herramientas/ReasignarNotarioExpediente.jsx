@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
@@ -86,7 +87,7 @@ export default function ReasignarNotarioExpediente() {
   return (
     <main className="herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <MolsanPageHeader mark="UT" title="Reasignar expediente a notario" description="Busca el expediente para recuperar su ficha de Envío a notario, corregir sus datos y guardar la nueva asignación." actions={<Link to="/herramientas/utilidades" className="rounded-xl border border-[var(--molsan-border)] px-4 py-2 text-sm font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]">
-            ← Volver a Utilidades
+            <MolsanIcon name="arrowLeft" size={14} bare /> Volver a Utilidades
           </Link>}/>
 
       <section className="rounded-3xl border border-[var(--molsan-border)] bg-white p-6 shadow-sm">
