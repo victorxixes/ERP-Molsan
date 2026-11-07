@@ -103,7 +103,7 @@ export default function Notificaciones() {
  borde: "border-[var(--molsan-border-strong)]",
  fondo: "bg-[var(--molsan-surface-soft)]",
  icono: "bg-[var(--molsan-surface-soft)] border-[var(--molsan-border-strong)] text-[var(--molsan-primary)]",
- barra: "bg-[var(--molsan-surface-soft)]0",
+ barra: "bg-[var(--molsan-primary)]",
  },
 
  default: {
