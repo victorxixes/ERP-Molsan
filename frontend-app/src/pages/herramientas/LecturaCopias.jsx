@@ -65,7 +65,7 @@ export default function LecturaCopias() {
               <span className="text-sm font-bold text-[var(--molsan-text)]">{procesando ? "Procesando ficheros y correos…" : procesado ? "Procesamiento de demostración completado" : "Estado del proceso"}</span>
               <span className="text-sm font-extrabold tabular-nums text-[var(--molsan-primary)]">{progreso}%</span>
             </div>
-            <div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-200">
+            <div className="mt-3 h-3 overflow-hidden rounded-full bg-[var(--molsan-surface-soft)]">
               <div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 transition-all duration-200" style={{ width: `${progreso}%` }} />
             </div>
             <p className="mt-2 text-xs text-[var(--molsan-text-secondary)]">{procesando ? "Simulación visual del avance. No se conecta a ningún buzón, API ni script." : procesado ? "Se han mostrado registros de ejemplo para ilustrar la futura salida." : "Pulsa «Procesar» para iniciar una simulación del progreso."}</p>
