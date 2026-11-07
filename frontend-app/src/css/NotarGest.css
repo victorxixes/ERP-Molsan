@@ -18,7 +18,7 @@
 
 .notargest.ng-content {
   --ng-primary: var(--molsan-primary, #064675);
-  --ng-text: var(--molsan-text, #17243A);
+  --ng-text: var(--molsan-text, #173247);
   --ng-muted: var(--molsan-text-muted, #617789);
   --ng-border: var(--molsan-border, #D8E4EC);
   --ng-soft: var(--molsan-surface-soft, #F2F7FB);
@@ -145,7 +145,7 @@
 .ng-barra-mes small { white-space: nowrap; }
 
 /* Resumen global y administración de notarías */
-.ng-admin-notarias { display: flex; flex-direction: column; gap: 18px; width: 100%; min-width: 0; padding: 22px 26px 30px; color: var(--ng-text, #17243A); }
+.ng-admin-notarias { display: flex; flex-direction: column; gap: 18px; width: 100%; min-width: 0; padding: 22px 26px 30px; color: var(--ng-text, #173247); }
 .ng-admin-global-resumen { overflow: hidden; }
 .ng-admin-global-titulo { padding: 18px 20px; }
 .ng-admin-global-total { flex: 0 0 auto; padding: 7px 11px; color: var(--ng-primary); border: 1px solid var(--ng-border); border-radius: 999px; background: #fff; font-size: 11px; font-weight: 800; }
