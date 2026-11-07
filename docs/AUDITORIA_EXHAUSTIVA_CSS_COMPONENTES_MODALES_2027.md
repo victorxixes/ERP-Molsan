@@ -2200,3 +2200,26 @@ En los 33 ficheros se ha confirmado importación/uso de `useAccessibleDialog` y 
 - mantiene el foco dentro del diálogo y filtra controles ocultos/deshabilitados.
 
 No se ha cambiado lógica de formularios ni operaciones. Esta comprobación es estática: siguen pendientes las pruebas manuales reales de teclado, lectores de pantalla, scroll interno, cierre anidado y viewport móvil/tablet.
+
+
+## 77. Barrido de paleta en Herramientas, Informes, Mensajería y modales — 7 de noviembre de 2026
+
+Se ha realizado un barrido de clases cromáticas heredadas en las **41 páginas JSX de Herramientas**. Los neutros slate y acentos blue/indigo/sky de la interfaz se han conectado a los tokens Molsan de texto, superficie, borde y acción. Se conservan:
+- los colores semánticos de estados (correcto, incidencia, aviso, cancelación, etc.);
+- los fondos oscuros de overlays de diálogo;
+- la paleta corporativa propia de las plantillas oficiales de documentos y sus vistas de impresión, sin confundir documento emitido con interfaz del editor.
+
+También se han normalizado las superficies de Informes, Mensajería, Expedientes, Fusiones, Control Apoderados y Control de Fichajes. Los botones primarios y estados de foco pasan al azul Molsan; tablas, formularios y textos secundarios usan los tokens comunes.
+
+### Superficie común de modales
+
+Se ha añadido `.molsan-modal__panel` como alias del panel canónico `.molsan-modal-panel` en el CSS compartido. Los diálogos de herramientas, mensajería, informes, expedientes, fichajes, seguridad, control de apoderados, empleados y selectores ahora reciben la misma superficie, radio, borde y sombra. El modal de alta de empleado se ha migrado explícitamente a `.molsan-modal-panel` y `.molsan-modal__header`, incluidos sus controles de formulario con tokens. Se mantienen las cabeceras específicas de los portales cuando ya están centralizadas por sus estilos de módulo.
+
+### Validación
+
+- Build frontend: success en `cb9cb1e344a0e84eab6d208bf7bc878b67a5c29d`.
+- Validación Fichajes: success en el mismo commit.
+- Render Preview: deploy `dep-dbnkff6c6qcc73e56170` en estado `live`, commit `cb9cb1e344a0e84eab6d208bf7bc878b67a5c29d`.
+- Producción y API sin cambios.
+
+Sigue pendiente la prueba visual autenticada y la comprobación manual de interacción/responsive antes de cerrar la auditoría y promover a producción.
