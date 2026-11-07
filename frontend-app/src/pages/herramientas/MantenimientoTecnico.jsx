@@ -401,7 +401,7 @@ export default function MantenimientoTecnico() {
                   key={nombre}
                   type="button"
                   onClick={() => setTabla(nombre)}
-                  className="rounded-full border border-[var(--molsan-border)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--molsan-text-secondary)] transition hover:border-blue-300 hover:bg-[var(--molsan-primary-soft)] hover:text-[var(--molsan-primary)]"
+                  className="rounded-full border border-[var(--molsan-border)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--molsan-text-secondary)] transition hover:border-[var(--molsan-primary)] hover:bg-[var(--molsan-primary-soft)] hover:text-[var(--molsan-primary)]"
                 >
                   {nombre}
                 </button>
