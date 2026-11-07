@@ -717,6 +717,7 @@ export default function ModalNuevaCita({
         aria-labelledby="modal-nueva-cita-title"
         tabIndex={-1}
         className="
+          molsan-modal__panel
           bg-white
           border border-slate-200
           rounded-2xl
@@ -738,6 +739,7 @@ export default function ModalNuevaCita({
 
         <div
           className="
+            molsan-modal-header
             sticky top-0 z-20
             bg-white/95 backdrop-blur-xl
             border-b border-slate-200
