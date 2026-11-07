@@ -440,7 +440,7 @@ export default function ImportadorAbsis() {
                                             font-semibold
                                         "
                                     >
-                                        <span>✓</span>
+                                        <span><MolsanIcon name="check" size={13} bare /></span>
                                         Excel seleccionado
                                     </div>
 
@@ -784,7 +784,7 @@ export default function ImportadorAbsis() {
                                 text-green-600
                             "
                         >
-                            ✓
+                            <MolsanIcon name="check" size={15} bare />
                         </div>
 
 
