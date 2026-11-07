@@ -607,7 +607,7 @@ function ModalDetalle({
         role="dialog"
         aria-modal="true"
         aria-label="Detalle de registro de auditoría"
-        className="
+        className="molsan-modal-panel 
           w-full
           max-w-2xl
           max-h-[90vh]
