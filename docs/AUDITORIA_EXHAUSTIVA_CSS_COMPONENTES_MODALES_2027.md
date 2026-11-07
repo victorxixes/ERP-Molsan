@@ -1845,3 +1845,13 @@ Se han incorporado a la capa canónica compartida los selectores `.ag-panel`, `.
 Commit: `5c1c9a61553fb049e7fa419d592b0ecdc54ad3ee`.
 
 Requiere build y contraste visual en Preview para comprobar los paneles de encargos de ApoderaGest, directorio de EncargaGest y resumen global de NotarGest, especialmente el espacio entre el borde exterior y los componentes interiores.
+
+## 51. Retirada de overrides locales de superficie en ApoderaGest — 7 de noviembre de 2026
+
+Tras incorporar `.ag-panel` a la capa de tarjetas canónicas, se han retirado de ApoderaGest.css los bordes, radios, fondos y sombras duplicados que seguían compitiendo con la superficie global en `.ag-panel`, `.ag-panel-resumen-heading` y `.ag-panel-proximas`. También se ha limpiado el grupo compartido que repetía borde/radio/sombra sobre los hijos de la cuadrícula; se conservan las reglas de anchura mínima, overflow, padding, estructura interna y responsive.
+
+El estilo exterior de estos paneles pasa a tener una única fuente: MolsanCanonicalVisual2027.css. La regla local conserva únicamente responsabilidades estructurales. El dashboard KPI sigue usando MolsanStatCard y mantiene su propio componente canónico.
+
+Commit: `a6cf08c6866cd9cdb35be7efe016ef15e1e74b6d`.
+
+Pendiente validar visualmente el resumen de actividad, próximas citas, grupo de encargos y el panel de tabla para asegurar que el borde y la franja superior no desplazan contenido ni alteran el scroll.
