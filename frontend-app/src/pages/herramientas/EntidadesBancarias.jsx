@@ -2558,7 +2558,7 @@ export default function EntidadesBancarias() {
               disabled:opacity-40
             "
           >
-            ← Anterior
+            <MolsanIcon name="arrowLeft" size={14} bare /> Anterior
           </button>
 
 
@@ -2619,7 +2619,7 @@ export default function EntidadesBancarias() {
               disabled:opacity-40
             "
           >
-            Siguiente →
+            Siguiente <MolsanIcon name="arrowRight" size={14} bare />
           </button>
 
         </div>
