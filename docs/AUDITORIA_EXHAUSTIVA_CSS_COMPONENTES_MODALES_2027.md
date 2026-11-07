@@ -2069,3 +2069,11 @@ El escaneo adicional de 11 hojas CSS de páginas técnicas (Expedientes, Ficha, 
 Commits: `c826eff0adc3a2e52b71eb7d675f65676f5a70a4`, `fa2be814dae7ef81c7e5a140c0d4d91d3ba7ebaa`, `9e299053131c6a9cff7513fb3906ecfa8de458c6`, `36704f5e11e5dc11ffacf052b0c2b3e46f5fba99`, `e7c5fbd22f0352e84c3129ff09aecd6dfa4d6dd4`, `264345b9ae9ac71d038aaafceaab8e291c46c8d8`, `04f70a2fadc17d1c04b6b6dfea50dc214ba85c35`, `8da5851ef2e76c252d8460aaf14bad772ec9b6c2`.
 
 El build y el despliegue del HEAD más reciente deben confirmar estas correcciones antes de la validación visual.
+
+## 69. Corrección de sintaxis del observador y recuperación del build — 7 de noviembre de 2026
+
+El build de Vite detectó un paréntesis de cierre ausente en la expresión `Array.from(querySelectorAll(...))` del nuevo filtro de cabeceras en Layout.jsx. La compilación falló en el commit `73c4d310`; ese artefacto no se promovió a Preview y el servicio conservó el último despliegue correcto.
+
+Se corrigió el cierre de la expresión en `caa3be72ec126049f96fc08637c1fc48a9891439`. El workflow **MOLSAN frontend premium build** #42371102007 ha terminado con resultado `success` para ese commit.
+
+El siguiente despliegue debe usar el HEAD posterior a esta corrección. La validación visual autenticada sigue pendiente; la compilación correcta no sustituye esa comprobación.
