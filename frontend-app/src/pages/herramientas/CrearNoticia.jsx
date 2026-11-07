@@ -69,7 +69,7 @@ export default function CrearNoticia() {
           max-w-3xl
           relative overflow-hidden
           rounded-[24px]
-          border border-slate-200/80
+          border border-[var(--molsan-border)]
           bg-white
           
           
@@ -99,7 +99,7 @@ export default function CrearNoticia() {
               className="
                 w-full
                 rounded-xl
-                border border-slate-200
+                border border-[var(--molsan-border)]
                 bg-[var(--molsan-surface-soft)]
                 px-4 py-3
                 text-[var(--molsan-primary)]
@@ -138,7 +138,7 @@ export default function CrearNoticia() {
                 w-full
                 resize-y
                 rounded-xl
-                border border-slate-200
+                border border-[var(--molsan-border)]
                 bg-[var(--molsan-surface-soft)]
                 px-4 py-3
                 text-[var(--molsan-primary)]
