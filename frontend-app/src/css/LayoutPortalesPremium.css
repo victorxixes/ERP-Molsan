@@ -7,7 +7,7 @@
 .portal-access-tabs-premium [role=tablist] { display:flex; flex-wrap:wrap; gap:.5rem; }
 .intranet-documentos-table-premium { min-width:0; }
 .intranet-documentos-table-premium table { width:100%; border-collapse:separate; border-spacing:0; }
-.intranet-documentos-table-premium th { background:var(--molsan-surface-soft, #F2F7FB); }
+.intranet-documentos-table-premium th { background:var(--molsan-table-head, #EAF2F8); }
 .intranet-documentos-table-premium td,.intranet-documentos-table-premium th { overflow-wrap:anywhere; }
 .intranet-noticias-feed-premium { min-width:0; }
 .intranet-noticias-feed-premium img { max-width:100%; }
@@ -156,7 +156,7 @@
 .ctn-portal-history-title { margin:0; color:var(--molsan-text,#17243a); font-size:15px; font-weight:750; }
 .ctn-portal-history-table-wrap { max-width:100%; overflow-x:auto; overscroll-behavior-x:contain; }
 .ctn-portal-history-table { width:100%; border-collapse:separate; border-spacing:0; font-size:12px; }
-.ctn-portal-history-th { padding:10px; color:var(--molsan-text-muted,#617789); background:var(--molsan-surface-soft, #F2F7FB); border-bottom:1px solid var(--molsan-border, #D8E4EC); text-align:left; font-weight:700; white-space:nowrap; }
+.ctn-portal-history-th { padding:10px; color:var(--molsan-text-muted,#617789); background:var(--molsan-table-head, #EAF2F8); border-bottom:1px solid var(--molsan-border, #D8E4EC); text-align:left; font-weight:700; white-space:nowrap; }
 .ctn-portal-history-td { padding:10px; border-bottom:1px solid var(--molsan-border-light,#e6ebf2); vertical-align:top; }
 .ctn-portal-history-td--nowrap { white-space:nowrap; }
 .ctn-portal-history-table tbody tr:hover { background:var(--molsan-primary-soft, #EAF2F8); }
@@ -239,7 +239,7 @@
 .herramientas-subpagina-premium input,.herramientas-subpagina-premium select,.herramientas-subpagina-premium textarea,.panel-modal-premium input,.panel-modal-premium select,.panel-modal-premium textarea { max-width:100%; transition:border-color .18s ease,box-shadow .18s ease; }
 .herramientas-subpagina-premium input:focus-visible,.herramientas-subpagina-premium select:focus-visible,.herramientas-subpagina-premium textarea:focus-visible,.herramientas-subpagina-premium button:focus-visible,.panel-modal-premium input:focus-visible,.panel-modal-premium select:focus-visible,.panel-modal-premium textarea:focus-visible,.panel-modal-premium button:focus-visible { outline:2px solid var(--molsan-primary,#064675); outline-offset:2px; }
 .herramientas-subpagina-premium table { width:100%; border-collapse:separate; border-spacing:0; }
-.herramientas-subpagina-premium th { background:var(--molsan-surface-soft,#f5f7fb); }
+.herramientas-subpagina-premium th { background:var(--molsan-table-head, #EAF2F8); }
 .herramientas-subpagina-premium td,.herramientas-subpagina-premium th { overflow-wrap:anywhere; }
 .panel-modal-premium { isolation:isolate; }
 .panel-modal-premium [role=dialog] { max-height:calc(100dvh - 2rem); overflow-y:auto; overscroll-behavior:contain; }

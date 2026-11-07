@@ -652,14 +652,14 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             <div className="ng-perfil-datos">{[["Nombre",notario?.nombre],["NIF",notario?.nif],["Usuario",notario?.nif],["Teléfono",notario?.telefono],["Dirección",notario?.direccion],["Código postal",notario?.cp],["Municipio",notario?.municipio],["Provincia",notario?.provincia],["Código CTN",notario?.codigo],["Videoconferencia",notario?.vc],["Apoderado asociado",notario?.apoderado],["Departamento cancelaciones",notario?.departamento_cancelaciones],["Departamento copias",notario?.departamento_copias],["Otros departamentos",notario?.otros_departamentos]].map(([label,value]) => <div className="ng-dato" key={label}><small>{label}</small><strong>{texto(value)}</strong></div>)}</div>
             {notario?.observacion && <div className="ng-perfil-observacion"><small>Observaciones CTN</small><p>{notario.observacion}</p></div>}
           </div>
-          <form onSubmit={cambiarPasswordPerfil} className="h-fit space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
-            <div><h3 className="text-sm font-extrabold text-slate-900">Seguridad de la cuenta</h3><p className="mt-1 text-xs leading-5 text-slate-500">Usuario: NIF completo registrado en CTN. Si aún no has cambiado la contraseña inicial, utiliza tu NIF como contraseña.</p></div>
+          <form onSubmit={cambiarPasswordPerfil} className="h-fit space-y-3 rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4 sm:p-5">
+            <div><h3 className="text-sm font-extrabold text-[var(--molsan-text)]">Seguridad de la cuenta</h3><p className="mt-1 text-xs leading-5 text-[var(--molsan-text-muted)]">Usuario: NIF completo registrado en CTN. Si aún no has cambiado la contraseña inicial, utiliza tu NIF como contraseña.</p></div>
             {notario?.requiere_cambio_password && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900">Debes sustituir la contraseña inicial antes de acceder a tus expedientes. La nueva contraseña debe tener al menos 8 caracteres.</p>}
             {mensajePasswordPerfil && <p role="status" className="rounded-lg bg-emerald-50 p-2 text-xs text-emerald-800">{mensajePasswordPerfil}</p>}
             {errorPasswordPerfil && <p role="alert" className="rounded-lg bg-rose-50 p-2 text-xs text-rose-700">{errorPasswordPerfil}</p>}
-            <label className="block text-xs font-semibold text-slate-600">Contraseña actual<input required type="password" autoComplete="current-password" value={passwordActualPerfil} onChange={e=>setPasswordActualPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" /></label>
-            <label className="block text-xs font-semibold text-slate-600">Nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordNuevaPerfil} onChange={e=>setPasswordNuevaPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" /></label>
-            <label className="block text-xs font-semibold text-slate-600">Repetir nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordConfirmarPerfil} onChange={e=>setPasswordConfirmarPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" /></label>
+            <label className="block text-xs font-semibold text-[var(--molsan-text-secondary)]">Contraseña actual<input required type="password" autoComplete="current-password" value={passwordActualPerfil} onChange={e=>setPasswordActualPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm" /></label>
+            <label className="block text-xs font-semibold text-[var(--molsan-text-secondary)]">Nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordNuevaPerfil} onChange={e=>setPasswordNuevaPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm" /></label>
+            <label className="block text-xs font-semibold text-[var(--molsan-text-secondary)]">Repetir nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordConfirmarPerfil} onChange={e=>setPasswordConfirmarPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm" /></label>
             <button type="submit" disabled={guardandoPasswordPerfil} className="ng-login-submit w-full">{guardandoPasswordPerfil ? "Guardando contraseña…" : "Cambiar contraseña"}</button>
           </form>
           </div>
@@ -707,13 +707,13 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
               mark="NG"
               title="NotarGest"
               description="Visión global del trabajo notarial y detalle operativo de cada notaría habilitada."
+              actions={
+                <button type="button" className="ng-boton-secundario" onClick={actualizarDatosSidebar} disabled={cargandoSelectorNotaria} aria-live="polite">
+                  <MolsanIcon name="refresh" size={18} className={cargandoSelectorNotaria ? "ng-icono-girando" : ""} tone="ocean" />
+                  {cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
+                </button>
+              }
             />
-            <div className="ng-page-toolbar">
-              <button type="button" className="ng-boton-secundario" onClick={actualizarDatosSidebar} disabled={cargandoSelectorNotaria} aria-live="polite">
-                <MolsanIcon name="refresh" size={18} className={cargandoSelectorNotaria ? "ng-icono-girando" : ""} tone="ocean" />
-                {cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
-              </button>
-            </div>
             {cargandoSelectorNotaria && <p className="ng-mensaje">Calculando pendientes de las notarías…</p>}
             {!cargandoSelectorNotaria && notariasSeleccionables.length === 0 && <div className="ng-admin-vacio"><strong>No hay notarías habilitadas</strong><p>Activa el acceso NotarGest desde la ficha CTN de cada notaría.</p></div>}
             <section className="ng-admin-global-resumen" aria-label="Resumen global de todas las notarías">
@@ -823,17 +823,18 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       mark="NG"
       title="NotarGest"
       description="Centro de gestión notarial, firmas y seguimiento registral."
-      
-      actions={vista !== "inicio" ? (
-        <button type="button" onClick={volverVistaAnterior} className="ng-boton-secundario"><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> {vista === "detalle" ? "Volver a la vista anterior" : "Volver al inicio"}</button>
-      ) : null}
+      actions={
+        <>
+          {vista !== "inicio" ? (
+            <button type="button" onClick={volverVistaAnterior} className="ng-boton-secundario"><MolsanIcon name="arrowLeft" size={20} tone="ocean" /> {vista === "detalle" ? "Volver a la vista anterior" : "Volver al inicio"}</button>
+          ) : null}
+          <button type="button" className="ng-boton-secundario" onClick={actualizarDatosSidebar} disabled={cargando || cargandoSelectorNotaria} aria-live="polite">
+            <MolsanIcon name="refresh" size={18} className={cargando || cargandoSelectorNotaria ? "ng-icono-girando" : ""} tone="ocean" />
+            {cargando || cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
+          </button>
+        </>
+      }
     />
-    <div className="ng-page-toolbar">
-      <button type="button" className="ng-boton-secundario" onClick={actualizarDatosSidebar} disabled={cargando || cargandoSelectorNotaria} aria-live="polite">
-        <MolsanIcon name="refresh" size={18} className={cargando || cargandoSelectorNotaria ? "ng-icono-girando" : ""} tone="ocean" />
-        {cargando || cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
-      </button>
-    </div>
 
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
     {vista === "inicio" && <section className="ng-dashboard-analitica">

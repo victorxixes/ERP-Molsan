@@ -1934,3 +1934,18 @@ Las dos coincidencias sin MolsanPageHeader son contextuales, no cabeceras de pá
 Se conserva la compatibilidad MutationObserver de Layout.jsx hasta completar la navegación visual y las rutas con renderizado asíncrono; no se elimina a ciegas porque puede seguir atendiendo contenido dinámico o diálogos no incluidos en el inventario de páginas.
 
 La revisión es estática de los 98 archivos. No sustituye el contraste visual de dimensiones, márgenes, parpadeo, acciones y responsive.
+
+
+## 59. Quinta pasada focalizada: residuos de paleta en los tres portales — 7 de noviembre de 2026
+
+Se han corregido inconsistencias concretas que seguían visibles en los JSX de NotarGest, ApoderaGest y EncargaGest, aunque las hojas globales ya definían los tokens Premium:
+
+- NotarGest: las acciones «Actualizar datos» estaban fuera de la cabecera corporativa en la administración global y en el portal. Se han integrado en `MolsanPageHeader.actions`, junto al botón contextual «Volver» cuando procede. Se han normalizado también los campos de seguridad del perfil a los tokens de superficie, texto y borde.
+- ApoderaGest: el modal de agrupación aún utilizaba neutros Slate en sus textos, bordes y hover; se han conectado a los tokens Molsan. La tabla ahora utiliza el token dedicado `--molsan-table-head` (#EAF2F8), no el fondo de panel #F2F7FB.
+- EncargaGest: se han migrado los neutros Slate y el acento Indigo heredado de bandeja, ficha, contratos, formularios y modales a los tokens corporativos. Los estados de incidencia, advertencia y éxito mantienen sus colores semánticos. Se ha corregido además una clase Tailwind de hover mal formada.
+- NotarGest: bordes de filas, hover de tabla y textos de pie ajustados a #D8E4EC, #F2F7FB y #617789; los colores de alertas y estados se conservan.
+- EncargaGest: se han normalizado superficies, textos y bordes residuales de su modal y ficha a la paleta corporativa.
+- LayoutPortalesPremium: las cabeceras de tabla de Documentos, CTN e Herramientas consumen `--molsan-table-head` (#EAF2F8), evitando que una regla específica las deje en #F2F7FB.
+- Se conserva la lógica funcional, endpoints, estados, operaciones, permisos y responsive.
+
+Esta pasada es estática. Requiere build sobre el nuevo HEAD y contraste visual autenticado de los tres portales, especialmente cabeceras con acciones, bandejas, tarjetas, tablas, formularios y modales.

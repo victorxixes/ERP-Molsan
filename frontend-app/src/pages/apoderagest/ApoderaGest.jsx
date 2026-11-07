@@ -503,9 +503,9 @@ function TablaEncargos({ encargos, onFirmado }) {
             {abierto ? createPortal((
               <div className="apoderagest ag-portal-root ag-grupo-modal-overlay fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" ref={grupoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} onMouseDown={(e) => { if (e.target === e.currentTarget) setGrupoEncargosAbierto(null); }}>
                 <div className="ag-grupo-modal flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
-                  <header className="ag-grupo-modal-cabecera molsan-modal-header flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
-                    <div><span className="text-xs font-semibold uppercase tracking-widest text-slate-500">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1 text-xl font-bold text-slate-900">{grupo.nombre}</h3><p className="text-sm text-slate-600">{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
-                    <button type="button" className="ag-grupo-modal-cerrar rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" autoFocus onClick={() => setGrupoEncargosAbierto(null)}>Cerrar <MolsanIcon name="x" size={14} bare /></button>
+                  <header className="ag-grupo-modal-cabecera molsan-modal-header flex items-center justify-between gap-4 border-b border-[var(--molsan-border)] bg-white px-5 py-4">
+                    <div><span className="text-xs font-semibold uppercase tracking-widest text-[var(--molsan-text-muted)]">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1 text-xl font-bold text-[var(--molsan-text)]">{grupo.nombre}</h3><p className="text-sm text-[var(--molsan-text-secondary)]">{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
+                    <button type="button" className="ag-grupo-modal-cerrar rounded-xl border border-[var(--molsan-border)] px-4 py-2 font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-primary-soft)]" autoFocus onClick={() => setGrupoEncargosAbierto(null)}>Cerrar <MolsanIcon name="x" size={14} bare /></button>
                   </header>
                   <div className="molsan-modal__body overflow-y-auto p-4">
                 {grupo.expedientes.map((encargo, indice) => {

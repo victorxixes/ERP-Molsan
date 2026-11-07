@@ -18,7 +18,7 @@
 
 .notargest.ng-content {
   --ng-primary: var(--molsan-primary, #064675);
-  --ng-text: var(--molsan-text, #173247);
+  --ng-text: var(--molsan-text, #17243A);
   --ng-muted: var(--molsan-text-muted, #617789);
   --ng-border: var(--molsan-border, #D8E4EC);
   --ng-soft: var(--molsan-surface-soft, #F2F7FB);
@@ -145,7 +145,7 @@
 .ng-barra-mes small { white-space: nowrap; }
 
 /* Resumen global y administración de notarías */
-.ng-admin-notarias { display: flex; flex-direction: column; gap: 18px; width: 100%; min-width: 0; padding: 22px 26px 30px; color: var(--ng-text, #173247); }
+.ng-admin-notarias { display: flex; flex-direction: column; gap: 18px; width: 100%; min-width: 0; padding: 22px 26px 30px; color: var(--ng-text, #17243A); }
 .ng-admin-global-resumen { overflow: hidden; }
 .ng-admin-global-titulo { padding: 18px 20px; }
 .ng-admin-global-total { flex: 0 0 auto; padding: 7px 11px; color: var(--ng-primary); border: 1px solid var(--ng-border); border-radius: 999px; background: #fff; font-size: 11px; font-weight: 800; }
@@ -251,10 +251,10 @@
 .ng-tabla-contenedor,.ng-pagos-tabla-wrap,.ng-resumen-expedientes-tabla-wrap { width: 100%; max-width: 100%; overflow: auto; }
 .ng-tabla { width: 100%; min-width: 760px; border-collapse: separate; border-spacing: 0; color: var(--ng-text); font-size: 12px; text-align: left; }
 .ng-tabla th { padding: 12px 14px; color: var(--ng-muted); border-bottom: 1px solid var(--ng-border); background: var(--ng-table-head); font-size: 10px; font-weight: 850; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
-.ng-tabla td { padding: 12px 14px; border-bottom: 1px solid #EAF0F4; vertical-align: middle; }
-.ng-tabla tbody tr:hover { background: #F7FAFC; }
+.ng-tabla td { padding: 12px 14px; border-bottom: 1px solid #D8E4EC; vertical-align: middle; }
+.ng-tabla tbody tr:hover { background: #F2F7FB; }
 .ng-abrir,.ng-pdf-link { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 30px; padding: 5px 9px; color: var(--ng-primary); border: 1px solid var(--ng-border); border-radius: 8px; background: var(--ng-soft); font-size: 10px; font-weight: 800; cursor: pointer; white-space: nowrap; }
-.ng-abrir:hover,.ng-pdf-link:hover { background: var(--ng-table-head); border-color: #B9D7E6; }
+.ng-abrir:hover,.ng-pdf-link:hover { background: var(--ng-table-head); border-color: #B8CBD9; }
 .ng-adjuntar { position:relative; display:inline-flex; align-items:center; gap:7px; min-height:34px; padding:7px 10px; color:var(--ng-primary); border:1px solid var(--ng-border); border-radius:9px; background:var(--ng-soft); font-size:11px; font-weight:750; cursor:pointer; }
 .ng-adjuntar input { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; }
 .ng-documentos { display: flex; flex-direction: column; gap: 9px; padding: 16px; }
@@ -263,7 +263,7 @@
 .ng-documento p { margin: 4px 0; color: var(--ng-text); font-size: 12px; }
 .ng-documento small,.ng-dato small,.ng-observacion small { display: block; color: var(--ng-muted); font-size: 10px; }
 .ng-mensaje { padding: 18px; color: var(--ng-muted); font-size: 12px; line-height: 1.6; }
-.ng-pie { padding: 4px 0 0; color: #8193A0; font-size: 9px; letter-spacing: .08em; text-align: center; }
+.ng-pie { padding: 4px 0 0; color: #617789; font-size: 9px; letter-spacing: .08em; text-align: center; }
 .ng-error,.ng-success { display: flex; align-items: center; gap: 10px; padding: 12px 15px; border-radius: 10px; font-size: 12px; }
 .ng-error { color: #963B43; border: 1px solid #F0D0D3; background: #FFF5F5; }
 .ng-success { color: #216A4A; border: 1px solid #CDE9D9; background: #F1FAF4; }
@@ -272,7 +272,7 @@
 .ng-alerta p { margin: 3px 0 0; color: #806B26; font-size: 11px; }
 .ng-alerta button { margin-left: auto; color: #775B00; border: 0; background: transparent; font-weight: 750; cursor: pointer; }
 .ng-boton-secundario { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 34px; padding: 7px 11px; color: var(--ng-primary); border: 1px solid var(--ng-border); border-radius: 9px; background: #fff; font-size: 11px; font-weight: 750; cursor: pointer; }
-.ng-boton-secundario:hover { background: var(--ng-soft); border-color: #B9D7E6; }
+.ng-boton-secundario:hover { background: var(--ng-soft); border-color: #B8CBD9; }
 .ng-login-submit { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 38px; padding: 8px 14px; color: #fff; border: 1px solid #064675; border-radius: 9px; background: #064675; font-size: 11px; font-weight: 800; cursor: pointer; }
 .ng-login-submit:hover:not(:disabled) { background: #04375B; }
 
@@ -294,20 +294,20 @@
 .ng-datos-superiores { display: grid; grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); align-items: start; gap: 16px; }
 .ng-datos-operacion,.ng-datos-facturacion { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; }
 .ng-datos-envio .ng-datos-grid,.ng-datos-facturacion-bloque .ng-datos-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
-.ng-dato { min-width: 0; padding: 11px 12px; border: 1px solid var(--ng-border); border-radius: 10px; background: #F8FBFD; }
+.ng-dato { min-width: 0; padding: 11px 12px; border: 1px solid var(--ng-border); border-radius: 10px; background: #F2F7FB; }
 .ng-dato strong { display: block; color: var(--ng-text); font-size: 12px; font-weight: 750; overflow-wrap: anywhere; }
 .ng-documentacion-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.08fr); align-items: start; gap: 16px; }
 .ng-subtitulo-detalle { margin: 18px 0 9px; color: var(--ng-primary); font-size: 12px; font-weight: 850; }
 .ng-fincas-lista { display: grid; gap: 9px; }
-.ng-finca-card { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; padding: 12px; border: 1px solid var(--ng-border); border-radius: 11px; background: #F8FBFD; }
+.ng-finca-card { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; padding: 12px; border: 1px solid var(--ng-border); border-radius: 11px; background: #F2F7FB; }
 .ng-finca-card > strong,.ng-finca-card > span { grid-column: 1 / -1; }
 .ng-finca-card > span { color: var(--ng-muted); font-size: 11px; }
 .ng-finca-card > div { display: grid; gap: 3px; min-width: 0; }
 .ng-finca-card small { color: var(--ng-muted); font-size: 10px; }
 .ng-finca-card b { color: var(--ng-text); font-size: 11px; overflow-wrap: anywhere; }
-.ng-observacion { margin: 8px 0; padding: 12px 14px; border: 1px solid var(--ng-border); border-left: 3px solid #8CB8D8; border-radius: 0 10px 10px 0; background: #F7FAFC; }
+.ng-observacion { margin: 8px 0; padding: 12px 14px; border: 1px solid var(--ng-border); border-left: 3px solid #8CB8D8; border-radius: 0 10px 10px 0; background: #F2F7FB; }
 .ng-observacion p { margin: 0 0 7px; color: var(--ng-text); font-size: 12px; white-space: pre-wrap; }
-.ng-comentario-form { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(190px,1fr); align-items: end; gap: 12px; margin: 14px 0 18px; padding: 14px; border: 1px solid var(--ng-border); border-radius: 12px; background: #F8FBFD; }
+.ng-comentario-form { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(190px,1fr); align-items: end; gap: 12px; margin: 14px 0 18px; padding: 14px; border: 1px solid var(--ng-border); border-radius: 12px; background: #F2F7FB; }
 .ng-comentario-form label,.ng-workflow-form label { display: flex; flex-direction: column; gap: 6px; color: var(--ng-muted); font-size: 11px; font-weight: 750; }
 .ng-comentario-form textarea { min-height: 82px; resize: vertical; }
 .ng-comentario-form button { grid-column: 2; justify-self: start; }
@@ -323,12 +323,12 @@
 .ng-adjuntar-pdf { position: relative; display: inline-flex; align-items: center; gap: 7px; min-height: 32px; padding: 6px 9px; overflow: hidden; color: var(--ng-primary); border: 1px solid var(--ng-border); border-radius: 8px; background: #fff; font-size: 10px; font-weight: 800; cursor: pointer; white-space: nowrap; }
 .ng-adjuntar-pdf input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .ng-vacio-categoria { margin: 0; padding: 14px; color: var(--ng-muted); font-size: 10px; }
-.ng-archivo-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-top: 1px solid #EDF2F5; }
+.ng-archivo-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-top: 1px solid #D8E4EC; }
 .ng-pdf-icon { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; color: var(--ng-primary); font-size: 9px; font-weight: 800; }
 .ng-archivo-info { display: flex; flex: 1; flex-direction: column; gap: 3px; min-width: 0; }
 .ng-archivo-info strong { color: var(--ng-text); font-size: 11px; overflow-wrap: anywhere; }
 .ng-archivo-info small { color: var(--ng-muted); font-size: 10px; }
-.ng-visor-documentos { display: flex; flex-direction: column; min-width: 0; min-height: 480px; overflow: hidden; border: 1px solid var(--ng-border); border-radius: 12px; background: #F8FBFD; }
+.ng-visor-documentos { display: flex; flex-direction: column; min-width: 0; min-height: 480px; overflow: hidden; border: 1px solid var(--ng-border); border-radius: 12px; background: #F2F7FB; }
 .ng-visor-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border:0; border-bottom:0; background:#FFFFFF; }
 .ng-visor-cabecera > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .ng-visor-cabecera strong { color: var(--ng-primary); font-size: 11px; }
