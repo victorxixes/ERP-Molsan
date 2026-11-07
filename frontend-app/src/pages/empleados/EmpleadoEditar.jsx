@@ -413,7 +413,7 @@ export default function EmpleadoEditar({
               ${
                 form.activo
                   ? "bg-emerald-500"
-                  : "bg-slate-300"
+                  : "bg-[var(--molsan-border-strong)]"
               }
             `}
           >
