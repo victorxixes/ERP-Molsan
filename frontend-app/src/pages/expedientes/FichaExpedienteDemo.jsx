@@ -223,7 +223,7 @@ export default function FichaExpedienteDemo() {
           <button type="button" onClick={() => {setControlCalidad(false);setActividad(item.key);}} aria-pressed={!controlCalidad && actividad === item.key} className={`group relative flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-md ${!controlCalidad && actividad === item.key ? "border-blue-300 bg-[var(--molsan-primary-soft)] shadow-sm" : "border-[var(--molsan-border)] bg-white"}`}>
             <span className={`absolute inset-x-0 top-0 h-[3px] rounded-t-xl transition-all group-hover:h-1 ${!controlCalidad && actividad === item.key ? "bg-[#064675]" : "bg-[#B8D1E2]"}`} />
             <span className="flex min-w-0 items-start gap-2 pt-1"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#F2F7FB] text-[#064675]"><MolsanIcon name={item.icon} size={18} tone="ocean" bare /></span><span className="min-w-0"><small className="block text-[9px] font-bold text-[var(--molsan-text-secondary)]">ACTIVIDAD {String(index+1).padStart(2,"0")}</small><b className="mt-1 block text-[11px] leading-tight text-[var(--molsan-primary)]">{item.label}</b></span></span>
-            {!controlCalidad && actividad === item.key && <span className="mt-1.5 text-[9px] font-bold text-emerald-700">● Actividad seleccionada</span>}
+            {!controlCalidad && actividad === item.key && <span className="mt-1.5 text-[9px] font-bold text-emerald-700"><MolsanIcon name="activity" size={11} bare /> Actividad seleccionada</span>}
           </button>
         </React.Fragment>)}
       </div>
