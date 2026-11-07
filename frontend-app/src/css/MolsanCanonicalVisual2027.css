@@ -445,11 +445,11 @@ body :where(
 }
 
 
-/* Subtítulos de cabecera: contraste explícito sobre el fondo azul Glass. */
+/* Subtítulos de cabecera: token corporativo sobre la superficie blanca. */
 :where(.molsan-page-header,.molsan-page-header--legacy,.erp-page-header)
 :where(.molsan-page-header__description,.erp-page-description,.molsan-page-subtitle,.page-subtitle,p[class*="description"]) {
-  color: #496B82 !important;
-  -webkit-text-fill-color: #496B82 !important;
+  color: var(--molsan-canon-header-muted, #617789) !important;
+  -webkit-text-fill-color: var(--molsan-canon-header-muted, #617789) !important;
   opacity: 1 !important;
   visibility: visible !important;
   font-weight: 500 !important;
