@@ -17,7 +17,6 @@ export default function Layout() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [cabeceraSubpagina, setCabeceraSubpagina] = useState(null);
-  const [tieneVolverPropio, setTieneVolverPropio] = useState(false);
 
   const rutasPrincipales = new Set([
     "/", "/dashboard", "/expedientes", "/provisiones-fondos", "/agenda",
@@ -45,8 +44,10 @@ export default function Layout() {
     let finalizado = false;
     const aplicar = () => {
       if (finalizado) return true;
-      if (contenedor.querySelector(".molsan-page-header:not(.molsan-page-back-fallback)")) return true;
-      const encontrada = contenedor.querySelector([
+      const cabeceraExistente = Array.from(contenedor.querySelectorAll(".molsan-page-header"))
+        .find((elemento) => !elemento.closest('[role="dialog"], [aria-modal="true"], .molsan-modal, .ng-modal, [data-modal]'));
+      if (cabeceraExistente) return true;
+      const candidatas = Array.from(contenedor.querySelectorAll([
         ":scope > header",
         ":scope > main > header",
         ":scope > div > header",
@@ -55,8 +56,11 @@ export default function Layout() {
         ":scope > main > div > header",
         ".herramienta-operativa-premium > header",
         ".herramientas-subpagina-premium > header",
-      ].join(", "));
-      if (!encontrada || encontrada.closest('[role="dialog"], [aria-modal="true"], .molsan-modal, .ng-modal')) return false;
+      ].join(", ")));
+      const encontrada = candidatas.find((elemento) =>
+        !elemento.closest('[role="dialog"], [aria-modal="true"], .molsan-modal, .ng-modal, [data-modal]')
+      );
+      if (!encontrada) return false;
       encontrada.classList.add("molsan-page-header", "molsan-page-header--legacy");
       return true;
     };
@@ -76,16 +80,17 @@ export default function Layout() {
 
   useLayoutEffect(() => {
     setCabeceraSubpagina(null);
-    setTieneVolverPropio(false);
     if (!esSubpagina) return undefined;
-    const contenedor = document.querySelector(".erp-main-inner");
+    const contenedor = document.querySelector(".erp-route-content");
     if (!contenedor) return undefined;
 
     let observador = null;
     let finalizado = false;
     const localizarCabecera = () => {
       if (finalizado) return true;
-      const encontrada = contenedor.querySelector(".molsan-page-header:not(.molsan-page-back-fallback)");
+      const encontrada = Array.from(contenedor.querySelectorAll(".molsan-page-header")).find((elemento) =>
+        !elemento.closest('[role="dialog"], [aria-modal="true"], .molsan-modal, .ng-modal, [data-modal]')
+      );
       if (!encontrada) return false;
 
       const esControlVolver = (elemento) => {
@@ -104,7 +109,6 @@ export default function Layout() {
       controlesVolver.forEach((elemento) => {
         elemento.classList.add("molsan-page-back-legacy-hidden");
       });
-      setTieneVolverPropio(false);
       setCabeceraSubpagina(encontrada.querySelector('.molsan-page-header__actions') || encontrada);
       return true;
     };
@@ -141,15 +145,10 @@ export default function Layout() {
       <main className="erp-main-content relative min-h-[calc(100vh-70px)]">
         <div className={`erp-main-inner w-full${esSubpaginaCatalogosUtilidades ? " molsan-tools-subpage" : ""}`}>
           <div className={`erp-route-content w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
-            {esSubpagina && !esSubpaginaCatalogosUtilidades && !cabeceraSubpagina && !tieneVolverPropio ? (
-        <header className="molsan-page-header molsan-page-back-fallback">
-          <button type="button" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior"><MolsanIcon name="arrowLeft" size={15} /> Volver</button>
-        </header>
-      ) : null}
-            <Outlet />
+<Outlet />
       {cabeceraSubpagina ? createPortal(
         <button type="button" data-layout-back-button="true" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior">
-          <span aria-hidden="true">←</span> Volver
+          <MolsanIcon name="arrowLeft" size={15} /> Volver
         </button>,
         cabeceraSubpagina
       ) : null}

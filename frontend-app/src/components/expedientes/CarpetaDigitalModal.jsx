@@ -588,8 +588,8 @@ export default function CarpetaDigitalModal({
                   <span className="block truncate">{doc.nombre_original}</span>
                   <span className="block">{bytes(doc.tamano_bytes || 0)}{doc.fecha_subida ? ` · ${new Date(doc.fecha_subida).toLocaleString("es-ES")}` : ""}</span>
                 </button>
-                <button type="button" onClick={() => verDocumento(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-indigo-700 hover:bg-indigo-100">Ver</button>
-                <button type="button" onClick={() => descargar(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-slate-600 hover:bg-slate-100" title="Descargar"><MolsanIcon name="download" size={14} tone="inherit" /></button>
+                <button type="button" onClick={() => verDocumento(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]">Ver</button>
+                <button type="button" onClick={() => descargar(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]" title="Descargar"><MolsanIcon name="download" size={14} tone="inherit" /></button>
                 <button type="button" onClick={() => eliminar(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-red-600 hover:bg-red-50" title="Eliminar"><MolsanIcon name="x" size={12} bare /></button>
               </li>
             ))}
@@ -611,7 +611,7 @@ export default function CarpetaDigitalModal({
             <span className={`flex h-8 w-8 shrink-0 items-center justify-center ${cantidad ? "" : ""}`}>{cantidad}</span>
             <span className="min-w-0"><span className="block">{bloque.titulo}</span><span className="block truncate">{bloque.descripcion}</span></span>
           </span>
-          <span className="shrink-0">{modoActividad ? "‹" : abierto ? "⌃" : "⌄"}</span>
+          <span className="shrink-0">{modoActividad ? <MolsanIcon name="arrowLeft" size={14} bare /> : abierto ? <MolsanIcon name="arrowUp" size={14} bare /> : <MolsanIcon name="arrowDown" size={14} bare />}</span>
         </button>
         {abierto && <div className={"grid grid-cols-1 gap-2 p-2 sm:p-3" + (modoActividad ? "" : "sm:grid-cols-2 xl:grid-cols-4")}>{bloque.categorias.map(renderCategoria)}</div>}
       </section>
@@ -619,17 +619,17 @@ export default function CarpetaDigitalModal({
   };
 
   const renderVisor = () => (
-    <aside className={`flex min-h-[360px] min-w-0 flex-col overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm ${visorExpandido ? "fixed inset-3 z-[10500] h-[calc(100vh-1.5rem)]" : "h-full"}`}>
-      <header className="flex items-center gap-2 border-b border-slate-200 bg-white px-3 py-3">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700"><MolsanIcon name="file" size={16} bare /></span>
-        <div className="min-w-0 flex-1"><h4 className="text-sm font-extrabold text-slate-800">Visor de documentos</h4><p className="truncate text-[11px] text-slate-500" title={documentoVistaPrevia?.nombre_original || "Sin documento seleccionado"}>{documentoVistaPrevia?.nombre_original || "Selecciona un archivo de la lista"}</p></div>
-        <button type="button" onClick={() => setVisorExpandido((v) => !v)} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title={visorExpandido ? "Reducir visor" : "Ampliar visor"}>{visorExpandido ? "Reducir" : <><MolsanIcon name="maximize" size={14} bare /> Ampliar</>}</button>
-        <button type="button" onClick={() => { if (modoActividad) cerrarVisor(); else { setVisorVisible(false); setVisorExpandido(false); } }} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title={modoActividad ? "Cerrar visor" : "Ocultar visor"}>{modoActividad ? <><MolsanIcon name="x" size={14} bare /> Cerrar</> : "Ocultar"}</button>
+    <aside className={`flex min-h-[360px] min-w-0 flex-col overflow-hidden rounded-xl border border-[var(--molsan-border)] bg-white shadow-sm ${visorExpandido ? "fixed inset-3 z-[10500] h-[calc(100vh-1.5rem)]" : "h-full"}`}>
+      <header className="flex items-center gap-2 border-b border-[var(--molsan-border)] bg-white px-3 py-3">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--molsan-surface-soft)] text-[var(--molsan-primary)]"><MolsanIcon name="file" size={16} bare /></span>
+        <div className="min-w-0 flex-1"><h4 className="text-sm font-extrabold text-[var(--molsan-text)]">Visor de documentos</h4><p className="truncate text-[11px] text-[var(--molsan-text-secondary)]" title={documentoVistaPrevia?.nombre_original || "Sin documento seleccionado"}>{documentoVistaPrevia?.nombre_original || "Selecciona un archivo de la lista"}</p></div>
+        <button type="button" onClick={() => setVisorExpandido((v) => !v)} className="rounded-lg border border-[var(--molsan-border)] px-2.5 py-1.5 text-xs font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]" title={visorExpandido ? "Reducir visor" : "Ampliar visor"}>{visorExpandido ? "Reducir" : <><MolsanIcon name="maximize" size={14} bare /> Ampliar</>}</button>
+        <button type="button" onClick={() => { if (modoActividad) cerrarVisor(); else { setVisorVisible(false); setVisorExpandido(false); } }} className="rounded-lg border border-[var(--molsan-border)] px-2.5 py-1.5 text-xs font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]" title={modoActividad ? "Cerrar visor" : "Ocultar visor"}>{modoActividad ? <><MolsanIcon name="x" size={14} bare /> Cerrar</> : "Ocultar"}</button>
       </header>
-      <div className="min-h-0 flex-1 overflow-hidden bg-slate-100 p-2 sm:p-3">
-        {cargandoVistaPrevia ? <div className="flex h-full min-h-[300px] items-center justify-center text-sm text-slate-500">Cargando documento…</div> : urlVistaPrevia && documentoVistaPrevia ? (
-          <iframe title={`Vista previa: ${documentoVistaPrevia.nombre_original || "documento"}`} src={urlVistaPrevia} className="h-full min-h-[360px] w-full rounded-lg border border-slate-200 bg-white" />
-        ) : <div className="flex h-full min-h-[300px] flex-col items-center justify-center px-6 text-center"><MolsanIcon name="file" size={52} /><p className="text-sm font-bold text-slate-700">Vista previa</p><p className="mt-1 max-w-xs text-xs leading-5 text-slate-500">Selecciona un PDF en el panel izquierdo. El visor permanecerá visible mientras navegas por la lista.</p></div>}
+      <div className="min-h-0 flex-1 overflow-hidden bg-[var(--molsan-surface-soft)] p-2 sm:p-3">
+        {cargandoVistaPrevia ? <div className="flex h-full min-h-[300px] items-center justify-center text-sm text-[var(--molsan-text-secondary)]">Cargando documento…</div> : urlVistaPrevia && documentoVistaPrevia ? (
+          <iframe title={`Vista previa: ${documentoVistaPrevia.nombre_original || "documento"}`} src={urlVistaPrevia} className="h-full min-h-[360px] w-full rounded-lg border border-[var(--molsan-border)] bg-white" />
+        ) : <div className="flex h-full min-h-[300px] flex-col items-center justify-center px-6 text-center"><MolsanIcon name="file" size={52} /><p className="text-sm font-bold text-[var(--molsan-text-secondary)]">Vista previa</p><p className="mt-1 max-w-xs text-xs leading-5 text-[var(--molsan-text-secondary)]">Selecciona un PDF en el panel izquierdo. El visor permanecerá visible mientras navegas por la lista.</p></div>}
       </div>
       {documentoVistaPrevia && <footer className="flex items-center justify-between gap-2 px-3 py-2"><span className="min-w-0 truncate">{documentoVistaPrevia.nombre_original}</span><div className="flex shrink-0 gap-2"><button type="button" onClick={() => descargar(documentoVistaPrevia)} className="px-3 py-2">Descargar</button><button type="button" onClick={cerrarVisor} className="px-3 py-2">Cerrar PDF</button></div></footer>}
     </aside>
@@ -664,8 +664,8 @@ export default function CarpetaDigitalModal({
               <p>Expediente {expedienteId || "—"} · {totalArchivos} archivo(s)</p>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <span className="hidden rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600 sm:inline-flex">{BLOQUES.length} actividades + Otros</span>
-              <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100"><MolsanIcon name="x" size={14} bare /> Cerrar</button>
+              <span className="hidden rounded-full bg-[var(--molsan-surface-soft)] px-3 py-1.5 text-xs font-bold text-[var(--molsan-text-secondary)] sm:inline-flex">{BLOQUES.length} actividades + Otros</span>
+              <button type="button" onClick={onClose} className="rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]"><MolsanIcon name="x" size={14} bare /> Cerrar</button>
             </div>
           </header>
 
@@ -722,8 +722,8 @@ export default function CarpetaDigitalModal({
               {modoActividad && (
                 <section className="mb-3 p-3">
                   <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                    <div><h4 className="text-xs font-extrabold text-slate-800"><MolsanIcon name="timer" size={14} bare /> Control SLA · {bloqueActividad?.titulo || actividadId}</h4><p className="mt-0.5 text-[10px] text-slate-500">Fechas propias de esta actividad; no se comparten con las demás fases.</p></div>
-                    <button type="button" onClick={guardarFechasSlaActividad} disabled={guardandoFechasSla} className="rounded-lg bg-blue-600 px-3 py-2 text-[11px] font-bold text-white hover:bg-blue-700 disabled:opacity-50">{guardandoFechasSla ? "Guardando…" : "Guardar fechas"}</button>
+                    <div><h4 className="text-xs font-extrabold text-[var(--molsan-text)]"><MolsanIcon name="timer" size={14} bare /> Control SLA · {bloqueActividad?.titulo || actividadId}</h4><p className="mt-0.5 text-[10px] text-[var(--molsan-text-secondary)]">Fechas propias de esta actividad; no se comparten con las demás fases.</p></div>
+                    <button type="button" onClick={guardarFechasSlaActividad} disabled={guardandoFechasSla} className="rounded-lg bg-[var(--molsan-primary)] px-3 py-2 text-[11px] font-bold text-white hover:bg-[var(--molsan-primary)] disabled:opacity-50">{guardandoFechasSla ? "Guardando…" : "Guardar fechas"}</button>
                   </div>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     <label className="block">Inicio actividad<input type="date" value={fechasSlaActividad.fecha_inicio} disabled={guardandoFechasSla} onChange={(e) => setFechasSlaActividad((v) => ({ ...v, fecha_inicio: e.target.value, fecha_fin: v.fecha_fin && e.target.value && v.fecha_fin < e.target.value ? "" : v.fecha_fin }))} className="mt-1 w-full px-2.5 py-2" /></label>
@@ -737,8 +737,8 @@ export default function CarpetaDigitalModal({
                 <div className="flex h-full min-h-[250px] flex-col overflow-y-auto">
                   <header className="flex flex-wrap items-center justify-between gap-2 px-3 py-3">
                     <div className="min-w-0">
-                      <h4 className="text-sm font-extrabold text-indigo-950">Datos de envío a notario</h4>
-                      <p className="mt-0.5 text-[11px] text-slate-500">Información sincronizada con el expediente y el modal de envío a notario</p>
+                      <h4 className="text-sm font-extrabold text-[var(--molsan-primary)]">Datos de envío a notario</h4>
+                      <p className="mt-0.5 text-[11px] text-[var(--molsan-text-secondary)]">Información sincronizada con el expediente y el modal de envío a notario</p>
                     </div>
                     <button
                       type="button"
@@ -880,7 +880,7 @@ export default function CarpetaDigitalModal({
                 </div>
               ) : visorVisible ? renderVisor() : (
                 <div className="flex h-full min-h-[250px] flex-col items-center justify-center p-5">
-                  <span className="mb-3">▤</span>
+                  <span className="mb-3"><MolsanIcon name="file" size={24} bare /></span>
                   <p>El visor está oculto.</p>
                   <button type="button" onClick={() => setVisorVisible(true)} className="mt-3 px-3 py-2">Mostrar visor</button>
                 </div>
@@ -909,13 +909,13 @@ export default function CarpetaDigitalModal({
             : "molsan-modal-panel molsan-modal__panel molsan-modal--wide flex max-h-[94vh] w-full max-w-[1500px] flex-col overflow-hidden"}
         >
           {!modoActividad && (
-            <header className="molsan-modal-header flex items-center justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
+            <header className="molsan-modal-header flex items-center justify-between gap-4 border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-5 py-4">
               <div>
                 <p className="uppercase">MOLSAN ERP · Documentación</p>
                 <h2 className="mt-1">Carpeta digital</h2>
                 <p>Expediente {expedienteId || "—"} · {totalArchivos} archivo(s)</p>
               </div>
-              <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100"><MolsanIcon name="x" size={14} bare /> Cerrar</button>
+              <button type="button" onClick={onClose} className="rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]"><MolsanIcon name="x" size={14} bare /> Cerrar</button>
             </header>
           )}
 
@@ -958,7 +958,7 @@ export default function CarpetaDigitalModal({
                           <span className={`flex h-8 w-8 shrink-0 items-center justify-center ${otrosCantidad ? "" : ""}`}>{otrosCantidad}</span>
                           <span><span className="block">Otros</span><span className="block">Documentación complementaria y comunicaciones.</span></span>
                         </span>
-                        <span>{otrosAbierto ? "⌃" : "⌄"}</span>
+                        <span>{otrosAbierto ? <MolsanIcon name="arrowUp" size={14} bare /> : <MolsanIcon name="arrowDown" size={14} bare />}</span>
                       </button>
                       {otrosAbierto && <div className="space-y-2 p-2">{CATEGORIAS_OTROS.map(renderCategoria)}</div>}
                     </section>
@@ -1057,8 +1057,8 @@ export default function CarpetaDigitalModal({
                   ) : (
                     (["liquidacion-impuestos", "tramitacion-inscripcion", "defectos-registrales", "facturacion-cierre"].includes(actividadId)) ? (
                       <div className={`grid min-w-0 grid-cols-1 items-start gap-3 ${actividadId === "facturacion-cierre" ? "xl:grid-cols-2" : "xl:grid-cols-3"}`}>
-                        <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">Datos · {bloqueActividad?.titulo || ({ "liquidacion-impuestos": "Liquidación de impuestos", "tramitacion-inscripcion": "Tramitación inscripción", "defectos-registrales": "Defectos registrales", "facturacion-cierre": "Cierre del expediente" }[actividadId] || "Datos de actividad")}</h5>
+                        <section className="min-w-0 overflow-hidden rounded-xl border border-[var(--molsan-border)] bg-white">
+                          <h5 className="border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-2.5 py-2 text-[11px] font-extrabold text-[var(--molsan-text)]">Datos · {bloqueActividad?.titulo || ({ "liquidacion-impuestos": "Liquidación de impuestos", "tramitacion-inscripcion": "Tramitación inscripción", "defectos-registrales": "Defectos registrales", "facturacion-cierre": "Cierre del expediente" }[actividadId] || "Datos de actividad")}</h5>
                           <div className="grid min-w-0 grid-cols-1 gap-1.5 px-2.5 py-2 sm:grid-cols-2 xl:grid-cols-1">
 
                             {actividadId === "facturacion-cierre" && (

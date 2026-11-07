@@ -74,7 +74,7 @@ function Chip({
       "border-[var(--erp-border)] bg-[var(--erp-bg)] text-[var(--erp-text-soft)]",
 
     primary:
-      "border-blue-200 bg-blue-50 text-blue-700",
+      "border-[var(--molsan-border-strong)] bg-[var(--molsan-primary-soft)] text-[var(--molsan-primary)]",
 
     success:
       "border-emerald-200 bg-emerald-50 text-emerald-700",
@@ -228,7 +228,7 @@ function SeccionAcordeon({
             "
             aria-hidden="true"
           >
-            {abierto ? "▲" : "▼"}
+            {abierto ? <MolsanIcon name="arrowUp" size={12} bare /> : <MolsanIcon name="arrowDown" size={12} bare />}
           </span>
 
         </div>
@@ -1831,13 +1831,13 @@ const permisosGlobales =
                 className="
                   rounded-xl
                   border
-                  border-blue-200
-                  bg-blue-50
+                  border-[var(--molsan-border-strong)]
+                  bg-[var(--molsan-primary-soft)]
                   px-4
                   py-2.5
                   text-sm
                   font-semibold
-                  text-blue-700
+                  text-[var(--molsan-primary)]
                   disabled:cursor-not-allowed
                   disabled:opacity-40
                 "
@@ -2023,7 +2023,7 @@ const permisosGlobales =
                     py-2.5
                     ${
                       visible
-                        ? "border-blue-200 bg-blue-50"
+                        ? "border-[var(--molsan-border-strong)] bg-[var(--molsan-primary-soft)]"
                         : "border-[var(--erp-border)] bg-[var(--erp-surface)]"
                     }
                   `}
@@ -2036,7 +2036,7 @@ const permisosGlobales =
                       font-medium
                       ${
                         visible
-                          ? "text-blue-800"
+                          ? "text-[var(--molsan-primary)]"
                           : "text-[var(--erp-text)]"
                       }
                     `}
@@ -2252,8 +2252,8 @@ const permisosGlobales =
                         aria-hidden="true"
                       >
                         {abierto
-                          ? "▲"
-                          : "▼"}
+                          ? <MolsanIcon name="arrowUp" size={12} bare />
+                          : <MolsanIcon name="arrowDown" size={12} bare />}
                       </span>
 
                     </div>

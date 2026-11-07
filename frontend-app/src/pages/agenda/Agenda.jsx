@@ -511,7 +511,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
  </span>
  )}
 
- {soloApoderado ? <button type="button" onClick={imprimirAgenda} className="ag-print-action" title="Imprimir la vista actual de la agenda">⎙ Imprimir agenda</button> : null}
+ {soloApoderado ? <button type="button" onClick={imprimirAgenda} className="ag-print-action" title="Imprimir la vista actual de la agenda"><MolsanIcon name="printer" size={15} bare /> Imprimir agenda</button> : null}
 
  {/* SELECTOR DE VISTA */}
 
@@ -562,7 +562,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
  {/* FILTROS Y CALENDARIO */}
  <div className="erp-card p-4 shadow-sm agenda-calendar-card">
  <div className="agenda-filters">
- <label className="agenda-search"><span aria-hidden="true">⌕</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar cita, notario, apoderado…" aria-label="Buscar citas" /></label>
+ <label className="agenda-search"><span aria-hidden="true"><MolsanIcon name="search" size={15} bare /></span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar cita, notario, apoderado…" aria-label="Buscar citas" /></label>
  <div className="agenda-filter-buttons" aria-label="Filtrar por modalidad">{[["todas", "Todas"], ["presencial", "Presencial"], ["videoconferencia", "Videoconferencia"]].map(([valor, etiqueta]) => <button key={valor} type="button" aria-pressed={modalidadFiltro === valor} onClick={() => setModalidadFiltro(valor)}>{etiqueta}</button>)}</div>
  {(busqueda || modalidadFiltro !== "todas") && <button type="button" className="agenda-clear-filters" onClick={() => { setBusqueda(""); setModalidadFiltro("todas"); }}>Limpiar filtros</button>}
  </div>
@@ -607,7 +607,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
  const anterior = fecha < hoyISO && !realizada;
  const modalidad = modalidadCita(cita);
  return <tr key={cita.id}><td><strong>{fechaTexto(cita.fecha)}</strong><small>{horaTexto(cita.hora_inicio)} – {horaTexto(cita.hora_fin)}</small></td><td><strong>{cita.tipo_cita || "Cita"}</strong>{cita.observaciones ? <small>{cita.observaciones}</small> : null}</td><td><span className={`agenda-modality-pill ${modalidad === "videoconferencia" ? "is-video" : modalidad === "presencial" ? "is-presencial" : ""}`}>{modalidad === "videoconferencia" ? "Videoconferencia" : modalidad === "presencial" ? "Presencial" : cita.tipo_firma || "Sin especificar"}</span></td><td>{cita.notario_nombre || cita.apoderado_nombre || cita.apoderado || "—"}</td><td><span className={`agenda-status-pill ${realizada ? "is-done" : anterior ? "is-past" : "is-pending"}`}>{realizada ? "Firma realizada" : anterior ? "Fecha pasada · revisar" : "Programada"}</span></td><td><button type="button" className="agenda-open-cita" onClick={() => handleCitaClick(cita)}>Abrir</button></td></tr>;
- })}</tbody></table></div> : <div className="agenda-empty-state"><span>▦</span><strong>No hay citas para mostrar</strong><p>Prueba con otra búsqueda o cambia el filtro de modalidad.</p></div>}
+ })}</tbody></table></div> : <div className="agenda-empty-state"><span><MolsanIcon name="calendar" size={22} bare /></span><strong>No hay citas para mostrar</strong><p>Prueba con otra búsqueda o cambia el filtro de modalidad.</p></div>}
  </section>
 
  {/* MODAL DE CITA */}

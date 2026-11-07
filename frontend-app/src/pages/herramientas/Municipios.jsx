@@ -1542,7 +1542,7 @@ export default function Municipios() {
                 justify-center
                 gap-2
                 rounded-xl
-                bg-blue-600
+                bg-[var(--molsan-primary)]
                 px-5
                 py-2.5
                 text-sm
@@ -1550,7 +1550,7 @@ export default function Municipios() {
                 text-white
                 shadow-[0_8px_20px_rgba(37,99,235,0.20)]
                 transition-all
-                hover:bg-blue-700
+                hover:bg-[var(--molsan-primary)]
                 hover:-translate-y-0.5
                 active:scale-[0.98]
               "
@@ -1623,7 +1623,7 @@ export default function Municipios() {
       <div
         className="
           rounded-[22px]
-          border border-slate-200/80
+          border border-[var(--molsan-border)]
           bg-white/80
           backdrop-blur-xl
           shadow-[0_12px_35px_rgba(15,23,42,0.06)]
@@ -1654,7 +1654,7 @@ export default function Municipios() {
                 font-semibold
                 uppercase
                 tracking-wide
-                text-slate-500
+                text-[var(--molsan-text-secondary)]
               "
             >
               Buscar
@@ -1670,7 +1670,7 @@ export default function Municipios() {
                   left-3
                   top-1/2
                   -translate-y-1/2
-                  text-slate-400
+                  text-[var(--molsan-text-muted)]
                 "
               >
                 <MolsanIcon name="search" size={18} tone="ocean" bare />
@@ -1691,18 +1691,18 @@ export default function Municipios() {
                 className="
                   w-full
                   rounded-xl
-                  border border-slate-200
+                  border border-[var(--molsan-border)]
                   bg-white
                   py-2.5
                   pl-10
                   pr-4
                   text-sm
-                  text-slate-700
+                  text-[var(--molsan-text)]
                   outline-none
                   transition
-                  focus:border-blue-400
+                  focus:border-[var(--molsan-border-strong)]
                   focus:ring-4
-                  focus:ring-blue-100
+                  focus:ring-[var(--molsan-primary-soft)]
                 "
               />
 
@@ -1723,7 +1723,7 @@ export default function Municipios() {
                 font-semibold
                 uppercase
                 tracking-wide
-                text-slate-500
+                text-[var(--molsan-text-secondary)]
               "
             >
               Comunidad autónoma
@@ -1742,17 +1742,17 @@ export default function Municipios() {
               className="
                 w-full
                 rounded-xl
-                border border-slate-200
+                border border-[var(--molsan-border)]
                 bg-white
                 px-3
                 py-2.5
                 text-sm
-                text-slate-700
+                text-[var(--molsan-text)]
                 outline-none
                 transition
-                focus:border-blue-400
+                focus:border-[var(--molsan-border-strong)]
                 focus:ring-4
-                focus:ring-blue-100
+                focus:ring-[var(--molsan-primary-soft)]
               "
             >
 
@@ -1791,7 +1791,7 @@ export default function Municipios() {
                 font-semibold
                 uppercase
                 tracking-wide
-                text-slate-500
+                text-[var(--molsan-text-secondary)]
               "
             >
               Provincia
@@ -1810,17 +1810,17 @@ export default function Municipios() {
               className="
                 w-full
                 rounded-xl
-                border border-slate-200
+                border border-[var(--molsan-border)]
                 bg-white
                 px-3
                 py-2.5
                 text-sm
-                text-slate-700
+                text-[var(--molsan-text)]
                 outline-none
                 transition
-                focus:border-blue-400
+                focus:border-[var(--molsan-border-strong)]
                 focus:ring-4
-                focus:ring-blue-100
+                focus:ring-[var(--molsan-primary-soft)]
               "
             >
 
@@ -1856,16 +1856,16 @@ export default function Municipios() {
             }
             className="
               rounded-xl
-              border border-slate-200
+              border border-[var(--molsan-border)]
               bg-white
               px-4
               py-2.5
               text-sm
               font-medium
-              text-slate-600
+              text-[var(--molsan-text-secondary)]
               transition
-              hover:border-slate-300
-              hover:bg-slate-50
+              hover:border-[var(--molsan-border-strong)]
+              hover:bg-[var(--molsan-surface-soft)]
             "
           >
             Limpiar filtros
@@ -1894,7 +1894,7 @@ export default function Municipios() {
         <div
           className="
             text-sm
-            text-slate-500
+            text-[var(--molsan-text-secondary)]
           "
         >
 
@@ -1903,7 +1903,7 @@ export default function Municipios() {
           <span
             className="
               font-semibold
-              text-slate-700
+              text-[var(--molsan-text)]
             "
           >
             {municipiosFiltrados.length.toLocaleString(
@@ -1923,7 +1923,7 @@ export default function Municipios() {
               <span
                 className="
                   font-semibold
-                  text-slate-700
+                  text-[var(--molsan-text)]
                 "
               >
                 {municipios.length.toLocaleString(
@@ -1940,7 +1940,7 @@ export default function Municipios() {
         <div
           className="
             text-xs
-            text-slate-400
+            text-[var(--molsan-text-muted)]
           "
         >
           Página {pagina} de {totalPaginas}
@@ -1957,7 +1957,7 @@ export default function Municipios() {
         className="
           overflow-hidden
           rounded-[22px]
-          border border-slate-200/80
+          border border-[var(--molsan-border)]
           bg-white/90
           shadow-[0_12px_35px_rgba(15,23,42,0.06)]
         "
@@ -1972,7 +1972,7 @@ export default function Municipios() {
               items-center
               justify-center
               text-sm
-              text-slate-400
+              text-[var(--molsan-text-muted)]
             "
           >
 
@@ -1987,7 +1987,7 @@ export default function Municipios() {
                   animate-spin
                   rounded-full
                   border-2
-                  border-slate-200
+                  border-[var(--molsan-border)]
                   border-t-blue-500
                 "
               />
@@ -2021,7 +2021,7 @@ export default function Municipios() {
                 items-center
                 justify-center
                 rounded-2xl
-                bg-slate-50
+                bg-[var(--molsan-surface-soft)]
                 text-2xl
               "
             >
@@ -2033,7 +2033,7 @@ export default function Municipios() {
               className="
                 text-base
                 font-semibold
-                text-slate-700
+                text-[var(--molsan-text)]
               "
             >
               No se han encontrado municipios
@@ -2044,7 +2044,7 @@ export default function Municipios() {
               className="
                 mt-1
                 text-sm
-                text-slate-400
+                text-[var(--molsan-text-muted)]
               "
             >
               Prueba con otro texto o limpia los filtros.
@@ -2069,8 +2069,8 @@ export default function Municipios() {
                 <tr
                   className="
                     border-b
-                    border-slate-200
-                    bg-slate-50/80
+                    border-[var(--molsan-border)]
+                    bg-[var(--molsan-surface-soft)]
                   "
                 >
 
@@ -2083,7 +2083,7 @@ export default function Municipios() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Comunidad autónoma
@@ -2099,7 +2099,7 @@ export default function Municipios() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Provincia
@@ -2115,13 +2115,13 @@ export default function Municipios() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Municipio
                   </th>
 
-                  <th className="px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  <th className="px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--molsan-text-secondary)]">
                     Códigos postales
                   </th>
 
@@ -2135,7 +2135,7 @@ export default function Municipios() {
                       font-bold
                       uppercase
                       tracking-wider
-                      text-slate-500
+                      text-[var(--molsan-text-secondary)]
                     "
                   >
                     Acciones
@@ -2158,9 +2158,9 @@ export default function Municipios() {
                       className="
                         group
                         border-b
-                        border-slate-100
+                        border-[var(--molsan-border-light)]
                         transition-colors
-                        hover:bg-blue-50/40
+                        hover:bg-[var(--molsan-primary-soft)]
                       "
                     >
 
@@ -2169,7 +2169,7 @@ export default function Municipios() {
                           px-5
                           py-3.5
                           text-sm
-                          text-slate-600
+                          text-[var(--molsan-text-secondary)]
                         "
                       >
                         {municipio.ccaa}
@@ -2181,7 +2181,7 @@ export default function Municipios() {
                           px-5
                           py-3.5
                           text-sm
-                          text-slate-600
+                          text-[var(--molsan-text-secondary)]
                         "
                       >
                         {municipio.provincia}
@@ -2194,19 +2194,19 @@ export default function Municipios() {
                           py-3.5
                           text-sm
                           font-semibold
-                          text-slate-700
+                          text-[var(--molsan-text)]
                         "
                       >
                         {municipio.municipio}
                       </td>
 
-                      <td className="px-5 py-3.5 text-sm text-slate-600">
+                      <td className="px-5 py-3.5 text-sm text-[var(--molsan-text-secondary)]">
                         {(municipio.codigos_postales || []).length ? (
                           <span title={"Códigos: " + municipio.codigos_postales.join(", ")}>
                             <strong>{municipio.codigo_postal_principal || municipio.codigos_postales[0]}</strong>
-                            {(municipio.codigos_postales.length > 1) && <span className="ml-2 text-xs text-slate-400">+{municipio.codigos_postales.length - 1}</span>}
+                            {(municipio.codigos_postales.length > 1) && <span className="ml-2 text-xs text-[var(--molsan-text-muted)]">+{municipio.codigos_postales.length - 1}</span>}
                           </span>
-                        ) : <span className="text-slate-400">Sin asignar</span>}
+                        ) : <span className="text-[var(--molsan-text-muted)]">Sin asignar</span>}
                       </td>
 
                       <td
@@ -2240,13 +2240,13 @@ export default function Municipios() {
                               justify-center
                               rounded-lg
                               border
-                              border-slate-200
+                              border-[var(--molsan-border)]
                               bg-white
-                              text-slate-500
+                              text-[var(--molsan-text-secondary)]
                               transition
-                              hover:border-blue-200
-                              hover:bg-blue-50
-                              hover:text-blue-600
+                              hover:border-[var(--molsan-border-strong)]
+                              hover:bg-[var(--molsan-primary-soft)]
+                              hover:text-[var(--molsan-primary)]
                             "
                           >
                             <MolsanIcon name="pen" size={15} tone="ocean" bare />
@@ -2269,9 +2269,9 @@ export default function Municipios() {
                               justify-center
                               rounded-lg
                               border
-                              border-slate-200
+                              border-[var(--molsan-border)]
                               bg-white
-                              text-slate-500
+                              text-[var(--molsan-text-secondary)]
                               transition
                               hover:border-red-200
                               hover:bg-red-50
@@ -2315,7 +2315,7 @@ export default function Municipios() {
             justify-between
             rounded-[18px]
             border
-            border-slate-200/80
+            border-[var(--molsan-border)]
             bg-white/70
             px-4
             py-3
@@ -2338,33 +2338,33 @@ export default function Municipios() {
             }
             className="
               rounded-lg
-              border border-slate-200
+              border border-[var(--molsan-border)]
               bg-white
               px-3
               py-2
               text-sm
               font-medium
-              text-slate-600
+              text-[var(--molsan-text-secondary)]
               transition
-              hover:bg-slate-50
+              hover:bg-[var(--molsan-surface-soft)]
               disabled:cursor-not-allowed
               disabled:opacity-40
             "
           >
-            ← Anterior
+            <MolsanIcon name="arrowLeft" size={14} bare /> Anterior
           </button>
 
 
           <span
             className="
               text-sm
-              text-slate-500
+              text-[var(--molsan-text-secondary)]
             "
           >
             Página{" "}
 
             <strong
-              className="text-slate-700"
+              className="text-[var(--molsan-text)]"
             >
               {pagina}
             </strong>
@@ -2372,7 +2372,7 @@ export default function Municipios() {
             {" "}de{" "}
 
             <strong
-              className="text-slate-700"
+              className="text-[var(--molsan-text)]"
             >
               {totalPaginas}
             </strong>
@@ -2396,20 +2396,20 @@ export default function Municipios() {
             }
             className="
               rounded-lg
-              border border-slate-200
+              border border-[var(--molsan-border)]
               bg-white
               px-3
               py-2
               text-sm
               font-medium
-              text-slate-600
+              text-[var(--molsan-text-secondary)]
               transition
-              hover:bg-slate-50
+              hover:bg-[var(--molsan-surface-soft)]
               disabled:cursor-not-allowed
               disabled:opacity-40
             "
           >
-            Siguiente →
+            Siguiente <MolsanIcon name="arrowRight" size={14} bare />
           </button>
 
         </div>
@@ -2539,13 +2539,13 @@ function ModalImportarExcel({
         role="dialog"
         aria-modal="true"
         aria-label="Importar municipios desde Excel"
-        className="
+        className="molsan-modal-panel 
           w-full
           max-w-2xl
           overflow-hidden
           rounded-[26px]
           border
-          border-slate-200
+          border-[var(--molsan-border)]
           bg-white
           shadow-[0_30px_80px_rgba(15,23,42,0.22)]
         "
@@ -2558,8 +2558,8 @@ function ModalImportarExcel({
         <div
           className="
             border-b
-            border-slate-100
-            bg-slate-50/80
+            border-[var(--molsan-border-light)]
+            bg-[var(--molsan-surface-soft)]
             px-6
             py-5
           "
@@ -2605,7 +2605,7 @@ function ModalImportarExcel({
                   className="
                     text-lg
                     font-bold
-                    text-slate-800
+                    text-[var(--molsan-primary)]
                   "
                 >
                   Importar municipios desde Excel
@@ -2616,7 +2616,7 @@ function ModalImportarExcel({
                   className="
                     mt-1
                     text-xs
-                    text-slate-500
+                    text-[var(--molsan-text-secondary)]
                   "
                 >
                   Carga masiva del catálogo territorial.
@@ -2642,10 +2642,10 @@ function ModalImportarExcel({
                 items-center
                 justify-center
                 rounded-lg
-                text-slate-400
+                text-[var(--molsan-text-muted)]
                 transition
-                hover:bg-slate-100
-                hover:text-slate-700
+                hover:bg-[var(--molsan-table-head)]
+                hover:text-[var(--molsan-text)]
                 disabled:cursor-not-allowed
                 disabled:opacity-40
               "
@@ -2670,8 +2670,8 @@ function ModalImportarExcel({
             className="
               rounded-2xl
               border
-              border-blue-100
-              bg-blue-50/70
+              border-[var(--molsan-border)]
+              bg-[var(--molsan-primary-soft)]
               px-4
               py-4
             "
@@ -2693,7 +2693,7 @@ function ModalImportarExcel({
                   className="
                     text-sm
                     font-semibold
-                    text-blue-800
+                    text-[var(--molsan-primary)]
                   "
                 >
                   Formato esperado
@@ -2705,7 +2705,7 @@ function ModalImportarExcel({
                     mt-1
                     text-xs
                     leading-5
-                    text-blue-700
+                    text-[var(--molsan-primary)]
                   "
                 >
                   El Excel debe contener las columnas
@@ -2733,7 +2733,7 @@ function ModalImportarExcel({
                 block
                 text-sm
                 font-semibold
-                text-slate-700
+                text-[var(--molsan-text)]
               "
             >
               Archivo Excel
@@ -2774,8 +2774,8 @@ function ModalImportarExcel({
                 rounded-2xl
                 border-2
                 border-dashed
-                border-slate-200
-                bg-slate-50/70
+                border-[var(--molsan-border)]
+                bg-[var(--molsan-surface-soft)]
                 px-6
                 py-8
                 text-center
@@ -2810,7 +2810,7 @@ function ModalImportarExcel({
                   mt-3
                   text-sm
                   font-semibold
-                  text-slate-700
+                  text-[var(--molsan-text)]
                 "
               >
                 Haz clic para seleccionar el Excel
@@ -2821,7 +2821,7 @@ function ModalImportarExcel({
                 className="
                   mt-1
                   text-xs
-                  text-slate-400
+                  text-[var(--molsan-text-muted)]
                 "
               >
                 Formatos admitidos: .xlsx y .xls
@@ -2928,7 +2928,7 @@ function ModalImportarExcel({
                     py-1
                     text-xs
                     font-medium
-                    text-slate-500
+                    text-[var(--molsan-text-secondary)]
                     hover:bg-white
                     hover:text-red-600
                   "
@@ -2955,7 +2955,7 @@ function ModalImportarExcel({
             justify-end
             gap-3
             border-t
-            border-slate-100
+            border-[var(--molsan-border-light)]
             px-6
             py-5
           "
@@ -2972,15 +2972,15 @@ function ModalImportarExcel({
             className="
               rounded-xl
               border
-              border-slate-200
+              border-[var(--molsan-border)]
               bg-white
               px-5
               py-2.5
               text-sm
               font-medium
-              text-slate-600
+              text-[var(--molsan-text-secondary)]
               transition
-              hover:bg-slate-50
+              hover:bg-[var(--molsan-surface-soft)]
               disabled:cursor-not-allowed
               disabled:opacity-50
             "
@@ -3170,13 +3170,13 @@ function ModalMunicipio({
         role="dialog"
         aria-modal="true"
         aria-label="Formulario de municipio"
-        className="
+        className="molsan-modal-panel 
           w-full
           max-w-xl
           overflow-hidden
           rounded-[24px]
           border
-          border-slate-200
+          border-[var(--molsan-border)]
           bg-white
           shadow-[0_30px_80px_rgba(15,23,42,0.22)]
         "
@@ -3187,8 +3187,8 @@ function ModalMunicipio({
         <div
           className="
             border-b
-            border-slate-100
-            bg-slate-50/70
+            border-[var(--molsan-border-light)]
+            bg-[var(--molsan-surface-soft)]
             px-6
             py-5
           "
@@ -3208,7 +3208,7 @@ function ModalMunicipio({
                 className="
                   text-lg
                   font-bold
-                  text-slate-800
+                  text-[var(--molsan-primary)]
                 "
               >
                 {modo ===
@@ -3222,7 +3222,7 @@ function ModalMunicipio({
                 className="
                   mt-1
                   text-xs
-                  text-slate-500
+                  text-[var(--molsan-text-secondary)]
                 "
               >
                 Datos territoriales del municipio.
@@ -3246,10 +3246,10 @@ function ModalMunicipio({
                 items-center
                 justify-center
                 rounded-lg
-                text-slate-400
+                text-[var(--molsan-text-muted)]
                 transition
-                hover:bg-slate-100
-                hover:text-slate-700
+                hover:bg-[var(--molsan-table-head)]
+                hover:text-[var(--molsan-text)]
               "
             >
               <MolsanIcon name="x" size={16} tone="ocean" bare />
@@ -3281,7 +3281,7 @@ function ModalMunicipio({
                   block
                   text-sm
                   font-semibold
-                  text-slate-700
+                  text-[var(--molsan-text)]
                 "
               >
                 Comunidad autónoma
@@ -3304,17 +3304,17 @@ function ModalMunicipio({
                 className="
                   w-full
                   rounded-xl
-                  border border-slate-200
+                  border border-[var(--molsan-border)]
                   bg-white
                   px-4
                   py-2.5
                   text-sm
-                  text-slate-700
+                  text-[var(--molsan-text)]
                   outline-none
                   transition
-                  focus:border-blue-400
+                  focus:border-[var(--molsan-border-strong)]
                   focus:ring-4
-                  focus:ring-blue-100
+                  focus:ring-[var(--molsan-primary-soft)]
                 "
               />
 
@@ -3331,7 +3331,7 @@ function ModalMunicipio({
                   block
                   text-sm
                   font-semibold
-                  text-slate-700
+                  text-[var(--molsan-text)]
                 "
               >
                 Provincia
@@ -3353,17 +3353,17 @@ function ModalMunicipio({
                 className="
                   w-full
                   rounded-xl
-                  border border-slate-200
+                  border border-[var(--molsan-border)]
                   bg-white
                   px-4
                   py-2.5
                   text-sm
-                  text-slate-700
+                  text-[var(--molsan-text)]
                   outline-none
                   transition
-                  focus:border-blue-400
+                  focus:border-[var(--molsan-border-strong)]
                   focus:ring-4
-                  focus:ring-blue-100
+                  focus:ring-[var(--molsan-primary-soft)]
                 "
               />
 
@@ -3380,7 +3380,7 @@ function ModalMunicipio({
                   block
                   text-sm
                   font-semibold
-                  text-slate-700
+                  text-[var(--molsan-text)]
                 "
               >
                 Municipio
@@ -3402,17 +3402,17 @@ function ModalMunicipio({
                 className="
                   w-full
                   rounded-xl
-                  border border-slate-200
+                  border border-[var(--molsan-border)]
                   bg-white
                   px-4
                   py-2.5
                   text-sm
-                  text-slate-700
+                  text-[var(--molsan-text)]
                   outline-none
                   transition
-                  focus:border-blue-400
+                  focus:border-[var(--molsan-border-strong)]
                   focus:ring-4
-                  focus:ring-blue-100
+                  focus:ring-[var(--molsan-primary-soft)]
                 "
               />
 
@@ -3420,7 +3420,7 @@ function ModalMunicipio({
 
             {/* CÓDIGOS POSTALES */}
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              <label className="mb-1.5 block text-sm font-semibold text-[var(--molsan-text)]">
                 Códigos postales
               </label>
               <input
@@ -3436,16 +3436,16 @@ function ModalMunicipio({
                   }
                 }}
                 placeholder="Ej. 08001, 08002, 08003"
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                className="w-full rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-2.5 text-sm text-[var(--molsan-text)] outline-none transition focus:border-[var(--molsan-border-strong)] focus:ring-4 focus:ring-[var(--molsan-primary-soft)]"
               />
-              <p className="mt-1 text-xs text-slate-500">Introduce códigos de 5 dígitos separados por comas o espacios. Se guardan como texto para conservar ceros iniciales.</p>
-              <label className="mb-1.5 mt-3 block text-sm font-semibold text-slate-700">
+              <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Introduce códigos de 5 dígitos separados por comas o espacios. Se guardan como texto para conservar ceros iniciales.</p>
+              <label className="mb-1.5 mt-3 block text-sm font-semibold text-[var(--molsan-text)]">
                 Código postal principal
               </label>
               <select
                 value={formulario.codigo_postal_principal}
                 onChange={(e) => cambiarCampo("codigo_postal_principal", e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                className="w-full rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-2.5 text-sm text-[var(--molsan-text)] outline-none transition focus:border-[var(--molsan-border-strong)] focus:ring-4 focus:ring-[var(--molsan-primary-soft)]"
               >
                 <option value="">Sin código postal principal</option>
                 {(formulario.codigos_postales_texto || "").split(/[;,\s]+/).map((cp) => cp.trim()).filter((cp, i, lista) => cp && lista.indexOf(cp) === i && /^\d{5}$/.test(cp)).map((cp) => <option key={cp} value={cp}>{cp}</option>)}
@@ -3464,7 +3464,7 @@ function ModalMunicipio({
               justify-end
               gap-3
               border-t
-              border-slate-100
+              border-[var(--molsan-border-light)]
               pt-5
             "
           >
@@ -3479,15 +3479,15 @@ function ModalMunicipio({
               }
               className="
                 rounded-xl
-                border border-slate-200
+                border border-[var(--molsan-border)]
                 bg-white
                 px-4
                 py-2.5
                 text-sm
                 font-medium
-                text-slate-600
+                text-[var(--molsan-text-secondary)]
                 transition
-                hover:bg-slate-50
+                hover:bg-[var(--molsan-surface-soft)]
                 disabled:opacity-50
               "
             >
@@ -3507,7 +3507,7 @@ function ModalMunicipio({
                 justify-center
                 gap-2
                 rounded-xl
-                bg-blue-600
+                bg-[var(--molsan-primary)]
                 px-5
                 py-2.5
                 text-sm
@@ -3515,7 +3515,7 @@ function ModalMunicipio({
                 text-white
                 shadow-sm
                 transition
-                hover:bg-blue-700
+                hover:bg-[var(--molsan-primary)]
                 disabled:cursor-not-allowed
                 disabled:opacity-60
               "

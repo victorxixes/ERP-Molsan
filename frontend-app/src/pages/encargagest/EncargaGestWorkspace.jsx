@@ -37,7 +37,7 @@ export default function EncargaGestWorkspace({ page }) {
           if (rutas[label]) navigate(rutas[label]);
         }}
       />
-      <main className="relative min-h-screen px-4 py-6 lg:px-6">
+      <main className="relative min-h-screen min-w-0 w-full">
         {page === "encargos" && <EncargaGest />}
         {page === "ctn" && <Ctn />}
         {page === "agenda" && <Agenda />}

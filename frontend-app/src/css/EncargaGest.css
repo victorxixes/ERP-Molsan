@@ -1,6 +1,6 @@
 /* EncargaGest · MOLSAN ERP Premium 2027 / Glass Luxe */
 .encargagest {
-  --ag-muted: var(--molsan-text-muted, #64748b);
+  --ag-muted: var(--molsan-text-muted, #617789);
   --ag-line: var(--molsan-border, #D8E4EC);
   --ag-panel: var(--molsan-surface, #fff);
   --ag-blue: var(--molsan-primary, #064675);
@@ -8,7 +8,7 @@
   min-height: 100vh;
   min-width: 0;
   overflow: visible;
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   font-family: var(--molsan-font-family, Inter, ui-sans-serif, system-ui, sans-serif);
   background: var(--molsan-page-bg, #FFFFFF);
 }
@@ -77,7 +77,7 @@
   height: 52px;
   color: #064675;
   background: #F2F7FB;
-  border: 1px solid #C5D8E5;
+  border: 1px solid #D8E4EC;
   border-radius: 16px;
   box-shadow: 0 5px 14px rgba(6,70,117,.08);
   font-size: 17px;
@@ -87,20 +87,20 @@
 .eg-modal-heading { flex: 1; min-width: 0; }
 .eg-modal-heading h2 {
   margin: 4px 0 4px;
-  color: var(--molsan-text, #17243a);
+  color: var(--molsan-text, #173247);
   font-size: clamp(20px, 2vw, 27px);
   font-weight: 850;
   letter-spacing: -.7px;
   line-height: 1.2;
 }
-.eg-modal-heading p { margin: 0; color: var(--molsan-text-muted, #64748b); font-size: 12px; line-height: 1.55; }
+.eg-modal-heading p { margin: 0; color: var(--molsan-text-muted, #617789); font-size: 12px; line-height: 1.55; }
 .eg-modal-close {
   display: grid;
   flex: 0 0 38px;
   width: 38px;
   height: 38px;
   place-items: center;
-  color: var(--molsan-text-muted, #64748b);
+  color: var(--molsan-text-muted, #617789);
   background: var(--molsan-surface-soft, #F2F7FB);
   border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-control, 9px);
@@ -120,13 +120,13 @@
   align-items: center;
   gap: 9px;
   padding: 11px 13px;
-  color: var(--molsan-text-secondary, #526176);
+  color: var(--molsan-text-secondary, #617789);
   background: var(--molsan-surface-soft, #F2F7FB);
   border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: var(--molsan-radius-control, 9px);
   font-size: 11px;
 }
-.eg-modal-notaria strong { color: #2b3f60; }
+.eg-modal-notaria strong { color: #173247; }
 .eg-modal-contexto-punto {
   flex: 0 0 7px;
   width: 7px;
@@ -144,7 +144,7 @@
   gap: 16px;
   padding: 16px 24px 20px;
   overflow-y: auto;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: #D8E4EC transparent;
   scrollbar-width: thin;
 }
 .eg-modal-section { min-width: 0; padding: 18px; }
@@ -157,7 +157,7 @@
   place-items: center;
   color: var(--molsan-primary);
   background: var(--molsan-primary-soft, #EAF2F8);
-  border: 1px solid #e0e8ff;
+  border: 1px solid #D8E4EC;
   border-radius: 12px;
   font-size: 12px;
   font-weight: 900;
@@ -166,7 +166,7 @@
 .eg-modal-section-heading > div { min-width: 0; }
 .eg-modal-section-heading > div > span {
   display: block;
-  color: #8290a6;
+  color: #617789;
   font-size: 8px;
   font-weight: 850;
   letter-spacing: 1.2px;
@@ -181,7 +181,7 @@
 .eg-modal-field-grid .eg-span-2 { grid-column: 1 / -1; }
 .eg-modal-field-grid label > span:first-child {
   margin-bottom: 6px;
-  color: #687891;
+  color: #617789;
   font-size: 9px;
   letter-spacing: .1em;
 }
@@ -191,8 +191,8 @@
 .eg-modal-contexto select {
   min-height: 40px;
   border-radius: 10px;
-  border-color: #e0e7f1;
-  background-color: #fbfcff;
+  border-color: #D8E4EC;
+  background-color: #F2F7FB;
   font-size: 11px;
 }
 .eg-modal-field-grid input:focus,
@@ -240,10 +240,10 @@
   gap: 12px;
   padding: 14px 24px;
   background: rgba(255,255,255,.96);
-  border-top: 1px solid #e7ecf4;
+  border-top: 1px solid #D8E4EC;
   box-shadow: 0 -5px 18px rgba(31,48,79,.025);
 }
-.eg-modal-footer > span { color: #8a96a9; font-size: 10px; font-weight: 700; }
+.eg-modal-footer > span { color: #617789; font-size: 10px; font-weight: 700; }
 .eg-modal-footer > div { display: flex; align-items: center; justify-content: flex-end; gap: 9px; }
 .eg-modal-footer .eg-secondary,
 .eg-modal-footer .eg-button-primary { min-height: 40px; }
@@ -364,14 +364,14 @@
   min-width:0;
   overflow-wrap:anywhere;
   background:#fff;
-  border-color:#edf0f5;
+  border-color:#F2F7FB;
   border-radius:11px;
   padding:12px;
 }
 .encargagest .eg-perfil-dato small{
   display:block;
   margin-bottom:4px;
-  color:#7b8798;
+  color:#617789;
   font-size:10px;
   font-weight:750;
   letter-spacing:.04em;
@@ -379,22 +379,22 @@
 .encargagest .eg-perfil-dato strong{
   display:block;
   margin-top:4px;
-  color:#293852;
+  color:#173247;
   font-size:12px;
   font-weight:750;
   overflow-wrap:anywhere;
   word-break:normal;
 }
 .encargagest .eg-perfil-observacion{
-  border:1px solid #e8edf5;
-  background:#f8faff;
+  border:1px solid #D8E4EC;
+  background:#F2F7FB;
   overflow-wrap:anywhere;
 }
 .encargagest .eg-perfil-seguridad{
   min-width:0;
   padding:22px;
-  background:#f8faff;
-  border-color:#e0e7f1;
+  background:#F2F7FB;
+  border-color:#D8E4EC;
   border-radius:16px;
 }
 .encargagest .eg-perfil-seguridad label{
@@ -451,24 +451,24 @@
 
 /* EncargaGest · centro de control nacional y directorio CTN */
 .encargagest .eg-directorio-eyebrow { color:var(--molsan-primary, #064675); font-size:10px; font-weight:900; letter-spacing:.16em; }
-.encargagest .eg-directorio-cabecera h2 { margin-top:5px; color:#172b4d; font-size:20px; font-weight:900; letter-spacing:-.025em; }
-.encargagest .eg-directorio-cabecera p:not(.eg-directorio-eyebrow) { max-width:680px; margin-top:5px; color:#71809a; font-size:12px; line-height:1.6; }
+.encargagest .eg-directorio-cabecera h2 { margin-top:5px; color:#173247; font-size:20px; font-weight:900; letter-spacing:-.025em; }
+.encargagest .eg-directorio-cabecera p:not(.eg-directorio-eyebrow) { max-width:680px; margin-top:5px; color:#617789; font-size:12px; line-height:1.6; }
 .encargagest .eg-directorio-contador { display:flex; flex-direction:column; align-items:flex-end; flex-shrink:0; }
 .encargagest .eg-directorio-contador strong { color:var(--molsan-primary, #064675); font-size:27px; line-height:1.1; font-weight:900; font-variant-numeric:tabular-nums; }
-.encargagest .eg-directorio-contador span { margin-top:4px; color:#8390a6; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
+.encargagest .eg-directorio-contador span { margin-top:4px; color:#617789; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
 .encargagest .eg-directorio-busqueda { display:flex; align-items:center; flex-wrap:wrap; gap:12px; padding:16px 26px; border:0; border-bottom:0; background:#FFFFFF; }
-.encargagest .eg-directorio-input-wrap { display:flex; align-items:center; gap:10px; flex:1 1 320px; min-width:180px; padding:0 13px; border:1px solid #dfe6f0; border-radius:12px; background:#fff; color:#6680ad; }
+.encargagest .eg-directorio-input-wrap { display:flex; align-items:center; gap:10px; flex:1 1 320px; min-width:180px; padding:0 13px; border:1px solid #D8E4EC; border-radius:12px; background:#fff; color:#617789; }
 .encargagest .eg-directorio-input-wrap > span { font-size:22px; line-height:1; }
-.encargagest .eg-directorio-input-wrap input { width:100%; min-width:0; padding:12px 0; border:0; outline:0; color:#263b5d; background:transparent; font-size:12px; box-shadow:none !important; }
-.encargagest .eg-directorio-alcance { display:flex; align-items:center; gap:8px; color:#435675; font-size:11px; font-weight:800; white-space:nowrap; }
+.encargagest .eg-directorio-input-wrap input { width:100%; min-width:0; padding:12px 0; border:0; outline:0; color:#173247; background:transparent; font-size:12px; box-shadow:none !important; }
+.encargagest .eg-directorio-alcance { display:flex; align-items:center; gap:8px; color:#617789; font-size:11px; font-weight:800; white-space:nowrap; }
 .encargagest .eg-directorio-alcance input { width:15px; height:15px; accent-color:var(--molsan-primary, #064675); }
-.encargagest .eg-directorio-global { padding:10px 12px; border:1px solid #dbe5f5; border-radius:10px; color:var(--molsan-primary, #064675); background:#f5f8ff; font-size:11px; font-weight:800; }
+.encargagest .eg-directorio-global { padding:10px 12px; border:1px solid #D8E4EC; border-radius:10px; color:var(--molsan-primary, #064675); background:#F2F7FB; font-size:11px; font-weight:800; }
 
 
 
 
 
-.encargagest .eg-directorio-estado { padding:5px 8px; border:1px solid #e3e8f0; border-radius:999px; color:#78859a; background:#f8fafc; font-size:9px; font-weight:900; white-space:nowrap; }
+.encargagest .eg-directorio-estado { padding:5px 8px; border:1px solid #D8E4EC; border-radius:999px; color:#617789; background:#F2F7FB; font-size:9px; font-weight:900; white-space:nowrap; }
 .encargagest .eg-directorio-estado.is-enabled { border-color:#bce8d3; color:#16774c; background:#effcf5; }
 
 
@@ -476,12 +476,12 @@
 
 .encargagest .eg-directorio-gestionar, .encargagest .eg-directorio-habilitar { padding:8px 10px; border-radius:9px; font-size:10px; font-weight:850; }
 .encargagest .eg-directorio-gestionar { color:#fff; background:var(--molsan-primary, #064675); }
-.encargagest .eg-directorio-gestionar:disabled { color:#9aa5b6; background:#edf0f5; cursor:not-allowed; }
-.encargagest .eg-directorio-habilitar { border:1px solid #dce5f5; color:var(--molsan-primary, #064675); background:#f7f9ff; }
-.encargagest .eg-directorio-vacio { padding:32px 16px; text-align:center; color:#8995a9; font-size:12px; }
+.encargagest .eg-directorio-gestionar:disabled { color:#617789; background:#F2F7FB; cursor:not-allowed; }
+.encargagest .eg-directorio-habilitar { border:1px solid #D8E4EC; color:var(--molsan-primary, #064675); background:#F2F7FB; }
+.encargagest .eg-directorio-vacio { padding:32px 16px; text-align:center; color:#617789; font-size:12px; }
 .encargagest .eg-directorio-paginacion { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 22px; border:0; border-top:0; color:#617789; font-size:10px; font-weight:750; }
 .encargagest .eg-directorio-paginacion > div { display:flex; gap:7px; }
-.encargagest .eg-directorio-paginacion button { padding:8px 10px; border:1px solid #dce5f1; border-radius:9px; color:#465a7a; background:#fff; font-size:10px; font-weight:800; }
+.encargagest .eg-directorio-paginacion button { padding:8px 10px; border:1px solid #D8E4EC; border-radius:9px; color:#617789; background:#fff; font-size:10px; font-weight:800; }
 .encargagest .eg-directorio-paginacion button:disabled { opacity:.4; cursor:not-allowed; }
 
 @media(max-width:650px) {
@@ -498,11 +498,11 @@
 /* Directorio CTN compacto en tabla tipo Excel */
 .encargagest .eg-directorio-tabla-wrap { width:100%; overflow-x:auto; }
 .encargagest .eg-directorio-tabla { width:100%; border-collapse:separate; border-spacing:0; font-size:11px; text-align:left; }
-.encargagest .eg-directorio-tabla thead th { padding:11px 14px; color:#62718a; background:#f5f8fd; border-bottom:1px solid #e2e9f4; font-size:9px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; }
-.encargagest .eg-directorio-tabla tbody td { padding:10px 14px; color:#4a5b75; border-bottom:1px solid #edf1f7; white-space:nowrap; }
+.encargagest .eg-directorio-tabla thead th { padding:11px 14px; color:#617789; background:#F2F7FB; border-bottom:1px solid #D8E4EC; font-size:9px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; }
+.encargagest .eg-directorio-tabla tbody td { padding:10px 14px; color:#617789; border-bottom:1px solid #F2F7FB; white-space:nowrap; }
 .encargagest .eg-directorio-tabla tbody tr:last-child td { border-bottom:0; }
-.encargagest .eg-directorio-tabla tbody tr:hover { background:#f7faff; }
-.encargagest .eg-directorio-tabla .eg-directorio-tabla-nombre { color:#263751; font-weight:850; }
+.encargagest .eg-directorio-tabla tbody tr:hover { background:#F2F7FB; }
+.encargagest .eg-directorio-tabla .eg-directorio-tabla-nombre { color:#173247; font-weight:850; }
 .encargagest .eg-directorio-tabla-acciones { display:flex; align-items:center; gap:6px; }
 .encargagest .eg-directorio-tabla-acciones .eg-directorio-gestionar,
 .encargagest .eg-directorio-tabla-acciones .eg-directorio-habilitar { padding:7px 9px; }
@@ -564,7 +564,7 @@
 }
 
 /* Autoridad visual EncargaGest · MOLSAN ERP PREMIUM 2027 */
-.encargagest { --eg-ink:#17344B; --eg-blue:#064675; --eg-muted:#617789; --eg-border:#D8E4EC; --eg-soft:#F2F7FB; }
+.encargagest { --eg-ink:#173247; --eg-blue:#064675; --eg-muted:#617789; --eg-border:#D8E4EC; --eg-soft:#F2F7FB; }
 
 .encargagest .eg-main > section { min-width:0; }
 .encargagest .eg-directorio { min-width:0; overflow:hidden; }
@@ -580,7 +580,7 @@
 .encargagest .eg-directorio-busqueda { border-color:var(--eg-border) !important; }
 .encargagest .eg-directorio-input-wrap { border-color:var(--eg-border) !important; border-radius:11px !important; color:var(--eg-blue) !important; }
 .encargagest .eg-directorio-input-wrap > span { font-size:inherit !important; }
-.encargagest .eg-directorio-tabla thead th { color:var(--eg-blue) !important; background:#EAF2F8 !important; border-color:var(--eg-border) !important; }
+.encargagest .eg-directorio-tabla thead th { color:var(--molsan-text-secondary, #617789) !important; background:var(--molsan-table-head, #EAF2F8) !important; border-color:var(--molsan-border, #D8E4EC) !important; }
 .encargagest .eg-directorio-tabla tbody td { border-color:var(--eg-border) !important; }
 .encargagest .eg-directorio-gestionar { background:var(--eg-blue) !important; }
 .encargagest .eg-directorio-habilitar,.encargagest .eg-directorio-global { color:var(--eg-blue) !important; border-color:var(--eg-border) !important; background:var(--eg-soft) !important; }
@@ -600,14 +600,9 @@
 /* Cabecera gestionada exclusivamente por MolsanPageHeader + Glass Luxe. */
 
 /* Impresión de EncargaGest: conserva las clases de impresión existentes. */
-@media print {
-  @page { size:A4 portrait; margin:12mm; }
-  body.molsan-print-encargos-lista *,
-  body.molsan-print-encargos-fichas * { visibility:hidden!important; }
-  * { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
-}
+/* La impresión se centraliza en PortalProfesionalPremium2027.css. */
 .encargagest .eg-empty-mark {
-  color:#064675;border:1.5px solid #C5D8E5;border-radius:16px;
+  color:#064675;border:1.5px solid #D8E4EC;border-radius:16px;
   background:#F2F7FB;box-shadow:0 5px 14px rgba(6,70,117,.08);
 }
 .encargagest .eg-modal-overlay {
@@ -635,7 +630,7 @@
 .encargagest .eg-modal-brand {
   display:grid;flex:0 0 56px;width:56px;height:56px;place-items:center;
   color:#064675;
-  border:1px solid #C5D8E5;border-radius:16px;
+  border:1px solid #D8E4EC;border-radius:16px;
   background:#F2F7FB;box-shadow:0 5px 14px rgba(6,70,117,.08);
 }
 .encargagest .eg-modal-brand .molsan-icon-3d { width:40px !important;height:40px !important;color:#064675; }
@@ -649,11 +644,11 @@
   max-width:100%;min-width:0;box-sizing:border-box;
 }
 .encargagest .eg-modal-form :is(input,select,textarea):focus-visible,.encargagest .eg-modal-perfil :is(input,select,textarea):focus-visible {
-  outline:3px solid rgba(6,70,117,.17);outline-offset:1px;border-color:#7EA8C2;
+  outline:3px solid rgba(6,70,117,.17);outline-offset:1px;border-color:#B8CBD9;
 }
 .encargagest .eg-perfil-avatar {
   display:grid;flex:0 0 52px;width:52px;height:52px;place-items:center;
-  color:#064675;border:1px solid #C5D8E5;border-radius:15px;
+  color:#064675;border:1px solid #D8E4EC;border-radius:15px;
   background:#F2F7FB;box-shadow:0 5px 14px rgba(6,70,117,.08);
 }
 .encargagest .eg-perfil-avatar .molsan-icon-3d { width:36px !important;height:36px !important;color:#064675; }
@@ -695,13 +690,15 @@
 
 .encargagest .eg-panel table thead th,
 .encargagest .eg-directorio-tabla thead th {
-
-  color:var(--molsan-prof-blue);background:var(--molsan-prof-table);border-color:var(--molsan-prof-border);
+  color:var(--molsan-text-secondary, #617789);
+  background:var(--molsan-table-head, #EAF2F8);
+  border-color:var(--molsan-border, #D8E4EC);
 }
 
 .encargagest .eg-panel table td,
 .encargagest .eg-directorio-tabla td {
-border-color:var(--molsan-prof-border)}
+  border-color:var(--molsan-border, #D8E4EC);
+}
 
 .encargagest .eg-directorio-input-wrap {
 display:flex;align-items:center;gap:9px;min-width:0}
@@ -725,7 +722,7 @@ flex-shrink:0}
 .encargagest .eg-modal-header :is(h2,h3) { color:#064675; }
 .encargagest .eg-modal-header :is(p,span) { color:#617789; }
 .encargagest .eg-modal-close {
-  color:#064675;border-color:#C5D8E5;background:#F2F7FB;
+  color:#064675;border-color:#D8E4EC;background:#F2F7FB;
 }
 .encargagest .eg-modal-close:hover { background:#EAF2F8; }
 

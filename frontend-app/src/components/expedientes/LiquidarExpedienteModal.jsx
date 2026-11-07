@@ -155,10 +155,10 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
   };
   const contenido = (
     <div className="molsan-modal-overlay liquidar-expediente-modal fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-5">
-      <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="liquidar-expediente-titulo" className="molsan-modal__panel flex max-h-[calc(100dvh-1rem)] w-full max-w-6xl sm:max-h-[calc(100dvh-2.5rem)] flex-col overflow-hidden">
+      <section ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="liquidar-expediente-titulo" className="molsan-modal-panel molsan-modal__panel flex max-h-[calc(100dvh-1rem)] w-full max-w-6xl sm:max-h-[calc(100dvh-2.5rem)] flex-col overflow-hidden">
         <header className="molsan-modal__header flex items-start justify-between gap-3 px-5 py-4">
           <div><p className="uppercase">MOLSAN ERP · Cierre</p><h2 id="liquidar-expediente-titulo" className="mt-1">Liquidar expediente</h2><p className="mt-1">Expediente {expediente?.id_expediente || expediente?.id || "—"}. Revisar y guardar no cierra el expediente.</p></div>
-          <button type="button" onClick={onClose} className="px-3 py-2" aria-label="Cerrar modal">×</button>
+          <button type="button" onClick={onClose} className="px-3 py-2" aria-label="Cerrar modal"><MolsanIcon name="x" size={18} bare /></button>
         </header>
         <div className="molsan-modal__body min-h-0 flex-1 space-y-5 overflow-y-auto p-4 sm:p-5">
           {error && <p role="alert" className="px-3 py-2">{String(error)}</p>}
@@ -183,9 +183,9 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
                   <tr><td className="px-3 py-2">—</td><td className="px-3 py-2">Provisión de fondos inicial</td><td className="px-3 py-2">{dinero(importeInicial)}</td><td className="px-3 py-2">Provisión registrada</td></tr>
                   {filas.map((fila, idx) => <tr key={fila.id || idx}>
                     <td className="whitespace-nowrap px-3 py-2">{String(fila.fecha_pago || fila.fecha || fila.fecha_factura || "").slice(0,10) || "—"}</td>
-                    <td className="px-3 py-2 text-slate-700">{fila._tipo}</td>
+                    <td className="px-3 py-2 text-[var(--molsan-text-secondary)]">{fila._tipo}</td>
                     <td className="whitespace-nowrap px-3 py-2 text-right font-semibold">{dinero(fila._importeObligacion)}</td>
-                    <td className="px-3 py-2"><span className={fila._estadoPago === "Pagado" ? "font-bold text-emerald-700" : fila._estadoPago === "Parcial" ? "font-bold text-blue-700" : "font-semibold text-amber-700"}>{fila._estadoPago}{fila._importePagado > 0 ? ` · ${dinero(fila._importePagado)}` : " · registrar desde Pagar"}</span></td>
+                    <td className="px-3 py-2"><span className={fila._estadoPago === "Pagado" ? "font-bold text-emerald-700" : fila._estadoPago === "Parcial" ? "font-bold text-[var(--molsan-primary)]" : "font-semibold text-amber-700"}>{fila._estadoPago}{fila._importePagado > 0 ? ` · ${dinero(fila._importePagado)}` : " · registrar desde Pagar"}</span></td>
                   </tr>)}
                   <tr><td className="whitespace-nowrap px-3 py-2">{form.fecha_fin_actividad || "—"}</td><td className="px-3 py-2">Liquidación final</td><td className="px-3 py-2">{dinero(saldoLiquidacion)}</td><td className="px-3 py-2">Saldo calculado</td></tr>
                 </tbody>
@@ -209,8 +209,8 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
           <section className="p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <h3 className="text-sm font-extrabold text-slate-900"><MolsanIcon name="book" size={20} /> Cierre documental digital</h3>
-                <p className="mt-1 text-xs leading-5 text-slate-600">Genera una vista previa sin guardar. Tras revisarla, pulsa «Aceptar y guardar en Carpeta digital» para registrar el PDF en Expediente digital completo. Orden: Hoja de liquidación, Factura notario, Factura registro, Factura Honorarios gestoría, Copia simple, Justificación de cancelación, AJD / ITP y Hoja de inscripción.</p>
+                <h3 className="text-sm font-extrabold text-[var(--molsan-text)]"><MolsanIcon name="book" size={20} /> Cierre documental digital</h3>
+                <p className="mt-1 text-xs leading-5 text-[var(--molsan-text-secondary)]">Genera una vista previa sin guardar. Tras revisarla, pulsa «Aceptar y guardar en Carpeta digital» para registrar el PDF en Expediente digital completo. Orden: Hoja de liquidación, Factura notario, Factura registro, Factura Honorarios gestoría, Copia simple, Justificación de cancelación, AJD / ITP y Hoja de inscripción.</p>
                 {cierreDocumental && <div className={`mt-3 rounded-lg border px-3 py-2 text-xs ${cierreDocumental.guardado ? "border-emerald-200 bg-white text-emerald-800" : "border-amber-200 bg-white text-amber-800"}`}>
                   <p className="font-extrabold">{cierreDocumental.mensaje || "PDF de cierre documental preparado."}</p>
                   <p className="mt-1">{Number(cierreDocumental.paginas || 0)} páginas · {Array.isArray(cierreDocumental.documentos_incluidos) ? cierreDocumental.documentos_incluidos.length : 0} documento(s).</p>
@@ -233,7 +233,7 @@ export default function LiquidarExpedienteModal({ expediente, movimientos = [], 
   );
   const vistaPrevia = vistaPreviaUrl ? (
     <div className="molsan-modal-overlay vista-previa-cierre-modal fixed inset-0 z-[10010] flex items-center justify-center p-2 sm:p-5">
-      <section ref={previewDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="vista-previa-cierre-titulo" className="molsan-modal__panel flex h-[calc(100dvh-1rem)] w-full max-w-6xl sm:h-[calc(100dvh-2.5rem)] flex-col overflow-hidden">
+      <section ref={previewDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="vista-previa-cierre-titulo" className="molsan-modal-panel molsan-modal__panel flex h-[calc(100dvh-1rem)] w-full max-w-6xl sm:h-[calc(100dvh-2.5rem)] flex-col overflow-hidden">
         <header className="molsan-modal__header flex flex-wrap items-center justify-between gap-3 px-5 py-3">
           <div><h2 id="vista-previa-cierre-titulo">Vista previa · Expediente digital completo</h2><p className="mt-1">Aún no está guardado. Revísalo antes de aceptar.</p></div>
           <button type="button" onClick={cerrarVistaPrevia} className="px-3 py-2">Cancelar</button>

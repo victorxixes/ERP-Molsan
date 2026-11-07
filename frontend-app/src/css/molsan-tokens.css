@@ -4,7 +4,7 @@
   /* Vidrio y superficies compartidas */
   --molsan-glass-border: rgba(6,70,117,.14);
   --molsan-glass-shadow: 0 8px 22px rgba(6,70,117,.075);
-  --molsan-card-border: #C5D8E5;
+  --molsan-card-border: var(--molsan-border, #D8E4EC);
   --molsan-card-shadow: 0 7px 20px rgba(6,70,117,.09);
   --molsan-card-shadow-hover: 0 12px 26px rgba(6,70,117,.13);
   /* Geometría canónica de cabeceras, controles y contenido */
@@ -12,7 +12,7 @@
   --molsan-canon-header-mid: #BED9E8;
   --molsan-canon-header-end: #D8E9F2;
   --molsan-canon-header-text: #064675;
-  --molsan-canon-header-muted: #496B82;
+  --molsan-canon-header-muted: #617789;
   --molsan-canon-gutter: 28px;
   --molsan-canon-header-height: 82px;
   --molsan-canon-card-radius: 20px;

@@ -71,7 +71,7 @@ select, textarea) {
 }
 
 .cg-unified-workspace table th {
-  color: var(--molsan-text-secondary, #526176);
+  color: var(--molsan-text-secondary, #617789);
   background: var(--molsan-surface-soft, #F2F7FB);
   font-size: 10px;
   font-weight: 800;

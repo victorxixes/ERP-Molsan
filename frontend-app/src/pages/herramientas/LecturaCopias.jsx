@@ -45,79 +45,79 @@ export default function LecturaCopias() {
 
   return (
     <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <MolsanPageHeader mark="LC" title="Lectura copias" description="Selecciona la fecha de recepción y ejecuta el procesamiento de ejemplo para visualizar el progreso y el resultado esperado de la futura integración." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>}/>
+      <MolsanPageHeader mark="LC" title="Lectura copias" description="Selecciona la fecha de recepción y ejecuta el procesamiento de ejemplo para visualizar el progreso y el resultado esperado de la futura integración." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-[var(--molsan-primary)] hover:underline"><MolsanIcon name="arrowLeft" size={13} bare /> Volver a Utilidades</Link>}/>
 
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(240px,0.8fr)]">
-        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-          <h2 className="text-base font-extrabold text-slate-900">Parámetros de procesamiento</h2>
-          <p className="mt-1 text-sm text-slate-500">Elige el día que se utilizaría para buscar las copias recibidas.</p>
+        <div className="rounded-3xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm sm:p-6">
+          <h2 className="text-base font-extrabold text-[var(--molsan-primary)]">Parámetros de procesamiento</h2>
+          <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Elige el día que se utilizaría para buscar las copias recibidas.</p>
           <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
             <label className="block">
-              <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Fecha de recepción</span>
-              <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} disabled={procesando} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100" />
+              <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Fecha de recepción</span>
+              <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} disabled={procesando} className="w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-3.5 py-3 text-sm font-semibold text-[var(--molsan-text)] outline-none focus:border-[var(--molsan-border-strong)] focus:ring-4 focus:ring-[var(--molsan-primary-soft)] disabled:bg-[var(--molsan-table-head)]" />
             </label>
-            <button type="button" onClick={procesar} disabled={!fecha || procesando} className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
+            <button type="button" onClick={procesar} disabled={!fecha || procesando} className="rounded-xl bg-[var(--molsan-primary)] px-6 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[var(--molsan-primary)] disabled:cursor-not-allowed disabled:opacity-50">
               {procesando ? "Procesando…" : <><MolsanIcon name="play" size={14} tone="inherit" /> Procesar</>}
             </button>
           </div>
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <div className="mt-6 rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-sm font-bold text-slate-700">{procesando ? "Procesando ficheros y correos…" : procesado ? "Procesamiento de demostración completado" : "Estado del proceso"}</span>
-              <span className="text-sm font-extrabold tabular-nums text-blue-700">{progreso}%</span>
+              <span className="text-sm font-bold text-[var(--molsan-text)]">{procesando ? "Procesando ficheros y correos…" : procesado ? "Procesamiento de demostración completado" : "Estado del proceso"}</span>
+              <span className="text-sm font-extrabold tabular-nums text-[var(--molsan-primary)]">{progreso}%</span>
             </div>
-            <div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-200">
+            <div className="mt-3 h-3 overflow-hidden rounded-full bg-[var(--molsan-surface-soft)]">
               <div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 transition-all duration-200" style={{ width: `${progreso}%` }} />
             </div>
-            <p className="mt-2 text-xs text-slate-500">{procesando ? "Simulación visual del avance. No se conecta a ningún buzón, API ni script." : procesado ? "Se han mostrado registros de ejemplo para ilustrar la futura salida." : "Pulsa «Procesar» para iniciar una simulación del progreso."}</p>
+            <p className="mt-2 text-xs text-[var(--molsan-text-secondary)]">{procesando ? "Simulación visual del avance. No se conecta a ningún buzón, API ni script." : procesado ? "Se han mostrado registros de ejemplo para ilustrar la futura salida." : "Pulsa «Procesar» para iniciar una simulación del progreso."}</p>
           </div>
         </div>
 
-        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-          <h2 className="text-base font-extrabold text-slate-900">Volumen de entrada</h2>
-          <p className="mt-1 text-sm text-slate-500">Número de ficheros / emails que se revisarían.</p>
+        <div className="rounded-3xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm sm:p-6">
+          <h2 className="text-base font-extrabold text-[var(--molsan-primary)]">Volumen de entrada</h2>
+          <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Número de ficheros / emails que se revisarían.</p>
           <label className="mt-5 block">
-            <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">N.º de ficheros / emails</span>
-            <input type="number" min="0" value={ficherosEmails} onChange={(e) => setFicherosEmails(e.target.value)} disabled={procesando} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-2xl font-extrabold tabular-nums text-slate-800 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100" />
+            <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">N.º de ficheros / emails</span>
+            <input type="number" min="0" value={ficherosEmails} onChange={(e) => setFicherosEmails(e.target.value)} disabled={procesando} className="w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-3.5 py-3 text-2xl font-extrabold tabular-nums text-[var(--molsan-primary)] outline-none focus:border-[var(--molsan-border-strong)] focus:ring-4 focus:ring-[var(--molsan-primary-soft)] disabled:bg-[var(--molsan-table-head)]" />
           </label>
-          <div className="mt-4 rounded-xl bg-indigo-50 px-4 py-3">
-            <p className="text-xs font-semibold text-indigo-700">Valor ficticio para la maqueta</p>
-            <p className="mt-1 text-xs text-indigo-600">El script real deberá informar del número detectado y procesado.</p>
+          <div className="mt-4 rounded-xl bg-[var(--molsan-primary-soft)] px-4 py-3">
+            <p className="text-xs font-semibold text-[var(--molsan-primary)]">Valor ficticio para la maqueta</p>
+            <p className="mt-1 text-xs text-[var(--molsan-primary)]">El script real deberá informar del número detectado y procesado.</p>
           </div>
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-col gap-2 border-b border-slate-200 bg-slate-50/80 p-5 sm:flex-row sm:items-end sm:justify-between">
+      <section className="overflow-hidden rounded-3xl border border-[var(--molsan-border)] bg-white shadow-sm">
+        <div className="flex flex-col gap-2 border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-[10px] font-extrabold uppercase tracking-widest text-blue-700">Resultado</p>
-            <h2 className="mt-1 text-lg font-extrabold text-slate-900">Copias recibidas</h2>
-            <p className="mt-1 text-xs text-slate-500">La tabla muestra datos de ejemplo; no son expedientes obtenidos del sistema.</p>
+            <p className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--molsan-primary)]">Resultado</p>
+            <h2 className="mt-1 text-lg font-extrabold text-[var(--molsan-primary)]">Copias recibidas</h2>
+            <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">La tabla muestra datos de ejemplo; no son expedientes obtenidos del sistema.</p>
           </div>
-          <span className="inline-flex w-fit rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600">{filas.length} registros de ejemplo</span>
+          <span className="inline-flex w-fit rounded-full border border-[var(--molsan-border)] bg-white px-3 py-1.5 text-xs font-bold text-[var(--molsan-text-secondary)]">{filas.length} registros de ejemplo</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[850px] text-left text-sm">
-            <thead className="bg-white text-[10px] uppercase tracking-wide text-slate-500">
+            <thead className="bg-white text-[10px] uppercase tracking-wide text-[var(--molsan-text-secondary)]">
               <tr>
-                {["Expediente", "Fecha recibida", "Contrato", "Finca", "Observaciones"].map((columna) => <th key={columna} className="border-b border-slate-200 px-4 py-3 font-extrabold">{columna}</th>)}
+                {["Expediente", "Fecha recibida", "Contrato", "Finca", "Observaciones"].map((columna) => <th key={columna} className="border-b border-[var(--molsan-border)] px-4 py-3 font-extrabold">{columna}</th>)}
               </tr>
             </thead>
             <tbody>
               {filas.length === 0 ? (
-                <tr><td colSpan={5} className="px-5 py-14 text-center"><div><MolsanIcon name="file" size={32} tone="ocean" /></div><p className="mt-2 font-bold text-slate-700">{procesando ? "Preparando resultados de ejemplo…" : "Todavía no hay resultados"}</p><p className="mt-1 text-xs text-slate-500">Selecciona una fecha y pulsa «Procesar» para ver la maqueta.</p></td></tr>
+                <tr><td colSpan={5} className="px-5 py-14 text-center"><div><MolsanIcon name="file" size={32} tone="ocean" /></div><p className="mt-2 font-bold text-[var(--molsan-text)]">{procesando ? "Preparando resultados de ejemplo…" : "Todavía no hay resultados"}</p><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Selecciona una fecha y pulsa «Procesar» para ver la maqueta.</p></td></tr>
               ) : filas.map((fila, index) => (
-                <tr key={fila.expediente} className="border-b border-slate-100 align-top last:border-0 hover:bg-slate-50/70">
-                  <td className="whitespace-nowrap px-4 py-4 font-extrabold text-blue-700">{fila.expediente}</td>
-                  <td className="whitespace-nowrap px-4 py-4 text-slate-600">{fila.fecha}</td>
-                  <td className="px-4 py-4 font-semibold text-slate-700">{fila.contrato}</td>
-                  <td className="px-4 py-4 text-slate-600">{fila.finca}</td>
-                  <td className="min-w-[260px] px-4 py-4 text-slate-600">{fila.observaciones}</td>
+                <tr key={fila.expediente} className="border-b border-[var(--molsan-border-light)] align-top last:border-0 hover:bg-[var(--molsan-surface-soft)]">
+                  <td className="whitespace-nowrap px-4 py-4 font-extrabold text-[var(--molsan-primary)]">{fila.expediente}</td>
+                  <td className="whitespace-nowrap px-4 py-4 text-[var(--molsan-text-secondary)]">{fila.fecha}</td>
+                  <td className="px-4 py-4 font-semibold text-[var(--molsan-text)]">{fila.contrato}</td>
+                  <td className="px-4 py-4 text-[var(--molsan-text-secondary)]">{fila.finca}</td>
+                  <td className="min-w-[260px] px-4 py-4 text-[var(--molsan-text-secondary)]">{fila.observaciones}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <footer className="border-t border-slate-200 bg-slate-50/70 px-4 py-3 text-xs text-slate-500">Pantalla de demostración: la lectura real, la API y el script de integración quedan pendientes de implementación.</footer>
+        <footer className="border-t border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-4 py-3 text-xs text-[var(--molsan-text-secondary)]">Pantalla de demostración: la lectura real, la API y el script de integración quedan pendientes de implementación.</footer>
       </section>
     </main>
   );

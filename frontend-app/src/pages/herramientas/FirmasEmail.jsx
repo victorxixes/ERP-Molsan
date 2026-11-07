@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 
-const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
+const inputClass = "w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-text)] outline-none transition focus:border-[var(--molsan-border-strong)] focus:ring-2 focus:ring-[var(--molsan-primary-soft)]";
 
 export default function FirmasEmail() {
   const [firmaPie, setFirmaPie] = useState("");
@@ -42,32 +43,32 @@ export default function FirmasEmail() {
     }
   }
 
-  return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
+  return <main className="herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
     <MolsanPageHeader
       mark="SIG"
       title="Firma corporativa de email"
       description="Configura el pie común que acompaña a la firma personal del empleado remitente."
       className="firmas-email-page-header"
-      actions={<Link to="/herramientas/catalogos" className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]">← Volver a Catálogos</Link>}
+      actions={<Link to="/herramientas/catalogos" className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]"><MolsanIcon name="arrowLeft" size={13} bare /> Volver a Catálogos</Link>}
     />
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</div>}
     {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{mensaje}</div>}
-    {cargando ? <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500">Cargando configuración…</div> : <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 space-y-5">
+    {cargando ? <div className="rounded-2xl border border-[var(--molsan-border)] bg-white p-8 text-center text-[var(--molsan-text-secondary)]">Cargando configuración…</div> : <section className="rounded-2xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm sm:p-6 space-y-5">
       <div>
-        <h2 className="text-lg font-bold text-slate-800">Firma personal automática + pie corporativo</h2>
-        <p className="mt-1 text-sm text-slate-500">El nombre y apellidos, departamento y cargo se obtienen de la FichaEmpleado del usuario que envía el correo. Aquí solo se configura el pie corporativo común.</p>
+        <h2 className="text-lg font-bold text-[var(--molsan-primary)]">Firma personal automática + pie corporativo</h2>
+        <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">El nombre y apellidos, departamento y cargo se obtienen de la FichaEmpleado del usuario que envía el correo. Aquí solo se configura el pie corporativo común.</p>
       </div>
-      <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 text-sm text-blue-900">
+      <div className="rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-primary-soft)] p-4 text-sm text-[var(--molsan-primary)]">
         <strong>Orden de la firma en cada email</strong>
-        <p className="mt-2 whitespace-pre-line text-blue-800">{"Nombre y apellidos del gestor\nDepartamento · Cargo\n"}{firmaPie || "Aquí aparecerá el pie corporativo común."}</p>
-        <p className="mt-2 text-xs text-blue-700">Los datos de nombre, departamento y cargo no se escriben manualmente aquí: se leen de la ficha de quien envía el correo.</p>
+        <p className="mt-2 whitespace-pre-line text-[var(--molsan-primary)]">{"Nombre y apellidos del gestor\nDepartamento · Cargo\n"}{firmaPie || "Aquí aparecerá el pie corporativo común."}</p>
+        <p className="mt-2 text-xs text-[var(--molsan-primary)]">Los datos de nombre, departamento y cargo no se escriben manualmente aquí: se leen de la ficha de quien envía el correo.</p>
       </div>
       <label className="block">
-        <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Pie corporativo común</span>
+        <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Pie corporativo común</span>
         <textarea rows={6} value={firmaPie} onChange={(e) => setFirmaPie(e.target.value)} placeholder={"MOLSAN\nGestoría y tramitación\nTel. · Web · Dirección"} className={inputClass} />
       </label>
       <div className="flex justify-end">
-        <button type="button" onClick={guardar} disabled={guardando} className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-60">{guardando ? "Guardando…" : "Guardar firma corporativa"}</button>
+        <button type="button" onClick={guardar} disabled={guardando} className="rounded-xl bg-[var(--molsan-primary)] px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[var(--molsan-primary)] disabled:opacity-60">{guardando ? "Guardando…" : "Guardar firma corporativa"}</button>
       </div>
     </section>}
   </main>;

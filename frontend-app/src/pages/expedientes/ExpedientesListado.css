@@ -62,7 +62,7 @@
 
 .expedientes-page {
   min-width: 0;
-  color: var(--molsan-text, #24324a);
+  color: var(--molsan-text, #173247);
 }
 
 .expedientes-page :is(.erp-card, [class~="bg-white"]) {

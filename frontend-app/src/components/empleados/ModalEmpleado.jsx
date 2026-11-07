@@ -2176,7 +2176,7 @@ const permisosDisponibles =
  max-w-7xl
  ${preservarEstilosSidebar ? "max-h-[94vh]" : "max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-3rem)]"}
  flex-col
- overflow-hidden ${preservarEstilosSidebar ? "" : "molsan-modal__panel"}`}
+ overflow-hidden ${preservarEstilosSidebar ? "" : "molsan-modal-panel molsan-modal__panel"}`}
         onClick={(
           event
         ) =>
@@ -2303,7 +2303,7 @@ const permisosDisponibles =
               className={`flex h-10 w-10 shrink-0 items-center justify-center ${preservarEstilosSidebar ? "" : "molsan-btn molsan-btn--ghost molsan-btn--icon"}`}
               aria-label="Cerrar"
             >
-              ×
+              <MolsanIcon name="x" size={18} bare />
             </button>
 
           </div>

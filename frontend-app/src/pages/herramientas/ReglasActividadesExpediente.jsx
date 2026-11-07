@@ -69,7 +69,7 @@ export default function ReglasActividadesExpediente() {
 
   return (
     <main className="utilidades-premium-page min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
-      <MolsanPageHeader mark="UT" title="Reglas de actividades expediente" description="Define los documentos, campos y validaciones de cada fase, y deja identificadas las integraciones y reglas que requieren revisión técnica." actions={<Link to="/herramientas/utilidades" className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>}/>
+      <MolsanPageHeader mark="UT" title="Reglas de actividades expediente" description="Define los documentos, campos y validaciones de cada fase, y deja identificadas las integraciones y reglas que requieren revisión técnica." actions={<Link to="/herramientas/utilidades" className="inline-flex items-center rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]"><MolsanIcon name="arrowLeft" size={14} bare /> Volver a Utilidades</Link>}/>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Resumen icono="folderOpen" titulo="Actividad inicial" valor="Documentación previa" />
@@ -77,12 +77,12 @@ export default function ReglasActividadesExpediente() {
         <Resumen icono="mail" titulo="Flujo principal" valor="5 transiciones" />
       </section>
 
-      <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
+      <section className="overflow-hidden rounded-[22px] border border-[var(--molsan-border)] bg-white shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 01</p>
-            <h2 className="mt-1 text-lg font-bold text-slate-800">Documentación previa → Sede notarial</h2>
-            <p className="mt-1 text-sm text-slate-500">Los tres documentos deben existir en la carpeta digital del resumen del expediente para dar por preparada la documentación.</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--molsan-primary)]">Regla 01</p>
+            <h2 className="mt-1 text-lg font-bold text-[var(--molsan-primary)]">Documentación previa → Sede notarial</h2>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Los tres documentos deben existir en la carpeta digital del resumen del expediente para dar por preparada la documentación.</p>
           </div>
           <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">Configuración persistente</span>
         </div>
@@ -90,22 +90,22 @@ export default function ReglasActividadesExpediente() {
         <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-4">
             <div>
-              <h3 className="text-sm font-bold text-slate-800">1. Documentos necesarios</h3>
-              <p className="mt-1 text-sm text-slate-500">Selecciona los documentos que deben estar presentes antes del envío.</p>
+              <h3 className="text-sm font-bold text-[var(--molsan-primary)]">1. Documentos necesarios</h3>
+              <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Selecciona los documentos que deben estar presentes antes del envío.</p>
             </div>
             <div className="space-y-3">
               {DOCUMENTOS_INICIALES.map((doc) => (
-                <label key={doc.id} className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 p-4 transition hover:border-indigo-200 hover:bg-indigo-50/30">
+                <label key={doc.id} className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[var(--molsan-border)] p-4 transition hover:border-[var(--molsan-border)] hover:bg-[var(--molsan-primary-soft)]">
                   <input type="checkbox" checked={Boolean(documentos[doc.id])} onChange={(e) => { setDocumentos((actual) => ({ ...actual, [doc.id]: e.target.checked })); setMensaje(""); }} className="mt-1 h-4 w-4 accent-indigo-600" />
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-semibold text-slate-800">{doc.nombre}</span>
-                    <span className="mt-1 block text-sm leading-5 text-slate-500">{doc.detalle}</span>
+                    <span className="block text-sm font-semibold text-[var(--molsan-primary)]">{doc.nombre}</span>
+                    <span className="mt-1 block text-sm leading-5 text-[var(--molsan-text-secondary)]">{doc.detalle}</span>
                   </span>
-                  <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${documentos[doc.id] ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{documentos[doc.id] ? "Requerido" : "Opcional"}</span>
+                  <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${documentos[doc.id] ? "bg-emerald-50 text-emerald-700" : "bg-[var(--molsan-table-head)] text-[var(--molsan-text-secondary)]"}`}>{documentos[doc.id] ? "Requerido" : "Opcional"}</span>
                 </label>
               ))}
             </div>
-            <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 text-sm leading-5 text-blue-900">
+            <div className="rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-primary-soft)] p-4 text-sm leading-5 text-[var(--molsan-primary)]">
               <strong>Condición de avance</strong>
               <p className="mt-1">El envío a notaría se registra con su fecha. Una vez registrada la fecha de envío, la actividad cambia automáticamente a Sede notarial, siempre que estén los tres documentos requeridos.</p>
             </div>
@@ -113,8 +113,8 @@ export default function ReglasActividadesExpediente() {
 
           <div className="space-y-5">
             <div>
-              <h3 className="text-sm font-bold text-slate-800">2. Validaciones del envío a notario</h3>
-              <p className="mt-1 text-sm text-slate-500">Condiciones que deben comprobarse al preparar el envío.</p>
+              <h3 className="text-sm font-bold text-[var(--molsan-primary)]">2. Validaciones del envío a notario</h3>
+              <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Condiciones que deben comprobarse al preparar el envío.</p>
             </div>
 
             <Opcion
@@ -123,14 +123,14 @@ export default function ReglasActividadesExpediente() {
               titulo="Validar fecha de envío frente al protocolo"
               descripcion="Si la escritura ya está firmada, la fecha de envío no puede ser posterior a la fecha del protocolo. Si todavía no está firmada, se permite introducir la fecha de envío."
             />
-            <div className="rounded-xl border border-slate-200 p-4">
-              <p className="text-sm font-semibold text-slate-800">Datos de facturación</p>
+            <div className="rounded-xl border border-[var(--molsan-border)] p-4">
+              <p className="text-sm font-semibold text-[var(--molsan-primary)]">Datos de facturación</p>
               <div className="mt-2 flex items-center gap-2">
                 <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800">No bloqueantes</span>
-                <span className="text-xs text-slate-500">Pendientes de cumplimentar</span>
+                <span className="text-xs text-[var(--molsan-text-secondary)]">Pendientes de cumplimentar</span>
               </div>
-              <p className="mt-2 text-sm leading-5 text-slate-500">No serán obligatorios para permitir el envío, pero el sistema debe advertir si faltan datos de facturación para que se completen.</p>
-              <label className="mt-3 flex items-center gap-2 text-sm text-slate-700">
+              <p className="mt-2 text-sm leading-5 text-[var(--molsan-text-secondary)]">No serán obligatorios para permitir el envío, pero el sistema debe advertir si faltan datos de facturación para que se completen.</p>
+              <label className="mt-3 flex items-center gap-2 text-sm text-[var(--molsan-text)]">
                 <input type="checkbox" checked={avisoFacturacion} onChange={(e) => { setAvisoFacturacion(e.target.checked); setMensaje(""); }} className="h-4 w-4 accent-indigo-600" />
                 Mostrar aviso si faltan datos de facturación
               </label>
@@ -150,23 +150,23 @@ export default function ReglasActividadesExpediente() {
           </div>
         </div>
 
-        <div className="border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:px-6">
+        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm font-semibold text-slate-800">3. Integración con ICAM I / ABSIS</p>
-              <p className="mt-1 max-w-3xl text-sm leading-5 text-slate-500">Al entrar en Sede notarial, la integración debe enviar a ABSIS los campos y repositorios digitales de la ventana modal «Datos de actividad». Esta integración queda identificada como trabajo técnico pendiente; todavía no se realiza ningún envío externo desde esta pantalla.</p>
+              <p className="text-sm font-semibold text-[var(--molsan-primary)]">3. Integración con ICAM I / ABSIS</p>
+              <p className="mt-1 max-w-3xl text-sm leading-5 text-[var(--molsan-text-secondary)]">Al entrar en Sede notarial, la integración debe enviar a ABSIS los campos y repositorios digitales de la ventana modal «Datos de actividad». Esta integración queda identificada como trabajo técnico pendiente; todavía no se realiza ningún envío externo desde esta pantalla.</p>
             </div>
             <span className="shrink-0 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">Pendiente de desarrollo API</span>
           </div>
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
+      <section className="overflow-hidden rounded-[22px] border border-[var(--molsan-border)] bg-white shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 02</p>
-            <h2 className="mt-1 text-lg font-bold text-slate-800">Sede notarial → Sede notarial con protocolo</h2>
-            <p className="mt-1 text-sm text-slate-500">La fecha de firma y el protocolo se reciben desde ApoderaGest cuando el apoderado informa de la firma de la escritura.</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--molsan-primary)]">Regla 02</p>
+            <h2 className="mt-1 text-lg font-bold text-[var(--molsan-primary)]">Sede notarial → Sede notarial con protocolo</h2>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">La fecha de firma y el protocolo se reciben desde ApoderaGest cuando el apoderado informa de la firma de la escritura.</p>
           </div>
           <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">Integración pendiente</span>
         </div>
@@ -176,29 +176,29 @@ export default function ReglasActividadesExpediente() {
           <Condicion titulo="Al entrar en Sede notarial" texto="Enviar a ABSIS los campos y repositorios digitales definidos en el modal Datos de actividad." />
           <Condicion titulo="Control de integridad" texto="Si falta la fecha de firma o el protocolo, el expediente permanece en Sede notarial y se muestra qué dato falta." />
         </div>
-        <div className="border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:px-6">
-          <p className="text-sm leading-5 text-slate-600">Pendiente del técnico: conectar el evento de ApoderaGest, validar los datos recibidos y desarrollar el envío de datos a ABSIS con trazabilidad de errores.</p>
+        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
+          <p className="text-sm leading-5 text-[var(--molsan-text-secondary)]">Pendiente del técnico: conectar el evento de ApoderaGest, validar los datos recibidos y desarrollar el envío de datos a ABSIS con trazabilidad de errores.</p>
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
+      <section className="overflow-hidden rounded-[22px] border border-[var(--molsan-border)] bg-white shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 03</p>
-            <h2 className="mt-1 text-lg font-bold text-slate-800">Sede notarial con protocolo → Liquidación impuestos</h2>
-            <p className="mt-1 text-sm text-slate-500">Validación de campos y documentos recibidos desde NotarGest / Visión Notarios.</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--molsan-primary)]">Regla 03</p>
+            <h2 className="mt-1 text-lg font-bold text-[var(--molsan-primary)]">Sede notarial con protocolo → Liquidación impuestos</h2>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Validación de campos y documentos recibidos desde NotarGest / Visión Notarios.</p>
           </div>
           <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">OCR/PDF pendiente</span>
         </div>
         <div className="space-y-5 p-5 sm:p-6">
           <div>
-            <h3 className="text-sm font-bold text-slate-800">Campos que deben estar informados</h3>
-            <p className="mt-1 text-sm text-slate-500">No se avanza de actividad hasta que todos los campos obligatorios estén detectados o validados.</p>
+            <h3 className="text-sm font-bold text-[var(--molsan-primary)]">Campos que deben estar informados</h3>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">No se avanza de actividad hasta que todos los campos obligatorios estén detectados o validados.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {["Notario", "NIF del notario", "Gestoría", "Fecha de presentación", "Entrada", "Asiento", "Diario"].map((campo) => (
-              <div key={campo} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm font-medium text-slate-700">
-                <span className="h-2 w-2 rounded-full bg-indigo-500" />{campo}
+              <div key={campo} className="flex items-center gap-2 rounded-xl border border-[var(--molsan-border)] p-3 text-sm font-medium text-[var(--molsan-text)]">
+                <span className="h-2 w-2 rounded-full bg-[var(--molsan-primary-soft)]0" />{campo}
               </div>
             ))}
           </div>
@@ -209,16 +209,16 @@ export default function ReglasActividadesExpediente() {
             <Condicion titulo="Si falta información" texto="Mantener Sede notarial con protocolo, mostrar los campos o documentos pendientes y no avanzar automáticamente." />
           </div>
         </div>
-        <div className="border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:px-6">
-          <p className="text-sm leading-5 text-slate-600">Pendiente del técnico: conexión con NotarGest / Visión Notarios, extracción PDF/OCR, validación de campos, detección de documentos y pruebas con expedientes reales.</p>
+        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
+          <p className="text-sm leading-5 text-[var(--molsan-text-secondary)]">Pendiente del técnico: conexión con NotarGest / Visión Notarios, extracción PDF/OCR, validación de campos, detección de documentos y pruebas con expedientes reales.</p>
         </div>
       </section>
 
       <section className="overflow-hidden rounded-[22px] border border-amber-200 bg-white shadow-sm">
         <div className="border-b border-amber-100 bg-amber-50/70 px-5 py-4 sm:px-6">
           <p className="text-xs font-bold uppercase tracking-wider text-amber-800">Actividad condicional · entre liquidación y tramitación</p>
-          <h2 className="mt-1 text-lg font-bold text-slate-800">Defectos registrales</h2>
-          <p className="mt-1 text-sm text-slate-600">No forma parte obligatoria del recorrido. Solo se activa si el Registro de la Propiedad notifica un defecto registral.</p>
+          <h2 className="mt-1 text-lg font-bold text-[var(--molsan-primary)]">Defectos registrales</h2>
+          <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">No forma parte obligatoria del recorrido. Solo se activa si el Registro de la Propiedad notifica un defecto registral.</p>
         </div>
         <div className="grid gap-4 p-5 sm:p-6 md:grid-cols-2">
           <Condicion titulo="Si no hay notificación" texto="El expediente continúa directamente desde Liquidación impuestos a Tramitación inscripción y puede llegar al cierre sin pasar por Defectos registrales." />
@@ -227,28 +227,28 @@ export default function ReglasActividadesExpediente() {
           <Condicion titulo="Control de cierre" texto="Antes de cerrar, comprobar que no quedan defectos registrales abiertos. El backend ya contiene una validación de bloqueo en una ruta de cierre documental; debe comprobarse que cubre todos los caminos de cierre." />
         </div>
         <div className="border-t border-amber-100 bg-amber-50/40 px-5 py-4 sm:px-6">
-          <p className="text-sm leading-5 text-slate-600">Pendiente de revisión: comprobar activación por notificación real, alta/edición, subsanación, historial y bloqueo de cierre con defectos abiertos.</p>
+          <p className="text-sm leading-5 text-[var(--molsan-text-secondary)]">Pendiente de revisión: comprobar activación por notificación real, alta/edición, subsanación, historial y bloqueo de cierre con defectos abiertos.</p>
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
+      <section className="overflow-hidden rounded-[22px] border border-[var(--molsan-border)] bg-white shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 04</p>
-            <h2 className="mt-1 text-lg font-bold text-slate-800">Liquidación impuestos → Tramitación inscripción</h2>
-            <p className="mt-1 text-sm text-slate-500">La liquidación tributaria debe quedar documentada y con todos los datos de actividad cumplimentados antes de avanzar.</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--molsan-primary)]">Regla 04</p>
+            <h2 className="mt-1 text-lg font-bold text-[var(--molsan-primary)]">Liquidación impuestos → Tramitación inscripción</h2>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">La liquidación tributaria debe quedar documentada y con todos los datos de actividad cumplimentados antes de avanzar.</p>
           </div>
           <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">Extracción PDF pendiente</span>
         </div>
         <div className="space-y-5 p-5 sm:p-6">
           <div>
-            <h3 className="text-sm font-bold text-slate-800">Campos obligatorios en Datos de actividad</h3>
-            <p className="mt-1 text-sm text-slate-500">Todos deben estar cumplimentados y validados para cerrar Liquidación impuestos.</p>
+            <h3 className="text-sm font-bold text-[var(--molsan-primary)]">Campos obligatorios en Datos de actividad</h3>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Todos deben estar cumplimentados y validados para cerrar Liquidación impuestos.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {["Fecha de presentación en oficina liquidadora", "Fecha de liquidación tributaria", "Base imponible", "Oficina liquidadora (desplegable existente)", "Tributo exento (desplegable existente)", "Documento AJD/ITP"].map((campo) => (
-              <div key={campo} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm font-medium text-slate-700">
-                <span className="h-2 w-2 rounded-full bg-indigo-500" />{campo}
+              <div key={campo} className="flex items-center gap-2 rounded-xl border border-[var(--molsan-border)] p-3 text-sm font-medium text-[var(--molsan-text)]">
+                <span className="h-2 w-2 rounded-full bg-[var(--molsan-primary-soft)]0" />{campo}
               </div>
             ))}
           </div>
@@ -263,29 +263,29 @@ export default function ReglasActividadesExpediente() {
             <p className="mt-1">La regla debe impedir fechas incoherentes. En tu mensaje hay una contradicción: indicas que la fecha de presentación en Liquidación impuestos nunca debe ser igual o anterior a la fecha de liquidación tributaria, pero después indicas que la fecha de liquidación tributaria nunca puede ser anterior a la fecha de presentación. No se activará una validación automática de esta pareja de fechas hasta confirmar cuál de las dos condiciones es la correcta.</p>
           </div>
         </div>
-        <div className="border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:px-6">
-          <p className="text-sm leading-5 text-slate-600">Pendiente del técnico: conexión con repositorios, lectura PDF/OCR, revisión de valores extraídos, detección de campos vacíos y pruebas de la transición a Tramitación inscripción.</p>
+        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
+          <p className="text-sm leading-5 text-[var(--molsan-text-secondary)]">Pendiente del técnico: conexión con repositorios, lectura PDF/OCR, revisión de valores extraídos, detección de campos vacíos y pruebas de la transición a Tramitación inscripción.</p>
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
+      <section className="overflow-hidden rounded-[22px] border border-[var(--molsan-border)] bg-white shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Regla 05</p>
-            <h2 className="mt-1 text-lg font-bold text-slate-800">Tramitación inscripción → Control de calidad → Cierre de expediente</h2>
-            <p className="mt-1 text-sm text-slate-500">Control de calidad se consulta antes del cierre; es una comprobación informativa del estado real y no una actividad obligatoria por la que deba pasar todo expediente.</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--molsan-primary)]">Regla 05</p>
+            <h2 className="mt-1 text-lg font-bold text-[var(--molsan-primary)]">Tramitación inscripción → Control de calidad → Cierre de expediente</h2>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Control de calidad se consulta antes del cierre; es una comprobación informativa del estado real y no una actividad obligatoria por la que deba pasar todo expediente.</p>
           </div>
           <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">PDF/OCR y transición pendientes</span>
         </div>
         <div className="space-y-5 p-5 sm:p-6">
           <div>
-            <h3 className="text-sm font-bold text-slate-800">Campos y condiciones de la actividad</h3>
-            <p className="mt-1 text-sm text-slate-500">La fecha de presentación se hereda de la actividad anterior y la fecha de vencimiento se calcula automáticamente según la regla de vencimiento configurada para la actividad.</p>
+            <h3 className="text-sm font-bold text-[var(--molsan-primary)]">Campos y condiciones de la actividad</h3>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">La fecha de presentación se hereda de la actividad anterior y la fecha de vencimiento se calcula automáticamente según la regla de vencimiento configurada para la actividad.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {["Fecha de presentación (heredada de Liquidación impuestos)", "Fecha de vencimiento (automática)", "Fecha de inscripción (manual o extraída del PDF)", "Hoja de inscripción en Carpeta digital"].map((campo) => (
-              <div key={campo} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm font-medium text-slate-700">
-                <span className="h-2 w-2 rounded-full bg-indigo-500" />{campo}
+              <div key={campo} className="flex items-center gap-2 rounded-xl border border-[var(--molsan-border)] p-3 text-sm font-medium text-[var(--molsan-text)]">
+                <span className="h-2 w-2 rounded-full bg-[var(--molsan-primary-soft)]0" />{campo}
               </div>
             ))}
           </div>
@@ -296,16 +296,16 @@ export default function ReglasActividadesExpediente() {
             <Condicion titulo="Fecha de vencimiento" texto="Se calcula automáticamente a partir de la fecha de presentación heredada. El cálculo debe reutilizar la regla vigente de vencimiento de Tramitación inscripción y verificarse en las pruebas; no duplicar ni inventar una fórmula distinta." />
           </div>
         </div>
-        <div className="border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:px-6">
-          <p className="text-sm leading-5 text-slate-600">Anotación para el técnico: preparar la integración/API con el Colegio de Registradores para la comunicación/consulta registral. Queda pendiente de especificación técnica, credenciales y documentación oficial; no se ejecuta ninguna llamada externa desde esta pantalla.</p>
+        <div className="border-t border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] px-5 py-4 sm:px-6">
+          <p className="text-sm leading-5 text-[var(--molsan-text-secondary)]">Anotación para el técnico: preparar la integración/API con el Colegio de Registradores para la comunicación/consulta registral. Queda pendiente de especificación técnica, credenciales y documentación oficial; no se ejecuta ninguna llamada externa desde esta pantalla.</p>
         </div>
       </section>
 
       <section className="overflow-hidden rounded-[22px] border border-amber-200 bg-white shadow-sm">
         <div className="border-b border-amber-100 bg-amber-50/70 px-5 py-4 sm:px-6">
           <p className="text-xs font-bold uppercase tracking-wider text-amber-800">Pendientes de revisión técnica</p>
-          <h2 className="mt-1 text-lg font-bold text-slate-800">Cierre de expediente, Gestión económica y Efectos</h2>
-          <p className="mt-1 text-sm text-slate-600">Estas reglas quedan documentadas para el técnico y no deben darse por implementadas hasta revisar el comportamiento real.</p>
+          <h2 className="mt-1 text-lg font-bold text-[var(--molsan-primary)]">Cierre de expediente, Gestión económica y Efectos</h2>
+          <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Estas reglas quedan documentadas para el técnico y no deben darse por implementadas hasta revisar el comportamiento real.</p>
         </div>
         <div className="grid gap-4 p-5 sm:p-6 md:grid-cols-2">
           <Condicion titulo="Control de calidad antes del cierre" texto="Revisar la pestaña y sus reglas existentes: cambios de estado, campos obligatorios cumplimentados, documentos adjuntos y consistencia global del expediente. Debe ofrecer una fotografía fiable del expediente antes de pulsar «Liquidar». No crear una checklist paralela: reutilizar la comprobación existente que ya se muestra en el modal Liquidar expediente. La revisión visual no convierte por sí sola esta actividad en un paso obligatorio del flujo." />
@@ -319,8 +319,8 @@ export default function ReglasActividadesExpediente() {
       {mensaje && <div role="status" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-5 text-amber-900">{mensaje}</div>}
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="max-w-2xl text-xs leading-5 text-slate-500">La configuración se guarda en el ERP y se recupera al volver a entrar. Guardarla no activa por sí sola automatismos ni modifica expedientes; la aplicación efectiva de cada regla se valida por separado.</p>
-        <button type="button" onClick={guardarVista} disabled={cargando || guardando} className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60">{cargando ? "Cargando..." : guardando ? "Guardando..." : "Guardar reglas"}</button>
+        <p className="max-w-2xl text-xs leading-5 text-[var(--molsan-text-secondary)]">La configuración se guarda en el ERP y se recupera al volver a entrar. Guardarla no activa por sí sola automatismos ni modifica expedientes; la aplicación efectiva de cada regla se valida por separado.</p>
+        <button type="button" onClick={guardarVista} disabled={cargando || guardando} className="inline-flex items-center justify-center rounded-xl bg-[var(--molsan-primary)] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[var(--molsan-primary)] disabled:cursor-not-allowed disabled:opacity-60">{cargando ? "Cargando..." : guardando ? "Guardando..." : "Guardar reglas"}</button>
       </div>
     </main>
   );
@@ -328,21 +328,21 @@ export default function ReglasActividadesExpediente() {
 
 function Condicion({ titulo, texto }) {
   return (
-    <div className="rounded-2xl border border-slate-200 p-4">
-      <p className="text-sm font-semibold text-slate-800">{titulo}</p>
-      <p className="mt-1 text-sm leading-5 text-slate-500">{texto}</p>
+    <div className="rounded-2xl border border-[var(--molsan-border)] p-4">
+      <p className="text-sm font-semibold text-[var(--molsan-primary)]">{titulo}</p>
+      <p className="mt-1 text-sm leading-5 text-[var(--molsan-text-secondary)]">{texto}</p>
     </div>
   );
 }
 
 function Resumen({ icono, titulo, valor }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-2xl border border-[var(--molsan-border)] bg-white p-4 shadow-sm">
       <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 text-xl"><MolsanIcon name={icono} size={20} tone="ocean" /></span>
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--molsan-border-light)] bg-[var(--molsan-surface-soft)] text-xl"><MolsanIcon name={icono} size={20} tone="ocean" /></span>
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-slate-500">{titulo}</p>
-          <p className="mt-1 text-base font-bold text-slate-800">{valor}</p>
+          <p className="text-xs font-semibold text-[var(--molsan-text-secondary)]">{titulo}</p>
+          <p className="mt-1 text-base font-bold text-[var(--molsan-primary)]">{valor}</p>
         </div>
       </div>
     </div>
@@ -351,11 +351,11 @@ function Resumen({ icono, titulo, valor }) {
 
 function Opcion({ checked, onChange, titulo, descripcion }) {
   return (
-    <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 p-4 transition hover:border-indigo-200 hover:bg-indigo-50/30">
+    <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[var(--molsan-border)] p-4 transition hover:border-[var(--molsan-border)] hover:bg-[var(--molsan-primary-soft)]">
       <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-1 h-4 w-4 accent-indigo-600" />
       <span>
-        <span className="block text-sm font-semibold text-slate-800">{titulo}</span>
-        <span className="mt-1 block text-sm leading-5 text-slate-500">{descripcion}</span>
+        <span className="block text-sm font-semibold text-[var(--molsan-primary)]">{titulo}</span>
+        <span className="mt-1 block text-sm leading-5 text-[var(--molsan-text-secondary)]">{descripcion}</span>
       </span>
     </label>
   );

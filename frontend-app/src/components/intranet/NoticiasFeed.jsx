@@ -29,7 +29,7 @@ export default function NoticiasFeed() {
   );
 
   return (
-    <div className="space-y-4">
+    <div className="intranet-noticias-feed-premium space-y-4">
 
       {noticias.length === 0 ? (
 

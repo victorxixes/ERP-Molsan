@@ -964,7 +964,7 @@ export default function EmpleadoPerfil({
           text-sm
         ">
 
-          ✓ {mensaje}
+          <MolsanIcon name="check" size={13} bare /> {mensaje}
 
         </div>
 

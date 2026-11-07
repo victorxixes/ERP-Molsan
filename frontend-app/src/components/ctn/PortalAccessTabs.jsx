@@ -115,7 +115,7 @@ export default function PortalAccessTabs({ notariaId }) {
   }
 
   return (
-    <section className="ctn-modal-seccion ctn-portal-access-panel">
+    <section className="portal-access-tabs-premium ctn-modal-seccion ctn-portal-access-panel">
       <div className="ctn-modal-seccion-titulo">
         <h3>Accesos a portales externos</h3>
         <span>Credenciales, permisos e historial</span>

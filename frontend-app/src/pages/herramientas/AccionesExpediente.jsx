@@ -2018,7 +2018,7 @@ export default function AccionesExpediente() {
                             "
                             title="Eliminar"
                           >
-                            ×
+                            <MolsanIcon name="x" size={18} bare />
                           </button>
 
                         </div>
@@ -2226,7 +2226,7 @@ export default function AccionesExpediente() {
             role="dialog"
             aria-modal="true"
             aria-label="Formulario de acción de expediente"
-            className="
+            className="molsan-modal-panel 
               w-full
               max-w-3xl
               rounded-2xl
@@ -2291,7 +2291,7 @@ export default function AccionesExpediente() {
                   text-[var(--erp-text-soft)]
                 "
               >
-                ×
+                <MolsanIcon name="x" size={18} bare />
               </button>
 
             </div>
@@ -2562,7 +2562,7 @@ export default function AccionesExpediente() {
             role="dialog"
             aria-modal="true"
             aria-label="Importar acciones de expediente"
-            className="
+            className="molsan-modal-panel 
               w-full
               max-w-xl
               rounded-2xl
@@ -2625,7 +2625,7 @@ export default function AccionesExpediente() {
                   border-[var(--erp-border)]
                 "
               >
-                ×
+                <MolsanIcon name="x" size={18} bare />
               </button>
 
             </div>

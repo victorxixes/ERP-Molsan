@@ -789,23 +789,23 @@ function RepositorioDocumentosInline({ expedienteId, categorias = [], titulo = "
           normalizarCategoriaRepositorio(doc.categoria || doc.categoria_nombre || doc.tipo_documento) === categoriaNormalizada
         );
         return (
-          <div key={categoria} className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700">
+          <div key={categoria} className="flex items-start justify-between gap-3 rounded-lg border border-[var(--molsan-border)] bg-white p-3 text-sm text-[var(--molsan-text)]">
             <div className="min-w-0 flex-1">
               <span className="block font-semibold">{categoria}</span>
-              {cargando ? <span className="mt-1 block text-[11px] text-slate-500">Cargando documentos…</span> :
+              {cargando ? <span className="mt-1 block text-[11px] text-[var(--molsan-text-secondary)]">Cargando documentos…</span> :
                 documentosCategoria.length ? (
                   <div className="mt-1 space-y-1">
                     {documentosCategoria.map((doc) => (
                       <div key={doc.id} className="flex flex-wrap items-center gap-2">
-                        <span className="min-w-0 flex-1 break-words text-[11px] font-semibold text-emerald-700">✓ {doc.nombre_original || doc.nombre || "Documento guardado"}</span>
-                        <button type="button" onClick={() => abrirDocumento(doc)} className="rounded-md px-2 py-1 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver</button>
+                        <span className="min-w-0 flex-1 break-words text-[11px] font-semibold text-emerald-700"><MolsanIcon name="check" size={13} bare /> {doc.nombre_original || doc.nombre || "Documento guardado"}</span>
+                        <button type="button" onClick={() => abrirDocumento(doc)} className="rounded-md px-2 py-1 text-xs font-bold text-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]">Ver</button>
                       </div>
                     ))}
-                    <p className="text-[10px] text-slate-500">{documentosCategoria.length} documento(s) encontrado(s) en la carpeta digital</p>
+                    <p className="text-[10px] text-[var(--molsan-text-secondary)]">{documentosCategoria.length} documento(s) encontrado(s) en la carpeta digital</p>
                   </div>
                 ) : <span className="mt-1 block text-[11px] text-amber-700">No hay ningún documento guardado en esta categoría.</span>}
             </div>
-            <button type="button" onClick={onAbrirRepositorio} className="shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100">Abrir repositorio</button>
+            <button type="button" onClick={onAbrirRepositorio} className="shrink-0 rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-xs font-bold text-[var(--molsan-text)] hover:bg-[var(--molsan-surface-soft)]">Abrir repositorio</button>
           </div>
         );
       })}
@@ -828,13 +828,13 @@ function EstadoBadge({
           items-center
           rounded-full
           border
-          border-slate-200
-          bg-slate-50
+          border-[var(--molsan-border)]
+          bg-[var(--molsan-surface-soft)]
           px-2.5
           py-1
           text-[11px]
           font-semibold
-          text-slate-400
+          text-[var(--molsan-text-secondary)]
         "
       >
         —
@@ -859,10 +859,10 @@ function EstadoBadge({
     normalizado.includes("final");
 
   let clases =
-    "border-blue-200 bg-blue-50 text-blue-700";
+    "border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] text-[var(--molsan-primary)]";
 
   let punto =
-    "bg-blue-500";
+    "bg-[var(--molsan-primary)]";
 
   if (positivo) {
     clases =
@@ -874,10 +874,10 @@ function EstadoBadge({
 
   if (cerrado) {
     clases =
-      "border-slate-200 bg-slate-100 text-slate-600";
+      "border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] text-[var(--molsan-text-secondary)]";
 
     punto =
-      "bg-slate-500";
+      "bg-[var(--molsan-text-secondary)]";
   }
 
   if (negativo) {
@@ -982,7 +982,7 @@ function Seccion({
           items-center
           gap-3
           border-b
-          border-slate-100
+          border-[var(--molsan-border)]
           ${compacto ? "px-2.5 py-2" : "px-5 py-4"}
         `}
       >
@@ -996,9 +996,9 @@ function Seccion({
             justify-center
             rounded-xl
             border
-            border-blue-100
-            bg-blue-50
-            text-blue-600
+            border-[var(--molsan-border)]
+            bg-[var(--molsan-surface-soft)]
+            text-[var(--molsan-primary)]
           "
         >
           <IconoSeccion
@@ -1012,7 +1012,7 @@ function Seccion({
               truncate
               text-sm
               font-bold
-              text-slate-800
+              text-[var(--molsan-text)]
             "
           >
             {titulo}
@@ -1024,7 +1024,7 @@ function Seccion({
                 mt-0.5
                 truncate
                 text-[11px]
-                text-slate-400
+                text-[var(--molsan-text-secondary)]
               "
             >
               {subtitulo}
@@ -1046,18 +1046,18 @@ function Seccion({
               justify-center
               rounded-lg
               border
-              border-slate-200
+              border-[var(--molsan-border)]
               bg-white
-              text-slate-500
+              text-[var(--molsan-text-secondary)]
               transition
-              hover:bg-slate-50
-              hover:text-blue-600
+              hover:bg-[var(--molsan-surface-soft)]
+              hover:text-[var(--molsan-primary)]
             "
             aria-label={abierta ? `Ocultar ${titulo}` : `Mostrar ${titulo}`}
             title={abierta ? "Ocultar" : "Mostrar"}
           >
             <span className="text-xs font-bold">
-              {abierta ? "⌃" : "⌄"}
+              {abierta ? <MolsanIcon name="arrowUp" size={13} bare /> : <MolsanIcon name="arrowDown" size={13} bare />}
             </span>
           </button>
         )}
@@ -1108,8 +1108,8 @@ function Dato({
         ${compacto ? "px-1.5 py-1.5 rounded-lg" : "px-2 py-2 rounded-xl"}
         ${
           destaque
-            ? "border-blue-100 bg-blue-50/60"
-            : "border-slate-100 bg-white"
+            ? "border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)]"
+            : "border-[var(--molsan-border)] bg-white"
         }
       `}
     >
@@ -1121,7 +1121,7 @@ function Dato({
           font-bold
           uppercase
           tracking-[0.08em]
-          text-slate-400
+          text-[var(--molsan-text-secondary)]
         "
       >
         {campo}
@@ -1138,8 +1138,8 @@ function Dato({
             font-medium
             ${
               destaque
-                ? "text-blue-700"
-                : "text-slate-700"
+                ? "text-[var(--molsan-primary)]"
+                : "text-[var(--molsan-text)]"
             }
             ${
               multilinea
@@ -1236,7 +1236,7 @@ function Modal({
               className="
                 text-lg
                 font-bold
-                text-slate-800
+                text-[var(--molsan-text)]
               "
             >
               {titulo}
@@ -1247,7 +1247,7 @@ function Modal({
                 className="
                   mt-1
                   text-xs
-                  text-slate-400
+                  text-[var(--molsan-text-secondary)]
                 "
               >
                 {subtitulo}
@@ -1267,12 +1267,12 @@ function Modal({
               justify-center
               rounded-xl
               border
-              border-slate-200
+              border-[var(--molsan-border)]
               bg-white
-              text-slate-500
+              text-[var(--molsan-text-secondary)]
               transition
-              hover:bg-slate-50
-              hover:text-slate-800
+              hover:bg-[var(--molsan-surface-soft)]
+              hover:text-[var(--molsan-text)]
             "
           >
             <MolsanIcon name="x" size={16} tone="ocean" bare />
@@ -1299,8 +1299,8 @@ function Modal({
               justify-end
               gap-3
               border-t
-              border-slate-200
-              bg-slate-50
+              border-[var(--molsan-border)]
+              bg-[var(--molsan-surface-soft)]
               px-6
               py-4
             "
@@ -1327,10 +1327,10 @@ function Boton({
 }) {
   const clases = {
     primary:
-      "border-blue-600 bg-blue-600 text-white hover:bg-blue-700",
+      "border-[var(--molsan-primary)] bg-[var(--molsan-primary)] text-white hover:bg-[var(--molsan-primary)]",
 
     secondary:
-      "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+      "border-[var(--molsan-border)] bg-white text-[var(--molsan-text)] hover:bg-[var(--molsan-surface-soft)]",
 
     danger:
       "border-red-200 bg-red-50 text-red-700 hover:bg-red-100",
@@ -4827,7 +4827,7 @@ async function descargarPDFCalificacion(defecto) {
             className="
               animate-pulse
               text-sm
-              text-slate-400
+              text-[var(--molsan-text-secondary)]
             "
           >
             Cargando ficha del expediente…
@@ -4879,7 +4879,7 @@ async function descargarPDFCalificacion(defecto) {
               mt-4
               inline-flex
               rounded-xl
-              bg-blue-600
+              bg-[var(--molsan-primary)]
               px-4
               py-2.5
               text-xs
@@ -4887,7 +4887,7 @@ async function descargarPDFCalificacion(defecto) {
               text-white
             "
           >
-            ← Expedientes
+            <MolsanIcon name="arrowLeft" size={14} bare /> Expedientes
           </Link>
         </div>
       </div>
@@ -5004,22 +5004,22 @@ const cuantiaFincasParaEnvio =
   }
 
   const renderChecklistCalidad = ({ compacto = false, onNavigate } = {}) => (
-                    <section className="rounded-2xl border border-slate-200 bg-white p-4">
+                    <section className="rounded-2xl border border-[var(--molsan-border)] bg-white p-4">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
-                          <h3 className="text-sm font-extrabold text-slate-800">Checklist de calidad del expediente</h3>
-                          <p className="mt-1 text-xs text-slate-500">Cada visto se obtiene de los datos guardados y de los documentos encontrados en la carpeta digital. Los requisitos pendientes se muestran para poder corregirlos.</p>
+                          <h3 className="text-sm font-extrabold text-[var(--molsan-text)]">Checklist de calidad del expediente</h3>
+                          <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Cada visto se obtiene de los datos guardados y de los documentos encontrados en la carpeta digital. Los requisitos pendientes se muestran para poder corregirlos.</p>
                         </div>
                         <button
                           type="button"
                           onClick={cargarDocumentosCierre}
                           disabled={cargandoDocumentosCierre}
-                          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                          className="rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-xs font-bold text-[var(--molsan-text)] hover:bg-[var(--molsan-surface-soft)] disabled:opacity-50"
                         >
-                          {cargandoDocumentosCierre ? "Comprobando…" : "↻ Comprobar de nuevo"}
+                          {cargandoDocumentosCierre ? "Comprobando…" : <><MolsanIcon name="refresh" size={14} bare /> Comprobar de nuevo</>}
                         </button>
                       </div>
-                      {cargandoDocumentosCierre && <p className="mt-3 text-xs text-slate-500">Actualizando datos documentales…</p>}
+                      {cargandoDocumentosCierre && <p className="mt-3 text-xs text-[var(--molsan-text-secondary)]">Actualizando datos documentales…</p>}
                       {errorDocumentosCierre && <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorDocumentosCierre}</p>}
                       {(() => {
                         const valor = (...claves) => {
@@ -5214,22 +5214,22 @@ const cuantiaFincasParaEnvio =
                                     key={fase.key}
                                     type="button"
                                     onClick={() => onNavigate?.(fase.key)}
-                                    className={`group w-full min-w-0 rounded-xl border p-3 text-left transition hover:-translate-y-px hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 ${completa ? "border-emerald-200 bg-emerald-50/50 hover:border-emerald-300" : actual ? "border-blue-300 bg-blue-50/70 hover:border-blue-400" : "border-slate-200 bg-white hover:border-indigo-200"}`}
+                                    className={`group w-full min-w-0 rounded-xl border p-3 text-left transition hover:-translate-y-px hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--molsan-primary)]/10 ${completa ? "border-emerald-200 bg-emerald-50/50 hover:border-emerald-300" : actual ? "border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] hover:border-[var(--molsan-primary)]" : "border-[var(--molsan-border)] bg-white hover:border-[var(--molsan-primary)]"}`}
                                     aria-label={"Ir a " + fase.label + ". " + (completa ? "Control superado" : pendientes.length + " tareas pendientes")}
                                   >
                                     <span className="flex items-center gap-3">
-                                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg ${completa ? "bg-emerald-100" : actual ? "bg-blue-100" : "bg-slate-100"}`}>{completa ? "✓" : <MolsanIcon name={fase.icono} size={20} tone="ocean" bare />}</span>
+                                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg ${completa ? "bg-emerald-100" : actual ? "bg-[var(--molsan-surface-soft)]" : "bg-[var(--molsan-surface-soft)]"}`}>{completa ? <MolsanIcon name="check" size={18} tone="emerald" bare /> : <MolsanIcon name={fase.icono} size={20} tone="ocean" bare />}</span>
                                       <span className="min-w-0 flex-1">
-                                        <span className="block text-sm font-extrabold text-slate-800"><MolsanIcon name={fase.icono} size={16} tone="ocean" bare /> {fase.label}</span>
-                                        <span className={`mt-1 block text-xs font-semibold ${completa ? "text-emerald-700" : actual ? "text-blue-700" : "text-amber-700"}`}>
+                                        <span className="block text-sm font-extrabold text-[var(--molsan-text)]"><MolsanIcon name={fase.icono} size={16} tone="ocean" bare /> {fase.label}</span>
+                                        <span className={`mt-1 block text-xs font-semibold ${completa ? "text-emerald-700" : actual ? "text-[var(--molsan-primary)]" : "text-amber-700"}`}>
                                           {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
                                         </span>
                                       </span>
                                       <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-extrabold ${completa ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"}`}>
-                                        {completa ? "✓ Correcto" : pendientes.length + " pendiente(s)"}
+                                        {completa ? <><MolsanIcon name="check" size={12} bare /> Correcto</> : pendientes.length + " pendiente(s)"}
                                       </span>
                                     </span>
-                                    <span className="mt-2 block text-[10px] font-semibold text-slate-400 group-hover:text-indigo-600">Abrir actividad →</span>
+                                    <span className="mt-2 block text-[10px] font-semibold text-[var(--molsan-text-secondary)] group-hover:text-[var(--molsan-primary)]">Abrir actividad <MolsanIcon name="arrowRight" size={12} bare /></span>
                                   </button>
                                 );
                               })}
@@ -5242,15 +5242,15 @@ const cuantiaFincasParaEnvio =
                         const porcentaje = totalChecks ? Math.round((checksOk / totalChecks) * 100) : 0;
                         return (
                           <>
-                            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                            <div className="mt-4 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3">
                               <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                                <span className="text-xs font-bold text-slate-700">Calidad documental y de datos</span>
-                                <span className="text-xs font-extrabold tabular-nums text-slate-700">{completadas}/7 fases completas · {checksOk}/{totalChecks} comprobaciones</span>
+                                <span className="text-xs font-bold text-[var(--molsan-text)]">Calidad documental y de datos</span>
+                                <span className="text-xs font-extrabold tabular-nums text-[var(--molsan-text)]">{completadas}/7 fases completas · {checksOk}/{totalChecks} comprobaciones</span>
                               </div>
-                              <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+                              <div className="h-2 overflow-hidden rounded-full bg-[var(--molsan-surface-soft)]">
                                 <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${porcentaje}%` }} />
                               </div>
-                              <p className="mt-2 text-[10px] text-slate-500">Una fase solo se marca como completa cuando todos sus requisitos configurados están cumplidos. La falta de datos no se considera correcta por el mero hecho de haber avanzado de actividad.</p>
+                              <p className="mt-2 text-[10px] text-[var(--molsan-text-secondary)]">Una fase solo se marca como completa cuando todos sus requisitos configurados están cumplidos. La falta de datos no se considera correcta por el mero hecho de haber avanzado de actividad.</p>
                             </div>
                             <div className="mt-4 grid grid-cols-1 items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
                               {fases.map((fase, indice) => {
@@ -5258,31 +5258,31 @@ const cuantiaFincasParaEnvio =
                                 const completa = pendientes.length === 0;
                                 const actual = fase.key === actividadActual;
                                 return (
-                                  <article key={fase.key} className={`min-w-0 rounded-xl border p-3 ${completa ? "border-emerald-200 bg-emerald-50/40" : actual ? "border-blue-200 bg-blue-50/40" : "border-slate-200 bg-white"}`}>
+                                  <article key={fase.key} className={`min-w-0 rounded-xl border p-3 ${completa ? "border-emerald-200 bg-emerald-50/40" : actual ? "border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)]" : "border-[var(--molsan-border)] bg-white"}`}>
                                     <div className="flex items-center gap-3">
-                                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-extrabold ${completa ? "border-emerald-500 bg-emerald-500 text-white" : actual ? "border-blue-500 bg-white text-blue-700" : "border-slate-300 bg-white text-slate-400"}`}>
-                                        {completa ? "✓" : actual ? "●" : indice + 1}
+                                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-extrabold ${completa ? "border-emerald-500 bg-emerald-500 text-white" : actual ? "border-[var(--molsan-primary)] bg-white text-[var(--molsan-primary)]" : "border-[var(--molsan-border-strong)] bg-white text-[var(--molsan-text-secondary)]"}`}>
+                                        {completa ? <MolsanIcon name="check" size={15} bare /> : actual ? <MolsanIcon name="activity" size={14} bare /> : indice + 1}
                                       </div>
                                       <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-bold text-slate-800"><MolsanIcon name={fase.icono} size={16} tone="ocean" bare /> {fase.label}</p>
-                                        <p className={`mt-0.5 text-[10px] font-semibold ${completa ? "text-emerald-700" : actual ? "text-blue-700" : "text-amber-700"}`}>
+                                        <p className="text-xs font-bold text-[var(--molsan-text)]"><MolsanIcon name={fase.icono} size={16} tone="ocean" bare /> {fase.label}</p>
+                                        <p className={`mt-0.5 text-[10px] font-semibold ${completa ? "text-emerald-700" : actual ? "text-[var(--molsan-primary)]" : "text-amber-700"}`}>
                                           {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
                                         </p>
                                       </div>
                                       <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${completa ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"}`}>
-                                        {completa ? "✓ Correcto" : `${pendientes.length} pendiente(s)`}
+                                        {completa ? <><MolsanIcon name="check" size={12} bare /> Correcto</> : `${pendientes.length} pendiente(s)`}
                                       </span>
                                       <button
                                         type="button"
                                         aria-expanded={!fasesCalidadColapsadas[fase.key]}
                                         onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, [fase.key]: !actuales[fase.key] }))}
-                                        className="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50"
+                                        className="shrink-0 rounded-md border border-[var(--molsan-border)] bg-white px-2 py-1 text-[10px] font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]"
                                       >
-                                        {fasesCalidadColapsadas[fase.key] ? "＋ Mostrar" : "− Ocultar"}
+                                        {fasesCalidadColapsadas[fase.key] ? <><MolsanIcon name="plus" size={12} bare /> Mostrar</> : <><MolsanIcon name="minus" size={12} bare /> Ocultar</>}
                                       </button>
                                     </div>
                                     {!fasesCalidadColapsadas[fase.key] && (
-                                    <ul className="ml-11 mt-2 space-y-1 border-t border-slate-200/70 pt-2">
+                                    <ul className="ml-11 mt-2 space-y-1 border-t border-[var(--molsan-border)] pt-2">
                                       {fase.checks.map((check) => (
                                         <li key={check.etiqueta} className="flex items-start gap-2 text-[11px]">
                                           <span
@@ -5290,7 +5290,7 @@ const cuantiaFincasParaEnvio =
                                             title={check.ok ? "Correcto" : "Pendiente"}
                                             className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-black ${check.ok ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
                                           >
-                                            {check.ok ? "✓" : "✕"}
+                                            {check.ok ? <MolsanIcon name="check" size={12} bare /> : <MolsanIcon name="x" size={12} bare />}
                                           </span>
                                           <span className={check.ok ? "text-emerald-800" : "text-red-800"}>
                                             <strong>{check.etiqueta}:</strong> {check.ok ? "Correcto" : check.detalle}
@@ -5306,17 +5306,17 @@ const cuantiaFincasParaEnvio =
                                 <div className="flex items-center gap-2">
                                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-violet-300 bg-white"><MolsanIcon name="euro" size={18} tone="ocean" bare /></div>
                                   <div className="min-w-0 flex-1">
-                                    <p className="text-xs font-bold text-slate-800">PPAD</p>
+                                    <p className="text-xs font-bold text-[var(--molsan-text)]">PPAD</p>
                                     <p className="mt-0.5 text-[10px] font-semibold text-violet-700">{cargandoPpad ? "Cargando registros…" : `${ppadItems.length} registro(s) · ${ppadItems.filter((item) => !item.compensado).length} pendiente(s)`}</p>
                                   </div>
-                                  <button type="button" aria-expanded={!fasesCalidadColapsadas.ppad} onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, ppad: !actuales.ppad }))} className="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50">{fasesCalidadColapsadas.ppad ? "＋ Mostrar" : "− Ocultar"}</button>
+                                  <button type="button" aria-expanded={!fasesCalidadColapsadas.ppad} onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, ppad: !actuales.ppad }))} className="shrink-0 rounded-md border border-[var(--molsan-border)] bg-white px-2 py-1 text-[10px] font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]">{fasesCalidadColapsadas.ppad ? <><MolsanIcon name="plus" size={12} bare /> Mostrar</> : <><MolsanIcon name="minus" size={12} bare /> Ocultar</>}</button>
                                 </div>
                                 {!fasesCalidadColapsadas.ppad && <div className="mt-2 space-y-1.5 border-t border-violet-200/70 pt-2">
                                   {errorPpad && <p role="alert" className="text-[10px] text-red-700">{errorPpad}</p>}
-                                  {!cargandoPpad && !errorPpad && ppadItems.length === 0 && <p className="text-[11px] text-slate-500">No hay registros PPAD en este expediente.</p>}
+                                  {!cargandoPpad && !errorPpad && ppadItems.length === 0 && <p className="text-[11px] text-[var(--molsan-text-secondary)]">No hay registros PPAD en este expediente.</p>}
                                   {ppadItems.map((item) => <div key={item.id} className="flex items-start justify-between gap-2 text-[11px]">
-                                    <span className="min-w-0 text-slate-700"><strong>{item.concepto || "PPAD"}</strong><span className="block text-[10px] text-slate-500">{item.compensado ? "✓ Compensado" : "◷ Pendiente"}{item.imputable_a || item.imputableA ? ` · ${item.imputable_a || item.imputableA}` : ""}</span></span>
-                                    <span className="shrink-0 font-bold tabular-nums text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
+                                    <span className="min-w-0 text-[var(--molsan-text)]"><strong>{item.concepto || "PPAD"}</strong><span className="block text-[10px] text-[var(--molsan-text-secondary)]">{item.compensado ? <><MolsanIcon name="check" size={12} bare /> Compensado</> : <><MolsanIcon name="clock" size={12} bare /> Pendiente</>}{item.imputable_a || item.imputableA ? ` · ${item.imputable_a || item.imputableA}` : ""}</span></span>
+                                    <span className="shrink-0 font-bold tabular-nums text-[var(--molsan-text)]">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
                                   </div>)}
                                 </div>}
                               </article>
@@ -5324,17 +5324,17 @@ const cuantiaFincasParaEnvio =
                                 <div className="flex items-center gap-2">
                                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-white"><MolsanIcon name="wallet" size={18} tone="ocean" bare /></div>
                                   <div className="min-w-0 flex-1">
-                                    <p className="text-xs font-bold text-slate-800">Complementos de saldo</p>
+                                    <p className="text-xs font-bold text-[var(--molsan-text)]">Complementos de saldo</p>
                                     <p className="mt-0.5 text-[10px] font-semibold text-amber-800">{cargandoComplementosExpediente ? "Cargando solicitudes…" : `${complementosSaldoExpediente.length} solicitud(es) · ${complementosSaldoExpediente.filter((item) => !["compensado", "cerrado"].includes(String(item.estado || "").toLowerCase())).length} pendiente(s)`}</p>
                                   </div>
-                                  <button type="button" aria-expanded={!fasesCalidadColapsadas.complementos} onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, complementos: !actuales.complementos }))} className="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50">{fasesCalidadColapsadas.complementos ? "＋ Mostrar" : "− Ocultar"}</button>
+                                  <button type="button" aria-expanded={!fasesCalidadColapsadas.complementos} onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, complementos: !actuales.complementos }))} className="shrink-0 rounded-md border border-[var(--molsan-border)] bg-white px-2 py-1 text-[10px] font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]">{fasesCalidadColapsadas.complementos ? <><MolsanIcon name="plus" size={12} bare /> Mostrar</> : <><MolsanIcon name="minus" size={12} bare /> Ocultar</>}</button>
                                 </div>
                                 {!fasesCalidadColapsadas.complementos && <div className="mt-2 space-y-1.5 border-t border-amber-200/70 pt-2">
                                   {errorComplementosExpediente && <p role="alert" className="text-[10px] text-red-700">{errorComplementosExpediente}</p>}
-                                  {!cargandoComplementosExpediente && !errorComplementosExpediente && complementosSaldoExpediente.length === 0 && <p className="text-[11px] text-slate-500">No hay solicitudes de complemento para este expediente.</p>}
+                                  {!cargandoComplementosExpediente && !errorComplementosExpediente && complementosSaldoExpediente.length === 0 && <p className="text-[11px] text-[var(--molsan-text-secondary)]">No hay solicitudes de complemento para este expediente.</p>}
                                   {complementosSaldoExpediente.map((item) => <div key={item.id} className="flex items-start justify-between gap-2 text-[11px]">
-                                    <span className="min-w-0 text-slate-700"><strong>{item.motivo || "Complemento de saldo"}</strong><span className="block text-[10px] text-slate-500">{item.fecha_solicitud ? formatearFecha(item.fecha_solicitud) : "Sin fecha"} · {item.estado || "Pendiente"}</span></span>
-                                    <span className="shrink-0 font-bold tabular-nums text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
+                                    <span className="min-w-0 text-[var(--molsan-text)]"><strong>{item.motivo || "Complemento de saldo"}</strong><span className="block text-[10px] text-[var(--molsan-text-secondary)]">{item.fecha_solicitud ? formatearFecha(item.fecha_solicitud) : "Sin fecha"} · {item.estado || "Pendiente"}</span></span>
+                                    <span className="shrink-0 font-bold tabular-nums text-[var(--molsan-text)]">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
                                   </div>)}
                                 </div>}
                               </article>
@@ -5384,9 +5384,9 @@ const cuantiaFincasParaEnvio =
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <Link
                 to="/expedientes"
-                className="inline-flex items-center text-[11px] font-bold text-blue-600 hover:text-blue-700"
+                className="inline-flex items-center text-[11px] font-bold text-[var(--molsan-primary)] hover:text-[var(--molsan-primary)]"
               >
-                ← Expedientes
+                <MolsanIcon name="arrowLeft" size={14} bare /> Expedientes
               </Link>
             </div>
 
@@ -5399,7 +5399,7 @@ const cuantiaFincasParaEnvio =
           title={valorVisible(expediente.id_expediente)}
           description="Ficha completa del expediente · Datos, documentación y seguimiento."
           className="ficha-expediente-page-header"
-          actions={<Link to="/expedientes" className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]">← Expedientes</Link>}
+          actions={<Link to="/expedientes" className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]"><MolsanIcon name="arrowLeft" size={14} bare /> Expedientes</Link>}
         />
 
         {/* ===================================================
@@ -5430,19 +5430,19 @@ const cuantiaFincasParaEnvio =
               compacto
             >
               <div className="flex h-full min-h-[112px] flex-col justify-between gap-3">
-                <div className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-sky-100 bg-white text-sky-800 shadow-sm">
+                <div className="flex items-start gap-3 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--molsan-border)] bg-white text-[var(--molsan-primary)] shadow-sm">
                     <MolsanIcon name="folder" size={21} tone="ocean" bare />
                   </span>
                   <div className="min-w-0">
-                    <p className="text-xs font-extrabold text-slate-800">Repositorio documental</p>
-                    <p className="mt-1 text-[11px] leading-relaxed text-slate-500">Accede a los documentos, justificantes y archivos vinculados a este expediente.</p>
+                    <p className="text-xs font-extrabold text-[var(--molsan-text)]">Repositorio documental</p>
+                    <p className="mt-1 text-[11px] leading-relaxed text-[var(--molsan-text-secondary)]">Accede a los documentos, justificantes y archivos vinculados a este expediente.</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setMostrarCarpetaDigital(true)}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2.5 text-xs font-extrabold text-sky-800 transition hover:border-sky-300 hover:bg-sky-100"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 text-xs font-extrabold text-[var(--molsan-primary)] transition hover:border-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]"
                 >
                   <MolsanIcon name="folderOpen" size={15} tone="ocean" bare /> Abrir carpeta digital
                 </button>
@@ -5459,8 +5459,8 @@ const cuantiaFincasParaEnvio =
               colapsadaInicial
             >
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div className="min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 p-2">
-                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Titulares</p>
+                <div className="min-w-0 rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-2">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Titulares</p>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     <Dato
                       campo="Nombre titular"
@@ -5473,8 +5473,8 @@ const cuantiaFincasParaEnvio =
                     />
                   </div>
                 </div>
-                <div className="min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 p-2">
-                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Solicitantes</p>
+                <div className="min-w-0 rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-2">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Solicitantes</p>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     <Dato
                       campo="Nombre solicitante"
@@ -5544,13 +5544,13 @@ const cuantiaFincasParaEnvio =
           </div>
 
           {/* Ficha y acciones en una sola línea, debajo de los bloques principales */}
-          <div className="mt-3 flex w-full min-w-0 flex-wrap items-center gap-2 overflow-x-hidden rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2">
-            <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5">
-              <label htmlFor="ficha-promocion" className="shrink-0 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Promoción</label>
-              <input id="ficha-promocion" type="text" value={expediente?.promocion || ""} readOnly placeholder="Sin asignar" className="w-36 min-w-[100px] cursor-default rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs text-slate-700 sm:w-44" aria-label="Promoción asignada al expediente" title="La promoción se asigna desde Utilidades → Gestión de expedientes." />
+          <div className="mt-3 flex w-full min-w-0 flex-wrap items-center gap-2 overflow-x-hidden rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2">
+            <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-lg border border-[var(--molsan-border)] bg-white px-2 py-1.5">
+              <label htmlFor="ficha-promocion" className="shrink-0 text-[10px] font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Promoción</label>
+              <input id="ficha-promocion" type="text" value={expediente?.promocion || ""} readOnly placeholder="Sin asignar" className="w-36 min-w-[100px] cursor-default rounded-md border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-2 py-1.5 text-xs text-[var(--molsan-text)] sm:w-44" aria-label="Promoción asignada al expediente" title="La promoción se asigna desde Utilidades → Gestión de expedientes." />
             </div>
             <div className="flex shrink-0 flex-wrap items-center gap-2">
-              <button type="button" onClick={abrirAgregarExpedientes} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold text-blue-700 transition hover:bg-blue-100">
+              <button type="button" onClick={abrirAgregarExpedientes} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-2.5 py-2 text-[11px] font-bold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-surface-soft)]">
                 <MolsanIcon name="plus" size={15} tone="ocean" bare /> Agregar expediente relacionado
               </button>
             </div>
@@ -5563,10 +5563,10 @@ const cuantiaFincasParaEnvio =
               ];
               const primerosRelacionados = relacionadosVisibles.slice(0, 2);
               return relacionadosVisibles.length > 0 ? (
-                <div className="order-last flex basis-full min-w-0 items-center gap-1.5 border-t border-slate-200 pt-2">
-                  <span className="mr-1 shrink-0 text-[9px] font-bold uppercase tracking-wide text-slate-400">Relacionados</span>
+                <div className="order-last flex basis-full min-w-0 items-center gap-1.5 border-t border-[var(--molsan-border)] pt-2">
+                  <span className="mr-1 shrink-0 text-[9px] font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Relacionados</span>
                   {primerosRelacionados.map((relacionado) => (
-                    <Link key={String(relacionado.id_expediente)} to={`/expedientes/${encodeURIComponent(relacionado.id_expediente)}`} className="inline-flex max-w-[180px] min-w-0 shrink items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50" title={relacionado.actividad_actual || "Abrir expediente relacionado"}>
+                    <Link key={String(relacionado.id_expediente)} to={`/expedientes/${encodeURIComponent(relacionado.id_expediente)}`} className="inline-flex max-w-[180px] min-w-0 shrink items-center gap-1 rounded-md border border-[var(--molsan-border)] bg-white px-2.5 py-1.5 text-[10px] font-semibold text-[var(--molsan-text)] transition hover:border-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]" title={relacionado.actividad_actual || "Abrir expediente relacionado"}>
                       <MolsanIcon name="folder" size={18} tone="ocean" bare />
                       <span className="truncate">{valorVisible(relacionado.id_expediente)}</span>
                     </Link>
@@ -5581,16 +5581,16 @@ const cuantiaFincasParaEnvio =
             })()}
             {expedienteBloqueado && <span className="inline-flex shrink-0 items-center rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[10px] font-extrabold text-red-800"><MolsanIcon name="lock" size={13} tone="amber" bare /> BLOQUEADO · {motivoBloqueoExpediente}</span>}
             <div className="flex shrink-0 items-center gap-1.5">
-              <button type="button" onClick={abrirDefecto} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-blue-700 shadow-sm transition hover:bg-blue-100" title="Registrar un defecto registral"><MolsanIcon name="plus" size={14} tone="ocean" bare /> Alta defecto</button>
+              <button type="button" onClick={abrirDefecto} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-2.5 py-2 text-[11px] font-bold leading-tight text-[var(--molsan-primary)] shadow-sm transition hover:bg-[var(--molsan-surface-soft)]" title="Registrar un defecto registral"><MolsanIcon name="plus" size={14} tone="ocean" bare /> Alta defecto</button>
               <Boton onClick={abrirControlExpediente} className="!shrink-0 !rounded-lg !px-2.5 !py-2 !text-[11px] !leading-tight">{expedienteBloqueado ? <><MolsanIcon name="lock" size={14} tone="ocean" bare /> Control / desbloqueo</> : <><MolsanIcon name="lock" size={14} tone="ocean" bare /> Control y bloqueo</>}</Boton>
               <button type="button" onClick={abrirReclamacionOficina} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100"><MolsanIcon name="mail" size={14} tone="ocean" bare /> Emails</button>
-              <button type="button" onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100" title="Pendiente de enlazar con el área de clientes"><MolsanIcon name="link" size={14} tone="ocean" bare /> Área de clientes</button>
+              <button type="button" onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-[var(--molsan-border)] bg-white px-2.5 py-2 text-[11px] font-bold leading-tight text-[var(--molsan-text-secondary)] shadow-sm transition hover:bg-[var(--molsan-surface-soft)]" title="Pendiente de enlazar con el área de clientes"><MolsanIcon name="link" size={14} tone="ocean" bare /> Área de clientes</button>
               {tieneDefecto && <button type="button" onClick={abrirDefecto} className="animate-pulse inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-red-700 shadow-sm"><MolsanIcon name="alert" size={14} tone="amber" bare /> DEFECTO REGISTRAL</button>}
             </div>
             <div className="ml-auto flex shrink-0 items-center gap-2">
-              <div className="inline-flex max-w-[260px] items-center gap-1.5 rounded-lg border border-blue-100 bg-white px-2.5 py-2 text-[11px]">
-                <span className="whitespace-nowrap font-bold text-blue-700">Gestor asignado:</span>
-                <span className="truncate font-semibold text-slate-700">{expediente.gestor_asignado_nombre || "Pendiente de asignación"}</span>
+              <div className="inline-flex max-w-[260px] items-center gap-1.5 rounded-lg border border-[var(--molsan-border)] bg-white px-2.5 py-2 text-[11px]">
+                <span className="whitespace-nowrap font-bold text-[var(--molsan-primary)]">Gestor asignado:</span>
+                <span className="truncate font-semibold text-[var(--molsan-text)]">{expediente.gestor_asignado_nombre || "Pendiente de asignación"}</span>
               </div>
               <div className="inline-flex max-w-[300px] items-center gap-1.5 rounded-lg border border-emerald-100 bg-emerald-50 px-2.5 py-2 text-[11px]" title="Actividad actual del expediente">
                 <span className="whitespace-nowrap font-bold text-emerald-800">Actividad actual:</span>
@@ -5608,7 +5608,7 @@ const cuantiaFincasParaEnvio =
           ACTIVIDADES DEL EXPEDIENTE
       ====================================================== */}
 
-      <section id="ficha-actividades" className="mb-4 w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+      <section id="ficha-actividades" className="mb-4 w-full min-w-0 rounded-2xl border border-[var(--molsan-border)] bg-white p-3 shadow-sm sm:p-4">
         <div
           className="
             flex min-w-0 flex-col gap-3
@@ -5650,7 +5650,7 @@ const cuantiaFincasParaEnvio =
                       className={`flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start rounded-xl border px-3 py-2 text-left transition ${mostrarControlCalidad ? "border-violet-300 bg-violet-50 shadow-sm" : "border-violet-200 bg-white hover:bg-violet-50"}`}
                     >
                       <span className={`text-xs font-bold ${mostrarControlCalidad ? "text-violet-700" : "text-violet-800"}`}><MolsanIcon name="shield" size={15} tone="violet" bare /> Control de calidad</span>
-                      <span className="mt-2 text-[9px] font-semibold text-slate-500">Revisión independiente</span>
+                      <span className="mt-2 text-[9px] font-semibold text-[var(--molsan-text-secondary)]">Revisión independiente</span>
                     </button>
                   )}
                   <button
@@ -5710,8 +5710,8 @@ const cuantiaFincasParaEnvio =
                       flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start rounded-xl border px-3 py-2 text-left transition
                       ${
                         activa
-                          ? "border-blue-300 bg-blue-50 shadow-sm"
-                          : "border-slate-200 bg-white hover:bg-slate-50"
+                          ? "border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] shadow-sm"
+                          : "border-[var(--molsan-border)] bg-white hover:bg-[var(--molsan-surface-soft)]"
                       }
                     `}
                   >
@@ -5748,8 +5748,8 @@ const cuantiaFincasParaEnvio =
                           font-bold
                           ${
                             activa
-                              ? "text-blue-700"
-                              : "text-slate-700"
+                              ? "text-[var(--molsan-primary)]"
+                              : "text-[var(--molsan-text)]"
                           }
                         `}
                       >
@@ -5778,7 +5778,7 @@ const cuantiaFincasParaEnvio =
                           text-emerald-700
                         "
                       >
-                        ● Actividad actual
+                        <MolsanIcon name="activity" size={11} bare /> Actividad actual
                       </span>
                     )}
 
@@ -5793,7 +5793,7 @@ const cuantiaFincasParaEnvio =
 
           {/* DETALLE */}
 
-          <div className={mostrarControlCalidad ? "hidden" : "min-w-0 rounded-2xl border border-slate-200 bg-slate-50/70 p-4"}>
+          <div className={mostrarControlCalidad ? "hidden" : "min-w-0 rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4"}>
 
             <div
               className="
@@ -5807,16 +5807,16 @@ const cuantiaFincasParaEnvio =
             >
 
               <div className="min-w-0 flex-1">
-                <h3 className="text-base font-bold text-slate-800">
+                <h3 className="text-base font-bold text-[var(--molsan-text)]">
                   <MolsanIcon name={actividadSeleccionadaDef.icono} size={20} tone="ocean" bare /> {actividadSeleccionadaDef.label}
                 </h3>
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="font-bold text-slate-500">Estado actividad</span>
-                    <span className="font-semibold text-slate-800">{expediente.estado_actividad || "—"}</span>
+                    <span className="font-bold text-[var(--molsan-text-secondary)]">Estado actividad</span>
+                    <span className="font-semibold text-[var(--molsan-text)]">{expediente.estado_actividad || "—"}</span>
                   </span>
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="font-bold text-slate-500">Oficina</span>
+                    <span className="font-bold text-[var(--molsan-text-secondary)]">Oficina</span>
                     <button type="button" onClick={async () => {
                       setOficinaDetalleAbierta(true);
                       setCargandoOficinaDetalle(true);
@@ -5832,30 +5832,30 @@ const cuantiaFincasParaEnvio =
                       } finally {
                         setCargandoOficinaDetalle(false);
                       }
-                    }} className="font-semibold text-indigo-700 underline decoration-dotted underline-offset-2 hover:text-indigo-900" title="Consultar datos del catálogo de oficinas">{expediente.oficina || "—"}</button>
+                    }} className="font-semibold text-[var(--molsan-primary)] underline decoration-dotted underline-offset-2 hover:text-[var(--molsan-primary)]" title="Consultar datos del catálogo de oficinas">{expediente.oficina || "—"}</button>
                   </span>
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="font-bold text-slate-500">Fecha alta</span>
-                    <span className="font-semibold text-slate-800">{expediente.fecha_alta ? formatearFecha(expediente.fecha_alta) : "—"}</span>
+                    <span className="font-bold text-[var(--molsan-text-secondary)]">Fecha alta</span>
+                    <span className="font-semibold text-[var(--molsan-text)]">{expediente.fecha_alta ? formatearFecha(expediente.fecha_alta) : "—"}</span>
                   </span>
                 </div>
-                <p className="mt-1.5 text-xs text-slate-400">Campos de esta actividad</p>
+                <p className="mt-1.5 text-xs text-[var(--molsan-text-secondary)]">Campos de esta actividad</p>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <button type="button" onClick={() => { setErrorActividad(""); setMensajeActividad(""); setMostrarModalDatosActividad(true); }} className="inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-800 transition hover:bg-sky-100">
+                <button type="button" onClick={() => { setErrorActividad(""); setMensajeActividad(""); setMostrarModalDatosActividad(true); }} className="inline-flex items-center gap-2 rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-xs font-extrabold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-surface-soft)]">
                   <MolsanIcon name="clipboardList" size={16} tone="ocean" bare /> Datos de actividad
                 </button>
-                <button type="button" onClick={() => { setPestanaActividad("datos"); setMostrarModalPpad(true); setErrorPpad(""); }} className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-extrabold text-indigo-800 transition hover:bg-indigo-100">
+                <button type="button" onClick={() => { setPestanaActividad("datos"); setMostrarModalPpad(true); setErrorPpad(""); }} className="inline-flex items-center gap-2 rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-xs font-extrabold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-surface-soft)]">
                   PPAD
                   {ppadItems.filter((item) => !item.compensado).length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white">{ppadItems.filter((item) => !item.compensado).length}</span>}
                 </button>
                 {actividadSeleccionada === "gestion-economica" && (
                   <TraspasoSaldoPanel expediente={expediente} visible={actividadSeleccionada === "gestion-economica"} />
                 )}
-                <button type="button" onClick={() => { setPestanaActividad("datos"); abrirAcciones(); }} className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-extrabold text-blue-700 transition hover:bg-blue-100">
+                <button type="button" onClick={() => { setPestanaActividad("datos"); abrirAcciones(); }} className="inline-flex items-center gap-2 rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-xs font-extrabold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-surface-soft)]">
                   <MolsanIcon name="zap" size={16} tone="ocean" bare /> Acciones
-                  {accionesExpediente.length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 py-0.5 text-[10px] font-extrabold text-white">{accionesExpediente.length}</span>}
+                  {accionesExpediente.length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--molsan-primary)] px-1.5 py-0.5 text-[10px] font-extrabold text-white">{accionesExpediente.length}</span>}
                 </button>
               </div>
 
@@ -5872,7 +5872,7 @@ const cuantiaFincasParaEnvio =
             {(
               <div className="mb-4 min-w-0">
                 {actividadSeleccionada !== "sede-notarial" && (
-                  <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                  <div className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-3">
                     <CarpetaDigitalModal
                       expedienteId={expediente?.id_expediente || id}
                       modoActividad
@@ -5891,61 +5891,61 @@ const cuantiaFincasParaEnvio =
                       generandoFacturacion={generandoHonorariosGestoria}
                       facturaEmitida={Boolean(honorariosGestoria?.guardado || expediente?.facturacion_fecha || expediente?.numero_factura || expediente?.factura_honorarios_id)}
                       onPagar={() => { void abrirPagoDesdeGestionEconomica(); }}
-                      panelLibroPagos={actividadSeleccionada === "gestion-economica" ? (<section className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/90 px-4 py-4 sm:px-5">
+                      panelLibroPagos={actividadSeleccionada === "gestion-economica" ? (<section className="mt-4 overflow-hidden rounded-2xl border border-[var(--molsan-border)] bg-white shadow-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-4 py-4 sm:px-5">
                       <div className="flex min-w-0 items-center gap-3">
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700"><span aria-hidden="true">▤</span></span>
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--molsan-surface-soft)] text-[var(--molsan-primary)]"><MolsanIcon name="file" size={18} bare /></span>
                         <div>
-                          <h5 className="text-sm font-extrabold text-slate-900">Control económico · Libro de pagos</h5>
-                          <p className="mt-1 text-xs text-slate-500">Saldo inicial, gastos imputados y saldo pendiente del expediente.</p>
+                          <h5 className="text-sm font-extrabold text-[var(--molsan-text)]">Control económico · Libro de pagos</h5>
+                          <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Saldo inicial, gastos imputados y saldo pendiente del expediente.</p>
                         </div>
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <button type="button" onClick={cargarGastosExpediente} disabled={cargandoGastos} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50">{cargandoGastos ? "Actualizando…" : "↻ Actualizar"}</button>
+                        <button type="button" onClick={cargarGastosExpediente} disabled={cargandoGastos} className="rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-xs font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)] disabled:opacity-50">{cargandoGastos ? "Actualizando…" : <><MolsanIcon name="refresh" size={14} bare /> Actualizar</>}</button>
                       </div>
                     </div>
                     <div className="p-4 sm:p-5">
                       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                        <div className="rounded-xl border border-indigo-100 bg-indigo-50/70 p-4">
-                          <p className="text-[10px] font-bold uppercase tracking-wide text-indigo-700">Saldo inicial</p>
-                          <p className="mt-2 text-xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? `${importeInicialProvision.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
-                          <p className="mt-1 text-[10px] text-slate-500">Campo Importe del expediente</p>
+                        <div className="rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4">
+                          <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--molsan-primary)]">Saldo inicial</p>
+                          <p className="mt-2 text-xl font-extrabold tabular-nums text-[var(--molsan-text)]">{importeInicialDisponible ? `${importeInicialProvision.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
+                          <p className="mt-1 text-[10px] text-[var(--molsan-text-secondary)]">Campo Importe del expediente</p>
                         </div>
                         <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4">
                           <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Saldo pendiente</p>
                           <p className={`mt-2 text-xl font-extrabold tabular-nums ${resumenEconomico.saldoActual < 0 ? "text-red-700" : "text-emerald-700"}`}>{importeInicialDisponible ? `${resumenEconomico.saldoActual.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
-                          <p className="mt-1 text-[10px] text-slate-500">Tras descontar pagos confirmados</p>
+                          <p className="mt-1 text-[10px] text-[var(--molsan-text-secondary)]">Tras descontar pagos confirmados</p>
                         </div>
-                        <div className="rounded-xl border border-slate-200 bg-white p-4">
-                          <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Total imputado</p>
-                          <p className="mt-2 text-xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? ` ${(importeInicialProvision - resumenEconomico.saldoActual).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`.trim() : `${resumenEconomico.movimientos.reduce((s, m) => s + Math.abs(Number(m.importeMovimiento || 0)), 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}</p>
-                          <p className="mt-1 text-[10px] text-slate-500">Pagos contabilizados</p>
+                        <div className="rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                          <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Total imputado</p>
+                          <p className="mt-2 text-xl font-extrabold tabular-nums text-[var(--molsan-text)]">{importeInicialDisponible ? ` ${(importeInicialProvision - resumenEconomico.saldoActual).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`.trim() : `${resumenEconomico.movimientos.reduce((s, m) => s + Math.abs(Number(m.importeMovimiento || 0)), 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}</p>
+                          <p className="mt-1 text-[10px] text-[var(--molsan-text-secondary)]">Pagos contabilizados</p>
                         </div>
-                        <div className="rounded-xl border border-slate-200 bg-white p-4">
-                          <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Pagos registrados</p>
-                          <p className="mt-2 text-xl font-extrabold tabular-nums text-slate-900">{resumenEconomico.movimientos.length}</p>
-                          <p className="mt-1 text-[10px] text-slate-500">Movimientos confirmados</p>
+                        <div className="rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                          <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Pagos registrados</p>
+                          <p className="mt-2 text-xl font-extrabold tabular-nums text-[var(--molsan-text)]">{resumenEconomico.movimientos.length}</p>
+                          <p className="mt-1 text-[10px] text-[var(--molsan-text-secondary)]">Movimientos confirmados</p>
                         </div>
                       </div>
                       {importeInicialDisponible && importeInicialProvision > 0 && (
                         <div className="mt-4">
-                          <div className="mb-2 flex items-center justify-between gap-3"><span className="text-xs font-semibold text-slate-600">Consumo del saldo inicial</span><span className="text-xs font-bold tabular-nums text-slate-600">{Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100)).toLocaleString("es-ES", { maximumFractionDigits: 1 })}%</span></div>
-                          <div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className={`h-full rounded-full ${resumenEconomico.saldoActual < 0 ? "bg-red-500" : "bg-emerald-500"}`} style={{ width: `${Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100))}%` }} /></div>
+                          <div className="mb-2 flex items-center justify-between gap-3"><span className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Consumo del saldo inicial</span><span className="text-xs font-bold tabular-nums text-[var(--molsan-text-secondary)]">{Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100)).toLocaleString("es-ES", { maximumFractionDigits: 1 })}%</span></div>
+                          <div className="h-2 overflow-hidden rounded-full bg-[var(--molsan-surface-soft)]"><div className={`h-full rounded-full ${resumenEconomico.saldoActual < 0 ? "bg-red-500" : "bg-emerald-500"}`} style={{ width: `${Math.max(0, Math.min(100, ((importeInicialProvision - resumenEconomico.saldoActual) / importeInicialProvision) * 100))}%` }} /></div>
                         </div>
                       )}
                       <div className="mt-5">
-                        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-600">Libro de movimientos contables</h6><span className="text-[11px] text-slate-500">Solo los pagos confirmados descuentan el saldo</span></div>
+                        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h6 className="text-xs font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Libro de movimientos contables</h6><span className="text-[11px] text-[var(--molsan-text-secondary)]">Solo los pagos confirmados descuentan el saldo</span></div>
                         {cargandoGastos ? (
-                          <p className="py-4 text-sm text-slate-500">Cargando movimientos contables…</p>
+                          <p className="py-4 text-sm text-[var(--molsan-text-secondary)]">Cargando movimientos contables…</p>
                         ) : gastosExpediente.length === 0 ? (
-                          <p className="rounded-xl border border-dashed border-slate-200 px-4 py-6 text-center text-sm text-slate-500">Todavía no hay líneas contables guardadas. Cada gasto registrado aparecerá aquí con su ID y desglose fiscal.</p>
+                          <p className="rounded-xl border border-dashed border-[var(--molsan-border)] px-4 py-6 text-center text-sm text-[var(--molsan-text-secondary)]">Todavía no hay líneas contables guardadas. Cada gasto registrado aparecerá aquí con su ID y desglose fiscal.</p>
                         ) : (
-                          <div className="overflow-x-auto rounded-xl border border-slate-200">
+                          <div className="overflow-x-auto rounded-xl border border-[var(--molsan-border)]">
                             <table className="w-full min-w-[1080px] text-left text-xs">
-                              <thead className="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500"><tr><th className="px-3 py-3 font-bold">ID de pago</th><th className="px-3 py-3 font-bold">Fecha</th><th className="px-3 py-3 font-bold">Tipo de documento</th><th className="px-3 py-3 text-right font-bold">Cuantía documento</th><th className="px-3 py-3 text-right font-bold">Impuesto</th><th className="px-3 py-3 text-right font-bold">Total</th><th className="px-3 py-3 font-bold">Estado</th><th className="px-3 py-3 text-right font-bold">Saldo tras pago</th><th className="px-3 py-3 font-bold">Acciones</th></tr></thead>
-                              <tbody className="divide-y divide-slate-100">
-                                {resumenEconomico.movimientos.length === 0 && gastosPendientesResumen.length === 0 && <tr><td colSpan={9} className="px-4 py-6 text-center text-slate-500">Todavía no hay gastos ni pagos registrados.</td></tr>}
-                                {gastosPendientesResumen.map((gasto) => { const fmtPendiente = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); const importe = Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0)); const base = Number(gasto.base_imponible ?? gasto.base_sujeta_impuestos ?? gasto.base_exenta_impuestos ?? 0); const impuesto = Number(gasto.importe_impuesto ?? gasto.impuesto ?? gasto.iva ?? 0); return <tr key={"pendiente-" + gasto.id} className="bg-amber-50/40 text-slate-700"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-amber-700">{gasto.numero_documento || ("GAS-" + String(gasto.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(gasto.fecha_factura || gasto.fecha || gasto.created_at)}</td><td className="px-3 py-3"><span className="font-semibold">{gasto.tipo || "Gasto registrado"}</span>{gasto.descripcion ? <span className="mt-1 block text-slate-500">{gasto.descripcion}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{fmtPendiente(base > 0 ? base : importe)} €</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{impuesto > 0 ? `${fmtPendiente(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmtPendiente(importe)} €</td><td className="whitespace-nowrap px-3 py-3"><span className="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-800">Pendiente</span></td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{importeInicialDisponible ? `${fmtPendiente(resumenEconomico.saldoActual)} €` : "—"}</td><td className="px-3 py-3">{esAdministradorSesion ? <button type="button" onClick={() => abrirOrdenPago(gasto)} disabled={importe <= 0} className="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50">Pagar</button> : <span className="text-[10px] text-slate-400">Solo administración</span>}</td></tr>; })}
+                              <thead className="bg-[var(--molsan-surface-soft)] text-[10px] uppercase tracking-wide text-[var(--molsan-text-secondary)]"><tr><th className="px-3 py-3 font-bold">ID de pago</th><th className="px-3 py-3 font-bold">Fecha</th><th className="px-3 py-3 font-bold">Tipo de documento</th><th className="px-3 py-3 text-right font-bold">Cuantía documento</th><th className="px-3 py-3 text-right font-bold">Impuesto</th><th className="px-3 py-3 text-right font-bold">Total</th><th className="px-3 py-3 font-bold">Estado</th><th className="px-3 py-3 text-right font-bold">Saldo tras pago</th><th className="px-3 py-3 font-bold">Acciones</th></tr></thead>
+                              <tbody className="divide-y divide-[var(--molsan-border)]">
+                                {resumenEconomico.movimientos.length === 0 && gastosPendientesResumen.length === 0 && <tr><td colSpan={9} className="px-4 py-6 text-center text-[var(--molsan-text-secondary)]">Todavía no hay gastos ni pagos registrados.</td></tr>}
+                                {gastosPendientesResumen.map((gasto) => { const fmtPendiente = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); const importe = Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0)); const base = Number(gasto.base_imponible ?? gasto.base_sujeta_impuestos ?? gasto.base_exenta_impuestos ?? 0); const impuesto = Number(gasto.importe_impuesto ?? gasto.impuesto ?? gasto.iva ?? 0); return <tr key={"pendiente-" + gasto.id} className="bg-amber-50/40 text-[var(--molsan-text)]"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-amber-700">{gasto.numero_documento || ("GAS-" + String(gasto.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(gasto.fecha_factura || gasto.fecha || gasto.created_at)}</td><td className="px-3 py-3"><span className="font-semibold">{gasto.tipo || "Gasto registrado"}</span>{gasto.descripcion ? <span className="mt-1 block text-[var(--molsan-text-secondary)]">{gasto.descripcion}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{fmtPendiente(base > 0 ? base : importe)} €</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{impuesto > 0 ? `${fmtPendiente(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmtPendiente(importe)} €</td><td className="whitespace-nowrap px-3 py-3"><span className="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-800">Pendiente</span></td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{importeInicialDisponible ? `${fmtPendiente(resumenEconomico.saldoActual)} €` : "—"}</td><td className="px-3 py-3">{esAdministradorSesion ? <button type="button" onClick={() => abrirOrdenPago(gasto)} disabled={importe <= 0} className="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50">Pagar</button> : <span className="text-[10px] text-[var(--molsan-text-secondary)]">Solo administración</span>}</td></tr>; })}
                                 {resumenEconomico.movimientos.map((movimiento) => {
                                   const fmt = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                   const importeMovimiento = Math.abs(Number(movimiento.importeMovimiento ?? movimiento.importe_resultante ?? movimiento.importe ?? 0));
@@ -5956,7 +5956,7 @@ const cuantiaFincasParaEnvio =
                                   const total = movimiento.es_movimiento_pago ? importeMovimiento : Math.abs(Number(movimiento.importe_resultante ?? movimiento.importe ?? movimiento.importe_total_bruto ?? importeMovimiento));
                                   const estado = movimiento.es_movimiento_pago ? (movimiento.anulado_en ? "Anulado" : "Pagado") : String(movimiento.estado_pago || "Pagado").trim();
                                   const saldoTrasMovimiento = importeInicialDisponible ? Number(movimiento.saldoCalculado) : null;
-                                  return <tr key={movimiento.id} className="text-slate-700 transition-colors hover:bg-indigo-50/40"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-indigo-700">{movimiento.numero_documento || ("PAG-" + String(movimiento.pago_id || movimiento.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(movimiento.fecha || movimiento.fecha_factura)}</td><td className="px-3 py-3"><span className="font-semibold">{movimiento.tipo || "Documento"}</span>{movimiento.concepto_pago ? <span className="mt-1 block text-slate-500">{movimiento.concepto_pago}</span> : movimiento.descripcion ? <span className="mt-1 block text-slate-500">{movimiento.descripcion}</span> : null}{movimiento.tipo_impuesto && !movimiento.es_movimiento_pago ? <span className="mt-1 block text-[10px] text-slate-400">{movimiento.tipo_impuesto}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{cuantiaDocumento === null || cuantiaDocumento === 0 ? "—" : `${fmt(cuantiaDocumento)} €`}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{impuesto > 0 ? `${fmt(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmt(total)} €</td><td className="whitespace-nowrap px-3 py-3"><span className={"rounded-full px-2 py-1 text-[10px] font-bold " + (estado === "Anulado" ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700")}>{estado}</span>{movimiento.motivo_anulacion ? <span className="mt-1 block max-w-[220px] whitespace-normal text-[10px] text-red-600" title={movimiento.motivo_anulacion}>Motivo: {movimiento.motivo_anulacion}</span> : null}</td><td className={"whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums " + (saldoTrasMovimiento !== null && saldoTrasMovimiento < 0 ? "text-red-700" : "text-slate-900")}>{saldoTrasMovimiento === null ? "—" : (fmt(saldoTrasMovimiento) + " €")}</td><td className="px-3 py-3">{movimiento.es_movimiento_pago && !movimiento.anulado_en && esAdministradorSesion ? <button type="button" onClick={() => void anularPagoGasto(movimiento)} className="rounded-lg border border-red-200 px-2.5 py-1.5 text-[10px] font-bold text-red-700 hover:bg-red-50">Anular pago</button> : movimiento.anulado_en ? <span className="text-[10px] font-semibold text-slate-500">Anulado</span> : "—"}</td></tr>;
+                                  return <tr key={movimiento.id} className="text-[var(--molsan-text)] transition-colors hover:bg-[var(--molsan-surface-soft)]"><td className="whitespace-nowrap px-3 py-3 font-extrabold text-[var(--molsan-primary)]">{movimiento.numero_documento || ("PAG-" + String(movimiento.pago_id || movimiento.id).padStart(6, "0"))}</td><td className="whitespace-nowrap px-3 py-3">{formatearFecha(movimiento.fecha || movimiento.fecha_factura)}</td><td className="px-3 py-3"><span className="font-semibold">{movimiento.tipo || "Documento"}</span>{movimiento.concepto_pago ? <span className="mt-1 block text-[var(--molsan-text-secondary)]">{movimiento.concepto_pago}</span> : movimiento.descripcion ? <span className="mt-1 block text-[var(--molsan-text-secondary)]">{movimiento.descripcion}</span> : null}{movimiento.tipo_impuesto && !movimiento.es_movimiento_pago ? <span className="mt-1 block text-[10px] text-[var(--molsan-text-secondary)]">{movimiento.tipo_impuesto}</span> : null}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{cuantiaDocumento === null || cuantiaDocumento === 0 ? "—" : `${fmt(cuantiaDocumento)} €`}</td><td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{impuesto > 0 ? `${fmt(impuesto)} €` : "—"}</td><td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmt(total)} €</td><td className="whitespace-nowrap px-3 py-3"><span className={"rounded-full px-2 py-1 text-[10px] font-bold " + (estado === "Anulado" ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700")}>{estado}</span>{movimiento.motivo_anulacion ? <span className="mt-1 block max-w-[220px] whitespace-normal text-[10px] text-red-600" title={movimiento.motivo_anulacion}>Motivo: {movimiento.motivo_anulacion}</span> : null}</td><td className={"whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums " + (saldoTrasMovimiento !== null && saldoTrasMovimiento < 0 ? "text-red-700" : "text-[var(--molsan-text)]")}>{saldoTrasMovimiento === null ? "—" : (fmt(saldoTrasMovimiento) + " €")}</td><td className="px-3 py-3">{movimiento.es_movimiento_pago && !movimiento.anulado_en && esAdministradorSesion ? <button type="button" onClick={() => void anularPagoGasto(movimiento)} className="rounded-lg border border-red-200 px-2.5 py-1.5 text-[10px] font-bold text-red-700 hover:bg-red-50">Anular pago</button> : movimiento.anulado_en ? <span className="text-[10px] font-semibold text-[var(--molsan-text-secondary)]">Anulado</span> : "—"}</td></tr>;
                                 })}
                               </tbody>
                             </table>
@@ -5965,7 +5965,7 @@ const cuantiaFincasParaEnvio =
                         {!importeInicialDisponible && <p className="mt-2 text-xs text-amber-700">No hay un Importe inicial válido en el expediente; revisa el dato antes de utilizar el saldo como referencia contable.</p>}
                       </div>
                       {gastosPendientesResumen.length > 0 && <p className="mt-3 rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-xs text-amber-800">{gastosPendientesResumen.length} gasto(s) registrado(s) todavía pendiente(s); no se descuentan del saldo hasta confirmar el pago.</p>}
-                      <div className="mt-3 flex justify-end border-t border-slate-100 pt-3">
+                      <div className="mt-3 flex justify-end border-t border-[var(--molsan-border)] pt-3">
                         <button type="button" onClick={() => generarHonorariosGestoria?.()} disabled={generandoHonorariosGestoria || !generarHonorariosGestoria} className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-700 px-5 py-2.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-emerald-800 disabled:opacity-50" title="Generar y guardar la factura en Honorarios gestoría, sin crear pagos ni avisos de deuda">
                           {generandoHonorariosGestoria ? "Generando factura…" : <><MolsanIcon name="receipt" size={14} tone="inherit" bare /> Facturar</>}
                         </button>
@@ -5979,124 +5979,124 @@ const cuantiaFincasParaEnvio =
                           <div ref={pagoRealDialogRef} tabIndex={-1} className="fixed inset-0 z-[12000] flex items-center justify-center bg-slate-950/65 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="orden-pago-titulo">
                             <section className="molsan-modal__panel flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl">
                               <header className="molsan-modal-header flex items-start justify-between gap-3 border-0 bg-white px-5 py-4 sm:px-6">
-                                <div><p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Gestión económica</p><h2 id="orden-pago-titulo" className="mt-1 text-xl font-extrabold text-slate-900">Orden de pago</h2><p className="mt-1 text-xs text-slate-500">Expediente {expediente?.id_expediente || expediente?.id || id || "—"} · Preparar la orden no ejecuta una transferencia bancaria.</p></div>
-                                <button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); } }} disabled={guardandoPagoReal} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-lg leading-none text-slate-600 hover:bg-slate-100 disabled:opacity-50" aria-label="Cerrar orden de pago">×</button>
+                                <div><p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[var(--molsan-primary)]">MOLSAN ERP · Gestión económica</p><h2 id="orden-pago-titulo" className="mt-1 text-xl font-extrabold text-[var(--molsan-text)]">Orden de pago</h2><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Expediente {expediente?.id_expediente || expediente?.id || id || "—"} · Preparar la orden no ejecuta una transferencia bancaria.</p></div>
+                                <button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); } }} disabled={guardandoPagoReal} className="rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-lg leading-none text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)] disabled:opacity-50" aria-label="Cerrar orden de pago"><MolsanIcon name="x" size={18} bare /></button>
                               </header>
                               <form onSubmit={registrarPagoObligacion} className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
-                                <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
-                                  <h3 className="mb-3 text-sm font-extrabold text-slate-800">1. Concepto del gasto</h3>
-                                  <label className="block text-xs font-bold text-slate-600">Tipo de documento / obligación
-                                    <input readOnly value={gastoForm.tipo || (gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.tipo || "Gasto")} className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-800" />
+                                <section className="mb-4 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                                  <h3 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">1. Concepto del gasto</h3>
+                                  <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Tipo de documento / obligación
+                                    <input readOnly value={gastoForm.tipo || (gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.tipo || "Gasto")} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 text-sm font-semibold text-[var(--molsan-text)]" />
                                   </label>
                                 </section>
-                                <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
-                                  <h3 className="mb-3 text-sm font-extrabold text-slate-800">2. Ordenante del pago</h3>
+                                <section className="mb-4 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                                  <h3 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">2. Ordenante del pago</h3>
                                   <div className="grid gap-3 md:grid-cols-2">
-                                    <label className="block text-xs font-bold text-slate-600">Nombre y apellidos
-                                      <input readOnly value={[expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" ")} placeholder="Sin datos de facturación" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Nombre y apellidos
+                                      <input readOnly value={[expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" ")} placeholder="Sin datos de facturación" className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                                     </label>
-                                    <label className="block text-xs font-bold text-slate-600">DNI / NIF
-                                      <input readOnly value={expediente?.facturacion_dni_nif || expediente?.dni_facturacion || expediente?.nif_facturacion || ""} placeholder="Sin DNI/NIF de facturación" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">DNI / NIF
+                                      <input readOnly value={expediente?.facturacion_dni_nif || expediente?.dni_facturacion || expediente?.nif_facturacion || ""} placeholder="Sin DNI/NIF de facturación" className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                                     </label>
                                   </div>
                                 </section>
-                                <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
-                                  <h3 className="mb-3 text-sm font-extrabold text-slate-800">3. Beneficiario</h3>
+                                <section className="mb-4 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                                  <h3 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">3. Beneficiario</h3>
                                   <div className="grid gap-3 md:grid-cols-2">
-                                    <label className="block text-xs font-bold text-slate-600">Nombre del notario
-                                      <input readOnly value={expediente?.nombre_notario || expediente?.notario || gastoForm.nombre_notario || ""} placeholder="Sin notario vinculado en Envío a notario" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Nombre del notario
+                                      <input readOnly value={expediente?.nombre_notario || expediente?.notario || gastoForm.nombre_notario || ""} placeholder="Sin notario vinculado en Envío a notario" className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                                     </label>
-                                    <label className="block text-xs font-bold text-slate-600">DNI / NIF del notario
-                                      <input readOnly value={expediente?.nif_notario || expediente?.notario_nif || gastoForm.nif_notario || ""} placeholder="Sin NIF del notario" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">DNI / NIF del notario
+                                      <input readOnly value={expediente?.nif_notario || expediente?.notario_nif || gastoForm.nif_notario || ""} placeholder="Sin NIF del notario" className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                                     </label>
                                   </div>
-                                  <label className="mt-3 block text-xs font-bold text-slate-600">Cuenta bancaria principal · CTN / Medios de pago
-                                    <input readOnly value={gastoForm.cuenta_bancaria || ""} placeholder="No consta cuenta principal en la ficha CTN" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 font-mono text-sm font-normal text-slate-800" />
+                                  <label className="mt-3 block text-xs font-bold text-[var(--molsan-text-secondary)]">Cuenta bancaria principal · CTN / Medios de pago
+                                    <input readOnly value={gastoForm.cuenta_bancaria || ""} placeholder="No consta cuenta principal en la ficha CTN" className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 font-mono text-sm font-normal text-[var(--molsan-text)]" />
                                   </label>
                                   {cuentasBancariasNotario.length === 0 && <p className="mt-2 text-[11px] text-amber-700">No se ha podido confirmar la cuenta principal del notario. Revisa la ficha CTN antes de continuar.</p>}
                                 </section>
-                                <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
-                                  <h3 className="mb-3 text-sm font-extrabold text-slate-800">4. Detalle del gasto</h3>
+                                <section className="mb-4 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                                  <h3 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">4. Detalle del gasto</h3>
                                   <div className="grid gap-3 md:grid-cols-2">
-                                    <label className="block text-xs font-bold text-slate-600">Medio de pago
-                                      <input readOnly value="Transferencia bancaria a la cuenta del destinatario" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Medio de pago
+                                      <input readOnly value="Transferencia bancaria a la cuenta del destinatario" className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                                     </label>
-                                    <label className="block text-xs font-bold text-slate-600">Fecha del pago
-                                      <input readOnly type="date" value={pagoRealForm.fecha} className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Fecha del pago
+                                      <input readOnly type="date" value={pagoRealForm.fecha} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                                     </label>
                                   </div>
                                 </section>
-                                <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
-                                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3 className="text-sm font-extrabold text-slate-800">5. Datos de la factura</h3><span className="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-bold text-amber-800">Extracción PDF pendiente</span></div>
+                                <section className="mb-4 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3 className="text-sm font-extrabold text-[var(--molsan-text)]">5. Datos de la factura</h3><span className="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-bold text-amber-800">Extracción PDF pendiente</span></div>
                                   <div className="grid gap-3 md:grid-cols-2">
-                                    <label className="block text-xs font-bold text-slate-600">N.º de factura
-                                      <input value={gastoForm.numero_factura || ""} onChange={(e) => setGastoForm((a) => ({ ...a, numero_factura: e.target.value }))} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">N.º de factura
+                                      <input value={gastoForm.numero_factura || ""} onChange={(e) => setGastoForm((a) => ({ ...a, numero_factura: e.target.value }))} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                                     </label>
-                                    <label className="block text-xs font-bold text-slate-600">Fecha de factura
-                                      <input type="date" value={gastoForm.fecha_factura || ""} onChange={(e) => setGastoForm((a) => ({ ...a, fecha_factura: e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Fecha de factura
+                                      <input type="date" value={gastoForm.fecha_factura || ""} onChange={(e) => setGastoForm((a) => ({ ...a, fecha_factura: e.target.value }))} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                                     </label>
                                   </div>
                                 </section>
-                                <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
-                                  <h3 className="mb-3 text-sm font-extrabold text-slate-800">6. Datos fiscales</h3>
+                                <section className="mb-4 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                                  <h3 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">6. Datos fiscales</h3>
                                   <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                                    <label className="block text-xs font-bold text-slate-600">Base imponible total
-                                      <input readOnly value={(gastoForm.base_exenta_impuestos !== "" || gastoForm.base_sujeta_impuestos !== "") ? (Number(gastoForm.base_exenta_impuestos || 0) + Number(gastoForm.base_sujeta_impuestos || 0)).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Base imponible total
+                                      <input readOnly value={(gastoForm.base_exenta_impuestos !== "" || gastoForm.base_sujeta_impuestos !== "") ? (Number(gastoForm.base_exenta_impuestos || 0) + Number(gastoForm.base_sujeta_impuestos || 0)).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                                     </label>
-                                    <label className="block text-xs font-bold text-slate-600">Base exenta / no sujeta
-                                      <input type="number" min="0" step="0.01" value={gastoForm.base_exenta_impuestos || ""} onChange={(e) => setGastoForm((a) => ({ ...a, base_exenta_impuestos: e.target.value }))} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Base exenta / no sujeta
+                                      <input type="number" min="0" step="0.01" value={gastoForm.base_exenta_impuestos || ""} onChange={(e) => setGastoForm((a) => ({ ...a, base_exenta_impuestos: e.target.value }))} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                                     </label>
-                                    <label className="block text-xs font-bold text-slate-600">Base sujeta a impuestos
-                                      <input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_impuestos || ""} onChange={(e) => setGastoForm((a) => ({ ...a, base_sujeta_impuestos: e.target.value }))} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Base sujeta a impuestos
+                                      <input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_impuestos || ""} onChange={(e) => setGastoForm((a) => ({ ...a, base_sujeta_impuestos: e.target.value }))} placeholder="Pendiente de lectura del PDF" className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                                     </label>
-                                    <label className="block text-xs font-bold text-slate-600">Tipo de impuesto
-                                      <select value={gastoForm.tipo_impuesto || ""} onChange={(e) => { const v=e.target.value; const tipo=tiposImpositivosCatalogo.find((x) => x.categoria === "impuesto" && x.nombre === v); setGastoForm((a) => ({ ...a, tipo_impuesto:v, porcentaje_impuesto:tipo ? (tipo.porcentaje == null ? "" : String(tipo.porcentaje)) : a.porcentaje_impuesto })); }} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800"><option value="">Seleccionar del catálogo…</option>{gastoForm.tipo_impuesto && !tiposImpositivosCatalogo.some((x) => x.categoria === "impuesto" && x.nombre === gastoForm.tipo_impuesto) && <option value={gastoForm.tipo_impuesto}>{gastoForm.tipo_impuesto} · valor histórico</option>}{tiposImpositivosCatalogo.filter((x) => x.categoria === "impuesto").map((x) => <option key={x.id} value={x.nombre}>{x.nombre}</option>)}</select>
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Tipo de impuesto
+                                      <select value={gastoForm.tipo_impuesto || ""} onChange={(e) => { const v=e.target.value; const tipo=tiposImpositivosCatalogo.find((x) => x.categoria === "impuesto" && x.nombre === v); setGastoForm((a) => ({ ...a, tipo_impuesto:v, porcentaje_impuesto:tipo ? (tipo.porcentaje == null ? "" : String(tipo.porcentaje)) : a.porcentaje_impuesto })); }} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]"><option value="">Seleccionar del catálogo…</option>{gastoForm.tipo_impuesto && !tiposImpositivosCatalogo.some((x) => x.categoria === "impuesto" && x.nombre === gastoForm.tipo_impuesto) && <option value={gastoForm.tipo_impuesto}>{gastoForm.tipo_impuesto} · valor histórico</option>}{tiposImpositivosCatalogo.filter((x) => x.categoria === "impuesto").map((x) => <option key={x.id} value={x.nombre}>{x.nombre}</option>)}</select>
                                     </label>
-                                    <label className="block text-xs font-bold text-slate-600">Tramo / tipo
-                                      <select value={gastoForm.tramo_impuesto || "General"} onChange={(e) => setGastoForm((a) => ({ ...a, tramo_impuesto:e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800">{["Exento","General","Reducido","Super reducido","Único"].map((x) => <option key={x}>{x}</option>)}</select>
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Tramo / tipo
+                                      <select value={gastoForm.tramo_impuesto || "General"} onChange={(e) => setGastoForm((a) => ({ ...a, tramo_impuesto:e.target.value }))} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]">{["Exento","General","Reducido","Super reducido","Único"].map((x) => <option key={x}>{x}</option>)}</select>
                                     </label>
-                                    <label className="block text-xs font-bold text-slate-600">Porcentaje del impuesto (%)
-                                      <input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto ?? "0"} onChange={(e) => setGastoForm((a) => ({ ...a, porcentaje_impuesto:e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Porcentaje del impuesto (%)
+                                      <input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto ?? "0"} onChange={(e) => setGastoForm((a) => ({ ...a, porcentaje_impuesto:e.target.value }))} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                                     </label>
-                                    <label className="block text-xs font-bold text-slate-600">Tipo de retención
-                                      <select value={gastoForm.tipo_retencion || ""} onChange={(e) => { const v=e.target.value; const tipo=tiposImpositivosCatalogo.find((x) => x.categoria === "retencion" && x.nombre === v); setGastoForm((a) => ({ ...a, tipo_retencion:v, porcentaje_retencion:tipo?.porcentaje == null ? "" : String(tipo.porcentaje) })); }} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800"><option value="">Seleccionar del catálogo…</option>{gastoForm.tipo_retencion && !tiposImpositivosCatalogo.some((x) => x.categoria === "retencion" && x.nombre === gastoForm.tipo_retencion) && <option value={gastoForm.tipo_retencion}>{gastoForm.tipo_retencion} · valor histórico</option>}{tiposImpositivosCatalogo.filter((x) => x.categoria === "retencion").map((x) => <option key={x.id} value={x.nombre}>{x.nombre}</option>)}</select>
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Tipo de retención
+                                      <select value={gastoForm.tipo_retencion || ""} onChange={(e) => { const v=e.target.value; const tipo=tiposImpositivosCatalogo.find((x) => x.categoria === "retencion" && x.nombre === v); setGastoForm((a) => ({ ...a, tipo_retencion:v, porcentaje_retencion:tipo?.porcentaje == null ? "" : String(tipo.porcentaje) })); }} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]"><option value="">Seleccionar del catálogo…</option>{gastoForm.tipo_retencion && !tiposImpositivosCatalogo.some((x) => x.categoria === "retencion" && x.nombre === gastoForm.tipo_retencion) && <option value={gastoForm.tipo_retencion}>{gastoForm.tipo_retencion} · valor histórico</option>}{tiposImpositivosCatalogo.filter((x) => x.categoria === "retencion").map((x) => <option key={x.id} value={x.nombre}>{x.nombre}</option>)}</select>
                                     </label>
-                                    <label className="block text-xs font-bold text-slate-600">Porcentaje de retención (%)
-                                      <input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_retencion ?? "0"} onChange={(e) => setGastoForm((a) => ({ ...a, porcentaje_retencion:e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal text-slate-800" />
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Porcentaje de retención (%)
+                                      <input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_retencion ?? "0"} onChange={(e) => setGastoForm((a) => ({ ...a, porcentaje_retencion:e.target.value }))} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                                     </label>
                                   </div>
                                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                                    <label className="block text-xs font-bold text-slate-600">Importe total de factura (€)
-                                      <input readOnly value={Number(gastoForm.importe_total_bruto || (gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe_total_bruto ?? gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe_resultante ?? gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe ?? 0)).toLocaleString("es-ES", { minimumFractionDigits:2, maximumFractionDigits:2 })} className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-extrabold text-slate-900" />
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Importe total de factura (€)
+                                      <input readOnly value={Number(gastoForm.importe_total_bruto || (gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe_total_bruto ?? gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe_resultante ?? gastosExpediente.find((g) => String(g.id) === String(pagoGastoSeleccionadoId))?.importe ?? 0)).toLocaleString("es-ES", { minimumFractionDigits:2, maximumFractionDigits:2 })} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 text-sm font-extrabold text-[var(--molsan-text)]" />
                                     </label>
-                                    <label className="block text-xs font-bold text-slate-600">Importe de este pago (€)
+                                    <label className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Importe de este pago (€)
                                       <input required type="number" min="0.01" step="0.01" value={pagoRealForm.importe} onChange={(e) => setPagoRealForm((a) => ({ ...a, importe: e.target.value }))} className="mt-1 w-full rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm font-extrabold text-emerald-900" />
                                     </label>
                                   </div>
                                 </section>
                                 {errorPagoReal && <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{errorPagoReal}</p>}
-                                <footer className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-4">
-                                  <p className="max-w-xl text-xs leading-5 text-slate-500">Al confirmar, se guardarán los datos de la factura en la obligación y se registrará un movimiento en el histórico. No se ordena ninguna transferencia bancaria desde el ERP.</p>
-                                  <div className="flex gap-2"><button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); } }} disabled={guardandoPagoReal} className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 disabled:opacity-50">Cancelar</button><button type="submit" disabled={guardandoPagoReal || !pagoGastoSeleccionadoId} className="rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-extrabold text-white hover:bg-emerald-800 disabled:opacity-50">{guardandoPagoReal ? "Registrando pago…" : "Pagar"}</button></div>
+                                <footer className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-4">
+                                  <p className="max-w-xl text-xs leading-5 text-[var(--molsan-text-secondary)]">Al confirmar, se guardarán los datos de la factura en la obligación y se registrará un movimiento en el histórico. No se ordena ninguna transferencia bancaria desde el ERP.</p>
+                                  <div className="flex gap-2"><button type="button" onClick={() => { if (!guardandoPagoReal) { setMostrarFormularioPagoReal(false); setPagoGastoSeleccionadoId(""); } }} disabled={guardandoPagoReal} className="rounded-lg border border-[var(--molsan-border)] bg-white px-4 py-2.5 text-sm font-bold text-[var(--molsan-text-secondary)] disabled:opacity-50">Cancelar</button><button type="submit" disabled={guardandoPagoReal || !pagoGastoSeleccionadoId} className="rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-extrabold text-white hover:bg-emerald-800 disabled:opacity-50">{guardandoPagoReal ? "Registrando pago…" : "Pagar"}</button></div>
                                 </footer>
                               </form>
                             </section>
                           </div>
                         ), document.body)}
                         {mostrarFormularioGasto && (
-                          <div className="mt-4 rounded-2xl border border-indigo-200 bg-indigo-50/40 p-3 sm:p-4">
-                            <div className="mx-auto flex w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                          <div className="mt-4 rounded-2xl border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] p-3 sm:p-4">
+                            <div className="mx-auto flex w-full flex-col overflow-hidden rounded-xl border border-[var(--molsan-border)] bg-white shadow-sm">
                           <form onSubmit={guardarGastoExpediente} className="flex min-h-0 flex-col overflow-hidden">
-                            <div className="flex items-start justify-between gap-3 border-b border-slate-200 bg-slate-50 px-5 py-4">
-                              <div><h5 id="titulo-modal-gasto" className="text-base font-extrabold text-slate-900">{gastoEdicionId ? "Completar obligación económica" : "Registrar obligación económica"}</h5><p className="mt-1 text-xs text-slate-500">Adjuntar una factura crea una obligación pendiente. Solo el formulario de pago confirma movimientos reales.</p></div>
-                              <button type="button" aria-label="Cerrar ventana" onClick={() => setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-lg leading-none text-slate-600 hover:bg-slate-100 disabled:opacity-50">×</button>
+                            <div className="flex items-start justify-between gap-3 border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-5 py-4">
+                              <div><h5 id="titulo-modal-gasto" className="text-base font-extrabold text-[var(--molsan-text)]">{gastoEdicionId ? "Completar obligación económica" : "Registrar obligación económica"}</h5><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Adjuntar una factura crea una obligación pendiente. Solo el formulario de pago confirma movimientos reales.</p></div>
+                              <button type="button" aria-label="Cerrar ventana" onClick={() => setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-lg leading-none text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)] disabled:opacity-50"><MolsanIcon name="x" size={18} bare /></button>
                               <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-bold text-amber-800">Pago: pendiente</span>
                             </div>
                             <div className="min-h-0 flex-1 overflow-y-auto p-5"><div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(360px,0.9fr)]">
                               <div className="min-w-0">
                               <div className="space-y-3">
-                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Factura y proveedor</h6>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-indigo-800">Honorarios de gestoría (opcional)</span><select value={honorarioGestoriaId} onChange={(e) => { const idSeleccionado = e.target.value; setHonorarioGestoriaId(idSeleccionado); const tarifa = honorariosCatalogo.find((x) => String(x.id) === idSeleccionado); if (tarifa) {
+                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Factura y proveedor</h6>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-primary)]">Honorarios de gestoría (opcional)</span><select value={honorarioGestoriaId} onChange={(e) => { const idSeleccionado = e.target.value; setHonorarioGestoriaId(idSeleccionado); const tarifa = honorariosCatalogo.find((x) => String(x.id) === idSeleccionado); if (tarifa) {
                                     const importeTarifa = Number(tarifa.importe || 0).toFixed(2);
                                     const baseTarifa = Number(tarifa.base_imponible ?? tarifa.importe ?? 0).toFixed(2);
                                     const tipoCatalogo = String(tarifa.tipo_impuesto || "IVA").toUpperCase();
@@ -6118,57 +6118,57 @@ const cuantiaFincasParaEnvio =
                                       porcentaje_retencion: "0",
                                       tipo_retencion: "Sin retención",
                                     }));
-                                  } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {Number(x.base_imponible ?? x.importe ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € + {String(x.tipo_impuesto || "IVA").toUpperCase()} {Number(x.porcentaje_impuesto ?? 21)}% · total {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tipo de concepto ABSIS (TIPOCONCEPTO)</span><select value={gastoForm.tipo_concepto_absis} onChange={(e) => setGastoForm((a) => ({ ...a, tipo_concepto_absis: e.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoTiposConceptoAbsis ? "Cargando catálogo ABSIS…" : tiposConceptoAbsis.length ? "Selecciona el tipo ABSIS" : "Sin valores activos en Catálogo ABSIS"}</option>{tiposConceptoAbsis.map((item) => <option key={item.id} value={String(item.codigo || item.valor || "")}>{item.codigo ? `${item.codigo} — ${item.valor}` : item.valor}</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Opcional hasta validar con Informática los códigos oficiales y su correspondencia con el concepto interno.</span></label>
+                                  } }} className="w-full rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {Number(x.base_imponible ?? x.importe ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € + {String(x.tipo_impuesto || "IVA").toUpperCase()} {Number(x.porcentaje_impuesto ?? 21)}% · total {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block text-[11px] text-[var(--molsan-text-secondary)]">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Tipo de concepto ABSIS (TIPOCONCEPTO)</span><select value={gastoForm.tipo_concepto_absis} onChange={(e) => setGastoForm((a) => ({ ...a, tipo_concepto_absis: e.target.value }))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm"><option value="">{cargandoTiposConceptoAbsis ? "Cargando catálogo ABSIS…" : tiposConceptoAbsis.length ? "Selecciona el tipo ABSIS" : "Sin valores activos en Catálogo ABSIS"}</option>{tiposConceptoAbsis.map((item) => <option key={item.id} value={String(item.codigo || item.valor || "")}>{item.codigo ? `${item.codigo} — ${item.valor}` : item.valor}</option>)}</select><span className="mt-1 block text-[11px] text-[var(--molsan-text-secondary)]">Opcional hasta validar con Informática los códigos oficiales y su correspondencia con el concepto interno.</span></label>
                                 <div className="grid gap-3 sm:grid-cols-2">
-                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">NIF/CIF/NIE notario</span><input value={gastoForm.nif_notario} onChange={(e)=>setGastoForm(a=>({...a,nif_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Nombre del notario</span><input value={gastoForm.nombre_notario} onChange={(e)=>setGastoForm(a=>({...a,nombre_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">NIF/CIF/NIE notario</span><input value={gastoForm.nif_notario} onChange={(e)=>setGastoForm(a=>({...a,nif_notario:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Nombre del notario</span><input value={gastoForm.nombre_notario} onChange={(e)=>setGastoForm(a=>({...a,nombre_notario:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
                                 </div>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Pagador / razón social</span><input value={gastoForm.pagador} onChange={(e)=>setGastoForm(a=>({...a,pagador:e.target.value}))} placeholder="Nombre de facturación" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Pagador / razón social</span><input value={gastoForm.pagador} onChange={(e)=>setGastoForm(a=>({...a,pagador:e.target.value}))} placeholder="Nombre de facturación" className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
                                 <div className="grid gap-3 sm:grid-cols-2">
-                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Número de factura</span><input value={gastoForm.numero_factura} onChange={(e)=>setGastoForm(a=>({...a,numero_factura:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de factura *</span><input required type="date" value={gastoForm.fecha_factura} onChange={(e)=>setGastoForm(a=>({...a,fecha_factura:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Número de factura</span><input value={gastoForm.numero_factura} onChange={(e)=>setGastoForm(a=>({...a,numero_factura:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Fecha de factura *</span><input required type="date" value={gastoForm.fecha_factura} onChange={(e)=>setGastoForm(a=>({...a,fecha_factura:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
                                 </div>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha del gasto / factura *</span><input required type="date" value={gastoForm.fecha} onChange={(e)=>setGastoForm(a=>({...a,fecha:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Fecha del gasto / factura *</span><input required type="date" value={gastoForm.fecha} onChange={(e)=>setGastoForm(a=>({...a,fecha:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
                                 <div className="space-y-2">
-                                  {cuentasBancariasNotario.length > 0 && <label className="block"><span className="mb-1 block text-xs font-bold text-indigo-800">Cuentas guardadas en la ficha CTN</span><select value={cuentasBancariasNotario.some((cuenta) => cuenta.iban === gastoForm.cuenta_bancaria) ? gastoForm.cuenta_bancaria : "__manual__"} onChange={(e)=>setGastoForm(a=>({...a,cuenta_bancaria:e.target.value === "__manual__" ? "" : e.target.value}))} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="__manual__">Introducir otra cuenta manualmente</option>{cuentasBancariasNotario.map((cuenta)=><option key={cuenta.id} value={cuenta.iban}>{cuenta.label} · {cuenta.iban}</option>)}</select></label>}
-                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Cuenta bancaria / IBAN</span><input value={gastoForm.cuenta_bancaria} onChange={(e)=>setGastoForm(a=>({...a,cuenta_bancaria:e.target.value.toUpperCase()}))} placeholder="Selecciona una cuenta guardada o introduce el IBAN" maxLength={34} autoComplete="off" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                  {cuentasBancariasNotario.length > 0 && <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-primary)]">Cuentas guardadas en la ficha CTN</span><select value={cuentasBancariasNotario.some((cuenta) => cuenta.iban === gastoForm.cuenta_bancaria) ? gastoForm.cuenta_bancaria : "__manual__"} onChange={(e)=>setGastoForm(a=>({...a,cuenta_bancaria:e.target.value === "__manual__" ? "" : e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-sm"><option value="__manual__">Introducir otra cuenta manualmente</option>{cuentasBancariasNotario.map((cuenta)=><option key={cuenta.id} value={cuenta.iban}>{cuenta.label} · {cuenta.iban}</option>)}</select></label>}
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Cuenta bancaria / IBAN</span><input value={gastoForm.cuenta_bancaria} onChange={(e)=>setGastoForm(a=>({...a,cuenta_bancaria:e.target.value.toUpperCase()}))} placeholder="Selecciona una cuenta guardada o introduce el IBAN" maxLength={34} autoComplete="off" className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
                                 </div>
-                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Medio de pago</span><select value={gastoForm.medio_pago} onChange={(e)=>setGastoForm(a=>({...a,medio_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Transferencia</option><option>Cheque</option><option>Tarjeta</option><option>Efectivo</option><option>Otro</option></select></label></div>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Documento / URL de factura</span><input type="url" value={gastoForm.documento_url} onChange={(e)=>setGastoForm(a=>({...a,documento_url:e.target.value}))} placeholder="https://…" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Medio de pago</span><select value={gastoForm.medio_pago} onChange={(e)=>setGastoForm(a=>({...a,medio_pago:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm"><option>Transferencia</option><option>Cheque</option><option>Tarjeta</option><option>Efectivo</option><option>Otro</option></select></label></div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Documento / URL de factura</span><input type="url" value={gastoForm.documento_url} onChange={(e)=>setGastoForm(a=>({...a,documento_url:e.target.value}))} placeholder="https://…" className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
                               </div>
                               </div>
                               <div className="space-y-3">
-                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Impuestos y retenciones</h6>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tramo de impuesto</span><select value={gastoForm.tramo_impuesto} onChange={(e)=>setGastoForm(a=>({...a,tramo_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","General","Reducido","Super reducido","Único"].map(x=><option key={x}>{x}</option>)}</select></label>
-                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tipo impositivo</span><select value={gastoForm.tipo_impuesto} onChange={(e)=>{const v=e.target.value;setGastoForm(a=>({...a,tipo_impuesto:v,porcentaje_impuesto:v==="IVA 21%"?"21":v==="IGIC 5%"?"5":v==="IGIC 6,50%"?"6.5":v==="IGIC 7%"?"7":"0"}))}} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{!["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].includes(gastoForm.tipo_impuesto) && <option value={gastoForm.tipo_impuesto}>{gastoForm.tipo_impuesto}</option>}{["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].map(x=><option key={x}>{x}</option>)}</select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Porcentaje (%)</span><input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <div className="grid gap-3 sm:grid-cols-2">{[["Base exenta (€)","base_exenta_impuestos"],["Base sujeta (€)","base_sujeta_impuestos"]].map(([label,key])=><label key={key} className="block"><span className="mb-1 block text-xs font-bold text-slate-700">{label}</span><input type="number" min="0" step="0.01" value={gastoForm[key]} onChange={(e)=>setGastoForm(a=>({...a,[key]:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>)}</div>
-                                <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{impuestoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div></div>
-                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base exenta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_exenta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_exenta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base sujeta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_sujeta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Retención</span><select value={gastoForm.tipo_retencion} onChange={(e)=>setGastoForm(a=>({...a,tipo_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>IRPF profesionales</option><option>Sin retención</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">IRPF (%)</span><input type="number" min="0" max="21" step="0.01" value={gastoForm.porcentaje_retencion} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Impuestos y retenciones</h6>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Tramo de impuesto</span><select value={gastoForm.tramo_impuesto} onChange={(e)=>setGastoForm(a=>({...a,tramo_impuesto:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm">{["Exento","General","Reducido","Super reducido","Único"].map(x=><option key={x}>{x}</option>)}</select></label>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Tipo impositivo</span><select value={gastoForm.tipo_impuesto} onChange={(e)=>{const v=e.target.value;setGastoForm(a=>({...a,tipo_impuesto:v,porcentaje_impuesto:v==="IVA 21%"?"21":v==="IGIC 5%"?"5":v==="IGIC 6,50%"?"6.5":v==="IGIC 7%"?"7":"0"}))}} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm">{!["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].includes(gastoForm.tipo_impuesto) && <option value={gastoForm.tipo_impuesto}>{gastoForm.tipo_impuesto}</option>}{["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].map(x=><option key={x}>{x}</option>)}</select></label><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Porcentaje (%)</span><input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_impuesto:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="grid gap-3 sm:grid-cols-2">{[["Base exenta (€)","base_exenta_impuestos"],["Base sujeta (€)","base_sujeta_impuestos"]].map(([label,key])=><label key={key} className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">{label}</span><input type="number" min="0" step="0.01" value={gastoForm[key]} onChange={(e)=>setGastoForm(a=>({...a,[key]:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>)}</div>
+                                <div className="rounded-lg border border-[var(--molsan-border)] bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{impuestoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div></div>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Base exenta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_exenta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_exenta_retencion:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Base sujeta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_sujeta_retencion:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Retención</span><select value={gastoForm.tipo_retencion} onChange={(e)=>setGastoForm(a=>({...a,tipo_retencion:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm"><option>IRPF profesionales</option><option>Sin retención</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">IRPF (%)</span><input type="number" min="0" max="21" step="0.01" value={gastoForm.porcentaje_retencion} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_retencion:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="rounded-xl border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] p-4"><div className="flex justify-between text-xs text-[var(--molsan-text-secondary)]"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-[var(--molsan-primary)]">Resultado calculado</span><strong className="text-2xl text-[var(--molsan-primary)]">{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label></div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
                               </div>
-                              <aside className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                              <aside className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3">
                                 <div className="mb-3">
-                                  <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-600">Factura de Carpeta Digital</h6>
-                                  <p className="mt-1 text-[11px] text-slate-500">Factura notarial o registral · PDF</p>
+                                  <h6 className="text-xs font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Factura de Carpeta Digital</h6>
+                                  <p className="mt-1 text-[11px] text-[var(--molsan-text-secondary)]">Factura notarial o registral · PDF</p>
                                 </div>
                                 <label className="mb-3 block">
-                                  <span className="mb-1 block text-xs font-bold text-slate-700">Documento a revisar</span>
-                                  <select value={documentoFacturaSeleccionado} onChange={(e) => { setDocumentoFacturaSeleccionado(e.target.value); setGastoForm(a => ({...a, documento_carpeta_id: e.target.value})); }} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs">
+                                  <span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Documento a revisar</span>
+                                  <select value={documentoFacturaSeleccionado} onChange={(e) => { setDocumentoFacturaSeleccionado(e.target.value); setGastoForm(a => ({...a, documento_carpeta_id: e.target.value})); }} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-xs">
                                     <option value="">Selecciona una factura PDF…</option>
                                     {documentosFacturaElegibles.map((doc) => <option key={doc.id} value={String(doc.id)}>{doc.nombre_original || doc.nombre || `Documento ${doc.id}`} · {doc.categoria || doc.categoria_nombre}</option>)}
                                   </select>
                                 </label>
-                                {cargandoVistaPreviaFactura ? <p className="p-4 text-xs text-slate-500">Cargando PDF…</p> : null}
+                                {cargandoVistaPreviaFactura ? <p className="p-4 text-xs text-[var(--molsan-text-secondary)]">Cargando PDF…</p> : null}
                                 {errorVistaPreviaFactura ? <p role="alert" className="mb-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800">{errorVistaPreviaFactura}</p> : null}
-                                {urlVistaPreviaFactura ? <iframe title="Vista previa de factura" src={urlVistaPreviaFactura} className="h-[58vh] min-h-[360px] w-full rounded-lg border border-slate-200 bg-white" /> : null}
-                                {!urlVistaPreviaFactura && !cargandoVistaPreviaFactura && !errorVistaPreviaFactura ? <p className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-center text-xs text-slate-500">No hay ningún PDF seleccionado. Comprueba que la factura esté en Gestión económica de la Carpeta Digital.</p> : null}
+                                {urlVistaPreviaFactura ? <iframe title="Vista previa de factura" src={urlVistaPreviaFactura} className="h-[58vh] min-h-[360px] w-full rounded-lg border border-[var(--molsan-border)] bg-white" /> : null}
+                                {!urlVistaPreviaFactura && !cargandoVistaPreviaFactura && !errorVistaPreviaFactura ? <p className="rounded-lg border border-dashed border-[var(--molsan-border-strong)] bg-white p-5 text-center text-xs text-[var(--molsan-text-secondary)]">No hay ningún PDF seleccionado. Comprueba que la factura esté en Gestión económica de la Carpeta Digital.</p> : null}
                               </aside>
                             </div></div>
-                            <div className="flex flex-wrap justify-end gap-2 border-t border-slate-200 bg-white px-5 py-4"><button type="button" onClick={()=>setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardandoGasto || cargandoConceptosGasto} className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoGasto ? "Guardando…" : gastoEdicionId ? "Guardar obligación" : "Registrar gasto"}</button></div>
+                            <div className="flex flex-wrap justify-end gap-2 border-t border-[var(--molsan-border)] bg-white px-5 py-4"><button type="button" onClick={()=>setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-[var(--molsan-border)] bg-white px-4 py-2 text-xs font-bold text-[var(--molsan-text-secondary)]">Cancelar</button><button type="submit" disabled={guardandoGasto || cargandoConceptosGasto} className="rounded-lg bg-[var(--molsan-primary)] px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoGasto ? "Guardando…" : gastoEdicionId ? "Guardar obligación" : "Registrar gasto"}</button></div>
                           </form>
                             </div>
                           </div>
@@ -6194,15 +6194,15 @@ const cuantiaFincasParaEnvio =
                 )}
 
                 {actividadSeleccionada === "sede-notarial" && (
-                  <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
+                  <section className="mb-3 rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3 sm:p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="text-sm font-extrabold text-slate-800">Datos de Sede notarial</h3>
-                  <span className="text-[11px] font-medium text-slate-500">Información del envío y del documento</span>
+                  <h3 className="text-sm font-extrabold text-[var(--molsan-text)]">Datos de Sede notarial</h3>
+                  <span className="text-[11px] font-medium text-[var(--molsan-text-secondary)]">Información del envío y del documento</span>
                 </div>
 
                 <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
-                  <article className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                    <h4 className="mb-3 border-b border-slate-100 pb-2 text-xs font-extrabold text-slate-800">Datos del notario</h4>
+                  <article className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-3">
+                    <h4 className="mb-3 border-b border-[var(--molsan-border)] pb-2 text-xs font-extrabold text-[var(--molsan-text)]">Datos del notario</h4>
                     <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
                       <Dato campo="Fecha envío" valor={expediente?.fecha_envio_notario || expediente?.fecha_envio} tipo="fecha" />
                       <Dato campo="Apoderado" valor={expediente?.apoderado} />
@@ -6219,8 +6219,8 @@ const cuantiaFincasParaEnvio =
                     </div>
                   </article>
 
-                  <article className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                    <h4 className="mb-3 border-b border-slate-100 pb-2 text-xs font-extrabold text-slate-800">Datos del documento</h4>
+                  <article className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-3">
+                    <h4 className="mb-3 border-b border-[var(--molsan-border)] pb-2 text-xs font-extrabold text-[var(--molsan-text)]">Datos del documento</h4>
                     <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
                       <Dato campo="Título" valor={expediente?.titulo ?? expediente?.titulo_documento ?? expediente?.titulo_escritura} />
                       <Dato
@@ -6250,49 +6250,49 @@ const cuantiaFincasParaEnvio =
             {false && <>
             {actividadSeleccionada === "documentacion-previa" && (
               <div className="mb-4 space-y-4">
-                <section className="rounded-xl border border-slate-200 bg-white p-4">
+                <section className="rounded-xl border border-[var(--molsan-border)] bg-white p-4">
                   <div className="mb-3">
-                    <h4 className="text-sm font-extrabold text-slate-800">Preparación de datos para la futura integración ABSIS</h4>
-                    <p className="mt-1 text-xs text-slate-500">Los datos se guardan en el ERP. Esta pantalla no transmite información a ABSIS.</p>
+                    <h4 className="text-sm font-extrabold text-[var(--molsan-text)]">Preparación de datos para la futura integración ABSIS</h4>
+                    <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Los datos se guardan en el ERP. Esta pantalla no transmite información a ABSIS.</p>
                   </div>
-                  {cargandoEstadoAbsis ? <p className="text-xs text-slate-500">Cargando estado de ABSIS…</p> : null}
+                  {cargandoEstadoAbsis ? <p className="text-xs text-[var(--molsan-text-secondary)]">Cargando estado de ABSIS…</p> : null}
                   <div className="grid gap-3 md:grid-cols-2">
-                    <label className="rounded-lg border border-slate-200 p-3">
-                      <span className="mb-2 block text-xs font-bold text-slate-700">Certificado Saldo «0» erróneo</span>
-                      <select value={estadoDocumentacionAbsis.certificado_saldo_cero_erroneo ? "si" : "no"} onChange={(e) => setEstadoDocumentacionAbsis((a) => ({ ...a, certificado_saldo_cero_erroneo: e.target.value === "si" }))} disabled={registrandoSolicitudIntegracion} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <label className="rounded-lg border border-[var(--molsan-border)] p-3">
+                      <span className="mb-2 block text-xs font-bold text-[var(--molsan-text)]">Certificado Saldo «0» erróneo</span>
+                      <select value={estadoDocumentacionAbsis.certificado_saldo_cero_erroneo ? "si" : "no"} onChange={(e) => setEstadoDocumentacionAbsis((a) => ({ ...a, certificado_saldo_cero_erroneo: e.target.value === "si" }))} disabled={registrandoSolicitudIntegracion} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm">
                         <option value="no">No</option><option value="si">Sí</option>
                       </select>
                     </label>
-                    <div className="rounded-lg border border-slate-200 p-3">
-                      <span className="mb-1 block text-xs font-bold text-slate-700">Fecha envío a notario</span>
-                      <p className="text-sm font-semibold text-slate-800">{expediente?.fecha_envio_notario || expediente?.fecha_envio ? new Date(expediente.fecha_envio_notario || expediente.fecha_envio).toLocaleDateString("es-ES") : "Pendiente de envío"}</p>
-                      <p className="mt-1 text-[11px] text-slate-500">Vinculada al envío guardado en Enviar a notario.</p>
+                    <div className="rounded-lg border border-[var(--molsan-border)] p-3">
+                      <span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Fecha envío a notario</span>
+                      <p className="text-sm font-semibold text-[var(--molsan-text)]">{expediente?.fecha_envio_notario || expediente?.fecha_envio ? new Date(expediente.fecha_envio_notario || expediente.fecha_envio).toLocaleDateString("es-ES") : "Pendiente de envío"}</p>
+                      <p className="mt-1 text-[11px] text-[var(--molsan-text-secondary)]">Vinculada al envío guardado en Enviar a notario.</p>
                     </div>
                   </div>
                   <div className="mt-3 space-y-2">
-                    <p className="text-xs font-bold text-slate-700">Documentos que incluirá la futura solicitud</p>
+                    <p className="text-xs font-bold text-[var(--molsan-text)]">Documentos que incluirá la futura solicitud</p>
                     {[
                       ["solicitud_cancelacion_notarial", "Hoja de Encargo firmada"],
                       ["certificado_cancelacion_administrativo", "Justificante de cancelación"],
                       ["nota_simple_registral", "Nota simple registral"],
                     ].map(([key, label]) => (
-                      <label key={key} className="flex items-center gap-3 rounded-lg border border-slate-100 px-3 py-2 text-sm text-slate-700">
-                        <input type="checkbox" checked={!!estadoDocumentacionAbsis[key]} onChange={(e) => setEstadoDocumentacionAbsis((a) => ({ ...a, [key]: e.target.checked }))} disabled={registrandoSolicitudIntegracion} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
+                      <label key={key} className="flex items-center gap-3 rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm text-[var(--molsan-text)]">
+                        <input type="checkbox" checked={!!estadoDocumentacionAbsis[key]} onChange={(e) => setEstadoDocumentacionAbsis((a) => ({ ...a, [key]: e.target.checked }))} disabled={registrandoSolicitudIntegracion} className="h-4 w-4 rounded border-[var(--molsan-border-strong)] text-[var(--molsan-primary)]" />
                         <span className="flex-1">{label}</span>
                       </label>
                     ))}
                   </div>
-                  <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50/40 p-3">
-                    <span className="mb-2 block text-xs font-extrabold text-slate-700">Solicitar avance al completar la futura integración</span>
+                  <div className="mt-3 rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3">
+                    <span className="mb-2 block text-xs font-extrabold text-[var(--molsan-text)]">Solicitar avance al completar la futura integración</span>
                     <div className="flex gap-4">
                       <label className="flex items-center gap-2 text-sm"><input type="radio" name="moverActividadPrevia" checked={!!estadoDocumentacionAbsis.mover_siguiente_actividad} onChange={() => setEstadoDocumentacionAbsis((a) => ({ ...a, mover_siguiente_actividad: true }))} disabled={registrandoSolicitudIntegracion} />Sí</label>
                       <label className="flex items-center gap-2 text-sm"><input type="radio" name="moverActividadPrevia" checked={!estadoDocumentacionAbsis.mover_siguiente_actividad} onChange={() => setEstadoDocumentacionAbsis((a) => ({ ...a, mover_siguiente_actividad: false }))} disabled={registrandoSolicitudIntegracion} />No</label>
                     </div>
-                    <p className="mt-2 text-[11px] text-slate-500">Registrar la solicitud no envía nada ni avanza el expediente. El avance se valida por separado.</p>
+                    <p className="mt-2 text-[11px] text-[var(--molsan-text-secondary)]">Registrar la solicitud no envía nada ni avanza el expediente. El avance se valida por separado.</p>
                   </div>
                   <div className="mt-4 flex flex-wrap justify-end gap-2">
                     <Boton onClick={() => guardarEstadoAbsis(false)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Guardando…" : <><MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar datos para integración</>}</Boton>
-                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : <><MolsanIcon name="mail" size={14} tone="inherit" bare /> Registrar solicitud pendiente</>}</Boton>
+                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? <><MolsanIcon name="check" size={13} bare /> Solicitud pendiente registrada</> : <><MolsanIcon name="mail" size={14} tone="inherit" bare /> Registrar solicitud pendiente</>}</Boton>
                   </div>
                   {estadoDocumentacionAbsis.solicitud_registrada_localmente && <p className="mt-2 text-right text-xs font-semibold text-amber-700">Pendiente de API externa; todavía no transmitida a ABSIS.</p>}
                 </section>
@@ -6307,12 +6307,12 @@ const cuantiaFincasParaEnvio =
 
             {false && <>
             {actividadSeleccionada === "defectos-registrales" && (
-              <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
+              <section className="mb-3 rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3 sm:p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="text-sm font-extrabold text-slate-800">Defectos registrales del expediente</h3>
+                  <h3 className="text-sm font-extrabold text-[var(--molsan-text)]">Defectos registrales del expediente</h3>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[11px] font-medium text-slate-500">Detalle compartido con el alta de defectos</span>
-                    <Boton tipo="primary" onClick={() => { setDefectoEditandoId(null); setDefectoForm({ ...DEFECTO_VACIO }); setErrorDefecto(""); setMostrarDefecto(true); }}>＋ Alta defecto</Boton>
+                    <span className="text-[11px] font-medium text-[var(--molsan-text-secondary)]">Detalle compartido con el alta de defectos</span>
+                    <Boton tipo="primary" onClick={() => { setDefectoEditandoId(null); setDefectoForm({ ...DEFECTO_VACIO }); setErrorDefecto(""); setMostrarDefecto(true); }}><MolsanIcon name="plus" size={14} bare /> Alta defecto</Boton>
                   </div>
                 </div>
                 <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
@@ -6330,17 +6330,17 @@ const cuantiaFincasParaEnvio =
                   />
                 </div>
 
-                <div className="mt-3 rounded-xl border border-slate-200 bg-white p-3">
-                  <h4 className="mb-2 text-xs font-extrabold text-slate-700">Información de fincas y registro</h4>
+                <div className="mt-3 rounded-xl border border-[var(--molsan-border)] bg-white p-3">
+                  <h4 className="mb-2 text-xs font-extrabold text-[var(--molsan-text)]">Información de fincas y registro</h4>
                   {cargandoFincas ? (
-                    <p className="text-xs text-slate-500">Cargando fincas y datos registrales…</p>
+                    <p className="text-xs text-[var(--molsan-text-secondary)]">Cargando fincas y datos registrales…</p>
                   ) : fincasExpediente.length === 0 ? (
-                    <p className="text-xs text-slate-500">No hay fincas ni datos registrales vinculados a este expediente.</p>
+                    <p className="text-xs text-[var(--molsan-text-secondary)]">No hay fincas ni datos registrales vinculados a este expediente.</p>
                   ) : (
                     <div className="space-y-2">
                       {fincasExpediente.map((finca, indice) => (
-                        <article key={finca.id || `${finca.finca || finca.numero_finca || "finca"}-${indice}`} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-                          <p className="text-xs font-bold text-slate-800">Finca {finca.finca || finca.numero_finca || "—"}</p>
+                        <article key={finca.id || `${finca.finca || finca.numero_finca || "finca"}-${indice}`} className="rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3">
+                          <p className="text-xs font-bold text-[var(--molsan-text)]">Finca {finca.finca || finca.numero_finca || "—"}</p>
                           <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                             <Dato campo="Registro" valor={finca.registro} />
                             <Dato campo="Sección" valor={finca.seccion} />
@@ -6362,15 +6362,15 @@ const cuantiaFincasParaEnvio =
 
                 {defectosRegistrados.length > 0 && (
                   <div className="mt-3 rounded-xl border border-amber-200 bg-white p-3">
-                    <h4 className="mb-3 text-xs font-extrabold text-slate-700">Datos de defectos registrales informados</h4>
+                    <h4 className="mb-3 text-xs font-extrabold text-[var(--molsan-text)]">Datos de defectos registrales informados</h4>
                     <div className="space-y-3">
                       {defectosRegistrados.map((defecto) => {
                         const tipoCarga = defecto.tipo_carga_hipotecaria_nombre || tiposCargaHipotecaria.find(
                           (tipo) => String(tipo.id) === String(defecto.tipo_carga_hipotecaria_id)
                         )?.nombre;
                         return (
-                          <article key={defecto.id ?? defecto.id_defecto} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                            <p className="mb-2 text-xs font-extrabold text-slate-800">{defecto.motivo_defecto || defecto.tipo_error || "Defecto registral"}</p>
+                          <article key={defecto.id ?? defecto.id_defecto} className="rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3">
+                            <p className="mb-2 text-xs font-extrabold text-[var(--molsan-text)]">{defecto.motivo_defecto || defecto.tipo_error || "Defecto registral"}</p>
                             <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                               <Dato campo="Tipo de carga hipotecaria" valor={tipoCarga} />
                               <Dato campo="Motivos del defecto" valor={defecto.motivo_defecto} />
@@ -6401,8 +6401,8 @@ const cuantiaFincasParaEnvio =
             )}
 
             {actividadSeleccionada === "tramitacion-inscripcion" && (
-              <section className="mb-3 rounded-2xl border border-indigo-100 bg-white p-3 sm:p-4">
-                <h3 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h3>
+              <section className="mb-3 rounded-2xl border border-[var(--molsan-border)] bg-white p-3 sm:p-4">
+                <h3 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">Repositorios digitales</h3>
                 <RepositorioDocumentosInline
                   expedienteId={expediente?.id_expediente || expediente?.id || id}
                   categorias={["Hoja de inscripción"]}
@@ -6412,10 +6412,10 @@ const cuantiaFincasParaEnvio =
             )}
 
             {actividadSeleccionada === "tramitacion-inscripcion" && (
-              <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
+              <section className="mb-3 rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3 sm:p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="text-sm font-extrabold text-slate-800">Datos vinculados de Enviar a notario</h3>
-                  <span className="text-[11px] font-medium text-slate-500">Información de la ficha del expediente</span>
+                  <h3 className="text-sm font-extrabold text-[var(--molsan-text)]">Datos vinculados de Enviar a notario</h3>
+                  <span className="text-[11px] font-medium text-[var(--molsan-text-secondary)]">Información de la ficha del expediente</span>
                 </div>
                 <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                   <Dato campo="Notario" valor={expediente?.nombre_notario ?? expediente?.notario} />
@@ -6423,17 +6423,17 @@ const cuantiaFincasParaEnvio =
                   <Dato campo="Fecha de firma" valor={expediente?.fecha_firma} tipo="fecha" />
                   <Dato campo="Protocolo" valor={expediente?.protocolo} />
                 </div>
-                <div className="mt-3 rounded-xl border border-slate-200 bg-white p-3">
-                  <h4 className="mb-2 text-xs font-extrabold text-slate-700">Fincas y registros vinculados</h4>
+                <div className="mt-3 rounded-xl border border-[var(--molsan-border)] bg-white p-3">
+                  <h4 className="mb-2 text-xs font-extrabold text-[var(--molsan-text)]">Fincas y registros vinculados</h4>
                   {cargandoFincas ? (
-                    <p className="text-xs text-slate-500">Cargando fincas y registros…</p>
+                    <p className="text-xs text-[var(--molsan-text-secondary)]">Cargando fincas y registros…</p>
                   ) : fincasExpediente.length === 0 ? (
-                    <p className="text-xs text-slate-500">No hay fincas ni registros vinculados a este expediente.</p>
+                    <p className="text-xs text-[var(--molsan-text-secondary)]">No hay fincas ni registros vinculados a este expediente.</p>
                   ) : (
                     <div className="space-y-2">
                       {fincasExpediente.map((finca, indice) => (
-                        <article key={finca.id || `${finca.finca || finca.numero_finca || "finca"}-${indice}`} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-                          <p className="text-xs font-bold text-slate-800">Finca {finca.finca || finca.numero_finca || "—"}</p>
+                        <article key={finca.id || `${finca.finca || finca.numero_finca || "finca"}-${indice}`} className="rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3">
+                          <p className="text-xs font-bold text-[var(--molsan-text)]">Finca {finca.finca || finca.numero_finca || "—"}</p>
                           <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                             <Dato campo="Registro" valor={finca.registro} />
                             <Dato campo="Sección" valor={finca.seccion} />
@@ -6485,22 +6485,22 @@ const cuantiaFincasParaEnvio =
                   return null;
                 }
                 return (
-                  <label key={campo.key} className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                    <span className="mb-1.5 flex items-center justify-between gap-2 text-[11px] font-bold text-slate-600">{campo.label}{campo.key === "oficina" && <button type="button" onClick={async () => { setOficinaDetalleAbierta(true); setCargandoOficinaDetalle(true); setOficinaCatalogoDetalle(null); try { const respuesta = await axios.get("/oficinas-catalogo", { params: { q: expediente?.oficina || "", limit: 200 } }); const items = Array.isArray(respuesta?.data?.items) ? respuesta.data.items : []; const valor = normalizarTexto(expediente?.oficina || ""); const encontrada = items.find((item) => normalizarTexto(item.oficina) === valor || normalizarTexto(item.nombre) === valor) || items.find((item) => valor && (normalizarTexto(item.oficina).includes(valor) || normalizarTexto(item.nombre).includes(valor) || valor.includes(normalizarTexto(item.oficina)))); setOficinaCatalogoDetalle(encontrada || null); } catch (error) { setOficinaCatalogoDetalle(null); } finally { setCargandoOficinaDetalle(false); } }} className="rounded-md border border-indigo-200 bg-indigo-50 px-2 py-1 text-[10px] font-extrabold text-indigo-700 hover:bg-indigo-100">ⓘ Ver catálogo</button>}</span>
+                  <label key={campo.key} className="block min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-3">
+                    <span className="mb-1.5 flex items-center justify-between gap-2 text-[11px] font-bold text-[var(--molsan-text-secondary)]">{campo.label}{campo.key === "oficina" && <button type="button" onClick={async () => { setOficinaDetalleAbierta(true); setCargandoOficinaDetalle(true); setOficinaCatalogoDetalle(null); try { const respuesta = await axios.get("/oficinas-catalogo", { params: { q: expediente?.oficina || "", limit: 200 } }); const items = Array.isArray(respuesta?.data?.items) ? respuesta.data.items : []; const valor = normalizarTexto(expediente?.oficina || ""); const encontrada = items.find((item) => normalizarTexto(item.oficina) === valor || normalizarTexto(item.nombre) === valor) || items.find((item) => valor && (normalizarTexto(item.oficina).includes(valor) || normalizarTexto(item.nombre).includes(valor) || valor.includes(normalizarTexto(item.oficina)))); setOficinaCatalogoDetalle(encontrada || null); } catch (error) { setOficinaCatalogoDetalle(null); } finally { setCargandoOficinaDetalle(false); } }} className="rounded-md border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-2 py-1 text-[10px] font-extrabold text-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]">ⓘ Ver catálogo</button>}</span>
                     {campo.multilinea ? (
                       <textarea
                         rows={3}
                         value={String(valorActual ?? "")}
                         disabled={guardandoActividad}
                         onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))}
-                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
+                        className="w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm outline-none focus:border-[var(--molsan-primary)]"
                       />
                     ) : campo.opciones ? (
                       <select
                         value={String(valorActual || (campo.key === "apoderado" ? "Gestoría" : ""))}
                         disabled={guardandoActividad}
                         onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))}
-                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400"
+                        className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--molsan-primary)]"
                       >
                         <option value="">Seleccionar…</option>
                         {campo.opciones.map((opcion) => <option key={opcion} value={opcion}>{opcion}</option>)}
@@ -6531,7 +6531,7 @@ const cuantiaFincasParaEnvio =
                           }
                           return { ...actual, [campo.key]: nuevoValor };
                         })}
-                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
+                        className="w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm outline-none focus:border-[var(--molsan-primary)]"
                       />
                     )}
                   </label>
@@ -6542,31 +6542,31 @@ const cuantiaFincasParaEnvio =
             )}
 
             {actividadSeleccionada === "sede-notarial-protocolo" && (
-              <section className="mt-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-4">
+              <section className="mt-3 rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4">
                 <div className="grid gap-3 md:grid-cols-2">
-                  <div className="rounded-xl border border-slate-200 bg-white p-3">
-                    <p className="text-xs font-extrabold text-slate-700">Copia simple de escritura</p>
-                    <p className="mt-1 text-sm text-slate-600">
+                  <div className="rounded-xl border border-[var(--molsan-border)] bg-white p-3">
+                    <p className="text-xs font-extrabold text-[var(--molsan-text)]">Copia simple de escritura</p>
+                    <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">
                       {actividadDraft?.copia_simple_escritura || expediente?.copia_simple_escritura
                         ? "Hay una referencia guardada a la copia simple."
                         : "Pendiente de que el notario la suba a la carpeta digital."}
                     </p>
-                    <p className="mt-1 text-[11px] text-slate-500">La vinculación automática con Notargest se completará cuando esté disponible la integración de documentos.</p>
-                    <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">
+                    <p className="mt-1 text-[11px] text-[var(--molsan-text-secondary)]">La vinculación automática con Notargest se completará cuando esté disponible la integración de documentos.</p>
+                    <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-[var(--molsan-border-strong)] bg-white px-3 py-2 text-xs font-bold text-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]">
                       <MolsanIcon name="folderOpen" size={16} tone="ocean" bare /> Abrir carpeta digital
                     </button>
                   </div>
-                  <div className="rounded-xl border border-slate-200 bg-white p-3">
-                    <p className="mb-2 text-xs font-extrabold text-slate-700">Solicitar avance al completar la futura integración</p>
+                  <div className="rounded-xl border border-[var(--molsan-border)] bg-white p-3">
+                    <p className="mb-2 text-xs font-extrabold text-[var(--molsan-text)]">Solicitar avance al completar la futura integración</p>
                     <div className="flex gap-5">
-                      <label className="flex items-center gap-2 text-sm text-slate-700">
+                      <label className="flex items-center gap-2 text-sm text-[var(--molsan-text)]">
                         <input type="radio" name="moverActividadProtocolo" checked={!!actividadDraft.mover_siguiente_actividad} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: true }))} disabled={guardandoActividad || registrandoSolicitudIntegracion} /> Sí
                       </label>
-                      <label className="flex items-center gap-2 text-sm text-slate-700">
+                      <label className="flex items-center gap-2 text-sm text-[var(--molsan-text)]">
                         <input type="radio" name="moverActividadProtocolo" checked={!actividadDraft.mover_siguiente_actividad} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: false }))} disabled={guardandoActividad || registrandoSolicitudIntegracion} /> No
                       </label>
                     </div>
-                    <p className="mt-2 text-[11px] text-slate-500">La preferencia se guarda en la solicitud pendiente. No modifica la actividad y no se realiza envío externo.</p>
+                    <p className="mt-2 text-[11px] text-[var(--molsan-text-secondary)]">La preferencia se guarda en la solicitud pendiente. No modifica la actividad y no se realiza envío externo.</p>
                   </div>
                 </div>
                 <div className="mt-3 flex justify-end">
@@ -6580,7 +6580,7 @@ const cuantiaFincasParaEnvio =
             {actividadSeleccionada === "defectos-registrales" && (
               <section className="mt-3 rounded-2xl border border-amber-200 bg-amber-50/30 p-4">
                 <div className="mt-4 border-t border-amber-200 pt-4">
-                  <h3 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h3>
+                  <h3 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">Repositorios digitales</h3>
                 <div className="grid gap-3 md:grid-cols-2">
                   {[
                     {
@@ -6611,44 +6611,44 @@ const cuantiaFincasParaEnvio =
                       return categoriaDoc.includes("subsan") || nombreDoc.includes("subsan");
                     });
                     return (
-                      <article key={categoria.key} className="rounded-xl border border-slate-200 bg-white p-4">
+                      <article key={categoria.key} className="rounded-xl border border-[var(--molsan-border)] bg-white p-4">
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <h4 className="text-sm font-extrabold text-slate-800">{categoria.titulo}</h4>
-                            <p className="mt-1 text-xs text-slate-500">{categoria.descripcion}</p>
+                            <h4 className="text-sm font-extrabold text-[var(--molsan-text)]">{categoria.titulo}</h4>
+                            <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">{categoria.descripcion}</p>
                           </div>
-                          <span className="shrink-0 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">
+                          <span className="shrink-0 rounded-full bg-[var(--molsan-surface-soft)] px-2 py-1 text-[10px] font-bold text-[var(--molsan-text-secondary)]">
                             {documentos.length} archivo(s)
                           </span>
                         </div>
-                        <div className="mt-3 border-t border-slate-100 pt-3">
+                        <div className="mt-3 border-t border-[var(--molsan-border)] pt-3">
                           {documentos.length ? (
                             <ul className="space-y-2">
                               {documentos.map((doc, index) => {
                                 const url = doc?.url || doc?.url_descarga || doc?.download_url || doc?.ruta;
                                 return (
                                   <li key={doc?.id || doc?.id_documento || index} className="flex items-center justify-between gap-2 text-xs">
-                                    <span className="min-w-0 break-words font-medium text-slate-700">{doc?.nombre_original || doc?.nombre || doc?.nombre_archivo || doc?.filename || `Archivo ${index + 1}`}</span>
-                                    {url && <a href={url} target="_blank" rel="noreferrer" className="shrink-0 font-bold text-blue-700 underline">Ver PDF</a>}
+                                    <span className="min-w-0 break-words font-medium text-[var(--molsan-text)]">{doc?.nombre_original || doc?.nombre || doc?.nombre_archivo || doc?.filename || `Archivo ${index + 1}`}</span>
+                                    {url && <a href={url} target="_blank" rel="noreferrer" className="shrink-0 font-bold text-[var(--molsan-primary)] underline">Ver PDF</a>}
                                   </li>
                                 );
                               })}
                             </ul>
                           ) : (
-                            <p className="text-xs text-slate-400">Todavía no hay documentos en esta categoría.</p>
+                            <p className="text-xs text-[var(--molsan-text-secondary)]">Todavía no hay documentos en esta categoría.</p>
                           )}
                         </div>
                         <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-                          <span className="text-[11px] text-slate-500">{documentos.length} archivo(s)</span>
+                          <span className="text-[11px] text-[var(--molsan-text-secondary)]">{documentos.length} archivo(s)</span>
                           <button
                             type="button"
                             onClick={() => {
                               setMostrarCarpetaDigital(true);
                               cargarDocumentosCierre();
                             }}
-                            className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-100"
+                            className="rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-xs font-bold text-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]"
                           >
-                            ＋ Adjuntar/ver PDF
+                            <MolsanIcon name="plus" size={14} bare /> Adjuntar/ver PDF
                           </button>
                         </div>
                       </article>
@@ -6660,27 +6660,27 @@ const cuantiaFincasParaEnvio =
             )}
 
             {actividadSeleccionada === "liquidacion-impuestos" && (
-              <section className="mt-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-4">
+              <section className="mt-3 rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4">
                 <div className="grid gap-3 md:grid-cols-2">
-                  <div className="rounded-xl border border-slate-200 bg-white p-3">
-                    <p className="text-xs font-extrabold text-slate-700">Impuesto (AJD / ITP)</p>
-                    <p className="mt-1 text-sm text-slate-600">
+                  <div className="rounded-xl border border-[var(--molsan-border)] bg-white p-3">
+                    <p className="text-xs font-extrabold text-[var(--molsan-text)]">Impuesto (AJD / ITP)</p>
+                    <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">
                       {actividadDraft?.impuesto_ajd_itp
                         ? `Documento asociado: ${actividadDraft.impuesto_ajd_itp}`
                         : "Pendiente de recibir el justificante tributario del notario en Notargest."}
                     </p>
-                    <p className="mt-1 text-[11px] text-slate-500">La asociación automática del PDF desde Notargest requiere conectar la integración documental.</p>
-                    <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">
+                    <p className="mt-1 text-[11px] text-[var(--molsan-text-secondary)]">La asociación automática del PDF desde Notargest requiere conectar la integración documental.</p>
+                    <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-[var(--molsan-border-strong)] bg-white px-3 py-2 text-xs font-bold text-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]">
                       <MolsanIcon name="folderOpen" size={16} tone="ocean" bare /> Abrir carpeta digital
                     </button>
                   </div>
-                  <div className="rounded-xl border border-slate-200 bg-white p-3">
-                    <p className="mb-2 text-xs font-extrabold text-slate-700">Solicitar avance al completar la futura integración</p>
+                  <div className="rounded-xl border border-[var(--molsan-border)] bg-white p-3">
+                    <p className="mb-2 text-xs font-extrabold text-[var(--molsan-text)]">Solicitar avance al completar la futura integración</p>
                     <div className="flex gap-5">
-                      <label className="flex items-center gap-2 text-sm text-slate-700">
+                      <label className="flex items-center gap-2 text-sm text-[var(--molsan-text)]">
                         <input type="radio" name="moverActividadLiquidacion" checked={actividadDraft.mover_siguiente_actividad !== false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: true }))} disabled={guardandoActividad || registrandoSolicitudIntegracion} /> Sí
                       </label>
-                      <label className="flex items-center gap-2 text-sm text-slate-700">
+                      <label className="flex items-center gap-2 text-sm text-[var(--molsan-text)]">
                         <input type="radio" name="moverActividadLiquidacion" checked={actividadDraft.mover_siguiente_actividad === false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: false }))} disabled={guardandoActividad || registrandoSolicitudIntegracion} /> No
                       </label>
                     </div>
@@ -6697,10 +6697,10 @@ const cuantiaFincasParaEnvio =
 
             {actividadSeleccionada === "facturacion-cierre" && (
               <div className="mt-4 space-y-4">
-                <section className="rounded-2xl border border-indigo-200 bg-indigo-50/30 p-4">
+                <section className="rounded-2xl border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] p-4">
                   <div className="mb-3">
-                    <h3 className="text-sm font-extrabold text-slate-800">Datos vinculados de la ficha del expediente</h3>
-                    <p className="mt-1 text-xs text-slate-500">Información enlazada con Enviar a notario, Fincas y registros e Información crediticia. Los datos se consultan desde el expediente, sin duplicarlos.</p>
+                    <h3 className="text-sm font-extrabold text-[var(--molsan-text)]">Datos vinculados de la ficha del expediente</h3>
+                    <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Información enlazada con Enviar a notario, Fincas y registros e Información crediticia. Los datos se consultan desde el expediente, sin duplicarlos.</p>
                   </div>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Expediente" valor={expediente?.numero_expediente ?? expediente?.id_expediente} compacto />
@@ -6712,29 +6712,29 @@ const cuantiaFincasParaEnvio =
                     <Dato campo="Importe (Información crediticia)" valor={expediente?.importe} tipo="numero" destaque compacto />
                     <Dato campo="Saldo real actual (Información crediticia)" valor={resumenEconomico?.saldoActual ?? expediente?.saldo_real} tipo="numero" destaque compacto />
                   </div>
-                  <div className="mt-4 border-t border-indigo-100 pt-3">
-                    <h4 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-700">Fincas y datos registrales vinculados</h4>
+                  <div className="mt-4 border-t border-[var(--molsan-border)] pt-3">
+                    <h4 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-[var(--molsan-text)]">Fincas y datos registrales vinculados</h4>
                     {errorFincas && <p className="mb-2 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{errorFincas}</p>}
                     {cargandoFincas ? (
-                      <p className="text-xs text-slate-500">Cargando fincas y registros…</p>
+                      <p className="text-xs text-[var(--molsan-text-secondary)]">Cargando fincas y registros…</p>
                     ) : fincasExpediente.length === 0 ? (
-                      <p className="rounded-xl border border-dashed border-slate-200 bg-white p-3 text-xs text-slate-500">No hay fincas ni registros vinculados a este expediente.</p>
+                      <p className="rounded-xl border border-dashed border-[var(--molsan-border)] bg-white p-3 text-xs text-[var(--molsan-text-secondary)]">No hay fincas ni registros vinculados a este expediente.</p>
                     ) : (
                       <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
                         {fincasExpediente.map((finca, indice) => (
-                          <article key={finca.id || String(finca.finca || finca.numero_finca || "finca") + "-" + indice} className="rounded-xl border border-slate-200 bg-white p-3">
-                            <p className="text-xs font-extrabold text-slate-800">Finca {finca.finca || finca.numero_finca || "—"}</p>
+                          <article key={finca.id || String(finca.finca || finca.numero_finca || "finca") + "-" + indice} className="rounded-xl border border-[var(--molsan-border)] bg-white p-3">
+                            <p className="text-xs font-extrabold text-[var(--molsan-text)]">Finca {finca.finca || finca.numero_finca || "—"}</p>
                             <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
-                              <div><span className="block text-slate-400">Registro</span><strong>{finca.registro || "—"}</strong></div>
-                              <div><span className="block text-slate-400">Sección</span><strong>{finca.seccion || "—"}</strong></div>
-                              <div><span className="block text-slate-400">CRU / IDUFIR</span><strong>{finca.cru_idufir || finca.cru || finca.idufir || "—"}</strong></div>
-                              <div><span className="block text-slate-400">Población</span><strong>{finca.poblacion || "—"}</strong></div>
-                              <div><span className="block text-slate-400">Provincia</span><strong>{finca.provincia || "—"}</strong></div>
-                              <div><span className="block text-slate-400">Inscripción</span><strong>{finca.inscripcion || "—"}</strong></div>
-                              <div><span className="block text-slate-400">Cuantía</span><strong>{finca.cuantia !== null && finca.cuantia !== undefined && finca.cuantia !== "" ? Number(finca.cuantia).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €" : "—"}</strong></div>
-                              <div><span className="block text-slate-400">Contrato</span><strong>{finca.contrato || "—"}</strong></div>
-                              <div><span className="block text-slate-400">Entidad original</span><strong>{finca.entidad_original || "—"}</strong></div>
-                              <div><span className="block text-slate-400">Fecha constitución</span><strong>{finca.fecha_constitucion || "—"}</strong></div>
+                              <div><span className="block text-[var(--molsan-text-secondary)]">Registro</span><strong>{finca.registro || "—"}</strong></div>
+                              <div><span className="block text-[var(--molsan-text-secondary)]">Sección</span><strong>{finca.seccion || "—"}</strong></div>
+                              <div><span className="block text-[var(--molsan-text-secondary)]">CRU / IDUFIR</span><strong>{finca.cru_idufir || finca.cru || finca.idufir || "—"}</strong></div>
+                              <div><span className="block text-[var(--molsan-text-secondary)]">Población</span><strong>{finca.poblacion || "—"}</strong></div>
+                              <div><span className="block text-[var(--molsan-text-secondary)]">Provincia</span><strong>{finca.provincia || "—"}</strong></div>
+                              <div><span className="block text-[var(--molsan-text-secondary)]">Inscripción</span><strong>{finca.inscripcion || "—"}</strong></div>
+                              <div><span className="block text-[var(--molsan-text-secondary)]">Cuantía</span><strong>{finca.cuantia !== null && finca.cuantia !== undefined && finca.cuantia !== "" ? Number(finca.cuantia).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €" : "—"}</strong></div>
+                              <div><span className="block text-[var(--molsan-text-secondary)]">Contrato</span><strong>{finca.contrato || "—"}</strong></div>
+                              <div><span className="block text-[var(--molsan-text-secondary)]">Entidad original</span><strong>{finca.entidad_original || "—"}</strong></div>
+                              <div><span className="block text-[var(--molsan-text-secondary)]">Fecha constitución</span><strong>{finca.fecha_constitucion || "—"}</strong></div>
                             </div>
                           </article>
                         ))}
@@ -6742,14 +6742,14 @@ const cuantiaFincasParaEnvio =
                     )}
                   </div>
 
-                  <div className="mt-4 border-t border-indigo-100 pt-3">
-                    <h4 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-700">Garantías</h4>
-                    <p className="mb-3 text-xs text-slate-500">Datos derivados de Fincas y registros y de la fecha de inscripción de Tramitación inscripción. No se duplican ni se editan desde este apartado.</p>
+                  <div className="mt-4 border-t border-[var(--molsan-border)] pt-3">
+                    <h4 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-[var(--molsan-text)]">Garantías</h4>
+                    <p className="mb-3 text-xs text-[var(--molsan-text-secondary)]">Datos derivados de Fincas y registros y de la fecha de inscripción de Tramitación inscripción. No se duplican ni se editan desde este apartado.</p>
                     {errorFincas && <p className="mb-2 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{errorFincas}</p>}
                     {cargandoFincas ? (
-                      <p className="text-xs text-slate-500">Cargando garantías…</p>
+                      <p className="text-xs text-[var(--molsan-text-secondary)]">Cargando garantías…</p>
                     ) : fincasExpediente.length === 0 ? (
-                      <p className="rounded-xl border border-dashed border-slate-200 bg-white p-3 text-xs text-slate-500">No hay fincas ni registros vinculados para generar garantías.</p>
+                      <p className="rounded-xl border border-dashed border-[var(--molsan-border)] bg-white p-3 text-xs text-[var(--molsan-text-secondary)]">No hay fincas ni registros vinculados para generar garantías.</p>
                     ) : (
                       <div className="space-y-3">
                         {fincasExpediente.map((finca, indice) => {
@@ -6766,26 +6766,26 @@ const cuantiaFincasParaEnvio =
                           const datosPendientes = !idufir || !numeroFinca || !fechaInscripcion || !registroProvincia || !registroPoblacion || !registroNumero || !numeroSeccion || !nombreRegistro;
                           const campoGarantia = (label, valor, fecha = false) => (
                             <div>
-                              <span className="block text-[10px] font-semibold text-slate-400">{label}</span>
-                              <strong className="mt-0.5 block break-words text-xs font-semibold text-slate-700">{valor ? (fecha ? formatearFecha(valor) : valor) : "No consta"}</strong>
+                              <span className="block text-[10px] font-semibold text-[var(--molsan-text-secondary)]">{label}</span>
+                              <strong className="mt-0.5 block break-words text-xs font-semibold text-[var(--molsan-text)]">{valor ? (fecha ? formatearFecha(valor) : valor) : "No consta"}</strong>
                             </div>
                           );
                           return (
-                            <article key={finca.id || String(numeroFinca || "finca") + "-garantia-" + indice} className="rounded-xl border border-slate-200 bg-white p-3">
+                            <article key={finca.id || String(numeroFinca || "finca") + "-garantia-" + indice} className="rounded-xl border border-[var(--molsan-border)] bg-white p-3">
                               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                                <h5 className="text-xs font-extrabold text-slate-800">Garantía {indice + 1} · Finca {numeroFinca || "No identificada"}</h5>
+                                <h5 className="text-xs font-extrabold text-[var(--molsan-text)]">Garantía {indice + 1} · Finca {numeroFinca || "No identificada"}</h5>
                                 <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${datosPendientes ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"}`}>Datos pendientes: {datosPendientes ? "Sí" : "No"}</span>
                               </div>
-                              <div className="rounded-lg bg-slate-50 p-3">
-                                <h6 className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Datos de la garantía</h6>
+                              <div className="rounded-lg bg-[var(--molsan-surface-soft)] p-3">
+                                <h6 className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Datos de la garantía</h6>
                                 <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                                   {campoGarantia("IDUFIR / CRU", idufir)}
                                   {campoGarantia("Núm. finca registral", numeroFinca)}
                                   {campoGarantia("Fecha inscripción cancelación", fechaInscripcion, true)}
                                 </div>
                               </div>
-                              <div className="mt-3 rounded-lg border border-slate-100 p-3">
-                                <h6 className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Identificación del registro de propiedad</h6>
+                              <div className="mt-3 rounded-lg border border-[var(--molsan-border)] p-3">
+                                <h6 className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Identificación del registro de propiedad</h6>
                                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                                   {campoGarantia("Provincia", registroProvincia)}
                                   {campoGarantia("Población", registroPoblacion)}
@@ -6806,8 +6806,8 @@ const cuantiaFincasParaEnvio =
                 <section className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <h3 className="text-sm font-extrabold text-slate-800">Honorarios de gestoría</h3>
-                      <p className="mt-1 text-xs text-slate-600">La tarifa se obtiene del catálogo de Utilidades según la entidad y si el expediente tiene provisión.</p>
+                      <h3 className="text-sm font-extrabold text-[var(--molsan-text)]">Honorarios de gestoría</h3>
+                      <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">La tarifa se obtiene del catálogo de Utilidades según la entidad y si el expediente tiene provisión.</p>
                     </div>
                     <button
                       type="button"
@@ -6820,11 +6820,11 @@ const cuantiaFincasParaEnvio =
                   </div>
                   {honorariosGestoria && (
                     <div className="mt-3 rounded-xl border border-emerald-200 bg-white p-3">
-                      <p className="text-xs text-slate-500">Tarifa aplicada: {honorariosGestoria.tarifa}</p>
+                      <p className="text-xs text-[var(--molsan-text-secondary)]">Tarifa aplicada: {honorariosGestoria.tarifa}</p>
                       <p className="mt-1 text-2xl font-extrabold text-emerald-800">
                         {Number(honorariosGestoria.importe).toLocaleString("es-ES", { style: "currency", currency: "EUR" })}
                       </p>
-                      <p className="mt-1 text-[11px] text-slate-500">Entidad detectada: {honorariosGestoria.entidad || "No identificada"}</p>
+                      <p className="mt-1 text-[11px] text-[var(--molsan-text-secondary)]">Entidad detectada: {honorariosGestoria.entidad || "No identificada"}</p>
                       {honorariosGestoria.guardado && <p className="mt-1 text-xs font-semibold text-emerald-700">Registrado en el backend.</p>}
                     </div>
                   )}
@@ -6879,7 +6879,7 @@ const cuantiaFincasParaEnvio =
                   rounded-xl
                   border
                   border-dashed
-                  border-slate-300
+                  border-[var(--molsan-border-strong)]
                   bg-white
                   p-8
                   text-center
@@ -6889,7 +6889,7 @@ const cuantiaFincasParaEnvio =
                   className="
                     text-sm
                     font-semibold
-                    text-slate-500
+                    text-[var(--molsan-text-secondary)]
                   "
                 >
                   No hay datos disponibles
@@ -6900,7 +6900,7 @@ const cuantiaFincasParaEnvio =
                   className="
                     mt-1
                     text-xs
-                    text-slate-400
+                    text-[var(--molsan-text-secondary)]
                   "
                 >
                   Los campos aparecerán cuando
@@ -6921,13 +6921,13 @@ const cuantiaFincasParaEnvio =
       <div className={`mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2 ${mostrarControlCalidad ? "hidden" : ""}`}>
       <div className="flex min-w-0 flex-wrap items-center gap-3">
 
-        {cargandoAcciones ? <span className="text-[10px] text-slate-500">Cargando última acción…</span> : accionesExpediente.length > 0 && (() => {
+        {cargandoAcciones ? <span className="text-[10px] text-[var(--molsan-text-secondary)]">Cargando última acción…</span> : accionesExpediente.length > 0 && (() => {
           const relacion = accionesExpediente[accionesExpediente.length - 1];
           const accion = relacion.accion || relacion.accion_expediente || relacion;
-          return <div className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2">
-            <div className="text-[10px] font-semibold text-slate-500">Última acción</div>
-            <div className="text-xs font-bold text-slate-800">{accion.descripcion || relacion.descripcion || "Acción"}</div>
-            <div className="mt-1 flex flex-wrap gap-2 text-[10px] text-slate-500">{relacion.fecha && <span>{formatearFecha(relacion.fecha)}</span>}{relacion.usuario_creador && <span>Realizada por: {relacion.usuario_creador}</span>}</div>
+          return <div className="min-w-0 flex-1 rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2">
+            <div className="text-[10px] font-semibold text-[var(--molsan-text-secondary)]">Última acción</div>
+            <div className="text-xs font-bold text-[var(--molsan-text)]">{accion.descripcion || relacion.descripcion || "Acción"}</div>
+            <div className="mt-1 flex flex-wrap gap-2 text-[10px] text-[var(--molsan-text-secondary)]">{relacion.fecha && <span>{formatearFecha(relacion.fecha)}</span>}{relacion.usuario_creador && <span>Realizada por: {relacion.usuario_creador}</span>}</div>
           </div>;
         })()}
         {errorAcciones && <p className="w-full text-xs text-red-700">{errorAcciones}</p>}
@@ -6939,17 +6939,17 @@ const cuantiaFincasParaEnvio =
                 {ppadItems.map((item) => (
                   <div key={item.id} className={`rounded-lg border px-3 py-2 ${item.compensado ? "border-emerald-200 bg-emerald-50/60" : "border-amber-200 bg-amber-50/70"}`}>
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="min-w-0 break-words text-xs font-bold text-slate-800">{item.concepto || "PPAD"}</span>
-                      <span className="text-xs font-extrabold text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
+                      <span className="min-w-0 break-words text-xs font-bold text-[var(--molsan-text)]">{item.concepto || "PPAD"}</span>
+                      <span className="text-xs font-extrabold text-[var(--molsan-text)]">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
                     </div>
-                    <p className="mt-1 text-[10px] text-slate-600">Realizado por: <strong>{item.usuario_creador || "Usuario no registrado"}</strong>{item.fecha_creacion ? ` · ${formatearFecha(item.fecha_creacion)}` : ""}</p>
+                    <p className="mt-1 text-[10px] text-[var(--molsan-text-secondary)]">Realizado por: <strong>{item.usuario_creador || "Usuario no registrado"}</strong>{item.fecha_creacion ? ` · ${formatearFecha(item.fecha_creacion)}` : ""}</p>
                     {item.compensado ? (
-                      <p className="mt-1 text-[11px] font-semibold text-emerald-700">✓ PPAD compensado{item.fecha_compensacion ? ` el ${formatearFecha(item.fecha_compensacion)}` : ""}.</p>
+                      <p className="mt-1 text-[11px] font-semibold text-emerald-700"><MolsanIcon name="check" size={12} bare /> PPAD compensado{item.fecha_compensacion ? ` el ${formatearFecha(item.fecha_compensacion)}` : ""}.</p>
                     ) : (
                       <p role="status" className="mt-1 flex items-center gap-1 text-[11px] font-bold text-amber-800"><MolsanIcon name="alert" size={13} tone="amber" bare /> PPAD pendiente de compensar.</p>
                     )}
                     {!item.compensado && !String(expediente?.fecha_firma || "").slice(0, 10) && (
-                      <p className="mt-1 text-[10px] text-slate-600">La compensación estará disponible cuando el expediente tenga fecha de firma.</p>
+                      <p className="mt-1 text-[10px] text-[var(--molsan-text-secondary)]">La compensación estará disponible cuando el expediente tenga fecha de firma.</p>
                     )}
                   </div>
                 ))}
@@ -6967,52 +6967,52 @@ const cuantiaFincasParaEnvio =
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="modal-ppad-titulo"
-                className="my-auto max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl"
+                className="my-auto max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-[var(--molsan-border)] bg-white shadow-2xl"
               >
-                <header className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-white/95 px-4 py-4 backdrop-blur sm:px-6">
+                <header className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--molsan-border)] bg-white/95 px-4 py-4 backdrop-blur sm:px-6">
                   <div>
-                    <h3 id="modal-ppad-titulo" className="text-base font-extrabold text-slate-900">PPAD · Conceptos y compensaciones</h3>
-                    <p className="mt-1 text-xs text-slate-500">Historial completo de PPAD de este expediente.</p>
+                    <h3 id="modal-ppad-titulo" className="text-base font-extrabold text-[var(--molsan-text)]">PPAD · Conceptos y compensaciones</h3>
+                    <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Historial completo de PPAD de este expediente.</p>
                   </div>
-                  <button type="button" onClick={() => { setMostrarModalPpad(false); cancelarPpad(); }} aria-label="Cerrar PPAD" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50"><MolsanIcon name="x" size={15} tone="ocean" bare /> Cerrar</button>
+                  <button type="button" onClick={() => { setMostrarModalPpad(false); cancelarPpad(); }} aria-label="Cerrar PPAD" className="rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]"><MolsanIcon name="x" size={15} tone="ocean" bare /> Cerrar</button>
                 </header>
                 <div className="space-y-3 p-4 sm:p-6">
                   {errorPpad && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorPpad}</p>}
-                  {cargandoPpad && <p className="text-xs text-slate-500">Cargando conceptos PPAD…</p>}
+                  {cargandoPpad && <p className="text-xs text-[var(--molsan-text-secondary)]">Cargando conceptos PPAD…</p>}
                   {!cargandoPpad && ppadItems.length === 0 && !mostrarFormularioPpad && (
-                    <p className="rounded-xl border border-dashed border-slate-200 px-3 py-5 text-center text-sm text-slate-500">Todavía no hay conceptos PPAD añadidos.</p>
+                    <p className="rounded-xl border border-dashed border-[var(--molsan-border)] px-3 py-5 text-center text-sm text-[var(--molsan-text-secondary)]">Todavía no hay conceptos PPAD añadidos.</p>
                   )}
                   {ppadItems.map((item) => (
                     <article key={item.id} className={`rounded-xl border p-3 ${item.compensado ? "border-emerald-200 bg-emerald-50/40" : "border-amber-200 bg-white"}`}>
-                      <p className="mb-2 text-[10px] text-slate-600">Realizado por: <strong>{item.usuario_creador || "Usuario no registrado"}</strong>{item.fecha_creacion ? ` · ${formatearFecha(item.fecha_creacion)}` : ""}</p>
+                      <p className="mb-2 text-[10px] text-[var(--molsan-text-secondary)]">Realizado por: <strong>{item.usuario_creador || "Usuario no registrado"}</strong>{item.fecha_creacion ? ` · ${formatearFecha(item.fecha_creacion)}` : ""}</p>
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                         <div className="min-w-0">
-                          <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Concepto</div>
-                          <div className="mt-1 break-words text-sm font-semibold text-slate-800">{item.concepto}</div>
+                          <div className="text-[10px] font-semibold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Concepto</div>
+                          <div className="mt-1 break-words text-sm font-semibold text-[var(--molsan-text)]">{item.concepto}</div>
                         </div>
                         <div>
-                          <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Importe</div>
-                          <div className="mt-1 text-sm font-semibold text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</div>
+                          <div className="text-[10px] font-semibold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Importe</div>
+                          <div className="mt-1 text-sm font-semibold text-[var(--molsan-text)]">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</div>
                         </div>
                         <div>
-                          <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Imputable a</div>
-                          <div className="mt-1 text-sm font-semibold text-slate-800">{item.imputable_a || item.imputableA || "Molsan"}</div>
+                          <div className="text-[10px] font-semibold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Imputable a</div>
+                          <div className="mt-1 text-sm font-semibold text-[var(--molsan-text)]">{item.imputable_a || item.imputableA || "Molsan"}</div>
                         </div>
                       </div>
-                      <div className="mt-3 grid grid-cols-1 gap-2 border-t border-slate-100 pt-3 text-xs sm:grid-cols-2">
-                        <div><span className="font-semibold text-slate-500">Fecha alta: </span><span className="font-semibold text-slate-700">{formatearFecha(item.fecha_creacion)}</span></div>
-                        <div><span className="font-semibold text-slate-500">Fecha compensación: </span><span className={item.compensado ? "font-bold text-emerald-700" : "font-semibold text-slate-500"}>{formatearFecha(item.fecha_compensacion)}</span></div>
-                        <div className="sm:col-span-2"><span className="font-semibold text-slate-500">Registrado por: </span><span className="font-semibold text-slate-700">{item.usuario_creador || "No disponible en registros anteriores"}</span></div>
+                      <div className="mt-3 grid grid-cols-1 gap-2 border-t border-[var(--molsan-border)] pt-3 text-xs sm:grid-cols-2">
+                        <div><span className="font-semibold text-[var(--molsan-text-secondary)]">Fecha alta: </span><span className="font-semibold text-[var(--molsan-text)]">{formatearFecha(item.fecha_creacion)}</span></div>
+                        <div><span className="font-semibold text-[var(--molsan-text-secondary)]">Fecha compensación: </span><span className={item.compensado ? "font-bold text-emerald-700" : "font-semibold text-[var(--molsan-text-secondary)]"}>{formatearFecha(item.fecha_compensacion)}</span></div>
+                        <div className="sm:col-span-2"><span className="font-semibold text-[var(--molsan-text-secondary)]">Registrado por: </span><span className="font-semibold text-[var(--molsan-text)]">{item.usuario_creador || "No disponible en registros anteriores"}</span></div>
                       </div>
                       <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
                         {item.compensado ? (
-                          <span className="mr-auto rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-800">✓ COMPENSADO</span>
+                          <span className="mr-auto rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-800"><MolsanIcon name="check" size={12} bare /> COMPENSADO</span>
                         ) : (
                           <>
                             <Boton tipo="primary" onClick={() => compensarPpad(item)} disabled={guardandoPpad || !String(expediente?.fecha_firma || "").slice(0, 10)}>
-                              {guardandoPpad ? "Registrando…" : "✓ Compensar"}
+                              {guardandoPpad ? "Registrando…" : <><MolsanIcon name="check" size={13} bare /> Compensar</>}
                             </Boton>
-                            {!String(expediente?.fecha_firma || "").slice(0, 10) && <span className="text-[10px] text-slate-500">Disponible tras informar la fecha de firma.</span>}
+                            {!String(expediente?.fecha_firma || "").slice(0, 10) && <span className="text-[10px] text-[var(--molsan-text-secondary)]">Disponible tras informar la fecha de firma.</span>}
                           </>
                         )}
                         {!item.compensado && <Boton tipo="secondary" onClick={() => editarPpad(item)}>Editar</Boton>}
@@ -7028,20 +7028,20 @@ const cuantiaFincasParaEnvio =
                     </article>
                   ))}
                   {mostrarFormularioPpad && (
-                    <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-4">
-                      <h4 className="mb-3 text-sm font-extrabold text-slate-800">{ppadEditandoId !== null ? "Editar concepto PPAD" : "Añadir concepto PPAD"}</h4>
+                    <div className="rounded-xl border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] p-4">
+                      <h4 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">{ppadEditandoId !== null ? "Editar concepto PPAD" : "Añadir concepto PPAD"}</h4>
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <label className="block sm:col-span-2">
-                          <span className="mb-1 block text-xs font-semibold text-slate-600">Concepto</span>
-                          <input type="text" value={ppadForm.concepto} onChange={(event) => setPpadForm((actual) => ({ ...actual, concepto: event.target.value }))} placeholder="Introduce el concepto" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" autoFocus />
+                          <span className="mb-1 block text-xs font-semibold text-[var(--molsan-text-secondary)]">Concepto</span>
+                          <input type="text" value={ppadForm.concepto} onChange={(event) => setPpadForm((actual) => ({ ...actual, concepto: event.target.value }))} placeholder="Introduce el concepto" className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary)]/10" autoFocus />
                         </label>
                         <label className="block">
-                          <span className="mb-1 block text-xs font-semibold text-slate-600">Importe (€)</span>
-                          <input type="text" inputMode="decimal" value={ppadForm.importe} onChange={(event) => setPpadForm((actual) => ({ ...actual, importe: event.target.value }))} placeholder="0,00" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                          <span className="mb-1 block text-xs font-semibold text-[var(--molsan-text-secondary)]">Importe (€)</span>
+                          <input type="text" inputMode="decimal" value={ppadForm.importe} onChange={(event) => setPpadForm((actual) => ({ ...actual, importe: event.target.value }))} placeholder="0,00" className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary)]/10" />
                         </label>
                         <label className="block">
-                          <span className="mb-1 block text-xs font-semibold text-slate-600">Imputable a</span>
-                          <select value={ppadForm.imputableA} onChange={(event) => setPpadForm((actual) => ({ ...actual, imputableA: event.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                          <span className="mb-1 block text-xs font-semibold text-[var(--molsan-text-secondary)]">Imputable a</span>
+                          <select value={ppadForm.imputableA} onChange={(event) => setPpadForm((actual) => ({ ...actual, imputableA: event.target.value }))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary)]/10">
                             <option value="Molsan">Molsan</option>
                             <option value="Externo">Externo</option>
                           </select>
@@ -7053,7 +7053,7 @@ const cuantiaFincasParaEnvio =
                       </div>
                     </div>
                   )}
-                  {!mostrarFormularioPpad && <div className="flex justify-end"><Boton tipo="primary" onClick={abrirNuevoPpad}>＋ Añadir concepto PPAD</Boton></div>}
+                  {!mostrarFormularioPpad && <div className="flex justify-end"><Boton tipo="primary" onClick={abrirNuevoPpad}><MolsanIcon name="plus" size={14} bare /> Añadir concepto PPAD</Boton></div>}
                 </div>
               </section>
             </div>
@@ -7070,19 +7070,19 @@ const cuantiaFincasParaEnvio =
             colapsable
           >
             {errorFincas && <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorFincas}</p>}
-            {cargandoFincas && <p className="text-xs text-slate-500">Cargando fincas...</p>}
+            {cargandoFincas && <p className="text-xs text-[var(--molsan-text-secondary)]">Cargando fincas...</p>}
             {!cargandoFincas && fincasExpediente.length === 0 && (
-              <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">
+              <p className="rounded-xl border border-dashed border-[var(--molsan-border)] px-3 py-3 text-xs text-[var(--molsan-text-secondary)]">
                 No hay fincas registradas en la tabla de fincas de este expediente.
               </p>
             )}
             <div className="space-y-3">
               {fincasExpediente.map((finca) => (
-                <article key={finca.id} className="rounded-xl border border-slate-200 bg-white p-3">
+                <article key={finca.id} className="rounded-xl border border-[var(--molsan-border)] bg-white p-3">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
-                      <p className="text-sm font-bold text-slate-800">Finca {finca.finca || "—"}</p>
-                      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5 text-slate-500">
+                      <p className="text-sm font-bold text-[var(--molsan-text)]">Finca {finca.finca || "—"}</p>
+                      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5 text-[var(--molsan-text-secondary)]">
                         {finca.registro ? <button type="button" onClick={() => {
                           const registroBuscado = normalizarTexto(finca.registro);
                           const registroCatalogo = catalogoRegistrosPropiedad.find((item) =>
@@ -7091,7 +7091,7 @@ const cuantiaFincasParaEnvio =
                           );
                           if (registroCatalogo) setRegistroDetalleAbierto(registroCatalogo);
                           else window.alert("Este registro no se encuentra en el catálogo de Registros de la Propiedad.");
-                        }} title="Abrir la ficha completa del Registro de la Propiedad" className="font-semibold text-blue-700 underline decoration-blue-300 underline-offset-2 transition hover:text-blue-900">Registro: {finca.registro} <span aria-hidden="true">ⓘ</span></button> : null}
+                        }} title="Abrir la ficha completa del Registro de la Propiedad" className="font-semibold text-[var(--molsan-primary)] underline decoration-blue-300 underline-offset-2 transition hover:text-[var(--molsan-primary)]">Registro: {finca.registro} <span aria-hidden="true">ⓘ</span></button> : null}
                         {finca.seccion ? <span>Sección: {finca.seccion}</span> : null}
                         {finca.poblacion ? <span>Población: {finca.poblacion}</span> : null}
                         {finca.provincia ? <span>Provincia: {finca.provincia}</span> : null}
@@ -7100,23 +7100,23 @@ const cuantiaFincasParaEnvio =
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <button type="button" onClick={() => abrirSolicitudFusion(finca)} disabled={!finca.registro} title={!finca.registro ? "Completa el registro de la finca para solicitar una fusión" : "Crear solicitud de fusión para este registro"} className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-1.5 text-[11px] font-bold text-violet-700 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50">
-                        <span aria-hidden="true">⇄</span> Fusión
+                        <MolsanIcon name="merge" size={14} bare /> Fusión
                       </button>
-                      <button type="button" onClick={() => abrirFincas(finca)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700">Editar</button>
+                      <button type="button" onClick={() => abrirFincas(finca)} className="rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-2.5 py-1.5 text-[11px] font-semibold text-[var(--molsan-primary)]">Editar</button>
                       <button type="button" onClick={() => eliminarFinca(finca.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700">Eliminar</button>
                     </div>
                   </div>
                   <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
-                    <div><span className="block text-slate-400">CRU/Idufir</span><strong>{finca.cru_idufir || "—"}</strong></div>
-                    <div><span className="block text-slate-400">Cuantía</span><strong>{finca.cuantia || "—"}</strong></div>
-                    <div><span className="block text-slate-400">Inscripción</span><strong>{finca.inscripcion || "—"}</strong></div>
-                    <div><span className="block text-slate-400">Contrato</span><strong>{finca.contrato || "—"}</strong></div>
+                    <div><span className="block text-[var(--molsan-text-secondary)]">CRU/Idufir</span><strong>{finca.cru_idufir || "—"}</strong></div>
+                    <div><span className="block text-[var(--molsan-text-secondary)]">Cuantía</span><strong>{finca.cuantia || "—"}</strong></div>
+                    <div><span className="block text-[var(--molsan-text-secondary)]">Inscripción</span><strong>{finca.inscripcion || "—"}</strong></div>
+                    <div><span className="block text-[var(--molsan-text-secondary)]">Contrato</span><strong>{finca.contrato || "—"}</strong></div>
                   </div>
                 </article>
               ))}
             </div>
-            <button type="button" onClick={() => abrirFincas()} className="mt-3 w-full rounded-xl border border-blue-100 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100">
-              ＋ Nueva finca
+            <button type="button" onClick={() => abrirFincas()} className="mt-3 w-full rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 text-xs font-bold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-surface-soft)]">
+              <MolsanIcon name="plus" size={14} bare /> Nueva finca
             </button>
           </Seccion>
         {/* OBSERVACIONES */}
@@ -7131,24 +7131,24 @@ const cuantiaFincasParaEnvio =
             <div className="space-y-3">
               {errorObservaciones && <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorObservaciones}</p>}
               {cargandoObservaciones ? (
-                <p className="text-xs text-slate-500">Cargando observaciones…</p>
+                <p className="text-xs text-[var(--molsan-text-secondary)]">Cargando observaciones…</p>
               ) : observacionesExpediente[0] ? (
-                <article className="rounded-xl border border-slate-200 bg-white p-3">
-                  <p className="whitespace-pre-wrap break-words text-sm text-slate-700">{observacionesExpediente[0].comentario}</p>
-                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+                <article className="rounded-xl border border-[var(--molsan-border)] bg-white p-3">
+                  <p className="whitespace-pre-wrap break-words text-sm text-[var(--molsan-text)]">{observacionesExpediente[0].comentario}</p>
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-[var(--molsan-text-secondary)]">
                     <span>{observacionesExpediente[0].autor || "Usuario conectado"} · {observacionesExpediente[0].visibilidad === "Gestor" ? "Interna" : observacionesExpediente[0].visibilidad}</span>
                     <time dateTime={observacionesExpediente[0].fecha}>{observacionesExpediente[0].fecha ? new Date(observacionesExpediente[0].fecha).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : "Fecha no disponible"}</time>
                   </div>
                   {observacionesExpediente[0].visibilidad === "Gestor" && (
                     <p className={`mt-2 text-[11px] font-semibold ${observacionesExpediente[0].estado_validacion === "Validada" ? "text-emerald-700" : "text-amber-700"}`}>
-                      {observacionesExpediente[0].estado_validacion === "Validada" ? "✓ Validada por el destinatario" : "⏳ Pendiente de validación del destinatario"}
+                      {observacionesExpediente[0].estado_validacion === "Validada" ? <><MolsanIcon name="check" size={12} bare /> Validada por el destinatario</> : <><MolsanIcon name="clock" size={12} bare /> Pendiente de validación del destinatario</>}
                     </p>
                   )}
                 </article>
               ) : (
-                <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">Todavía no hay observaciones añadidas.</p>
+                <p className="rounded-xl border border-dashed border-[var(--molsan-border)] px-3 py-3 text-xs text-[var(--molsan-text-secondary)]">Todavía no hay observaciones añadidas.</p>
               )}
-              <button type="button" onClick={() => { setComentario(""); setErrorObservaciones(""); setMostrarObservaciones(true); }} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100">
+              <button type="button" onClick={() => { setComentario(""); setErrorObservaciones(""); setMostrarObservaciones(true); }} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 text-xs font-bold text-[var(--molsan-primary)] transition hover:bg-[var(--molsan-surface-soft)]">
                 <MolsanIcon name="message" size={16} tone="ocean" bare /> Ver historial y gestionar observaciones <span className="rounded-full bg-white px-2 py-0.5 text-[10px]">{observacionesExpediente.length}</span>
               </button>
             </div>
@@ -7197,23 +7197,23 @@ const cuantiaFincasParaEnvio =
               FICHA COMPLETA DE ENVÍO A NOTARIO
               El botón abre el modal para completar y guardar el encargo.
           ====================================================== */}
-            <section className="w-full max-w-none min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_28px_rgba(30,41,59,0.08)]">
-              <div className="hidden flex-wrap items-center justify-center gap-3 border-b border-slate-100 bg-white px-4 py-4 text-center sm:px-5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white shadow-sm"><MolsanIcon name="courthouse" size={24} tone="ocean" /></div>
+            <section className="w-full max-w-none min-w-0 overflow-hidden rounded-2xl border border-[var(--molsan-border)] bg-white shadow-[0_10px_28px_rgba(30,41,59,0.08)]">
+              <div className="hidden flex-wrap items-center justify-center gap-3 border-b border-[var(--molsan-border)] bg-white px-4 py-4 text-center sm:px-5">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--molsan-border)] bg-white shadow-sm"><MolsanIcon name="courthouse" size={24} tone="ocean" /></div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-sm font-extrabold text-slate-800">Envío a notario</h3>
-                  <p className="mt-0.5 text-[11px] text-slate-500">Encargo al notario, datos de firma y facturación</p>
+                  <h3 className="text-sm font-extrabold text-[var(--molsan-text)]">Envío a notario</h3>
+                  <p className="mt-0.5 text-[11px] text-[var(--molsan-text-secondary)]">Encargo al notario, datos de firma y facturación</p>
                 </div>
                 {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
                   <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">Datos guardados</span>
                 )}
-                <button type="button" onClick={() => setMostrarDatosEnvioNotario((actual) => !actual)} aria-expanded={mostrarDatosEnvioNotario} className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">{mostrarDatosEnvioNotario ? "⌃ Ocultar" : "⌄ Expandir"}</button>
+                <button type="button" onClick={() => setMostrarDatosEnvioNotario((actual) => !actual)} aria-expanded={mostrarDatosEnvioNotario} className="shrink-0 rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-xs font-bold text-[var(--molsan-text)] hover:bg-[var(--molsan-surface-soft)]">{mostrarDatosEnvioNotario ? <><MolsanIcon name="arrowUp" size={12} bare /> Ocultar</> : <><MolsanIcon name="arrowDown" size={12} bare /> Expandir</>}</button>
               </div>
               <div className={`space-y-4 p-4 sm:p-5 ${mostrarDatosEnvioNotario ? "" : "hidden"}`}>
                 <>
                 <div className="grid min-w-0 grid-cols-1 items-start gap-4 xl:grid-cols-2">
-                <div className="hidden min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
-                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos del envío</p>
+                <div className="hidden min-w-0 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-[var(--molsan-primary)]">Datos del envío</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Fecha de envío" valor={expediente.fecha_envio_notario || expediente.fecha_envio} tipo="fecha" />
                     <Dato campo="Idioma del documento" valor={expediente.idioma_documento ?? expediente.idioma ?? expediente.lengua_documento} />
@@ -7230,8 +7230,8 @@ const cuantiaFincasParaEnvio =
                   </div>
                 </div>
                 </div>
-                <div className="hidden border-t border-slate-100 pt-3">
-                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Tipo de documento y cuantía</p>
+                <div className="hidden border-t border-[var(--molsan-border)] pt-3">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-[var(--molsan-primary)]">Tipo de documento y cuantía</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Formato de escritura" valor={expediente.formato_escritura ?? expediente.formato_escritura_notarial} />
                     <Dato campo="Tipo de trámite" valor={expediente.tipo_tramite ?? expediente.tipo_tramite_notarial ?? expediente.tramite} />
@@ -7288,11 +7288,11 @@ const cuantiaFincasParaEnvio =
                     </div>
 
                     {actividadSeleccionada === "gestion-economica" && (
-                      <section className="mt-4 rounded-xl border border-indigo-100 bg-white p-4">
+                      <section className="mt-4 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <div>
-                            <h4 className="text-sm font-extrabold text-slate-800">Resumen Económico</h4>
-                            <p className="mt-1 text-xs text-slate-500">
+                            <h4 className="text-sm font-extrabold text-[var(--molsan-text)]">Resumen Económico</h4>
+                            <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">
                               Importe inicial tomado de Información crediticia. El saldo solo descuenta los gastos cuyo pago está confirmado.
                             </p>
                           </div>
@@ -7309,9 +7309,9 @@ const cuantiaFincasParaEnvio =
                                 return abrir;
                               });
                             }}
-                            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700"
+                            className="inline-flex items-center gap-2 rounded-lg bg-[var(--molsan-primary)] px-4 py-2 text-xs font-bold text-white hover:bg-[var(--molsan-primary)]"
                           >
-                            ＋ Registrar gasto
+                            <MolsanIcon name="plus" size={14} bare /> Registrar gasto
                           </button>
                           <button
                             type="button"
@@ -7323,7 +7323,7 @@ const cuantiaFincasParaEnvio =
                             }}
                             className="inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-100"
                           >
-                            ＋ Solicitar complemento de saldo
+                            <MolsanIcon name="plus" size={14} bare /> Solicitar complemento de saldo
                           </button>
                         </div>
                         <div>
@@ -7332,8 +7332,8 @@ const cuantiaFincasParaEnvio =
                         {mostrarModalComplementoSaldo && (
                           <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4 sm:p-5">
                             <div className="mb-4 flex items-start justify-between gap-3">
-                              <div><h5 className="text-sm font-extrabold text-slate-900">Solicitar complemento de saldo</h5><p className="mt-1 text-xs text-slate-600">La solicitud quedará registrada en Utilidades → Complementos de saldo con estado Pendiente.</p></div>
-                              <button type="button" onClick={() => setMostrarModalComplementoSaldo(false)} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-600">Cerrar ×</button>
+                              <div><h5 className="text-sm font-extrabold text-[var(--molsan-text)]">Solicitar complemento de saldo</h5><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">La solicitud quedará registrada en Utilidades → Complementos de saldo con estado Pendiente.</p></div>
+                              <button type="button" onClick={() => setMostrarModalComplementoSaldo(false)} className="rounded-lg border border-[var(--molsan-border)] bg-white px-2.5 py-1.5 text-xs font-bold text-[var(--molsan-text-secondary)]">Cerrar <MolsanIcon name="x" size={12} bare /></button>
                             </div>
                             <form onSubmit={async (event) => {
                               event.preventDefault(); setErrorComplementoSaldo("");
@@ -7362,39 +7362,39 @@ const cuantiaFincasParaEnvio =
                                 setErrorComplementoSaldo(error?.response?.data?.detail || "No se pudo registrar la solicitud de complemento.");
                               } finally { setGuardandoComplementoSaldo(false); }
                             }} className="grid gap-3 sm:grid-cols-2">
-                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Provisionado (€)</label><input readOnly value={formComplementoSaldo.provisionado} className="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-600" /></div>
-                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Saldo disponible (€)</label><input readOnly value={formComplementoSaldo.saldo_disponible} className="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-600" /></div>
-                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Saldo a solicitar (€)</label><input required min="0.01" step="0.01" type="number" value={formComplementoSaldo.importe} onChange={(e) => setFormComplementoSaldo((f) => ({ ...f, importe: e.target.value }))} placeholder="0,00" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm" /></div>
-                              <div className="sm:col-span-2"><label className="mb-1 block text-xs font-bold text-slate-600">Motivo</label><textarea required rows={3} value={formComplementoSaldo.motivo} onChange={(e) => setFormComplementoSaldo((f) => ({ ...f, motivo: e.target.value }))} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm" placeholder="Explica el motivo por el que se solicita el complemento…" /></div>
+                              <div><label className="mb-1 block text-xs font-bold text-[var(--molsan-text-secondary)]">Provisionado (€)</label><input readOnly value={formComplementoSaldo.provisionado} className="w-full rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-sm text-[var(--molsan-text-secondary)]" /></div>
+                              <div><label className="mb-1 block text-xs font-bold text-[var(--molsan-text-secondary)]">Saldo disponible (€)</label><input readOnly value={formComplementoSaldo.saldo_disponible} className="w-full rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-sm text-[var(--molsan-text-secondary)]" /></div>
+                              <div><label className="mb-1 block text-xs font-bold text-[var(--molsan-text-secondary)]">Saldo a solicitar (€)</label><input required min="0.01" step="0.01" type="number" value={formComplementoSaldo.importe} onChange={(e) => setFormComplementoSaldo((f) => ({ ...f, importe: e.target.value }))} placeholder="0,00" className="w-full rounded-lg border border-[var(--molsan-border-strong)] bg-white px-3 py-2 text-sm" /></div>
+                              <div className="sm:col-span-2"><label className="mb-1 block text-xs font-bold text-[var(--molsan-text-secondary)]">Motivo</label><textarea required rows={3} value={formComplementoSaldo.motivo} onChange={(e) => setFormComplementoSaldo((f) => ({ ...f, motivo: e.target.value }))} className="w-full rounded-lg border border-[var(--molsan-border-strong)] bg-white px-3 py-2 text-sm" placeholder="Explica el motivo por el que se solicita el complemento…" /></div>
                               {errorComplementoSaldo && <p role="alert" className="sm:col-span-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">{errorComplementoSaldo}</p>}
-                              <div className="flex flex-wrap justify-end gap-2 sm:col-span-2"><button type="button" onClick={() => setMostrarModalComplementoSaldo(false)} disabled={guardandoComplementoSaldo} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardandoComplementoSaldo} className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoComplementoSaldo ? "Guardando…" : "Solicitar complemento"}</button></div>
+                              <div className="flex flex-wrap justify-end gap-2 sm:col-span-2"><button type="button" onClick={() => setMostrarModalComplementoSaldo(false)} disabled={guardandoComplementoSaldo} className="rounded-lg border border-[var(--molsan-border)] bg-white px-4 py-2 text-xs font-bold text-[var(--molsan-text-secondary)]">Cancelar</button><button type="submit" disabled={guardandoComplementoSaldo} className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoComplementoSaldo ? "Guardando…" : "Solicitar complemento"}</button></div>
                             </form>
                           </div>
                         )}
 
                         <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                          <div className="rounded-xl border border-indigo-100 bg-indigo-50/70 p-4">
-                            <p className="text-[11px] font-bold uppercase tracking-wide text-indigo-700">Importe inicial de la provisión</p>
-                            <p className="mt-1 text-2xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? `${importeInicialProvision.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
-                            <p className="mt-1 text-[10px] text-slate-500">Campo Importe · Excel de Absis</p>
+                          <div className="rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4">
+                            <p className="text-[11px] font-bold uppercase tracking-wide text-[var(--molsan-primary)]">Importe inicial de la provisión</p>
+                            <p className="mt-1 text-2xl font-extrabold tabular-nums text-[var(--molsan-text)]">{importeInicialDisponible ? `${importeInicialProvision.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
+                            <p className="mt-1 text-[10px] text-[var(--molsan-text-secondary)]">Campo Importe · Excel de Absis</p>
                           </div>
-                          <div className="rounded-xl border border-slate-200 bg-white p-4">
-                            <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Saldo real actual</p>
+                          <div className="rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                            <p className="text-[11px] font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Saldo real actual</p>
                             <p className={`mt-1 text-2xl font-extrabold tabular-nums ${resumenEconomico.saldoActual < 0 ? "text-red-700" : "text-emerald-700"}`}>{importeInicialDisponible ? `${resumenEconomico.saldoActual.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
-                            <p className="mt-1 text-[10px] text-slate-500">Importe inicial menos pagos confirmados</p>
+                            <p className="mt-1 text-[10px] text-[var(--molsan-text-secondary)]">Importe inicial menos pagos confirmados</p>
                           </div>
                         </div>
 
                         <div className="mt-4">
-                          <h5 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-600">Movimientos de la provisión</h5>
+                          <h5 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Movimientos de la provisión</h5>
                           {cargandoGastos ? (
-                            <p className="py-3 text-xs text-slate-500">Cargando movimientos económicos…</p>
+                            <p className="py-3 text-xs text-[var(--molsan-text-secondary)]">Cargando movimientos económicos…</p>
                           ) : resumenEconomico.movimientos.length === 0 ? (
-                            <p className="rounded-lg border border-dashed border-slate-200 px-3 py-4 text-center text-xs text-slate-500">Todavía no hay pagos confirmados para mostrar.</p>
+                            <p className="rounded-lg border border-dashed border-[var(--molsan-border)] px-3 py-4 text-center text-xs text-[var(--molsan-text-secondary)]">Todavía no hay pagos confirmados para mostrar.</p>
                           ) : (
-                            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+                            <div className="overflow-x-auto rounded-xl border border-[var(--molsan-border)] bg-white shadow-sm">
                               <table className="w-full min-w-[980px] table-auto text-left text-sm">
-                                <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-600">
+                                <thead className="bg-[var(--molsan-surface-soft)] text-xs uppercase tracking-wider text-[var(--molsan-text-secondary)]">
                                   <tr>
                                     <th className="w-[190px] px-5 py-4 font-extrabold">N.º documento</th>
                                     <th className="w-[170px] px-5 py-4 font-extrabold">Fecha de pago</th>
@@ -7405,12 +7405,12 @@ const cuantiaFincasParaEnvio =
                                 </thead>
                                 <tbody>
                                   {resumenEconomico.movimientos.map((movimiento, indice) => (
-                                    <tr key={movimiento.id} className={`border-t border-slate-100 transition-colors hover:bg-indigo-50/40 ${indice % 2 === 1 ? "bg-slate-50/50" : "bg-white"}`}>
-                                      <td className="whitespace-nowrap px-5 py-4 font-extrabold text-indigo-700">{movimiento.numero_documento || `PAG-${String(movimiento.id).padStart(6, "0")}`}</td>
-                                      <td className="whitespace-nowrap px-5 py-4 text-slate-600">{movimiento.fecha ? formatearFecha(movimiento.fecha) : "—"}</td>
-                                      <td className="px-5 py-4 font-semibold text-slate-800">{movimiento.descripcion || movimiento.tipo || "Gasto"}</td>
+                                    <tr key={movimiento.id} className={`border-t border-[var(--molsan-border)] transition-colors hover:bg-[var(--molsan-surface-soft)] ${indice % 2 === 1 ? "bg-[var(--molsan-surface-soft)]" : "bg-white"}`}>
+                                      <td className="whitespace-nowrap px-5 py-4 font-extrabold text-[var(--molsan-primary)]">{movimiento.numero_documento || `PAG-${String(movimiento.id).padStart(6, "0")}`}</td>
+                                      <td className="whitespace-nowrap px-5 py-4 text-[var(--molsan-text-secondary)]">{movimiento.fecha ? formatearFecha(movimiento.fecha) : "—"}</td>
+                                      <td className="px-5 py-4 font-semibold text-[var(--molsan-text)]">{movimiento.descripcion || movimiento.tipo || "Gasto"}</td>
                                       <td className="whitespace-nowrap px-5 py-4 text-right font-bold text-red-700">{movimiento.importeMovimiento === 0 ? "0,00 €" : `−${Math.abs(movimiento.importeMovimiento).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}</td>
-                                      <td className={`whitespace-nowrap px-5 py-4 text-right text-base font-extrabold ${movimiento.saldoCalculado < 0 ? "text-red-700" : "text-slate-900"}`}>{movimiento.saldoCalculado.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</td>
+                                      <td className={`whitespace-nowrap px-5 py-4 text-right text-base font-extrabold ${movimiento.saldoCalculado < 0 ? "text-red-700" : "text-[var(--molsan-text)]"}`}>{movimiento.saldoCalculado.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</td>
                                     </tr>
                                   ))}
                                 </tbody>
@@ -7433,18 +7433,18 @@ const cuantiaFincasParaEnvio =
 
                         {mostrarFormularioGasto && origenFormularioGasto === "economico" && createPortal((
                           <div ref={gastoDialogRef} tabIndex={-1} className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-gasto">
-                            <div className="flex max-h-[94vh] w-full max-w-[96vw] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+                            <div className="flex max-h-[94vh] w-full max-w-[96vw] flex-col overflow-hidden rounded-2xl border border-[var(--molsan-border)] bg-white shadow-2xl">
                           <form onSubmit={guardarGastoExpediente} className="flex min-h-0 flex-col overflow-hidden">
-                            <div className="flex items-start justify-between gap-3 border-b border-slate-200 bg-slate-50 px-5 py-4">
-                              <div><h5 id="titulo-modal-gasto" className="text-base font-extrabold text-slate-900">Registrar gasto · Factura y pago</h5><p className="mt-1 text-xs text-slate-500">El registro no ejecuta una transferencia bancaria.</p></div>
-                              <button type="button" aria-label="Cerrar ventana" onClick={() => setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-lg leading-none text-slate-600 hover:bg-slate-100 disabled:opacity-50">×</button>
+                            <div className="flex items-start justify-between gap-3 border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-5 py-4">
+                              <div><h5 id="titulo-modal-gasto" className="text-base font-extrabold text-[var(--molsan-text)]">Registrar gasto · Factura y pago</h5><p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">El registro no ejecuta una transferencia bancaria.</p></div>
+                              <button type="button" aria-label="Cerrar ventana" onClick={() => setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-lg leading-none text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)] disabled:opacity-50"><MolsanIcon name="x" size={18} bare /></button>
                               <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-bold text-amber-800">Pago: pendiente</span>
                             </div>
                             <div className="min-h-0 flex-1 overflow-y-auto p-5"><div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(360px,0.9fr)]">
                               <div className="min-w-0">
                               <div className="space-y-3">
-                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Factura y proveedor</h6>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-indigo-800">Honorarios de gestoría (opcional)</span><select value={honorarioGestoriaId} onChange={(e) => { const idSeleccionado = e.target.value; setHonorarioGestoriaId(idSeleccionado); const tarifa = honorariosCatalogo.find((x) => String(x.id) === idSeleccionado); if (tarifa) {
+                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Factura y proveedor</h6>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-primary)]">Honorarios de gestoría (opcional)</span><select value={honorarioGestoriaId} onChange={(e) => { const idSeleccionado = e.target.value; setHonorarioGestoriaId(idSeleccionado); const tarifa = honorariosCatalogo.find((x) => String(x.id) === idSeleccionado); if (tarifa) {
                                     const importeTarifa = Number(tarifa.importe || 0).toFixed(2);
                                     const baseTarifa = Number(tarifa.base_imponible ?? tarifa.importe ?? 0).toFixed(2);
                                     const tipoCatalogo = String(tarifa.tipo_impuesto || "IVA").toUpperCase();
@@ -7466,82 +7466,82 @@ const cuantiaFincasParaEnvio =
                                       porcentaje_retencion: "0",
                                       tipo_retencion: "Sin retención",
                                     }));
-                                  } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {Number(x.base_imponible ?? x.importe ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € + {String(x.tipo_impuesto || "IVA").toUpperCase()} {Number(x.porcentaje_impuesto ?? 21)}% · total {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
+                                  } }} className="w-full rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · base {Number(x.base_imponible ?? x.importe ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € + {String(x.tipo_impuesto || "IVA").toUpperCase()} {Number(x.porcentaje_impuesto ?? 21)}% · total {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block text-[11px] text-[var(--molsan-text-secondary)]">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
                                 <div className="grid gap-3 sm:grid-cols-2">
-                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">NIF/CIF/NIE notario</span><input value={gastoForm.nif_notario} onChange={(e)=>setGastoForm(a=>({...a,nif_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Nombre del notario</span><input value={gastoForm.nombre_notario} onChange={(e)=>setGastoForm(a=>({...a,nombre_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">NIF/CIF/NIE notario</span><input value={gastoForm.nif_notario} onChange={(e)=>setGastoForm(a=>({...a,nif_notario:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Nombre del notario</span><input value={gastoForm.nombre_notario} onChange={(e)=>setGastoForm(a=>({...a,nombre_notario:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
                                 </div>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Pagador / razón social</span><input value={gastoForm.pagador} onChange={(e)=>setGastoForm(a=>({...a,pagador:e.target.value}))} placeholder="Nombre de facturación" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Pagador / razón social</span><input value={gastoForm.pagador} onChange={(e)=>setGastoForm(a=>({...a,pagador:e.target.value}))} placeholder="Nombre de facturación" className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
                                 <div className="grid gap-3 sm:grid-cols-2">
-                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Número de factura</span><input value={gastoForm.numero_factura} onChange={(e)=>setGastoForm(a=>({...a,numero_factura:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de factura *</span><input required type="date" value={gastoForm.fecha_factura} onChange={(e)=>setGastoForm(a=>({...a,fecha_factura:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Número de factura</span><input value={gastoForm.numero_factura} onChange={(e)=>setGastoForm(a=>({...a,numero_factura:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Fecha de factura *</span><input required type="date" value={gastoForm.fecha_factura} onChange={(e)=>setGastoForm(a=>({...a,fecha_factura:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
                                 </div>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de pago / movimiento *</span><input required type="date" value={gastoForm.fecha} onChange={(e)=>setGastoForm(a=>({...a,fecha:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Cuenta bancaria / IBAN</span><input value={gastoForm.cuenta_bancaria} onChange={(e)=>setGastoForm(a=>({...a,cuenta_bancaria:e.target.value.toUpperCase()}))} placeholder="ES… (editable; no se autocompleta)" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Medio de pago</span><select value={gastoForm.medio_pago} onChange={(e)=>setGastoForm(a=>({...a,medio_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Transferencia</option><option>Cheque</option><option>Tarjeta</option><option>Efectivo</option><option>Otro</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Estado</span><select value={gastoForm.estado_pago} onChange={(e)=>setGastoForm(a=>({...a,estado_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Pendiente</option><option>Pagado</option><option>Anulado</option></select></label></div>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Documento / URL de factura</span><input type="url" value={gastoForm.documento_url} onChange={(e)=>setGastoForm(a=>({...a,documento_url:e.target.value}))} placeholder="https://…" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Fecha de pago / movimiento *</span><input required type="date" value={gastoForm.fecha} onChange={(e)=>setGastoForm(a=>({...a,fecha:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Cuenta bancaria / IBAN</span><input value={gastoForm.cuenta_bancaria} onChange={(e)=>setGastoForm(a=>({...a,cuenta_bancaria:e.target.value.toUpperCase()}))} placeholder="ES… (editable; no se autocompleta)" className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Medio de pago</span><select value={gastoForm.medio_pago} onChange={(e)=>setGastoForm(a=>({...a,medio_pago:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm"><option>Transferencia</option><option>Cheque</option><option>Tarjeta</option><option>Efectivo</option><option>Otro</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Estado</span><select value={gastoForm.estado_pago} onChange={(e)=>setGastoForm(a=>({...a,estado_pago:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm"><option>Pendiente</option><option>Pagado</option><option>Anulado</option></select></label></div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Documento / URL de factura</span><input type="url" value={gastoForm.documento_url} onChange={(e)=>setGastoForm(a=>({...a,documento_url:e.target.value}))} placeholder="https://…" className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
                               </div>
                               </div>
                               <div className="space-y-3">
-                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Impuestos y retenciones</h6>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tramo de impuesto</span><select value={gastoForm.tramo_impuesto} onChange={(e)=>setGastoForm(a=>({...a,tramo_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","General","Reducido","Super reducido","Único"].map(x=><option key={x}>{x}</option>)}</select></label>
-                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tipo impositivo</span><select value={gastoForm.tipo_impuesto} onChange={(e)=>{const v=e.target.value;setGastoForm(a=>({...a,tipo_impuesto:v,porcentaje_impuesto:v==="IVA 21%"?"21":v==="IGIC 5%"?"5":v==="IGIC 6,50%"?"6.5":v==="IGIC 7%"?"7":"0"}))}} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{!["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].includes(gastoForm.tipo_impuesto) && <option value={gastoForm.tipo_impuesto}>{gastoForm.tipo_impuesto}</option>}{["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].map(x=><option key={x}>{x}</option>)}</select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Porcentaje (%)</span><input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <div className="grid gap-3 sm:grid-cols-2">{[["Base exenta (€)","base_exenta_impuestos"],["Base sujeta (€)","base_sujeta_impuestos"]].map(([label,key])=><label key={key} className="block"><span className="mb-1 block text-xs font-bold text-slate-700">{label}</span><input type="number" min="0" step="0.01" value={gastoForm[key]} onChange={(e)=>setGastoForm(a=>({...a,[key]:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>)}</div>
-                                <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{impuestoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div></div>
-                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base exenta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_exenta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_exenta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base sujeta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_sujeta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Retención</span><select value={gastoForm.tipo_retencion} onChange={(e)=>setGastoForm(a=>({...a,tipo_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>IRPF profesionales</option><option>Sin retención</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">IRPF (%)</span><input type="number" min="0" max="21" step="0.01" value={gastoForm.porcentaje_retencion} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Impuestos y retenciones</h6>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Tramo de impuesto</span><select value={gastoForm.tramo_impuesto} onChange={(e)=>setGastoForm(a=>({...a,tramo_impuesto:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm">{["Exento","General","Reducido","Super reducido","Único"].map(x=><option key={x}>{x}</option>)}</select></label>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Tipo impositivo</span><select value={gastoForm.tipo_impuesto} onChange={(e)=>{const v=e.target.value;setGastoForm(a=>({...a,tipo_impuesto:v,porcentaje_impuesto:v==="IVA 21%"?"21":v==="IGIC 5%"?"5":v==="IGIC 6,50%"?"6.5":v==="IGIC 7%"?"7":"0"}))}} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm">{!["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].includes(gastoForm.tipo_impuesto) && <option value={gastoForm.tipo_impuesto}>{gastoForm.tipo_impuesto}</option>}{["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].map(x=><option key={x}>{x}</option>)}</select></label><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Porcentaje (%)</span><input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_impuesto:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="grid gap-3 sm:grid-cols-2">{[["Base exenta (€)","base_exenta_impuestos"],["Base sujeta (€)","base_sujeta_impuestos"]].map(([label,key])=><label key={key} className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">{label}</span><input type="number" min="0" step="0.01" value={gastoForm[key]} onChange={(e)=>setGastoForm(a=>({...a,[key]:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>)}</div>
+                                <div className="rounded-lg border border-[var(--molsan-border)] bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{impuestoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div></div>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Base exenta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_exenta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_exenta_retencion:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Base sujeta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_sujeta_retencion:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Retención</span><select value={gastoForm.tipo_retencion} onChange={(e)=>setGastoForm(a=>({...a,tipo_retencion:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm"><option>IRPF profesionales</option><option>Sin retención</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">IRPF (%)</span><input type="number" min="0" max="21" step="0.01" value={gastoForm.porcentaje_retencion} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_retencion:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="rounded-xl border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] p-4"><div className="flex justify-between text-xs text-[var(--molsan-text-secondary)]"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-[var(--molsan-primary)]">Resultado calculado</span><strong className="text-2xl text-[var(--molsan-primary)]">{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label></div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm" /></label>
                               </div>
-                              <aside className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                              <aside className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3">
                                 <div className="mb-3">
-                                  <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-600">Factura de Carpeta Digital</h6>
-                                  <p className="mt-1 text-[11px] text-slate-500">Factura notarial o registral · PDF</p>
+                                  <h6 className="text-xs font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Factura de Carpeta Digital</h6>
+                                  <p className="mt-1 text-[11px] text-[var(--molsan-text-secondary)]">Factura notarial o registral · PDF</p>
                                 </div>
                                 <label className="mb-3 block">
-                                  <span className="mb-1 block text-xs font-bold text-slate-700">Documento a revisar</span>
-                                  <select value={documentoFacturaSeleccionado} onChange={(e) => { setDocumentoFacturaSeleccionado(e.target.value); setGastoForm(a => ({...a, documento_carpeta_id: e.target.value})); }} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs">
+                                  <span className="mb-1 block text-xs font-bold text-[var(--molsan-text)]">Documento a revisar</span>
+                                  <select value={documentoFacturaSeleccionado} onChange={(e) => { setDocumentoFacturaSeleccionado(e.target.value); setGastoForm(a => ({...a, documento_carpeta_id: e.target.value})); }} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-xs">
                                     <option value="">Selecciona una factura PDF…</option>
                                     {documentosFacturaElegibles.map((doc) => <option key={doc.id} value={String(doc.id)}>{doc.nombre_original || doc.nombre || `Documento ${doc.id}`} · {doc.categoria || doc.categoria_nombre}</option>)}
                                   </select>
                                 </label>
-                                {cargandoVistaPreviaFactura ? <p className="p-4 text-xs text-slate-500">Cargando PDF…</p> : null}
+                                {cargandoVistaPreviaFactura ? <p className="p-4 text-xs text-[var(--molsan-text-secondary)]">Cargando PDF…</p> : null}
                                 {errorVistaPreviaFactura ? <p role="alert" className="mb-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800">{errorVistaPreviaFactura}</p> : null}
-                                {urlVistaPreviaFactura ? <iframe title="Vista previa de factura" src={urlVistaPreviaFactura} className="h-[58vh] min-h-[360px] w-full rounded-lg border border-slate-200 bg-white" /> : null}
-                                {!urlVistaPreviaFactura && !cargandoVistaPreviaFactura && !errorVistaPreviaFactura ? <p className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-center text-xs text-slate-500">No hay ningún PDF seleccionado. Comprueba que la factura esté en Gestión económica de la Carpeta Digital.</p> : null}
+                                {urlVistaPreviaFactura ? <iframe title="Vista previa de factura" src={urlVistaPreviaFactura} className="h-[58vh] min-h-[360px] w-full rounded-lg border border-[var(--molsan-border)] bg-white" /> : null}
+                                {!urlVistaPreviaFactura && !cargandoVistaPreviaFactura && !errorVistaPreviaFactura ? <p className="rounded-lg border border-dashed border-[var(--molsan-border-strong)] bg-white p-5 text-center text-xs text-[var(--molsan-text-secondary)]">No hay ningún PDF seleccionado. Comprueba que la factura esté en Gestión económica de la Carpeta Digital.</p> : null}
                               </aside>
                             </div></div>
-                            <div className="flex flex-wrap justify-end gap-2 border-t border-slate-200 bg-white px-5 py-4"><button type="button" onClick={()=>setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardandoGasto || cargandoConceptosGasto} className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoGasto ? "Guardando…" : "Registrar gasto"}</button></div>
+                            <div className="flex flex-wrap justify-end gap-2 border-t border-[var(--molsan-border)] bg-white px-5 py-4"><button type="button" onClick={()=>setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-[var(--molsan-border)] bg-white px-4 py-2 text-xs font-bold text-[var(--molsan-text-secondary)]">Cancelar</button><button type="submit" disabled={guardandoGasto || cargandoConceptosGasto} className="rounded-lg bg-[var(--molsan-primary)] px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoGasto ? "Guardando…" : "Registrar gasto"}</button></div>
                           </form>
                             </div>
                           </div>
                         ), document.body)}
 
-                        <div className="mt-6 border-t border-slate-100 pt-5">
-                          <h5 className="mb-4 text-sm font-extrabold uppercase tracking-wide text-slate-700">Facturas y gastos registrados</h5>
+                        <div className="mt-6 border-t border-[var(--molsan-border)] pt-5">
+                          <h5 className="mb-4 text-sm font-extrabold uppercase tracking-wide text-[var(--molsan-text)]">Facturas y gastos registrados</h5>
                           {cargandoGastos ? (
-                            <p className="py-4 text-sm text-slate-500">Cargando gastos…</p>
+                            <p className="py-4 text-sm text-[var(--molsan-text-secondary)]">Cargando gastos…</p>
                           ) : gastosExpediente.length === 0 ? (
-                            <p className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm text-slate-500">Todavía no hay gastos registrados en este expediente.</p>
+                            <p className="rounded-xl border border-dashed border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-4 py-5 text-sm text-[var(--molsan-text-secondary)]">Todavía no hay gastos registrados en este expediente.</p>
                           ) : (
                             <ul className="space-y-3">
                               {gastosExpediente.map((gasto) => (
-                                <li key={gasto.id} className="flex flex-wrap items-center gap-4 rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+                                <li key={gasto.id} className="flex flex-wrap items-center gap-4 rounded-xl border border-[var(--molsan-border)] bg-white px-5 py-4 shadow-sm">
                                   <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-extrabold text-slate-900">{gasto.descripcion || gasto.tipo || "Gasto"}</p>
-                                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-600">
-                                      <span className="font-bold text-indigo-700">{gasto.numero_documento || `PAG-${String(gasto.id).padStart(6, "0")}`}</span>
+                                    <p className="text-sm font-extrabold text-[var(--molsan-text)]">{gasto.descripcion || gasto.tipo || "Gasto"}</p>
+                                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[var(--molsan-text-secondary)]">
+                                      <span className="font-bold text-[var(--molsan-primary)]">{gasto.numero_documento || `PAG-${String(gasto.id).padStart(6, "0")}`}</span>
                                       {gasto.tipo && <span>{gasto.tipo}</span>}
                                       {gasto.fecha && <span>Fecha: {formatearFecha(gasto.fecha)}</span>}
-                                      {gasto.id_gasto_absis && <span className="rounded-md bg-slate-100 px-2 py-1 font-semibold text-slate-700">IDGASTO: {gasto.id_gasto_absis}</span>}
-                                      {gasto.tipo_concepto_absis && <span className="rounded-md bg-indigo-50 px-2 py-1 font-semibold text-indigo-700">TIPOCONCEPTO: {gasto.tipo_concepto_absis}</span>}
-                                      {gasto.estado_consolidacion && <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${gasto.estado_consolidacion === "Consolidado" ? "bg-emerald-50 text-emerald-700" : gasto.estado_consolidacion === "Pendiente envío" ? "bg-amber-50 text-amber-700" : "bg-sky-50 text-sky-700"}`}>{gasto.estado_consolidacion}</span>}
+                                      {gasto.id_gasto_absis && <span className="rounded-md bg-[var(--molsan-surface-soft)] px-2 py-1 font-semibold text-[var(--molsan-text)]">IDGASTO: {gasto.id_gasto_absis}</span>}
+                                      {gasto.tipo_concepto_absis && <span className="rounded-md bg-[var(--molsan-surface-soft)] px-2 py-1 font-semibold text-[var(--molsan-primary)]">TIPOCONCEPTO: {gasto.tipo_concepto_absis}</span>}
+                                      {gasto.estado_consolidacion && <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${gasto.estado_consolidacion === "Consolidado" ? "bg-emerald-50 text-emerald-700" : gasto.estado_consolidacion === "Pendiente envío" ? "bg-amber-50 text-amber-700" : "bg-[var(--molsan-surface-soft)] text-[var(--molsan-primary)]"}`}>{gasto.estado_consolidacion}</span>}
                                       {gasto.fecha_ultima_sincronizacion && <span>Sincronizado: {formatearFecha(gasto.fecha_ultima_sincronizacion)}</span>}
                                       <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${String(gasto.estado_pago || "Pendiente").toLowerCase().includes("pag") || String(gasto.estado_pago || "").toLowerCase().includes("abon") ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{gasto.estado_pago || "Pendiente"}</span>
                                     </div>
                                   </div>
-                                  <span className="whitespace-nowrap text-base font-extrabold text-slate-900">
+                                  <span className="whitespace-nowrap text-base font-extrabold text-[var(--molsan-text)]">
                                     {gasto.importe_resultante == null && gasto.importe == null ? "—" : `${Number(gasto.importe_resultante ?? gasto.importe).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}
                                   </span>
                                   {(() => {
@@ -7607,22 +7607,22 @@ const cuantiaFincasParaEnvio =
         <div className="space-y-5">
           {errorReclamacion && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorReclamacion}</p>}
           {mensajeReclamacion && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{mensajeReclamacion}</p>}
-          <section className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-2">
+          <section className="grid grid-cols-1 gap-3 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4 md:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">1 · Tipo de email</label>
-              <select value={categoriaEmail} onChange={(e) => { setCategoriaEmail(e.target.value); setPlantillaEmailId(""); setEmailReclamacion({ destinatario: "", cc: "", asunto: "", cuerpo: "" }); }} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700">
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">1 · Tipo de email</label>
+              <select value={categoriaEmail} onChange={(e) => { setCategoriaEmail(e.target.value); setPlantillaEmailId(""); setEmailReclamacion({ destinatario: "", cc: "", asunto: "", cuerpo: "" }); }} className="w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-text)]">
                 <option value="">Todas las categorías</option>
                 {categoriasEmail.map((categoria) => <option key={categoria} value={categoria}>{categoria}</option>)}
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">2 · Plantilla guardada</label>
-              <select value={plantillaEmailId} onChange={(e) => seleccionarPlantillaEmail(e.target.value)} disabled={cargandoPlantillasEmail || plantillasCategoriaEmail.length === 0} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700">
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">2 · Plantilla guardada</label>
+              <select value={plantillaEmailId} onChange={(e) => seleccionarPlantillaEmail(e.target.value)} disabled={cargandoPlantillasEmail || plantillasCategoriaEmail.length === 0} className="w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-text)]">
                 <option value="">{cargandoPlantillasEmail ? "Cargando plantillas…" : plantillasCategoriaEmail.length ? "Selecciona una plantilla…" : "No hay plantillas activas para esta categoría"}</option>
                 {plantillasCategoriaEmail.map((plantilla) => <option key={plantilla.id} value={plantilla.id}>{plantilla.nombre} · {plantilla.asunto || "Sin asunto"}</option>)}
               </select>
             </div>
-            {plantillaEmailId && <p className="text-xs text-slate-500 md:col-span-2">Plantilla: {plantillaSeleccionadaEmail?.nombre || "—"}. Revisa los marcadores [[FALTA: …]] si algún dato no existe en la ficha.</p>}
+            {plantillaEmailId && <p className="text-xs text-[var(--molsan-text-secondary)] md:col-span-2">Plantilla: {plantillaSeleccionadaEmail?.nombre || "—"}. Revisa los marcadores [[FALTA: …]] si algún dato no existe en la ficha.</p>}
           </section>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <CampoFormulario label="De · Email de empresa (FichaEmpleado)" value={empleadoSesion?.email_empresa || "Falta email de empresa en la ficha del empleado"} onChange={() => {}} />
@@ -7631,19 +7631,19 @@ const cuantiaFincasParaEnvio =
           </div>
           <CampoFormulario label="Asunto" value={emailReclamacion.asunto} onChange={(v) => setEmailReclamacion((p) => ({ ...p, asunto: v }))} />
           <CampoFormulario label="Mensaje (editable antes de enviar)" value={emailReclamacion.cuerpo} onChange={(v) => setEmailReclamacion((p) => ({ ...p, cuerpo: v }))} textarea />
-          <section className="overflow-hidden rounded-xl border border-slate-200">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-4 py-3">
+          <section className="overflow-hidden rounded-xl border border-[var(--molsan-border)]">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-4 py-3">
               <div>
-                <h3 className="text-sm font-bold text-slate-800">Histórico de emails</h3>
-                <p className="text-xs text-slate-500">Registro guardado en el sistema para este expediente.</p>
+                <h3 className="text-sm font-bold text-[var(--molsan-text)]">Histórico de emails</h3>
+                <p className="text-xs text-[var(--molsan-text-secondary)]">Registro guardado en el sistema para este expediente.</p>
               </div>
-              <Boton onClick={cargarHistoricoReclamaciones} disabled={cargandoHistoricoReclamaciones}>{cargandoHistoricoReclamaciones ? "Actualizando…" : "↻ Actualizar"}</Boton>
+              <Boton onClick={cargarHistoricoReclamaciones} disabled={cargandoHistoricoReclamaciones}>{cargandoHistoricoReclamaciones ? "Actualizando…" : <><MolsanIcon name="refresh" size={14} bare /> Actualizar</>}</Boton>
             </div>
-            {cargandoHistoricoReclamaciones ? <p className="p-4 text-sm text-slate-500">Cargando histórico…</p> : historicoReclamaciones.length === 0 ? <p className="p-4 text-sm text-slate-500">Todavía no hay correos registrados.</p> : (
+            {cargandoHistoricoReclamaciones ? <p className="p-4 text-sm text-[var(--molsan-text-secondary)]">Cargando histórico…</p> : historicoReclamaciones.length === 0 ? <p className="p-4 text-sm text-[var(--molsan-text-secondary)]">Todavía no hay correos registrados.</p> : (
               <div className="max-h-64 overflow-auto">
                 <table className="w-full min-w-[700px] text-left text-xs">
-                  <thead className="sticky top-0 bg-white text-slate-500"><tr><th className="px-3 py-2">Fecha</th><th className="px-3 py-2">Tipo / plantilla</th><th className="px-3 py-2">Para</th><th className="px-3 py-2">Asunto</th><th className="px-3 py-2">Estado</th><th className="px-3 py-2">Gestor</th></tr></thead>
-                  <tbody>{historicoReclamaciones.map((item) => <tr key={item.id} className="border-t border-slate-100 align-top"><td className="whitespace-nowrap px-3 py-2">{item.creado_en ? new Date(item.creado_en).toLocaleString("es-ES") : "—"}</td><td className="px-3 py-2">{item.categoria || "—"}<p className="text-slate-400">{item.plantilla_nombre || "Plantilla manual/anterior"}</p></td><td className="px-3 py-2">{item.destinatario}{item.cc && <p className="text-slate-400">CC: {item.cc}</p>}</td><td className="max-w-xs px-3 py-2">{item.asunto}</td><td className="px-3 py-2"><span className={item.estado === "enviado" ? "font-bold text-emerald-700" : "font-bold text-red-700"}>{item.estado === "enviado" ? "Enviado" : "Error"}</span>{item.detalle && <p className="mt-1 max-w-xs text-[10px] text-slate-500">{item.detalle}</p>}</td><td className="px-3 py-2">{item.enviado_por || "—"}</td></tr>)}</tbody>
+                  <thead className="sticky top-0 bg-white text-[var(--molsan-text-secondary)]"><tr><th className="px-3 py-2">Fecha</th><th className="px-3 py-2">Tipo / plantilla</th><th className="px-3 py-2">Para</th><th className="px-3 py-2">Asunto</th><th className="px-3 py-2">Estado</th><th className="px-3 py-2">Gestor</th></tr></thead>
+                  <tbody>{historicoReclamaciones.map((item) => <tr key={item.id} className="border-t border-[var(--molsan-border)] align-top"><td className="whitespace-nowrap px-3 py-2">{item.creado_en ? new Date(item.creado_en).toLocaleString("es-ES") : "—"}</td><td className="px-3 py-2">{item.categoria || "—"}<p className="text-[var(--molsan-text-secondary)]">{item.plantilla_nombre || "Plantilla manual/anterior"}</p></td><td className="px-3 py-2">{item.destinatario}{item.cc && <p className="text-[var(--molsan-text-secondary)]">CC: {item.cc}</p>}</td><td className="max-w-xs px-3 py-2">{item.asunto}</td><td className="px-3 py-2"><span className={item.estado === "enviado" ? "font-bold text-emerald-700" : "font-bold text-red-700"}>{item.estado === "enviado" ? "Enviado" : "Error"}</span>{item.detalle && <p className="mt-1 max-w-xs text-[10px] text-[var(--molsan-text-secondary)]">{item.detalle}</p>}</td><td className="px-3 py-2">{item.enviado_por || "—"}</td></tr>)}</tbody>
                 </table>
               </div>
             )}
@@ -7688,11 +7688,11 @@ const cuantiaFincasParaEnvio =
       <Modal open={mostrarControlExpediente} onClose={()=>!guardandoControlExpediente&&setMostrarControlExpediente(false)} titulo="Control del expediente" subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`} ancho="max-w-[760px]" footer={<div className="flex justify-end gap-2"><Boton onClick={()=>setMostrarControlExpediente(false)} disabled={guardandoControlExpediente}>Cancelar</Boton><Boton tipo="primary" onClick={guardarControlExpediente} disabled={guardandoControlExpediente}>{guardandoControlExpediente?"Guardando…":<><MolsanIcon name="fileCheck" size={14} tone="inherit" bare /> Guardar control</>}</Boton></div>}>
         <div className="space-y-4">
           {estadoLegadoBloqueante&&<p role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm font-bold text-amber-900">El estado {expediente?.estado_expediente} mantiene el bloqueo automático. Para desbloquearlo, debe corregirse primero el estado del expediente.</p>}
-          <label className="flex items-start gap-3 rounded-xl border p-4"><input type="checkbox" className="mt-1" checked={!!controlExpediente.liquidado_sin_tramitar} onChange={e=>setControlExpediente(v=>({...v,liquidado_sin_tramitar:e.target.checked}))}/><span className="flex-1"><strong className="block text-sm">Liquidado sin tramitar</strong><span className="block text-xs text-slate-500">Bloquea el expediente y genera aviso central.</span>{controlExpediente.liquidado_sin_tramitar&&<input aria-label="Fecha liquidado sin tramitar" type="date" className="mt-3 w-full rounded-lg border p-2" value={controlExpediente.fecha_liquidacion_sin_tramitar||""} onChange={e=>setControlExpediente(v=>({...v,fecha_liquidacion_sin_tramitar:e.target.value}))}/>}</span></label>
-          <label className="flex items-start gap-3 rounded-xl border p-4"><input type="checkbox" className="mt-1" checked={!!controlExpediente.cambio_gestoria} onChange={e=>setControlExpediente(v=>({...v,cambio_gestoria:e.target.checked}))}/><span className="flex-1"><strong className="block text-sm">Cambio de gestoría</strong><span className="block text-xs text-slate-500">Bloquea el expediente con aviso específico.</span>{controlExpediente.cambio_gestoria&&<input aria-label="Fecha cambio gestoría" type="date" className="mt-3 w-full rounded-lg border p-2" value={controlExpediente.fecha_cambio_gestoria||""} onChange={e=>setControlExpediente(v=>({...v,fecha_cambio_gestoria:e.target.value}))}/>}</span></label>
-          <div className="rounded-xl border p-4"><label className="flex items-start gap-3"><input type="checkbox" className="mt-1" checked={!!controlExpediente.bloqueo_manual} onChange={e=>setControlExpediente(v=>({...v,bloqueo_manual:e.target.checked}))}/><span><strong className="block text-sm">Bloqueo manual</strong><span className="block text-xs text-slate-500">Se puede desbloquear desmarcando esta opción.</span></span></label>{controlExpediente.bloqueo_manual&&<div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="text-xs font-bold">Motivo<input className="mt-1 w-full rounded-lg border p-2 text-sm font-normal" value={controlExpediente.motivo_bloqueo||""} onChange={e=>setControlExpediente(v=>({...v,motivo_bloqueo:e.target.value}))} placeholder="Motivo del bloqueo"/></label><label className="text-xs font-bold">Fecha<input type="date" className="mt-1 w-full rounded-lg border p-2 text-sm font-normal" value={controlExpediente.fecha_bloqueo||""} onChange={e=>setControlExpediente(v=>({...v,fecha_bloqueo:e.target.value}))}/></label></div>}</div>
+          <label className="flex items-start gap-3 rounded-xl border p-4"><input type="checkbox" className="mt-1" checked={!!controlExpediente.liquidado_sin_tramitar} onChange={e=>setControlExpediente(v=>({...v,liquidado_sin_tramitar:e.target.checked}))}/><span className="flex-1"><strong className="block text-sm">Liquidado sin tramitar</strong><span className="block text-xs text-[var(--molsan-text-secondary)]">Bloquea el expediente y genera aviso central.</span>{controlExpediente.liquidado_sin_tramitar&&<input aria-label="Fecha liquidado sin tramitar" type="date" className="mt-3 w-full rounded-lg border p-2" value={controlExpediente.fecha_liquidacion_sin_tramitar||""} onChange={e=>setControlExpediente(v=>({...v,fecha_liquidacion_sin_tramitar:e.target.value}))}/>}</span></label>
+          <label className="flex items-start gap-3 rounded-xl border p-4"><input type="checkbox" className="mt-1" checked={!!controlExpediente.cambio_gestoria} onChange={e=>setControlExpediente(v=>({...v,cambio_gestoria:e.target.checked}))}/><span className="flex-1"><strong className="block text-sm">Cambio de gestoría</strong><span className="block text-xs text-[var(--molsan-text-secondary)]">Bloquea el expediente con aviso específico.</span>{controlExpediente.cambio_gestoria&&<input aria-label="Fecha cambio gestoría" type="date" className="mt-3 w-full rounded-lg border p-2" value={controlExpediente.fecha_cambio_gestoria||""} onChange={e=>setControlExpediente(v=>({...v,fecha_cambio_gestoria:e.target.value}))}/>}</span></label>
+          <div className="rounded-xl border p-4"><label className="flex items-start gap-3"><input type="checkbox" className="mt-1" checked={!!controlExpediente.bloqueo_manual} onChange={e=>setControlExpediente(v=>({...v,bloqueo_manual:e.target.checked}))}/><span><strong className="block text-sm">Bloqueo manual</strong><span className="block text-xs text-[var(--molsan-text-secondary)]">Se puede desbloquear desmarcando esta opción.</span></span></label>{controlExpediente.bloqueo_manual&&<div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="text-xs font-bold">Motivo<input className="mt-1 w-full rounded-lg border p-2 text-sm font-normal" value={controlExpediente.motivo_bloqueo||""} onChange={e=>setControlExpediente(v=>({...v,motivo_bloqueo:e.target.value}))} placeholder="Motivo del bloqueo"/></label><label className="text-xs font-bold">Fecha<input type="date" className="mt-1 w-full rounded-lg border p-2 text-sm font-normal" value={controlExpediente.fecha_bloqueo||""} onChange={e=>setControlExpediente(v=>({...v,fecha_bloqueo:e.target.value}))}/></label></div>}</div>
           {errorControlExpediente&&<p role="alert" className="rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700">{errorControlExpediente}</p>}
-          <p className="text-xs text-slate-500">LST y RST bloquean automáticamente el expediente aunque se desmarquen las opciones.</p>
+          <p className="text-xs text-[var(--molsan-text-secondary)]">LST y RST bloquean automáticamente el expediente aunque se desmarquen las opciones.</p>
         </div>
       </Modal>
 
@@ -7736,13 +7736,13 @@ const cuantiaFincasParaEnvio =
       </div>
     )}
 
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-      <h3 className="mb-3 text-sm font-bold text-slate-800">
+    <div className="rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4">
+      <h3 className="mb-3 text-sm font-bold text-[var(--molsan-text)]">
         Defectos registrados
       </h3>
 
       {defectosRegistrados.length === 0 ? (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-[var(--molsan-text-secondary)]">
           Todavía no hay defectos registrados para este expediente.
         </p>
       ) : (
@@ -7750,23 +7750,23 @@ const cuantiaFincasParaEnvio =
           {defectosRegistrados.map((defecto) => (
             <div
               key={defecto.id ?? defecto.id_defecto}
-              className="flex flex-col justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3 md:flex-row md:items-center"
+              className="flex flex-col justify-between gap-3 rounded-lg border border-[var(--molsan-border)] bg-white p-3 md:flex-row md:items-center"
             >
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-slate-800">
+                <p className="text-sm font-semibold text-[var(--molsan-text)]">
                   {defecto.motivo_defecto || defecto.tipo_error || "Defecto"}
                 </p>
 
                 {defecto.tipo_carga_hipotecaria_nombre || tiposCargaHipotecaria.find(
                   (tipo) => String(tipo.id) === String(defecto.tipo_carga_hipotecaria_id)
                 )?.nombre ? (
-                  <p className="mt-1 text-xs font-medium text-indigo-700">
+                  <p className="mt-1 text-xs font-medium text-[var(--molsan-primary)]">
                     Carga hipotecaria: {defecto.tipo_carga_hipotecaria_nombre || tiposCargaHipotecaria.find(
                       (tipo) => String(tipo.id) === String(defecto.tipo_carga_hipotecaria_id)
                     )?.nombre}
                   </p>
                 ) : null}
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">
                   {defecto.fecha_entrada_subsanacion
                     ? `Subsanado: ${formatearFecha(defecto.fecha_entrada_subsanacion)}`
                     : "Pendiente de subsanación"}
@@ -7790,7 +7790,7 @@ const cuantiaFincasParaEnvio =
     </div>
 
     <div>
-      <h3 className="mb-3 text-sm font-bold text-slate-800">
+      <h3 className="mb-3 text-sm font-bold text-[var(--molsan-text)]">
         {defectoEditandoId
           ? `Modificar defecto nº ${defectoEditandoId}`
           : "Datos del nuevo defecto"}
@@ -7798,10 +7798,10 @@ const cuantiaFincasParaEnvio =
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           
-        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+        <label className="block text-sm font-medium text-[var(--molsan-text)] md:col-span-2">
           Tipo de carga hipotecaria
           <select
-            className="mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm"
+            className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white p-3 text-sm"
             value={defectoForm.tipo_carga_hipotecaria_id}
             onChange={(e) =>
               setDefectoForm((actual) => ({
@@ -7824,11 +7824,11 @@ const cuantiaFincasParaEnvio =
           )}
         </label>
 
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-[var(--molsan-text)]">
           Motivos del Defecto *
           <select
             required
-            className="mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm"
+            className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white p-3 text-sm"
             value={defectoForm.motivo_defecto}
             onChange={(e) =>
               setDefectoForm((actual) => ({
@@ -7849,10 +7849,10 @@ const cuantiaFincasParaEnvio =
           </select>
         </label>
 
-        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+        <label className="block text-sm font-medium text-[var(--molsan-text)] md:col-span-2">
           Subtipo del Defecto
           <select
-            className="mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm"
+            className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white p-3 text-sm"
             value={defectoForm.subtipo_defecto_id}
             onChange={(e) => {
               const subtipoSeleccionado = subtiposDefecto.find(
@@ -7879,50 +7879,50 @@ const cuantiaFincasParaEnvio =
           )}
         </label>
 
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-[var(--molsan-text)]">
           Fecha calificación *
-          <input type="date" required className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.fecha_calificacion} onChange={(e) => setDefectoForm((actual) => ({ ...actual, fecha_calificacion: e.target.value }))} />
+          <input type="date" required className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] p-3 text-sm" value={defectoForm.fecha_calificacion} onChange={(e) => setDefectoForm((actual) => ({ ...actual, fecha_calificacion: e.target.value }))} />
         </label>
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-[var(--molsan-text)]">
           Fecha renovación asiento
-          <input type="date" className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.fecha_renovacion_asiento} onChange={(e) => setDefectoForm((actual) => ({ ...actual, fecha_renovacion_asiento: e.target.value }))} />
+          <input type="date" className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] p-3 text-sm" value={defectoForm.fecha_renovacion_asiento} onChange={(e) => setDefectoForm((actual) => ({ ...actual, fecha_renovacion_asiento: e.target.value }))} />
         </label>
-        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+        <label className="block text-sm font-medium text-[var(--molsan-text)] md:col-span-2">
           Asiento renovación y libro diario
-          <input type="text" maxLength={200} className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.asiento_renovacion_libro_diario} onChange={(e) => setDefectoForm((actual) => ({ ...actual, asiento_renovacion_libro_diario: e.target.value }))} placeholder="Asiento de renovación / libro diario" />
+          <input type="text" maxLength={200} className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] p-3 text-sm" value={defectoForm.asiento_renovacion_libro_diario} onChange={(e) => setDefectoForm((actual) => ({ ...actual, asiento_renovacion_libro_diario: e.target.value }))} placeholder="Asiento de renovación / libro diario" />
         </label>
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-[var(--molsan-text)]">
           Vencimiento asiento renovación
           <input type="date" readOnly className="mt-1 w-full rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm" value={defectoForm.vencimiento_asiento_renovacion} />
           <span className="mt-1 block text-xs font-normal text-amber-700">Cálculo automático: fecha de notificación + 60 días naturales.</span>
         </label>
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-[var(--molsan-text)]">
           Anotación suspensiva
-          <select className="mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm" value={defectoForm.anotacion_suspensiva} onChange={(e) => setDefectoForm((actual) => ({ ...actual, anotacion_suspensiva: e.target.value }))}>
+          <select className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white p-3 text-sm" value={defectoForm.anotacion_suspensiva} onChange={(e) => setDefectoForm((actual) => ({ ...actual, anotacion_suspensiva: e.target.value }))}>
             <option value="">— Seleccionar —</option><option value="true">Sí</option><option value="false">No</option>
           </select>
         </label>
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-[var(--molsan-text)]">
           Vencimiento anotación
-          <input type="date" className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.vencimiento_anotacion} onChange={(e) => setDefectoForm((actual) => ({ ...actual, vencimiento_anotacion: e.target.value }))} />
+          <input type="date" className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] p-3 text-sm" value={defectoForm.vencimiento_anotacion} onChange={(e) => setDefectoForm((actual) => ({ ...actual, vencimiento_anotacion: e.target.value }))} />
         </label>
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-[var(--molsan-text)]">
           Calificación sustitutoria
-          <select className="mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm" value={defectoForm.calificacion_sustitutoria} onChange={(e) => setDefectoForm((actual) => ({ ...actual, calificacion_sustitutoria: e.target.value }))}>
+          <select className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white p-3 text-sm" value={defectoForm.calificacion_sustitutoria} onChange={(e) => setDefectoForm((actual) => ({ ...actual, calificacion_sustitutoria: e.target.value }))}>
             <option value="">— Seleccionar —</option><option value="true">Sí</option><option value="false">No</option>
           </select>
         </label>
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-[var(--molsan-text)]">
           Recurso gubernativo
-          <select className="mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm" value={defectoForm.recurso_gubernativo} onChange={(e) => setDefectoForm((actual) => ({ ...actual, recurso_gubernativo: e.target.value }))}>
+          <select className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white p-3 text-sm" value={defectoForm.recurso_gubernativo} onChange={(e) => setDefectoForm((actual) => ({ ...actual, recurso_gubernativo: e.target.value }))}>
             <option value="">— Seleccionar —</option><option value="true">Sí</option><option value="false">No</option>
           </select>
         </label>
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-[var(--molsan-text)]">
           Fecha Notificación Registro
           <input
             type="date"
-            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
+            className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] p-3 text-sm"
             value={defectoForm.fecha_notificacion_registro}
             onChange={(e) =>
               setDefectoForm((actual) => ({
@@ -7934,11 +7934,11 @@ const cuantiaFincasParaEnvio =
           />
         </label>
 
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-[var(--molsan-text)]">
           Fecha Vencimiento Presentación Registro
           <input
             type="date"
-            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
+            className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] p-3 text-sm"
             value={defectoForm.fecha_vencimiento_presentacion}
             onChange={(e) =>
               setDefectoForm((actual) => ({
@@ -7949,12 +7949,12 @@ const cuantiaFincasParaEnvio =
           />
         </label>
 
-        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+        <label className="block text-sm font-medium text-[var(--molsan-text)] md:col-span-2">
           Calificación del Registro
           <textarea
             rows={3}
             maxLength={2000}
-            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
+            className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] p-3 text-sm"
             value={defectoForm.calificacion_registro}
             onChange={(e) =>
               setDefectoForm((actual) => ({
@@ -7966,29 +7966,29 @@ const cuantiaFincasParaEnvio =
           />
         </label>
 
-        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+        <label className="block text-sm font-medium text-[var(--molsan-text)] md:col-span-2">
           PDF de calificación del Registro
           <input
             type="file"
             accept="application/pdf,.pdf"
-            className="mt-1 block w-full rounded-xl border border-slate-300 bg-white p-3 text-sm"
+            className="mt-1 block w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white p-3 text-sm"
             onChange={(e) => setArchivoCalificacion(e.target.files?.[0] || null)}
           />
-          <span className="mt-1 block text-xs font-normal text-slate-500">
+          <span className="mt-1 block text-xs font-normal text-[var(--molsan-text-secondary)]">
             PDF de hasta 15 MB. Se guardará al pulsar «Guardar defecto».
             {archivoCalificacion ? ` Archivo seleccionado: ${archivoCalificacion.name}` : ""}
           </span>
         </label>
 
-        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+        <label className="block text-sm font-medium text-[var(--molsan-text)] md:col-span-2">
           Observaciones
-          <span className="ml-2 text-xs font-normal text-slate-400">
+          <span className="ml-2 text-xs font-normal text-[var(--molsan-text-secondary)]">
             {defectoForm.observaciones_registro.length}/200 caracteres
           </span>
           <textarea
             rows={3}
             maxLength={200}
-            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
+            className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] p-3 text-sm"
             value={defectoForm.observaciones_registro}
             onChange={(e) =>
               setDefectoForm((actual) => ({
@@ -8000,11 +8000,11 @@ const cuantiaFincasParaEnvio =
           />
         </label>
 
-        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+        <label className="block text-sm font-medium text-[var(--molsan-text)] md:col-span-2">
           Fecha Entrada Registro Subsanación
           <input
             type="date"
-            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
+            className="mt-1 w-full rounded-xl border border-[var(--molsan-border-strong)] p-3 text-sm"
             value={defectoForm.fecha_entrada_subsanacion}
             onChange={(e) =>
               setDefectoForm((actual) => ({
@@ -8013,7 +8013,7 @@ const cuantiaFincasParaEnvio =
               }))
             }
           />
-          <span className="mt-1 block text-xs font-normal text-slate-500">
+          <span className="mt-1 block text-xs font-normal text-[var(--molsan-text-secondary)]">
             Rellena esta fecha cuando la subsanación haya entrado en el Registro.
           </span>
         </label>
@@ -8095,7 +8095,7 @@ const cuantiaFincasParaEnvio =
           />
 
           <div className="relative mt-4 min-w-0">
-            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-slate-500">Población / municipio</label>
+            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Población / municipio</label>
             <input
               type="text"
               value={fincaForm.poblacion ?? ""}
@@ -8109,14 +8109,14 @@ const cuantiaFincasParaEnvio =
                 setMunicipiosFincaAbierto(true);
               }}
               onBlur={() => setTimeout(() => setMunicipiosFincaAbierto(false), 120)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-text)] outline-none transition focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary)]/10"
               role="combobox"
               aria-autocomplete="list"
               aria-expanded={municipiosFincaAbierto}
               aria-label="Población o municipio de la finca"
             />
             {municipiosFincaAbierto && String(fincaForm.poblacion || "").trim() && (
-              <div role="listbox" className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl">
+              <div role="listbox" className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-[var(--molsan-border)] bg-white p-1 shadow-xl">
                 {municipiosCatalogo.filter((item) =>
                   normalizarMunicipio(item.municipio).includes(normalizarMunicipio(fincaForm.poblacion)) ||
                   normalizarMunicipio(item.provincia).includes(normalizarMunicipio(fincaForm.poblacion))
@@ -8131,35 +8131,35 @@ const cuantiaFincasParaEnvio =
                       setFincaForm((actual) => ({ ...actual, poblacion: item.municipio, provincia: item.provincia }));
                       setMunicipiosFincaAbierto(false);
                     }}
-                    className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-indigo-50"
+                    className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-[var(--molsan-surface-soft)]"
                   >
-                    <span className="font-medium text-slate-800">{item.municipio}</span>
-                    <span className="text-xs text-slate-500">{item.provincia}</span>
+                    <span className="font-medium text-[var(--molsan-text)]">{item.municipio}</span>
+                    <span className="text-xs text-[var(--molsan-text-secondary)]">{item.provincia}</span>
                   </button>
                 ))}
                 {municipiosCatalogo.filter((item) =>
                   normalizarMunicipio(item.municipio).includes(normalizarMunicipio(fincaForm.poblacion)) ||
                   normalizarMunicipio(item.provincia).includes(normalizarMunicipio(fincaForm.poblacion))
-                ).length === 0 && <p className="px-3 py-2 text-xs text-slate-500">No se encuentra en el catálogo. Revisa Utilidades → Municipios.</p>}
+                ).length === 0 && <p className="px-3 py-2 text-xs text-[var(--molsan-text-secondary)]">No se encuentra en el catálogo. Revisa Utilidades → Municipios.</p>}
               </div>
             )}
-            <p className="mt-1 text-[11px] text-slate-500">{cargandoMunicipiosCatalogo ? "Cargando catálogo de municipios…" : "Selecciona una población del catálogo para completar automáticamente la provincia."}</p>
+            <p className="mt-1 text-[11px] text-[var(--molsan-text-secondary)]">{cargandoMunicipiosCatalogo ? "Cargando catálogo de municipios…" : "Selecciona una población del catálogo para completar automáticamente la provincia."}</p>
           </div>
 
           <div className="mt-4 min-w-0">
-            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-slate-500">Provincia (automática)</label>
+            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Provincia (automática)</label>
             <input
               type="text"
               value={fincaForm.provincia ?? ""}
               readOnly
               aria-label="Provincia de la finca, completada automáticamente"
               placeholder="Se completa al seleccionar la población"
-              className="w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600 outline-none"
+              className="w-full cursor-not-allowed rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 text-sm text-[var(--molsan-text-secondary)] outline-none"
             />
           </div>
 
           <div className="mt-4 min-w-0">
-            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-slate-500">Registro (número - Nombre)</label>
+            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Registro (número - Nombre)</label>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -8176,12 +8176,12 @@ const cuantiaFincasParaEnvio =
                     else setModalSelectorRegistro(true);
                   } else setModalSelectorRegistro(true);
                 }}
-                className="min-w-0 flex-1 cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none hover:border-indigo-300"
+                className="min-w-0 flex-1 cursor-pointer rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2.5 text-sm text-[var(--molsan-text)] outline-none hover:border-[var(--molsan-primary)]"
                 aria-label="Consultar datos del Registro de la Propiedad"
               />
-              <button type="button" onClick={() => { setBusquedaRegistroCatalogo(""); setModalSelectorRegistro(true); }} className="shrink-0 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100">Buscar</button>
+              <button type="button" onClick={() => { setBusquedaRegistroCatalogo(""); setModalSelectorRegistro(true); }} className="shrink-0 rounded-xl border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-xs font-bold text-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]">Buscar</button>
             </div>
-            <p className="mt-1 text-[11px] text-slate-500">{fincaForm.registro_propiedad_id ? "Registro vinculado al catálogo. Pulsa el campo para consultar sus datos." : "Selecciona un registro del catálogo para vincularlo al expediente."}</p>
+            <p className="mt-1 text-[11px] text-[var(--molsan-text-secondary)]">{fincaForm.registro_propiedad_id ? "Registro vinculado al catálogo. Pulsa el campo para consultar sus datos." : "Selecciona un registro del catálogo para vincularlo al expediente."}</p>
           </div>
 
           <CampoFormulario
@@ -8279,21 +8279,21 @@ const cuantiaFincasParaEnvio =
         footer={<Boton onClick={() => setModalSelectorRegistro(false)}>Cerrar</Boton>}
       >
         <div className="space-y-3">
-          <input value={busquedaRegistroCatalogo} onChange={(event) => setBusquedaRegistroCatalogo(event.target.value)} placeholder="Buscar por número, nombre, población o provincia…" className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" />
-          <div className="max-h-[55vh] overflow-y-auto rounded-xl border border-slate-200">
+          <input value={busquedaRegistroCatalogo} onChange={(event) => setBusquedaRegistroCatalogo(event.target.value)} placeholder="Buscar por número, nombre, población o provincia…" className="w-full rounded-xl border border-[var(--molsan-border)] px-3 py-2.5 text-sm outline-none focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary)]/10" />
+          <div className="max-h-[55vh] overflow-y-auto rounded-xl border border-[var(--molsan-border)]">
             {catalogoRegistrosPropiedad.filter((item) => {
               const q = normalizarTexto(busquedaRegistroCatalogo);
               return !q || [item.registro_propiedad, item.nombre_registrador, item.poblacion, item.provincia, item.direccion].some((v) => normalizarTexto(v).includes(q));
             }).slice(0, 100).map((item) => (
-              <div key={item.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-3 py-2.5 last:border-b-0 hover:bg-indigo-50/60">
+              <div key={item.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--molsan-border)] px-3 py-2.5 last:border-b-0 hover:bg-[var(--molsan-surface-soft)]">
                 <button type="button" onClick={() => { setFincaForm((actual) => ({ ...actual, registro: item.registro_propiedad || "", registro_propiedad_id: String(item.id), poblacion: item.poblacion || actual.poblacion, provincia: item.provincia || actual.provincia })); setModalSelectorRegistro(false); }} className="min-w-0 flex-1 text-left">
-                  <span className="block text-sm font-bold text-slate-800">{item.registro_propiedad}</span>
-                  <span className="block text-xs text-slate-500">{[item.poblacion ? `Población: ${item.poblacion}` : null, item.provincia ? `Provincia: ${item.provincia}` : null, item.nombre_registrador ? `Registrador: ${item.nombre_registrador}` : null].filter(Boolean).join(" · ")}</span>
+                  <span className="block text-sm font-bold text-[var(--molsan-text)]">{item.registro_propiedad}</span>
+                  <span className="block text-xs text-[var(--molsan-text-secondary)]">{[item.poblacion ? `Población: ${item.poblacion}` : null, item.provincia ? `Provincia: ${item.provincia}` : null, item.nombre_registrador ? `Registrador: ${item.nombre_registrador}` : null].filter(Boolean).join(" · ")}</span>
                 </button>
-                <button type="button" onClick={() => { setRegistroDetalleAbierto(item); setModalSelectorRegistro(false); }} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver datos</button>
+                <button type="button" onClick={() => { setRegistroDetalleAbierto(item); setModalSelectorRegistro(false); }} className="rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-1.5 text-xs font-bold text-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]">Ver datos</button>
               </div>
             ))}
-            {catalogoRegistrosPropiedad.length === 0 && <p className="p-4 text-sm text-slate-500">No se han podido cargar registros del catálogo.</p>}
+            {catalogoRegistrosPropiedad.length === 0 && <p className="p-4 text-sm text-[var(--molsan-text-secondary)]">No se han podido cargar registros del catálogo.</p>}
           </div>
         </div>
       </Modal>
@@ -8323,7 +8323,7 @@ const cuantiaFincasParaEnvio =
             ["IBAN", registroDetalleAbierto.iban],
             ["Oficina liquidadora", registroDetalleAbierto.tiene_of_liq ? "Sí" : "No"],
             ["Comentarios", registroDetalleAbierto.comentarios],
-          ].map(([label, value]) => <div key={label} className="rounded-xl border border-slate-200 bg-slate-50/70 p-3"><div className="text-[10px] font-extrabold uppercase tracking-wide text-slate-500">{label}</div><div className="mt-1 break-words text-sm font-medium text-slate-800">{value || "—"}</div></div>)}
+          ].map(([label, value]) => <div key={label} className="rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3"><div className="text-[10px] font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">{label}</div><div className="mt-1 break-words text-sm font-medium text-[var(--molsan-text)]">{value || "—"}</div></div>)}
         </div>}
       </Modal>
 
@@ -8335,7 +8335,7 @@ const cuantiaFincasParaEnvio =
         ancho="max-w-3xl"
         footer={<Boton onClick={() => setOficinaDetalleAbierta(false)}>Cerrar</Boton>}
       >
-        {cargandoOficinaDetalle ? <p className="text-sm text-slate-500">Consultando el catálogo de oficinas…</p> : oficinaCatalogoDetalle ? <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {cargandoOficinaDetalle ? <p className="text-sm text-[var(--molsan-text-secondary)]">Consultando el catálogo de oficinas…</p> : oficinaCatalogoDetalle ? <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[
             ["Oficina", oficinaCatalogoDetalle.oficina],
             ["Nombre", oficinaCatalogoDetalle.nombre],
@@ -8350,7 +8350,7 @@ const cuantiaFincasParaEnvio =
             ["DG", oficinaCatalogoDetalle.dg],
             ["Código DAN", oficinaCatalogoDetalle.cod_dan],
             ["DAN", oficinaCatalogoDetalle.dan],
-          ].map(([label, value]) => <div key={label} className="rounded-xl border border-slate-200 bg-slate-50/70 p-3"><div className="text-[10px] font-extrabold uppercase tracking-wide text-slate-500">{label}</div><div className="mt-1 break-words text-sm font-medium text-slate-800">{value || "—"}</div></div>)}
+          ].map(([label, value]) => <div key={label} className="rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3"><div className="text-[10px] font-extrabold uppercase tracking-wide text-[var(--molsan-text-secondary)]">{label}</div><div className="mt-1 break-words text-sm font-medium text-[var(--molsan-text)]">{value || "—"}</div></div>)}
         </div> : <p className="text-sm text-amber-700">No se ha encontrado una coincidencia para esta oficina en el catálogo. El dato original del expediente se conserva: {expediente?.oficina || "—"}.</p>}
       </Modal>
 
@@ -8360,7 +8360,7 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarFusion}
         onClose={() => { if (!guardandoFusion) setMostrarFusion(false); }}
-        titulo="⇄ Solicitud de fusión"
+        titulo="Solicitud de fusión"
         subtitulo={`Expediente ${expediente?.id_expediente || id} · Registro ${fincaFusion?.registro || "—"}`}
         ancho={["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) ? "max-w-7xl" : "max-w-4xl"}
         footer={
@@ -8377,9 +8377,9 @@ const cuantiaFincasParaEnvio =
           <div className="rounded-xl border border-violet-100 bg-violet-50/60 p-3">
             <p className="text-xs font-bold uppercase tracking-wide text-violet-700">Datos vinculados automáticamente</p>
             <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-3 text-sm">
-              <div><span className="block text-[11px] text-slate-500">Expediente *</span><strong>{expediente?.id_expediente || id || "—"}</strong></div>
-              <div><span className="block text-[11px] text-slate-500">Registro *</span><strong>{fincaFusion?.registro || "—"}</strong></div>
-              <div><span className="block text-[11px] text-slate-500">Finca</span><strong>{fincaFusion?.finca || "—"}</strong></div>
+              <div><span className="block text-[11px] text-[var(--molsan-text-secondary)]">Expediente *</span><strong>{expediente?.id_expediente || id || "—"}</strong></div>
+              <div><span className="block text-[11px] text-[var(--molsan-text-secondary)]">Registro *</span><strong>{fincaFusion?.registro || "—"}</strong></div>
+              <div><span className="block text-[11px] text-[var(--molsan-text-secondary)]">Finca</span><strong>{fincaFusion?.finca || "—"}</strong></div>
             </div>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -8392,26 +8392,26 @@ const cuantiaFincasParaEnvio =
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <p className="mb-2 text-xs font-bold text-slate-600">Cambio denominación *</p>
+              <p className="mb-2 text-xs font-bold text-[var(--molsan-text-secondary)]">Cambio denominación *</p>
               <div className="flex gap-4">
                 {["NO","SI"].map(v => <label key={v} className="flex items-center gap-2 text-sm"><input type="radio" name="fusion-cambio-denominacion" checked={fusionForm.cambio_denominacion===v} onChange={() => setFusionForm(a => ({...a,cambio_denominacion:v}))}/>{v}</label>)}
               </div>
             </div>
             <div>
-              <p className="mb-2 text-xs font-bold text-slate-600">Recurrible *</p>
+              <p className="mb-2 text-xs font-bold text-[var(--molsan-text-secondary)]">Recurrible *</p>
               <div className="flex gap-4">
                 {["SI","NO"].map(v => <label key={v} className="flex items-center gap-2 text-sm"><input type="radio" name="fusion-recurrible" checked={fusionForm.recurrible===v} onChange={() => setFusionForm(a => ({...a,recurrible:v}))}/>{v}</label>)}
               </div>
             </div>
           </div>
           <div>
-            <p className="mb-2 text-xs font-bold text-slate-600">Indicar tipo factura *</p>
+            <p className="mb-2 text-xs font-bold text-[var(--molsan-text-secondary)]">Indicar tipo factura *</p>
             <div className="space-y-2">
               {["Factura (con número y fecha)","Pre-Factura (falta número)"].map(v => <label key={v} className="flex items-center gap-2 text-sm"><input type="radio" name="fusion-tipo-factura" checked={fusionForm.tipo_factura===v} onChange={() => setFusionForm(a => ({...a,tipo_factura:v}))}/>{v}</label>)}
             </div>
           </div>
           <CampoFormulario label="Comentarios / Observaciones" value={fusionForm.comentarios_observaciones} textarea onChange={v => setFusionForm(a => ({...a,comentarios_observaciones:v}))} placeholder="Comentarios para el equipo de Fusiones" />
-          <p className="text-[11px] text-slate-500">La solicitud se guardará vinculada a este expediente y a la finca/registro seleccionado. En Factura (con número y fecha), ambos datos son obligatorios.</p>
+          <p className="text-[11px] text-[var(--molsan-text-secondary)]">La solicitud se guardará vinculada a este expediente y a la finca/registro seleccionado. En Factura (con número y fecha), ambos datos son obligatorios.</p>
         </div>
       </Modal>
 
@@ -8486,24 +8486,24 @@ const cuantiaFincasParaEnvio =
       }
     />
 
-    <div className="border-t border-slate-200 pt-4">
+    <div className="border-t border-[var(--molsan-border)] pt-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h4 className="text-sm font-extrabold text-slate-800">Histórico de acciones</h4>
-          <p className="text-[11px] text-slate-500">Todas las acciones registradas en este expediente, ordenadas por fecha.</p>
+          <h4 className="text-sm font-extrabold text-[var(--molsan-text)]">Histórico de acciones</h4>
+          <p className="text-[11px] text-[var(--molsan-text-secondary)]">Todas las acciones registradas en este expediente, ordenadas por fecha.</p>
         </div>
-        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold text-slate-600">{accionesExpediente.length} {accionesExpediente.length === 1 ? "acción" : "acciones"}</span>
+        <span className="rounded-full bg-[var(--molsan-surface-soft)] px-2.5 py-1 text-[10px] font-bold text-[var(--molsan-text-secondary)]">{accionesExpediente.length} {accionesExpediente.length === 1 ? "acción" : "acciones"}</span>
       </div>
       {cargandoAcciones ? (
-        <p className="py-3 text-xs text-slate-500">Cargando histórico…</p>
+        <p className="py-3 text-xs text-[var(--molsan-text-secondary)]">Cargando histórico…</p>
       ) : accionesExpediente.length ? (
         <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
           {[...accionesExpediente].reverse().map((relacion, indice) => {
             const accion = relacion.accion || relacion.accion_expediente || relacion;
             return (
-              <div key={relacion.id || `${relacion.accion_id || "accion"}-${indice}`} className="rounded-lg border border-slate-200 bg-white px-3 py-2.5">
+              <div key={relacion.id || `${relacion.accion_id || "accion"}-${indice}`} className="rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2.5">
                 <div className="flex flex-wrap items-start justify-between gap-2">
-                  <p className="min-w-0 flex-1 text-xs font-bold text-slate-800">{accion.descripcion || relacion.descripcion || "Acción"}</p>
+                  <p className="min-w-0 flex-1 text-xs font-bold text-[var(--molsan-text)]">{accion.descripcion || relacion.descripcion || "Acción"}</p>
                   {(relacion.id || relacion.id_accion_expediente || relacion.relacion_id) && (
                     <button
                       type="button"
@@ -8520,15 +8520,15 @@ const cuantiaFincasParaEnvio =
                     </button>
                   )}
                 </div>
-                {(accion.actividad || accion.departamento || accion.seccion) && <p className="mt-1 text-[10px] text-slate-500">{[accion.departamento, accion.seccion, accion.actividad].filter(Boolean).join(" · ")}</p>}
-                <div className="mt-1 text-[10px] text-slate-500">{relacion.fecha ? formatearFecha(relacion.fecha) : "Sin fecha registrada"}{relacion.usuario_creador ? ` · Realizada por: ${relacion.usuario_creador}` : ""}</div>
-                {relacion.observaciones && <p className="mt-2 whitespace-pre-wrap text-xs text-slate-600">{relacion.observaciones}</p>}
+                {(accion.actividad || accion.departamento || accion.seccion) && <p className="mt-1 text-[10px] text-[var(--molsan-text-secondary)]">{[accion.departamento, accion.seccion, accion.actividad].filter(Boolean).join(" · ")}</p>}
+                <div className="mt-1 text-[10px] text-[var(--molsan-text-secondary)]">{relacion.fecha ? formatearFecha(relacion.fecha) : "Sin fecha registrada"}{relacion.usuario_creador ? ` · Realizada por: ${relacion.usuario_creador}` : ""}</div>
+                {relacion.observaciones && <p className="mt-2 whitespace-pre-wrap text-xs text-[var(--molsan-text-secondary)]">{relacion.observaciones}</p>}
               </div>
             );
           })}
         </div>
       ) : (
-        <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-4 text-center text-xs text-slate-500">Este expediente todavía no tiene acciones registradas.</p>
+        <p className="rounded-lg border border-dashed border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4 text-center text-xs text-[var(--molsan-text-secondary)]">Este expediente todavía no tiene acciones registradas.</p>
       )}
     </div>
 
@@ -8566,12 +8566,12 @@ const cuantiaFincasParaEnvio =
 
         <div className="space-y-5">
 
-          <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
-            <p className="text-sm font-bold text-slate-800">
+          <div className="rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4">
+            <p className="text-sm font-bold text-[var(--molsan-text)]">
               Agregar expediente manualmente
             </p>
 
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">
               Introduce el número de expediente que quieres relacionar.
               Se guardará en este navegador para este expediente.
             </p>
@@ -8592,10 +8592,10 @@ const cuantiaFincasParaEnvio =
                 }}
                 placeholder="Nº de expediente"
                 className="
-                  min-w-0 flex-1 rounded-xl border border-slate-200
-                  bg-white px-4 py-2.5 text-sm text-slate-700
-                  outline-none transition focus:border-blue-400
-                  focus:ring-2 focus:ring-blue-100
+                  min-w-0 flex-1 rounded-xl border border-[var(--molsan-border)]
+                  bg-white px-4 py-2.5 text-sm text-[var(--molsan-text)]
+                  outline-none transition focus:border-[var(--molsan-primary)]
+                  focus:ring-2 focus:ring-[var(--molsan-primary)]/10
                 "
               />
 
@@ -8607,7 +8607,7 @@ const cuantiaFincasParaEnvio =
                   !expedienteRelacionadoManual.trim()
                 }
               >
-                ＋ Agregar
+                <MolsanIcon name="plus" size={14} bare /> Agregar
               </Boton>
             </div>
 
@@ -8623,12 +8623,12 @@ const cuantiaFincasParaEnvio =
               className="
                 rounded-xl
                 border
-                border-slate-200
-                bg-slate-50
+                border-[var(--molsan-border)]
+                bg-[var(--molsan-surface-soft)]
                 p-8
                 text-center
                 text-sm
-                text-slate-400
+                text-[var(--molsan-text-secondary)]
               "
             >
               Buscando expedientes del mismo NIF…
@@ -8639,17 +8639,17 @@ const cuantiaFincasParaEnvio =
                 rounded-xl
                 border
                 border-dashed
-                border-slate-300
-                bg-slate-50
+                border-[var(--molsan-border-strong)]
+                bg-[var(--molsan-surface-soft)]
                 p-8
                 text-center
               "
             >
-              <p className="text-sm font-semibold text-slate-500">
+              <p className="text-sm font-semibold text-[var(--molsan-text-secondary)]">
                 No hay otros expedientes relacionados.
               </p>
 
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">
                 Los encontrados por NIF aparecerán aquí y también puedes
                 añadirlos manualmente.
               </p>
@@ -8661,17 +8661,17 @@ const cuantiaFincasParaEnvio =
                 className="
                   rounded-xl
                   border
-                  border-blue-100
-                  bg-blue-50
+                  border-[var(--molsan-border)]
+                  bg-[var(--molsan-surface-soft)]
                   px-4
                   py-3
                 "
               >
-                <p className="text-xs font-bold text-blue-700">
+                <p className="text-xs font-bold text-[var(--molsan-primary)]">
                   {expedientesRelacionados.length} expediente(s) relacionado(s)
                 </p>
 
-                <p className="mt-1 text-[11px] text-blue-600">
+                <p className="mt-1 text-[11px] text-[var(--molsan-primary)]">
                   Automáticos por NIF y añadidos manualmente.
                 </p>
               </div>
@@ -8681,7 +8681,7 @@ const cuantiaFincasParaEnvio =
                   overflow-hidden
                   rounded-xl
                   border
-                  border-slate-200
+                  border-[var(--molsan-border)]
                   bg-white
                 "
               >
@@ -8691,15 +8691,15 @@ const cuantiaFincasParaEnvio =
                     grid-cols-[1.2fr_1fr_1.3fr_1fr_auto]
                     gap-3
                     border-b
-                    border-slate-200
-                    bg-slate-50
+                    border-[var(--molsan-border)]
+                    bg-[var(--molsan-surface-soft)]
                     px-4
                     py-3
                     text-[10px]
                     font-bold
                     uppercase
                     tracking-wide
-                    text-slate-400
+                    text-[var(--molsan-text-secondary)]
                   "
                 >
                   <span>Expediente</span>
@@ -8721,25 +8721,25 @@ const cuantiaFincasParaEnvio =
                         items-center
                         gap-3
                         border-b
-                        border-slate-100
+                        border-[var(--molsan-border)]
                         px-4
                         py-3
                         last:border-b-0
                       "
                     >
-                      <span className="text-xs font-bold text-blue-700">
+                      <span className="text-xs font-bold text-[var(--molsan-primary)]">
                         {valorVisible(
                           relacionado.id_expediente
                         )}
                       </span>
 
-                      <span className="text-xs text-slate-600">
+                      <span className="text-xs text-[var(--molsan-text-secondary)]">
                         {formatearFecha(
                           relacionado.fecha_alta
                         )}
                       </span>
 
-                      <span className="text-xs text-slate-600">
+                      <span className="text-xs text-[var(--molsan-text-secondary)]">
                         {valorVisible(
                           relacionado.actividad_actual
                         )}
@@ -8756,8 +8756,8 @@ const cuantiaFincasParaEnvio =
                           font-bold
                           ${
                             relacionado._manual
-                              ? "bg-blue-50 text-blue-700"
-                              : "bg-slate-100 text-slate-600"
+                              ? "bg-[var(--molsan-surface-soft)] text-[var(--molsan-primary)]"
+                              : "bg-[var(--molsan-surface-soft)] text-[var(--molsan-text-secondary)]"
                           }
                         `}
                       >
@@ -8777,14 +8777,14 @@ const cuantiaFincasParaEnvio =
                             inline-flex
                             rounded-lg
                             border
-                            border-blue-200
-                            bg-blue-50
+                            border-[var(--molsan-border-strong)]
+                            bg-[var(--molsan-surface-soft)]
                             px-3
                             py-2
                             text-[10px]
                             font-bold
-                            text-blue-700
-                            hover:bg-blue-100
+                            text-[var(--molsan-primary)]
+                            hover:bg-[var(--molsan-surface-soft)]
                           "
                           onClick={() =>
                             setMostrarAgregarExpedientes(false)
@@ -8896,7 +8896,7 @@ const cuantiaFincasParaEnvio =
                 mb-3
                 text-xs
                 font-bold
-                text-slate-700
+                text-[var(--molsan-text)]
               "
             >
               Dirigir comentario a
@@ -8976,13 +8976,13 @@ const cuantiaFincasParaEnvio =
 
             {visionesComentario.actividad && (
               <label className="mt-3 block">
-                <span className="mb-1 block text-xs font-semibold text-slate-600">
+                <span className="mb-1 block text-xs font-semibold text-[var(--molsan-text-secondary)]">
                   Empleado destinatario del comentario interno
                 </span>
                 <select
                   value={destinatarioObservacion}
                   onChange={(event) => setDestinatarioObservacion(event.target.value)}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm"
                 >
                   <option value="">Selecciona un empleado</option>
                   {empleadosObservaciones.map((empleado) => (
@@ -8995,29 +8995,29 @@ const cuantiaFincasParaEnvio =
             )}
           </div>
 
-          <div className="border-t border-slate-200 pt-4">
+          <div className="border-t border-[var(--molsan-border)] pt-4">
             <div className="mb-3 flex items-center justify-between gap-3">
-              <h3 className="text-sm font-extrabold text-slate-800">Historial completo</h3>
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold text-slate-600">{observacionesExpediente.length} observaciones</span>
+              <h3 className="text-sm font-extrabold text-[var(--molsan-text)]">Historial completo</h3>
+              <span className="rounded-full bg-[var(--molsan-surface-soft)] px-2.5 py-1 text-[10px] font-bold text-[var(--molsan-text-secondary)]">{observacionesExpediente.length} observaciones</span>
             </div>
-            {cargandoObservaciones ? <p className="text-xs text-slate-500">Actualizando historial…</p> : observacionesExpediente.length === 0 ? (
-              <p className="rounded-lg border border-dashed border-slate-200 p-3 text-xs text-slate-500">No hay observaciones guardadas todavía.</p>
+            {cargandoObservaciones ? <p className="text-xs text-[var(--molsan-text-secondary)]">Actualizando historial…</p> : observacionesExpediente.length === 0 ? (
+              <p className="rounded-lg border border-dashed border-[var(--molsan-border)] p-3 text-xs text-[var(--molsan-text-secondary)]">No hay observaciones guardadas todavía.</p>
             ) : (
               <div className="max-h-[42vh] space-y-2 overflow-y-auto pr-1">
                 {observacionesExpediente.map((observacion) => (
-                  <article key={observacion.id} className="rounded-xl border border-slate-200 bg-white p-3">
-                    <p className="whitespace-pre-wrap break-words text-sm text-slate-700">{observacion.comentario}</p>
-                    <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+                  <article key={observacion.id} className="rounded-xl border border-[var(--molsan-border)] bg-white p-3">
+                    <p className="whitespace-pre-wrap break-words text-sm text-[var(--molsan-text)]">{observacion.comentario}</p>
+                    <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-[var(--molsan-text-secondary)]">
                       <span>{observacion.autor || "Usuario conectado"} → {observacion.visibilidad === "Gestor" ? (observacion.empleado_destinatario || "Empleado interno") : observacion.visibilidad}</span>
                       <time>{observacion.fecha ? new Date(observacion.fecha).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : "Fecha no disponible"}</time>
                     </div>
                     {observacion.visibilidad === "Gestor" && (
                       <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                         <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${observacion.estado_validacion === "Validada" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-800"}`}>
-                          {observacion.estado_validacion === "Validada" ? `✓ Validada por ${observacion.validado_por || "empleado destinatario"} · ${observacion.validado_en ? new Date(observacion.validado_en).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : ""}` : "⏳ Pendiente de validación"}
+                          {observacion.estado_validacion === "Validada" ? <><MolsanIcon name="check" size={12} bare /> Validada por {observacion.validado_por || "empleado destinatario"} · {observacion.validado_en ? new Date(observacion.validado_en).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : ""}</> : <><MolsanIcon name="clock" size={12} bare /> Pendiente de validación</>}
                         </span>
                         {Number(empleadoSesion?.id) === Number(observacion.empleado_destinatario_id) && observacion.estado_validacion !== "Validada" && (
-                          <button type="button" onClick={() => validarObservacionInterna(observacion)} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100">✓ Validar observación</button>
+                          <button type="button" onClick={() => validarObservacionInterna(observacion)} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100"><MolsanIcon name="check" size={13} bare /> Validar observación</button>
                         )}
                       </div>
                     )}
@@ -9046,7 +9046,7 @@ const cuantiaFincasParaEnvio =
           <div className="flex w-full flex-wrap justify-between gap-2">
             <Boton onClick={() => setMostrarModalFacturaHonorarios(false)} disabled={guardandoFacturaHonorarios}>Cancelar</Boton>
             <div className="flex flex-wrap gap-2">
-              {previsualizandoFacturaHonorarios && <Boton onClick={() => setPrevisualizandoFacturaHonorarios(false)} disabled={guardandoFacturaHonorarios}>← Editar datos</Boton>}
+              {previsualizandoFacturaHonorarios && <Boton onClick={() => setPrevisualizandoFacturaHonorarios(false)} disabled={guardandoFacturaHonorarios}><MolsanIcon name="arrowLeft" size={13} bare /> Editar datos</Boton>}
               {!previsualizandoFacturaHonorarios ? (
                 <Boton tipo="primary" onClick={() => setPrevisualizandoFacturaHonorarios(true)}><MolsanIcon name="eye" size={14} tone="inherit" bare /> Previsualizar factura</Boton>
               ) : (
@@ -9061,17 +9061,17 @@ const cuantiaFincasParaEnvio =
         <div className="max-h-[68vh] space-y-5 overflow-y-auto pr-1">
           {errorHonorariosGestoria && <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorHonorariosGestoria}</p>}
           <div className="grid gap-3 md:grid-cols-3">
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Provisión de fondos</p>
-              <p className="mt-1 text-lg font-extrabold text-slate-800">{Number(String(facturaHonorariosForm.provisionFondos || "0").replace(",", "." ) || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
+            <div className="rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Provisión de fondos</p>
+              <p className="mt-1 text-lg font-extrabold text-[var(--molsan-text)]">{Number(String(facturaHonorariosForm.provisionFondos || "0").replace(",", "." ) || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Saldo disponible (dato del expediente)</p>
-              <p className="mt-1 text-lg font-extrabold text-slate-800">{Number(String(facturaHonorariosForm.saldoDisponible || "0").replace(",", "." ) || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
+            <div className="rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--molsan-text-secondary)]">Saldo disponible (dato del expediente)</p>
+              <p className="mt-1 text-lg font-extrabold text-[var(--molsan-text)]">{Number(String(facturaHonorariosForm.saldoDisponible || "0").replace(",", "." ) || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
             </div>
-            <div className={`rounded-xl border p-3 ${empleadoEnFactura ? "border-amber-300 bg-amber-50" : "border-slate-200 bg-slate-50"}`}>
+            <div className={`rounded-xl border p-3 ${empleadoEnFactura ? "border-amber-300 bg-amber-50" : "border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)]"}`}>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <label htmlFor="empleado-factura-honorarios" className="text-xs font-extrabold text-slate-800">Empleado</label>
+                <label htmlFor="empleado-factura-honorarios" className="text-xs font-extrabold text-[var(--molsan-text)]">Empleado</label>
                 <select
                   id="empleado-factura-honorarios"
                   value={empleadoEnFactura ? "si" : "no"}
@@ -9088,7 +9088,7 @@ const cuantiaFincasParaEnvio =
                       observaciones: esEmpleado ? `Cliente empleado: descuento del 50 % (${descuento.toFixed(2)} €) sobre honorarios.` : "",
                     }));
                   }}
-                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none focus:border-amber-500"
+                  className="rounded-lg border border-[var(--molsan-border-strong)] bg-white px-3 py-2 text-sm font-semibold text-[var(--molsan-text)] outline-none focus:border-amber-500"
                 >
                   <option value="no">No</option>
                   <option value="si">Sí — descuento del 50 %</option>
@@ -9099,65 +9099,65 @@ const cuantiaFincasParaEnvio =
           </div>
 
           {previsualizandoFacturaHonorarios ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-6">
-              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-4">
-                <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">MOLSAN ERP · Facturación</p><h3 className="mt-2 text-2xl font-extrabold text-slate-800">FACTURA DE HONORARIOS GESTORIA</h3><p className="mt-1 text-sm text-slate-500">Expediente {expediente?.id_expediente}</p></div>
-                <div className="text-right"><p className="text-sm font-bold text-slate-700">{facturaHonorariosForm.numeroFactura || "Número pendiente de asignación"}</p><p className="text-sm text-slate-500">Fecha: {facturaHonorariosForm.fechaFactura || "—"}</p></div>
+            <div className="rounded-2xl border border-[var(--molsan-border)] bg-white p-6">
+              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--molsan-border)] pb-4">
+                <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--molsan-text-secondary)]">MOLSAN ERP · Facturación</p><h3 className="mt-2 text-2xl font-extrabold text-[var(--molsan-text)]">FACTURA DE HONORARIOS GESTORIA</h3><p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Expediente {expediente?.id_expediente}</p></div>
+                <div className="text-right"><p className="text-sm font-bold text-[var(--molsan-text)]">{facturaHonorariosForm.numeroFactura || "Número pendiente de asignación"}</p><p className="text-sm text-[var(--molsan-text-secondary)]">Fecha: {facturaHonorariosForm.fechaFactura || "—"}</p></div>
               </div>
               <div className="grid gap-4 py-5 md:grid-cols-2">
-                <div><p className="text-[10px] font-bold uppercase text-slate-400">Datos de facturación</p><p className="mt-1 font-bold text-slate-800">{facturaHonorariosForm.cliente || "Cliente pendiente de completar"}</p><p className="text-sm text-slate-600">NIF: {facturaHonorariosForm.nifCliente || "—"}</p><p className="text-sm text-slate-600">{[facturaHonorariosForm.direccion, facturaHonorariosForm.codigoPostal, facturaHonorariosForm.poblacion, facturaHonorariosForm.provincia].filter(Boolean).join(", ") || "Dirección pendiente de completar"}</p></div>
-                <div><p className="text-[10px] font-bold uppercase text-slate-400">Concepto</p><p className="mt-1 font-semibold text-slate-800">{facturaHonorariosForm.tarifa || facturaHonorariosForm.concepto}</p></div>
+                <div><p className="text-[10px] font-bold uppercase text-[var(--molsan-text-secondary)]">Datos de facturación</p><p className="mt-1 font-bold text-[var(--molsan-text)]">{facturaHonorariosForm.cliente || "Cliente pendiente de completar"}</p><p className="text-sm text-[var(--molsan-text-secondary)]">NIF: {facturaHonorariosForm.nifCliente || "—"}</p><p className="text-sm text-[var(--molsan-text-secondary)]">{[facturaHonorariosForm.direccion, facturaHonorariosForm.codigoPostal, facturaHonorariosForm.poblacion, facturaHonorariosForm.provincia].filter(Boolean).join(", ") || "Dirección pendiente de completar"}</p></div>
+                <div><p className="text-[10px] font-bold uppercase text-[var(--molsan-text-secondary)]">Concepto</p><p className="mt-1 font-semibold text-[var(--molsan-text)]">{facturaHonorariosForm.tarifa || facturaHonorariosForm.concepto}</p></div>
               </div>
-              <div className="overflow-hidden rounded-xl border border-slate-200">
-                <div className="grid grid-cols-[1fr_auto] gap-3 bg-slate-50 px-4 py-3 text-xs font-bold text-slate-600"><span>Concepto</span><span>Importe</span></div>
-                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 px-4 py-3 text-sm"><span>Base imponible</span><span>{Number(facturaHonorariosForm.baseImponible || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
-                {empleadoEnFactura && <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 bg-amber-50/60 px-4 py-3 text-sm text-amber-900"><span>Descuento empleado (50 %)</span><span className="font-semibold">− {(Math.round((Math.max(0, Number(baseHonorariosOriginal) || 0) * 0.5 + Number.EPSILON) * 100) / 100).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>}
-                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 px-4 py-3 text-sm"><span>{facturaHonorariosForm.tipoImpuesto} ({facturaHonorariosForm.porcentajeImpuesto}%)</span><span>{Number(facturaHonorariosForm.importeImpuesto || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
-                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-200 bg-emerald-50 px-4 py-4 font-extrabold text-emerald-900"><span>TOTAL FACTURA</span><span>{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
+              <div className="overflow-hidden rounded-xl border border-[var(--molsan-border)]">
+                <div className="grid grid-cols-[1fr_auto] gap-3 bg-[var(--molsan-surface-soft)] px-4 py-3 text-xs font-bold text-[var(--molsan-text-secondary)]"><span>Concepto</span><span>Importe</span></div>
+                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-[var(--molsan-border)] px-4 py-3 text-sm"><span>Base imponible</span><span>{Number(facturaHonorariosForm.baseImponible || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
+                {empleadoEnFactura && <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-[var(--molsan-border)] bg-amber-50/60 px-4 py-3 text-sm text-amber-900"><span>Descuento empleado (50 %)</span><span className="font-semibold">− {(Math.round((Math.max(0, Number(baseHonorariosOriginal) || 0) * 0.5 + Number.EPSILON) * 100) / 100).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>}
+                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-[var(--molsan-border)] px-4 py-3 text-sm"><span>{facturaHonorariosForm.tipoImpuesto} ({facturaHonorariosForm.porcentajeImpuesto}%)</span><span>{Number(facturaHonorariosForm.importeImpuesto || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
+                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-[var(--molsan-border)] bg-emerald-50 px-4 py-4 font-extrabold text-emerald-900"><span>TOTAL FACTURA</span><span>{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
               </div>
-              {facturaHonorariosForm.observaciones && <p className="mt-4 whitespace-pre-wrap text-sm text-slate-600">{facturaHonorariosForm.observaciones}</p>}
+              {facturaHonorariosForm.observaciones && <p className="mt-4 whitespace-pre-wrap text-sm text-[var(--molsan-text-secondary)]">{facturaHonorariosForm.observaciones}</p>}
               <p className="mt-4 text-xs text-amber-700">Vista previa de revisión. Al pulsar «Guardar y facturar», el ERP generará y descargará la factura en PDF con número {expediente?.id_expediente || "—"} - {facturaHonorariosForm.numeroFactura || "pendiente de asignación"}, usando la plantilla oficial asociada al concepto de honorarios de gestoría.</p>
             </div>
           ) : (
             <>
-              <section className="rounded-xl border border-slate-200 p-4">
-                <h3 className="mb-3 text-sm font-extrabold text-slate-800">Datos de facturación</h3>
+              <section className="rounded-xl border border-[var(--molsan-border)] p-4">
+                <h3 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">Datos de facturación</h3>
                 <div className="grid gap-3 md:grid-cols-2">
-                  <label className="text-xs font-semibold text-slate-600">Cliente / titular<input value={facturaHonorariosForm.cliente} onChange={e => setFacturaHonorariosForm(f => ({...f,cliente:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
-                  <label className="text-xs font-semibold text-slate-600">NIF / CIF<input value={facturaHonorariosForm.nifCliente} onChange={e => setFacturaHonorariosForm(f => ({...f,nifCliente:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
-                  <label className="text-xs font-semibold text-slate-600">Dirección<input value={facturaHonorariosForm.direccion} onChange={e => setFacturaHonorariosForm(f => ({...f,direccion:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
-                  <label className="text-xs font-semibold text-slate-600">Código postal<input value={facturaHonorariosForm.codigoPostal} onChange={e => setFacturaHonorariosForm(f => ({...f,codigoPostal:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
-                  <label className="text-xs font-semibold text-slate-600">Población<input value={facturaHonorariosForm.poblacion} onChange={e => setFacturaHonorariosForm(f => ({...f,poblacion:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
-                  <label className="text-xs font-semibold text-slate-600">Provincia<input value={facturaHonorariosForm.provincia} onChange={e => setFacturaHonorariosForm(f => ({...f,provincia:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Cliente / titular<input value={facturaHonorariosForm.cliente} onChange={e => setFacturaHonorariosForm(f => ({...f,cliente:e.target.value}))} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">NIF / CIF<input value={facturaHonorariosForm.nifCliente} onChange={e => setFacturaHonorariosForm(f => ({...f,nifCliente:e.target.value}))} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Dirección<input value={facturaHonorariosForm.direccion} onChange={e => setFacturaHonorariosForm(f => ({...f,direccion:e.target.value}))} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Código postal<input value={facturaHonorariosForm.codigoPostal} onChange={e => setFacturaHonorariosForm(f => ({...f,codigoPostal:e.target.value}))} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Población<input value={facturaHonorariosForm.poblacion} onChange={e => setFacturaHonorariosForm(f => ({...f,poblacion:e.target.value}))} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Provincia<input value={facturaHonorariosForm.provincia} onChange={e => setFacturaHonorariosForm(f => ({...f,provincia:e.target.value}))} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm" /></label>
                 </div>
               </section>
-              <section className="rounded-xl border border-slate-200 p-4">
-                <h3 className="mb-3 text-sm font-extrabold text-slate-800">Datos de factura</h3>
+              <section className="rounded-xl border border-[var(--molsan-border)] p-4">
+                <h3 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">Datos de factura</h3>
                 <div className="grid gap-3 md:grid-cols-2">
-                  <label className="text-xs font-semibold text-slate-600">Número de factura (automático)<input value={facturaHonorariosForm.numeroFactura} readOnly placeholder="Se asignará al generar la factura" className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm" /><span className="mt-1 block text-[11px] font-normal text-slate-400">Serie correlativa VI por año; el número definitivo lo asigna el servidor.</span></label>
-                  <label className="text-xs font-semibold text-slate-600">Fecha de factura<input type="date" value={facturaHonorariosForm.fechaFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,fechaFactura:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
-                  <label className="text-xs font-semibold text-slate-600 md:col-span-2">Concepto
-                    <select value={facturaHonorariosForm.concepto} onChange={e => setFacturaHonorariosForm(f => ({...f,concepto:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                  <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Número de factura (automático)<input value={facturaHonorariosForm.numeroFactura} readOnly placeholder="Se asignará al generar la factura" className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-sm" /><span className="mt-1 block text-[11px] font-normal text-[var(--molsan-text-secondary)]">Serie correlativa VI por año; el número definitivo lo asigna el servidor.</span></label>
+                  <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Fecha de factura<input type="date" value={facturaHonorariosForm.fechaFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,fechaFactura:e.target.value}))} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-[var(--molsan-text-secondary)] md:col-span-2">Concepto
+                    <select value={facturaHonorariosForm.concepto} onChange={e => setFacturaHonorariosForm(f => ({...f,concepto:e.target.value}))} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm">
                       {conceptosFacturaHonorarios.length === 0 && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}
                       {conceptosFacturaHonorarios.map((concepto) => <option key={concepto.id} value={concepto.nombre}>{concepto.nombre}</option>)}
                     </select>
-                    <span className="mt-1 block text-[11px] font-normal text-slate-400">Opciones del catálogo Tipos de Concepto de Gastos.</span>
+                    <span className="mt-1 block text-[11px] font-normal text-[var(--molsan-text-secondary)]">Opciones del catálogo Tipos de Concepto de Gastos.</span>
                   </label>
                 </div>
               </section>
-              <section className="rounded-xl border border-slate-200 p-4">
-                <h3 className="mb-3 text-sm font-extrabold text-slate-800">Tarifa de honorarios</h3>
-                <p className="mb-3 text-xs text-slate-500">Tarifa del catálogo: <strong>{facturaHonorariosForm.tarifa}</strong> · Entidad detectada: {facturaHonorariosForm.entidad || "No identificada"} · <a href="/herramientas/honorarios-gestoria" target="_blank" rel="noreferrer" className="font-bold text-blue-700 underline">Revisa aquí tarifa honorarios</a></p>
+              <section className="rounded-xl border border-[var(--molsan-border)] p-4">
+                <h3 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">Tarifa de honorarios</h3>
+                <p className="mb-3 text-xs text-[var(--molsan-text-secondary)]">Tarifa del catálogo: <strong>{facturaHonorariosForm.tarifa}</strong> · Entidad detectada: {facturaHonorariosForm.entidad || "No identificada"} · <a href="/herramientas/honorarios-gestoria" target="_blank" rel="noreferrer" className="font-bold text-[var(--molsan-primary)] underline">Revisa aquí tarifa honorarios</a></p>
                 <div className="grid gap-3 md:grid-cols-3">
-                  <label className="text-xs font-semibold text-slate-600">Base imponible (€)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.baseImponible} onChange={e => setFacturaHonorariosForm(f => actualizarImportesFacturaHonorarios(f,{baseImponible:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
-                  <label className="text-xs font-semibold text-slate-600">IVA (€)<input type="number" value={facturaHonorariosForm.importeImpuesto} readOnly className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">Base imponible (€)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.baseImponible} onChange={e => setFacturaHonorariosForm(f => actualizarImportesFacturaHonorarios(f,{baseImponible:e.target.value}))} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-[var(--molsan-text-secondary)]">IVA (€)<input type="number" value={facturaHonorariosForm.importeImpuesto} readOnly className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-3 py-2 text-sm" /></label>
                   <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2"><span className="block text-xs font-semibold text-emerald-700">Total honorarios (€)</span><strong className="mt-1 block text-sm text-emerald-800">{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</strong></div>
                 </div>
-                <label className="mt-3 block text-xs font-semibold text-slate-600">Observaciones<textarea value={facturaHonorariosForm.observaciones} onChange={e => setFacturaHonorariosForm(f => ({...f,observaciones:e.target.value}))} rows={2} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                <label className="mt-3 block text-xs font-semibold text-[var(--molsan-text-secondary)]">Observaciones<textarea value={facturaHonorariosForm.observaciones} onChange={e => setFacturaHonorariosForm(f => ({...f,observaciones:e.target.value}))} rows={2} className="mt-1 w-full rounded-lg border border-[var(--molsan-border)] px-3 py-2 text-sm" /></label>
               </section>
-              <section className="rounded-xl border border-slate-200 p-4">
-                <h3 className="mb-2 text-sm font-extrabold text-slate-800">Checklist de control</h3>
-                <p className="mb-3 text-xs text-slate-500">Revisión visual de documentos y actividades vinculados al expediente. Los documentos no se marcan como completados automáticamente.</p>
+              <section className="rounded-xl border border-[var(--molsan-border)] p-4">
+                <h3 className="mb-2 text-sm font-extrabold text-[var(--molsan-text)]">Checklist de control</h3>
+                <p className="mb-3 text-xs text-[var(--molsan-text-secondary)]">Revisión visual de documentos y actividades vinculados al expediente. Los documentos no se marcan como completados automáticamente.</p>
                 {(() => {
                   const docs = Array.isArray(documentosCierre) ? documentosCierre : [];
                   const norm = (v) => String(v ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -9175,15 +9175,15 @@ const cuantiaFincasParaEnvio =
                   const completos = items.every((item) => item.ok);
                   return <>
                     <div className={`mb-3 rounded-lg border px-3 py-2 text-xs font-bold ${completos ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-amber-200 bg-amber-50 text-amber-800"}`}>
-                      {completos ? "✓ Checklist completo según datos/documentos encontrados" : `${items.filter((item) => item.ok).length} de ${items.length} comprobaciones completas`}
+                      {completos ? <><MolsanIcon name="check" size={13} bare /> Checklist completo según datos/documentos encontrados</> : `${items.filter((item) => item.ok).length} de ${items.length} comprobaciones completas`}
                     </div>
                     <div className="grid gap-2 sm:grid-cols-2">
-                      {items.map((item) => <div key={item.nombre} className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs ${item.ok ? "border-emerald-100 bg-emerald-50/60 text-emerald-800" : "border-slate-200 bg-slate-50 text-slate-600"}`}><span className="font-extrabold">{item.ok ? "✓" : "□"}</span><span>{item.nombre}</span></div>)}
+                      {items.map((item) => <div key={item.nombre} className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs ${item.ok ? "border-emerald-100 bg-emerald-50/60 text-emerald-800" : "border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] text-[var(--molsan-text-secondary)]"}`}><span className="font-extrabold">{item.ok ? <MolsanIcon name="check" size={12} bare /> : <MolsanIcon name="clock" size={12} bare />}</span><span>{item.nombre}</span></div>)}
                     </div>
                   </>;
                 })()}
                 {errorDocumentosCierre && <p className="mt-2 text-xs text-red-700">No se ha podido verificar la carpeta digital completa; revisa antes de facturar.</p>}
-                <button type="button" onClick={cargarDocumentosCierre} disabled={cargandoDocumentosCierre} className="mt-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50">{cargandoDocumentosCierre ? "Comprobando…" : "↻ Actualizar checklist"}</button>
+                <button type="button" onClick={cargarDocumentosCierre} disabled={cargandoDocumentosCierre} className="mt-3 rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-xs font-bold text-[var(--molsan-text)] disabled:opacity-50">{cargandoDocumentosCierre ? "Comprobando…" : <><MolsanIcon name="refresh" size={14} bare /> Actualizar checklist</>}</button>
               </section>
             </>
           )}
@@ -9219,45 +9219,45 @@ const cuantiaFincasParaEnvio =
           ].map((campo) => {
             const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
             return (
-              <label key={campo.key} className="min-w-0 text-xs font-bold text-slate-600">
+              <label key={campo.key} className="min-w-0 text-xs font-bold text-[var(--molsan-text-secondary)]">
                 <span className="mb-1.5 block">{campo.label}</span>
-                <input type="date" value={valor ?? ""} onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800" />
+                <input type="date" value={valor ?? ""} onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
               </label>
             );
           })}
         </div>
         )}
         {actividadSeleccionada !== "sede-notarial-protocolo" && !["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) && (
-        <section className={`rounded-2xl p-3 sm:p-4 ${["gestion-economica", "defectos-registrales", "facturacion-cierre"].includes(actividadSeleccionada) ? "border border-indigo-100 bg-indigo-50/30" : "rounded-xl border border-slate-200 bg-white"}`}>
+        <section className={`rounded-2xl p-3 sm:p-4 ${["gestion-economica", "defectos-registrales", "facturacion-cierre"].includes(actividadSeleccionada) ? "border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)]" : "rounded-xl border border-[var(--molsan-border)] bg-white"}`}>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key) && !(actividadSeleccionada === "defectos-registrales" && ["tiene_defectos_abiertos", "tipo_error", "falta_defecto", "descripcion_error", "fcierre_defecto", "tipo_documento", "motivos_defecto", "fecha_notificacion_registro", "fecha_vencimiento_presentacion_registro", "observaciones_defecto_registral"].includes(campo.key))).map((campo) => {
             const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
             const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
             return (
-              <label key={campo.key} className={`min-w-0 text-xs font-bold text-slate-600 ${campo.multilinea ? "sm:col-span-2 lg:col-span-3" : ""}`}>
+              <label key={campo.key} className={`min-w-0 text-xs font-bold text-[var(--molsan-text-secondary)] ${campo.multilinea ? "sm:col-span-2 lg:col-span-3" : ""}`}>
                 <span className="mb-1.5 block">{campo.label}</span>
                 {Array.isArray(campo.opciones) ? (
-                  <select value={valor ?? ""} onChange={(event) => cambiar(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800">
+                  <select value={valor ?? ""} onChange={(event) => cambiar(event.target.value)} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]">
                     <option value="">— Seleccionar —</option>
                     {campo.opciones.map((opcion) => <option key={String(opcion)} value={typeof opcion === "object" ? opcion.value : opcion}>{typeof opcion === "object" ? opcion.label : opcion}</option>)}
                   </select>
                 ) : campo.multilinea ? (
-                  <textarea value={valor ?? ""} onChange={(event) => cambiar(event.target.value)} rows={3} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800" />
+                  <textarea value={valor ?? ""} onChange={(event) => cambiar(event.target.value)} rows={3} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                 ) : (
-                  <input type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"} value={valor ?? ""} onChange={(event) => cambiar(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800" />
+                  <input type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"} value={valor ?? ""} onChange={(event) => cambiar(event.target.value)} className="w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm font-normal text-[var(--molsan-text)]" />
                 )}
               </label>
             );
           })}
           {!(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).length && actividadSeleccionada !== "sede-notarial-protocolo" && actividadSeleccionada !== "sede-notarial" && actividadSeleccionada !== "gestion-economica" && (
-            <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">Esta actividad no tiene campos específicos configurados todavía.</p>
+            <p className="rounded-xl border border-dashed border-[var(--molsan-border)] p-4 text-sm text-[var(--molsan-text-secondary)]">Esta actividad no tiene campos específicos configurados todavía.</p>
           )}
           </div>
         </section>
         )}
         {["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) && (
-          <section className="mb-4 rounded-xl border border-indigo-200 bg-indigo-50/40 p-4">
-            <h3 className="mb-3 text-sm font-extrabold text-slate-800">Fechas de actividad</h3>
+          <section className="mb-4 rounded-xl border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] p-4">
+            <h3 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">Fechas de actividad</h3>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {[
                 { key: "fecha_inicio_actividad", label: "Inicio actividad" },
@@ -9265,14 +9265,14 @@ const cuantiaFincasParaEnvio =
               ].map((campo) => {
                 const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
                 return (
-                  <label key={campo.key} className="block rounded-lg border border-slate-200 bg-white p-3">
-                    <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
+                  <label key={campo.key} className="block rounded-lg border border-[var(--molsan-border)] bg-white p-3">
+                    <span className="block text-xs font-bold text-[var(--molsan-text-secondary)]">{campo.label}</span>
                     <input
                       type="date"
                       value={String(valor ?? "").slice(0, 10)}
                       onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))}
                       disabled={guardandoActividad || expedienteBloqueado}
-                      className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800"
+                      className="mt-2 w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm font-normal text-[var(--molsan-text)]"
                     />
                   </label>
                 );
@@ -9281,24 +9281,24 @@ const cuantiaFincasParaEnvio =
           </section>
         )}
         {(
-          <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
+          <section className="mt-5 space-y-3 rounded-xl border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] p-4">
             <div>
-              <h3 className="text-sm font-extrabold text-slate-800">{actividadSeleccionada === "sede-notarial-protocolo" ? "Sede notarial con protocolo · datos para integración" : `${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"} · datos para integración`}</h3>
-              <p className="mt-1 text-xs text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
+              <h3 className="text-sm font-extrabold text-[var(--molsan-text)]">{actividadSeleccionada === "sede-notarial-protocolo" ? "Sede notarial con protocolo · datos para integración" : `${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"} · datos para integración`}</h3>
+              <p className="mt-1 text-xs text-[var(--molsan-text-secondary)]">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
             </div>
             {actividadSeleccionada === "documentacion-previa" ? (
               <>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <label className="block rounded-lg border border-slate-200 bg-white p-3">
-                  <span className="block text-xs font-bold text-slate-600">Certificado Saldo "0" erróneo SI/NO</span>
-                  <select value={estadoDocumentacionAbsis.certificado_saldo_cero_erroneo ? "si" : "no"} onChange={(event) => setEstadoDocumentacionAbsis((actual) => ({ ...actual, certificado_saldo_cero_erroneo: event.target.value === "si" }))} disabled={guardandoActividad || cargandoEstadoAbsis || registrandoSolicitudIntegracion || expedienteBloqueado} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800">
+                <label className="block rounded-lg border border-[var(--molsan-border)] bg-white p-3">
+                  <span className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Certificado Saldo "0" erróneo SI/NO</span>
+                  <select value={estadoDocumentacionAbsis.certificado_saldo_cero_erroneo ? "si" : "no"} onChange={(event) => setEstadoDocumentacionAbsis((actual) => ({ ...actual, certificado_saldo_cero_erroneo: event.target.value === "si" }))} disabled={guardandoActividad || cargandoEstadoAbsis || registrandoSolicitudIntegracion || expedienteBloqueado} className="mt-2 w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm font-normal text-[var(--molsan-text)]">
                     <option value="no">NO</option>
                     <option value="si">SÍ</option>
                   </select>
                 </label>
               </div>
-              <section className="mt-3 rounded-xl border border-slate-200 bg-white p-4">
-                <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="folder" size={17} tone="ocean" bare /> Repositorios digitales</h4>
+              <section className="mt-3 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-[var(--molsan-text)]"><MolsanIcon name="folder" size={17} tone="ocean" bare /> Repositorios digitales</h4>
                 <RepositorioDocumentosInline
                   expedienteId={expediente?.id_expediente || expediente?.id || id}
                   categorias={["Hoja de Encargo firmada", "Justificante de cancelación", "Nota simple registral"]}
@@ -9309,19 +9309,19 @@ const cuantiaFincasParaEnvio =
               </>
             ) : actividadSeleccionada === "sede-notarial" ? (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <label className="block rounded-lg border border-slate-200 bg-white p-3">
-                  <span className="block text-xs font-bold text-slate-600">Notario</span>
-                  <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nombre_notario") ? String(actividadDraft.nombre_notario ?? "") : String(expediente?.nombre_notario || "")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nombre_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="Nombre del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                <label className="block rounded-lg border border-[var(--molsan-border)] bg-white p-3">
+                  <span className="block text-xs font-bold text-[var(--molsan-text-secondary)]">Notario</span>
+                  <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nombre_notario") ? String(actividadDraft.nombre_notario ?? "") : String(expediente?.nombre_notario || "")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nombre_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="Nombre del notario" className="mt-2 w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm font-normal text-[var(--molsan-text)]" />
                 </label>
-                <label className="block rounded-lg border border-slate-200 bg-white p-3">
-                  <span className="block text-xs font-bold text-slate-600">NIF de notario</span>
-                  <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nif_notario") ? String(actividadDraft.nif_notario ?? "") : String(expediente?.nif_notario || "")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nif_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="NIF del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                <label className="block rounded-lg border border-[var(--molsan-border)] bg-white p-3">
+                  <span className="block text-xs font-bold text-[var(--molsan-text-secondary)]">NIF de notario</span>
+                  <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nif_notario") ? String(actividadDraft.nif_notario ?? "") : String(expediente?.nif_notario || "")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nif_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="NIF del notario" className="mt-2 w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm font-normal text-[var(--molsan-text)]" />
                 </label>
               </div>
             ) : actividadSeleccionada === "sede-notarial-protocolo" ? (
               <div className="grid w-full min-w-0 grid-cols-1 items-start gap-3">
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">Datos de la actividad</h4>
+                <section className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                  <h4 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">Datos de la actividad</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.filter((campo) => ["nombre_notario", "nif_notario", "tipo_gestoria", "fecha_firma", "asiento_presentacion", "libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"].includes(campo.key)).map((campo) => {
                       const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
@@ -9331,57 +9331,57 @@ const cuantiaFincasParaEnvio =
                           : (expediente?.[campo.key] ?? "");
                       const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
                       return (
-                        <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
-                          <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
+                        <label key={campo.key} className="block min-w-0 rounded-lg border border-[var(--molsan-border)] bg-white p-3">
+                          <span className="block text-xs font-bold text-[var(--molsan-text-secondary)]">{campo.label}</span>
                           {campo.key === "tipo_gestoria" ? (
-                            <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800">
+                            <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm font-normal text-[var(--molsan-text)]">
                               <option value="Gestoría">Gestoría</option>
                               <option value="CaixaBank">CaixaBank</option>
                             </select>
                           ) : (
-                            <input type={campo.tipo === "fecha" ? "date" : "text"} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} placeholder={campo.label} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                            <input type={campo.tipo === "fecha" ? "date" : "text"} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} placeholder={campo.label} className="mt-2 w-full min-w-0 rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm font-normal text-[var(--molsan-text)]" />
                           )}
                         </label>
                       );
                     })}
                   </div>
                 </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
+                <section className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                  <h4 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">Repositorios digitales</h4>
                   <RepositorioDocumentosInline
                     expedienteId={expediente?.id_expediente || expediente?.id || id}
                     categorias={["Copia simple", "Hoja de presentación"]}
                     onAbrirRepositorio={() => setMostrarRepositoriosDocumentacionPrevia(true)}
                   />
-                  <p className="mt-3 rounded-lg border border-sky-200 bg-sky-50 p-3 text-xs text-sky-800">
+                  <p className="mt-3 rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3 text-xs text-[var(--molsan-primary)]">
                     La extracción automática de estos datos desde la hoja de presentación PDF subida en NotarGest está pendiente de implementar; por ahora puedes introducirlos y guardarlos aquí.
                   </p>
                 </section>
               </div>
             ) : actividadSeleccionada === "gestion-economica" ? (
               <div className="space-y-3">
-                <section className="min-w-0 rounded-xl border border-sky-200 bg-sky-50/70 p-4">
+                <section className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4">
                   <div className="flex items-start gap-3">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-800" aria-hidden="true">⇧</span>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--molsan-surface-soft)] text-[var(--molsan-primary)]" aria-hidden="true"><MolsanIcon name="upload" size={20} tone="ocean" /></span>
                     <div>
-                      <h4 className="text-sm font-extrabold text-sky-950">Información económica para enviar a ABSIS</h4>
-                      <p className="mt-1 text-xs leading-relaxed text-sky-900">
+                      <h4 className="text-sm font-extrabold text-[var(--molsan-primary)]">Información económica para enviar a ABSIS</h4>
+                      <p className="mt-1 text-xs leading-relaxed text-[var(--molsan-primary)]">
                         <strong>Los pagos realizados del expediente son los que deben comunicarse a ABSIS.</strong> Cada línea debe incluir el ID de pago, la fecha de pago, el tipo de documento, la base imponible, el impuesto y el importe total. Los gastos pendientes de pago se conservan en el libro contable, pero no deben comunicarse como pagos realizados.
                       </p>
-                      <p className="mt-2 text-xs leading-relaxed text-sky-800">
+                      <p className="mt-2 text-xs leading-relaxed text-[var(--molsan-primary)]">
                         <strong>Estado de integración:</strong> este bloque define los datos que debe recoger el envío. La conexión automática con ABSIS sigue pendiente de activación; guardar o confirmar un pago en el ERP no acredita por sí solo que ABSIS lo haya recibido.
                       </p>
                     </div>
                   </div>
                 </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-2 text-sm font-extrabold text-slate-800">Campos de cada línea económica</h4>
-                  <p className="text-xs leading-relaxed text-slate-600">
+                <section className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                  <h4 className="mb-2 text-sm font-extrabold text-[var(--molsan-text)]">Campos de cada línea económica</h4>
+                  <p className="text-xs leading-relaxed text-[var(--molsan-text-secondary)]">
                     El libro de movimientos de la ficha del expediente es la referencia para preparar la información contable. El campo <strong>Tipo de documento</strong> debe conservarse en cada movimiento junto con su identificador y desglose fiscal.
                   </p>
                 </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">Carpeta digital · Gestión económica</h4>
+                <section className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                  <h4 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">Carpeta digital · Gestión económica</h4>
                   <RepositorioDocumentosInline
                     expedienteId={expediente?.id_expediente || expediente?.id || id}
                     categorias={["Factura notarial", "Factura registral", "Factura impuestos", "Honorarios gestoría", "Otros"]}
@@ -9391,8 +9391,8 @@ const cuantiaFincasParaEnvio =
               </div>
             ) : actividadSeleccionada === "facturacion-cierre" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboardList" size={17} tone="ocean" bare /> Datos · Cierre del expediente</h4>
+                <section className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-[var(--molsan-text)]"><MolsanIcon name="clipboardList" size={17} tone="ocean" bare /> Datos · Cierre del expediente</h4>
                 <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {[
                     { key: "fecha_fin_actividad", label: "Fecha de cierre" },
@@ -9401,22 +9401,22 @@ const cuantiaFincasParaEnvio =
                       ? actividadDraft[campo.key]
                       : expediente?.[campo.key] ?? "";
                     return (
-                      <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
-                        <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
+                      <label key={campo.key} className="block min-w-0 rounded-lg border border-[var(--molsan-border)] bg-white p-3">
+                        <span className="block text-xs font-bold text-[var(--molsan-text-secondary)]">{campo.label}</span>
                         <input
                           type="date"
                           value={String(valor ?? "").slice(0, 10)}
                           onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))}
                           disabled={guardandoActividad || expedienteBloqueado}
-                          className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800"
+                          className="mt-2 w-full rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm font-normal text-[var(--molsan-text)]"
                         />
                       </label>
                     );
                   })}
                 </div>
                 </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
+                <section className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                <h4 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">Repositorios digitales</h4>
                 <RepositorioDocumentosInline
                   expedienteId={expediente?.id || id}
                   categorias={["Expediente digital completo"]}
@@ -9426,30 +9426,30 @@ const cuantiaFincasParaEnvio =
               </div>
             ) : actividadSeleccionada === "liquidacion-impuestos" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboardList" size={17} tone="ocean" bare /> Datos · Liquidación de impuestos</h4>
+                <section className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                  <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-[var(--molsan-text)]"><MolsanIcon name="clipboardList" size={17} tone="ocean" bare /> Datos · Liquidación de impuestos</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                       const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
                       const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
                       return (
-                        <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
-                          <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
+                        <label key={campo.key} className="block min-w-0 rounded-lg border border-[var(--molsan-border)] bg-white p-3">
+                          <span className="block text-xs font-bold text-[var(--molsan-text-secondary)]">{campo.label}</span>
                           {Array.isArray(campo.opciones) ? (
-                            <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800">
+                            <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm font-normal text-[var(--molsan-text)]">
                               <option value="">— Seleccionar —</option>
                               {campo.opciones.map((opcion) => <option key={String(opcion)} value={typeof opcion === "object" ? opcion.value : opcion}>{typeof opcion === "object" ? opcion.label : opcion}</option>)}
                             </select>
                           ) : (
-                            <input type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"} step={campo.tipo === "numero" ? "0.01" : undefined} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                            <input type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"} step={campo.tipo === "numero" ? "0.01" : undefined} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm font-normal text-[var(--molsan-text)]" />
                           )}
                         </label>
                       );
                     })}
                   </div>
                 </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
+                <section className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                  <h4 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">Repositorios digitales</h4>
                   <RepositorioDocumentosInline
                     expedienteId={expediente?.id_expediente || expediente?.id || id}
                     categorias={["AJD/ITP"]}
@@ -9460,30 +9460,30 @@ const cuantiaFincasParaEnvio =
               </div>
             ) : actividadSeleccionada === "tramitacion-inscripcion" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3">
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800"><MolsanIcon name="clipboardList" size={17} tone="ocean" bare /> Datos · Tramitación inscripción</h4>
+                <section className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                  <h4 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-[var(--molsan-text)]"><MolsanIcon name="clipboardList" size={17} tone="ocean" bare /> Datos · Tramitación inscripción</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                       const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
                       const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
                       return (
-                        <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
-                          <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
+                        <label key={campo.key} className="block min-w-0 rounded-lg border border-[var(--molsan-border)] bg-white p-3">
+                          <span className="block text-xs font-bold text-[var(--molsan-text-secondary)]">{campo.label}</span>
                           {Array.isArray(campo.opciones) ? (
-                            <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800">
+                            <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm font-normal text-[var(--molsan-text)]">
                               <option value="">— Seleccionar —</option>
                               {campo.opciones.map((opcion) => <option key={String(opcion)} value={typeof opcion === "object" ? opcion.value : opcion}>{typeof opcion === "object" ? opcion.label : opcion}</option>)}
                             </select>
                           ) : (
-                            <input type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"} step={campo.tipo === "numero" ? "0.01" : undefined} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                            <input type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"} step={campo.tipo === "numero" ? "0.01" : undefined} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm font-normal text-[var(--molsan-text)]" />
                           )}
                         </label>
                       );
                     })}
                   </div>
                 </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
+                <section className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                  <h4 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">Repositorios digitales</h4>
                   <RepositorioDocumentosInline
                     expedienteId={expediente?.id_expediente || expediente?.id || id}
                     categorias={["Hoja de inscripción"]}
@@ -9494,24 +9494,24 @@ const cuantiaFincasParaEnvio =
               </div>
             ) : actividadSeleccionada === "defectos-registrales" ? (
               <div className="space-y-3">
-                <section className="rounded-xl border border-slate-200 bg-white p-4">
+                <section className="rounded-xl border border-[var(--molsan-border)] bg-white p-4">
                   <div className="mb-3">
-                    <h3 className="text-sm font-extrabold text-slate-800">Defectos registrales · datos para integración</h3>
-                    <p className="mt-1 text-xs leading-relaxed text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
+                    <h3 className="text-sm font-extrabold text-[var(--molsan-text)]">Defectos registrales · datos para integración</h3>
+                    <p className="mt-1 text-xs leading-relaxed text-[var(--molsan-text-secondary)]">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
                   </div>
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-indigo-100 bg-indigo-50 p-3">
-                  <p className="text-xs leading-relaxed text-indigo-900">Los datos del defecto se mantienen en un único registro. Usa el alta para crear o editar la información; esta actividad solo resume el estado guardado y no duplica campos editables.</p>
-                  <Boton tipo="primary" disabled={expedienteBloqueado} onClick={abrirDefecto}>＋ Alta defecto</Boton>
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3">
+                  <p className="text-xs leading-relaxed text-[var(--molsan-primary)]">Los datos del defecto se mantienen en un único registro. Usa el alta para crear o editar la información; esta actividad solo resume el estado guardado y no duplica campos editables.</p>
+                  <Boton tipo="primary" disabled={expedienteBloqueado} onClick={abrirDefecto}><MolsanIcon name="plus" size={14} bare /> Alta defecto</Boton>
                 </div>
                 {defectosRegistrados.length === 0 ? (
-                  <p className="rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500">Todavía no hay defectos registrados para este expediente.</p>
+                  <p className="rounded-lg border border-dashed border-[var(--molsan-border-strong)] p-4 text-sm text-[var(--molsan-text-secondary)]">Todavía no hay defectos registrados para este expediente.</p>
                 ) : (
                   <div className="space-y-3">
                     {defectosRegistrados.map((defecto) => (
-                      <article key={defecto.id ?? defecto.id_defecto} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                      <article key={defecto.id ?? defecto.id_defecto} className="rounded-lg border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-3">
                         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                          <p className="text-sm font-bold text-slate-800">{defecto.motivo_defecto || "Defecto registral"}</p>
-                          <span className="rounded-full border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-600">{defecto.estado_envio_absis || "Pendiente ABSIS"}</span>
+                          <p className="text-sm font-bold text-[var(--molsan-text)]">{defecto.motivo_defecto || "Defecto registral"}</p>
+                          <span className="rounded-full border border-[var(--molsan-border)] bg-white px-2 py-1 text-xs font-semibold text-[var(--molsan-text-secondary)]">{defecto.estado_envio_absis || "Pendiente ABSIS"}</span>
                         </div>
                         <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
                           <Dato campo="Fecha calificación" valor={defecto.fecha_calificacion} tipo="fecha" />
@@ -9533,8 +9533,8 @@ const cuantiaFincasParaEnvio =
                   </div>
                 )}
                 </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-                <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
+                <section className="min-w-0 rounded-xl border border-[var(--molsan-border)] bg-white p-4">
+                <h4 className="mb-3 text-sm font-extrabold text-[var(--molsan-text)]">Repositorios digitales</h4>
                 <RepositorioDocumentosInline
                   expedienteId={expediente?.id_expediente || expediente?.id || id}
                   categorias={["Defecto registral"]}
@@ -9545,28 +9545,28 @@ const cuantiaFincasParaEnvio =
               </div>
             ) : null}
         {actividadSeleccionada !== "gestion-economica" && (
-          <section className="mt-5 rounded-xl border border-sky-200 bg-sky-50/70 p-4">
+          <section className="mt-5 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4">
             <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
               <label className="block min-w-0">
-                <span className="mb-1.5 block text-xs font-extrabold text-slate-700">Fecha envío ABSIS</span>
+                <span className="mb-1.5 block text-xs font-extrabold text-[var(--molsan-text)]">Fecha envío ABSIS</span>
                 <input
                   type="date"
                   value={fechaEnvioAbsis}
                   onChange={(event) => setFechaEnvioAbsis(event.target.value)}
                   disabled={registrandoSolicitudIntegracion || expedienteBloqueado}
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800"
+                  className="w-full rounded-lg border border-[var(--molsan-border-strong)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-text)]"
                 />
               </label>
               <button
                 type="button"
                 onClick={enviarActividadAAbsis}
                 disabled={registrandoSolicitudIntegracion || expedienteBloqueado}
-                className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-lg bg-[var(--molsan-primary)] px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-[var(--molsan-primary)] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {registrandoSolicitudIntegracion ? "Registrando solicitud…" : <><MolsanIcon name="upload" size={14} tone="inherit" bare /> Enviar a ABSIS</>}
               </button>
             </div>
-            <p className="mt-2 text-[11px] leading-relaxed text-sky-900">
+            <p className="mt-2 text-[11px] leading-relaxed text-[var(--molsan-primary)]">
               Permite registrar el envío manual o dejar preparada la solicitud. Hasta que se active la conexión con ABSIS, este botón registra la petición en el ERP, pero no transmite datos externamente.
             </p>
           </section>
@@ -9671,7 +9671,7 @@ function CampoFormulario({
           font-bold
           uppercase
           tracking-wide
-          text-slate-500
+          text-[var(--molsan-text-secondary)]
         "
       >
         {label}
@@ -9695,17 +9695,17 @@ function CampoFormulario({
             w-full
             rounded-xl
             border
-            border-slate-200
+            border-[var(--molsan-border)]
             bg-white
             px-3
             py-3
             text-sm
-            text-slate-700
+            text-[var(--molsan-text)]
             outline-none
             transition
-            focus:border-blue-400
+            focus:border-[var(--molsan-primary)]
             focus:ring-2
-            focus:ring-blue-100
+            focus:ring-[var(--molsan-primary)]/10
           "
         />
       ) : (
@@ -9728,17 +9728,17 @@ function CampoFormulario({
             w-full
             rounded-xl
             border
-            border-slate-200
+            border-[var(--molsan-border)]
             bg-white
             px-3
             py-2.5
             text-sm
-            text-slate-700
+            text-[var(--molsan-text)]
             outline-none
             transition
-            focus:border-blue-400
+            focus:border-[var(--molsan-primary)]
             focus:ring-2
-            focus:ring-blue-100
+            focus:ring-[var(--molsan-primary)]/10
           "
         />
       )}
@@ -9769,7 +9769,7 @@ function CampoSelect({
           font-bold
           uppercase
           tracking-wide
-          text-slate-500
+          text-[var(--molsan-text-secondary)]
         "
       >
         {label}
@@ -9788,17 +9788,17 @@ function CampoSelect({
           w-full
           rounded-xl
           border
-          border-slate-200
+          border-[var(--molsan-border)]
           bg-white
           px-3
           py-2.5
           text-sm
-          text-slate-700
+          text-[var(--molsan-text)]
           outline-none
           transition
-          focus:border-blue-400
+          focus:border-[var(--molsan-primary)]
           focus:ring-2
-          focus:ring-blue-100
+          focus:ring-[var(--molsan-primary)]/10
         "
       >
 
@@ -9868,8 +9868,8 @@ function CheckboxVision({
         transition
         ${
           checked
-            ? "border-blue-200 bg-blue-50"
-            : "border-slate-200 bg-white hover:bg-slate-50"
+            ? "border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)]"
+            : "border-[var(--molsan-border)] bg-white hover:bg-[var(--molsan-surface-soft)]"
         }
       `}
     >
@@ -9889,9 +9889,9 @@ function CheckboxVision({
           h-4
           w-4
           rounded
-          border-slate-300
-          text-blue-600
-          focus:ring-blue-500
+          border-[var(--molsan-border-strong)]
+          text-[var(--molsan-primary)]
+          focus:ring-[var(--molsan-primary)]/10
         "
       />
 
@@ -9901,8 +9901,8 @@ function CheckboxVision({
           font-bold
           ${
             checked
-              ? "text-blue-700"
-              : "text-slate-600"
+              ? "text-[var(--molsan-primary)]"
+              : "text-[var(--molsan-text-secondary)]"
           }
         `}
       >

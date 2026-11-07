@@ -92,8 +92,8 @@
 .ag-tabla th,
 .ng-tabla th,
 .encargagest .eg-directorio-tabla th {
-  color: #52617a;
-  background: var(--molsan-surface-soft);
+  color: var(--molsan-text-secondary, #617789);
+  background: var(--molsan-table-head, #EAF2F8);
   border-bottom: 1px solid var(--molsan-border);
   font-size: 12px;
   font-weight: 700;
@@ -256,7 +256,7 @@
 }
 
 .molsan-intranet-page table thead tr {
-  background: var(--molsan-surface-soft);
+  background: var(--molsan-table-head, #EAF2F8);
 }
 
 .molsan-intranet-page table thead th {
@@ -457,11 +457,11 @@
 /* MOLSAN ERP · tablas, listados y desplazamiento compartidos */
 .molsan-table-wrap { width:100%; min-width:0; overflow-x:auto; overscroll-behavior-x:contain; border:1px solid var(--molsan-border); border-radius:var(--molsan-radius-card); background:var(--molsan-surface); }
 .molsan-table { width:100%; border-collapse:separate; border-spacing:0; color:var(--molsan-text); font-family:var(--molsan-font-family); font-size:var(--molsan-font-size-md); }
-.molsan-table th { padding:10px 12px; color:var(--molsan-text-secondary); background:var(--molsan-surface-soft); border-bottom:1px solid var(--molsan-border); font-size:var(--molsan-font-size-sm); font-weight:700; text-align:left; white-space:nowrap; }
+.molsan-table th { padding:10px 12px; color:var(--molsan-text-secondary); background:var(--molsan-table-head, #EAF2F8); border-bottom:1px solid var(--molsan-border); font-size:var(--molsan-font-size-sm); font-weight:700; text-align:left; white-space:nowrap; }
 .molsan-table td { padding:9px 12px; border-bottom:1px solid var(--molsan-border-light); vertical-align:middle; line-height:1.45; }
 .molsan-table tbody tr:last-child td { border-bottom:0; }
 .molsan-table tbody tr { transition:background-color var(--molsan-transition-fast); }
-.molsan-table tbody tr:hover { background:#f7f9fd; }
+.molsan-table tbody tr:hover { background:var(--molsan-surface-soft, #F2F7FB); }
 .molsan-table-wrap :where(table) { margin:0; }
 @media(max-width:640px) { .molsan-table th,.molsan-table td { padding:8px 10px; } }
 
@@ -469,7 +469,7 @@
 /* Tabla MOLSAN PREMIUM · cabecera, ordenación accesible y datos tabulares */
 .molsan-data-table-wrap { box-shadow:0 5px 18px rgba(6,50,82,.045); }
 .molsan-data-table { font-variant-numeric:tabular-nums; }
-.molsan-data-table th { padding:0; color:#064675; background:var(--molsan-table-head, #EAF2F8); }
+.molsan-data-table th { padding:0; color:var(--molsan-text-secondary, #617789); background:var(--molsan-table-head, #EAF2F8); }
 .molsan-data-table-sort,
 .molsan-table-sort {
   display:inline-flex; width:100%; min-height:42px; align-items:center; justify-content:flex-start;

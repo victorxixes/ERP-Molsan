@@ -1275,3 +1275,990 @@ Pendiente en esta sección: build final del commit más reciente y comprobación
 - El navegador de inspección disponible no pudo abrir el dominio público del Preview; por tanto, el deploy y la compilación están verificados, pero no se afirma una inspección visual real de cada ruta. La comprobación visual final de cabeceras, tarjetas, botones, tablas y modales sigue pendiente de una sesión de navegador accesible.
 
 URL del Preview: https://molsan-premium-2027-candidate-preview.onrender.com
+
+
+## 25. Cruce focalizado JSX ↔ CSS de NotarGest y EncargaGest — 6 de noviembre de 2026, 21:31
+
+Se ha repetido el cruce de clases CSS con sus consumidores JSX sobre el HEAD de `molsan-premium-deep-cleanup-continuation`, sin inferir que una clase esté muerta por no aparecer literalmente en el componente principal.
+
+- **NotarGest:** `NotarGest.css` contiene 145 nombres de clase únicos detectados estáticamente. Los dos tokens que no aparecen como texto literal en `NotarGest.jsx` son falsos positivos del análisis: `.css` procede de comentarios y `.molsan-icon-3d` lo genera el componente compartido `MolsanIcon`. No se autoriza borrar reglas de esta hoja por falta de consumidor.
+- **EncargaGest:** `EncargaGest.css` contiene 65 nombres de clase únicos. Los tokens `.molsan-print-encargos-lista` y `.molsan-print-encargos-fichas` no aparecen en los dos JSX de EncargaGest, pero el flujo de impresión del portal ApoderaGest añade esas clases al `body`; por tanto, son selectores globales compartidos y no deben eliminarse desde EncargaGest sin trasladar primero su responsabilidad de impresión. `.molsan-icon-3d` lo genera `MolsanIcon`.
+- Se han comprobado los consumidores de las tarjetas/controles de ambos portales: NotarGest utiliza `MolsanPageHeader`, `MolsanDataTable` y `MolsanStatCard`; EncargaGest utiliza `MolsanPageHeader` y `MolsanStatCard`. El espacio EncargaGest compone CTN, Agenda, Mensajes e Intranet como páginas hijas y no debe tratarse como una única hoja CSS aislada.
+- **Incidencia visual localizada en NotarGest:** el `Sidebar` recibe todavía `headerActions` con fecha actual y botón «Actualizar datos»; el botón llama a `actualizarDatosSidebar`, que realiza la recarga de la bandeja o de la lista de notarías para el administrador. La petición visual de retirar fecha/actualización de las cabeceras sigue vigente, pero no se debe borrar el handler de recarga ni sus estados sin reubicar o decidir expresamente esa acción. Queda marcado como migración de acción fuera de cabecera, no como selector CSS huérfano.
+
+### Resultado de esta comprobación
+
+- No se han eliminado reglas de NotarGest ni EncargaGest en esta pasada: el cruce no aporta evidencia suficiente de selectores muertos.
+- Se evita una regresión de impresión al conservar las clases globales activadas por ApoderaGest.
+- La migración pendiente de NotarGest es estructural (sacar fecha/actualización del área de cabecera/sidebar), no un borrado indiscriminado de CSS.
+- Esta revisión es estática. No sustituye la navegación autenticada ni la prueba visual responsive en Preview.
+
+
+## 26. Corrección de alcance del hover Glass Luxe en paneles de contenido — 6 de noviembre de 2026
+
+La inspección de `MolsanCanonicalVisual2027.css` detectó que la lista global de tarjetas incluía clases de panel/contenedor de contenido (`.ag-panel`, `.cg-panel`, `.eg-panel`, `.ng-panel`, `.ng-detalle-bloque` y `.ng-admin-global-resumen`). Esas clases describen paneles de trabajo, secciones y bloques de detalle, no necesariamente tarjetas de acceso/KPI. Al incluirlas en las reglas globales se les imponía franja superior cian, elevación y hover de tarjeta; esto contradecía el comentario de la propia hoja canónica que excluye paneles de contenido y podía crear líneas/animaciones internas no deseadas.
+
+**Cambio aplicado:** se retiraron esas seis clases de las siete listas repetidas de selectores que gobiernan la superficie, hover, animación de icono y foco de las tarjetas globales. Se mantienen los selectores de tarjetas identificables (`.ag-grupo-apoderado`, `.ag-grupo-notario`, `.ag-carpeta-apoderado`, `.ng-admin-individual-panel`, etc.) y los paneles conservan sus reglas de módulo para estructura, bordes y espaciado. No se han borrado hojas CSS ni estilos funcionales específicos.
+
+**Validación estática:** las siete listas objetivo se sustituyeron de forma exacta; no se tocó ningún otro bloque. Falta ejecutar build/lint y revisar visualmente Preview en Dashboard, ficha/detalle y modales de los tres portales, con especial atención a tarjetas KPI frente a paneles de contenido.
+
+
+## 27. Reubicación de acciones de NotarGest fuera de Sidebar — 6 de noviembre de 2026
+
+Se ha completado la incidencia estructural identificada en la sección 25:
+
+- Se retiró de las props `headerActions` de `Sidebar` la fecha dinámica y el botón «Actualizar datos». La fecha ya no se calcula ni se muestra en esa cabecera lateral.
+- La acción de actualización se conserva y se ha reubicado en la cabecera principal `MolsanPageHeader` del portal NotarGest. En el modo de administración global también queda disponible en la cabecera global, donde actualiza el catálogo de notarías.
+- Se conservan el handler `actualizarDatosSidebar`, los estados `cargando` / `cargandoSelectorNotaria`, los bloqueos durante la operación y el indicador de carga giratorio. No se ha eliminado funcionalidad ni se han cambiado endpoints.
+- Se retiraron de `NotarGest.css` los estilos obsoletos `.ng-sidebar-date`, `.ng-sidebar-live-dot` y `.ng-sidebar-refresh`. Se conserva `.ng-icono-girando`, que ahora utilizan las acciones reubicadas.
+
+**Comprobación estática posterior:** las cuatro clases/variables de la cabecera lateral antigua (`fechaActual`, `.ng-sidebar-date`, `.ng-sidebar-live-dot`, `.ng-sidebar-refresh`) ya no aparecen ni en el JSX ni en la hoja CSS. `actualizarDatosSidebar` sigue teniendo sus dos puntos de invocación (cabecera principal y cabecera global) además de su definición; `.ng-icono-girando` sigue teniendo consumidores JSX y regla CSS. La comprobación no sustituye build, navegación ni prueba visual autenticada, que continúan pendientes.
+
+
+## 28. Reconciliación de cobertura de ficheros frontend — 6 de noviembre de 2026
+
+Se ha contrastado el árbol completo de `frontend-app/src` de esta rama con el contenido de esta auditoría y con el inventario de rutas:
+
+- Árbol actual: **241 ficheros** bajo `frontend-app/src`: 143 JSX, 57 JS y 41 CSS.
+- Las **41 hojas CSS** tienen registrada una pasada estática de llaves, bloques vacíos y selectores repetidos (sección 45). Esto no equivale a validar visualmente todas sus reglas ni todos los estados.
+- El inventario `docs/INVENTARIO_RUTAS_FRONTEND_2027.md` registra 110 declaraciones Route y 91 componentes de destino distintos. La matriz ruta → componente está hecha; no certifica por sí sola todas las subpáginas, pestañas, estados y modales.
+- La PR #409 contiene 103 ficheros cambiados, 97 bajo `frontend-app/src` (40 JSX/TSX y 57 CSS según el recuento documentado en la sección 49). Los restantes ficheros del árbol no se deben considerar automáticamente revisados por el hecho de que la PR sea amplia.
+- La búsqueda de trazabilidad por nombre de fichero en esta auditoría encuentra referencias explícitas a 45 de los 143 JSX. Quedan **98 JSX sin una referencia individual inequívoca por nombre en el documento**. Esto es una lista de cobertura documental pendiente, no una afirmación de que ninguno haya sido leído durante las sesiones anteriores.
+
+### JSX sin trazabilidad individual explícita en esta auditoría
+
+**Componentes compartidos, layout, autenticación y utilidades**
+- `components/AuthenticatedPhoto.jsx`
+- `components/PortalLogin.jsx`
+- `components/Sidebar.jsx`
+- `components/SidebarPerfilModal.jsx`
+- `components/agenda/AgendaToast.jsx`
+- `components/agenda/AutocompleteNotario.jsx`
+- `components/auth/RequireAuth.jsx`
+- `components/auth/RequireModule.jsx`
+- `components/ctn/PortalAccessTabs.jsx`
+- `components/expedientes/ProvisionesLauncher.jsx`
+- `components/expedientes/ProvisionesModal.jsx`
+- `components/expedientes/VisibilidadTablas.jsx`
+- `components/informes/InformeApoderado.jsx`
+- `components/intranet/DocumentosTable.jsx`
+- `components/intranet/NoticiasFeed.jsx`
+- `components/layout/NotificacionesBadge.jsx`
+- `components/logs/TablaLogs.jsx`
+- `components/mensajes/MensajeBubble.jsx`
+- `components/mensajes/MensajesHeader.jsx`
+- `components/notificaciones/NotificacionesToast.jsx`
+- `components/realtime/RealtimeGlobal.jsx`
+- `components/ui/MolsanDetailField.jsx`
+- `components/ui/MolsanSortableTh.jsx`
+- `components/ui/MolsanStatCard.jsx`
+- `components/ui/SelectSJ.jsx`
+- `context/AuthContext.jsx`
+- `icons/IconCalendar.jsx`
+- `icons/IconClock.jsx`
+- `icons/IconMonth.jsx`
+- `icons/IconWeek.jsx`
+
+**Páginas y módulos**
+- `pages/LoginPage.jsx`
+- `pages/ModuloPendiente.jsx`
+- `pages/ModulosSelector.jsx`
+- `pages/agenda/VistaDia.jsx`
+- `pages/agenda/VistaMes.jsx`
+- `pages/agenda/VistaSemana.jsx`
+- `pages/apoderagest/ControlApoderados.jsx`
+- `pages/ctn/Ctn.jsx`
+- `pages/dashboard/Dashboard.jsx`
+- `pages/empleados/EmpleadoEditar.jsx`
+- `pages/empleados/EmpleadoFicha.jsx`
+- `pages/empleados/EmpleadoPerfil.jsx`
+- `pages/empleados/EmpleadosModulo2026.jsx`
+- `pages/expedientes/FichaExpedienteDemo.jsx`
+- `pages/fichajes/DocumentosAdmin.jsx`
+- `pages/fichajes/FestivosCompensaciones.jsx`
+- `pages/fichajes/Fichajes.jsx`
+- `pages/fichajes/FichajesResumen.jsx`
+- `pages/fichajes/SolicitudesAusencia.jsx`
+- `pages/fusiones/Fusiones.jsx`
+- `pages/herramientas/AdministracionEmpleadoConfig.jsx`
+- `pages/herramientas/AltaExpediente.jsx`
+- `pages/herramientas/AsignarExpedientesPromociones.jsx`
+- `pages/herramientas/CambiarGestorExpediente.jsx`
+- `pages/herramientas/CambiosActividadAbsis.jsx`
+- `pages/herramientas/CatalogoAbsis.jsx`
+- `pages/herramientas/CatalogoFichajes.jsx`
+- `pages/herramientas/CatalogoOficinas.jsx`
+- `pages/herramientas/ComplementosSaldo.jsx`
+- `pages/herramientas/CorrespondenciaTipificada.jsx`
+- `pages/herramientas/CrearNoticia.jsx`
+- `pages/herramientas/DatosMolsan.jsx`
+- `pages/herramientas/FirmasEmail.jsx`
+- `pages/herramientas/HonorariosGestoria.jsx`
+- `pages/herramientas/ImportacionesDatos.jsx`
+- `pages/herramientas/ImportadorPostFirma.jsx`
+- `pages/herramientas/ImportarCTN.jsx`
+- `pages/herramientas/LecturaCancelaI.jsx`
+- `pages/herramientas/LecturaCopias.jsx`
+- `pages/herramientas/MantenimientoTecnico.jsx`
+- `pages/herramientas/ModelosDocumentos.jsx`
+- `pages/herramientas/Municipios.jsx`
+- `pages/herramientas/OficinasLiquidadoras.jsx`
+- `pages/herramientas/PPAD.jsx`
+- `pages/herramientas/ProcesoAbsis.jsx`
+- `pages/herramientas/ReasignarNotarioExpediente.jsx`
+- `pages/herramientas/RegistrosPropiedad.jsx`
+- `pages/herramientas/ReglasActividadesExpediente.jsx`
+- `pages/herramientas/SubirDocumento.jsx`
+- `pages/herramientas/TiposConceptoGastos.jsx`
+- `pages/herramientas/TiposImpositivos.jsx`
+- `pages/herramientas/Verifacti.jsx`
+- `pages/herramientas/importador_absis.jsx`
+- `pages/intranet/Intranet.jsx`
+- `pages/maestros/Maestros.jsx`
+- `pages/mensajeria/MensajeriaProveedores.jsx`
+- `pages/mensajes/Mensajes.jsx`
+- `pages/notificaciones/Notificaciones.jsx`
+- `pages/paneltecnico/MonitorRealtime.jsx`
+- `pages/paneltecnico/PanelTecnico.jsx`
+- `pages/seguridad/Seguridad.jsx`
+- `pages/seguridad/SeguridadFicha.jsx`
+- `pages/seguridad/SeguridadModulos.jsx`
+- `pages/seguridad/SeguridadPermisos.jsx`
+- `pages/seguridad/SeguridadResumen.jsx`
+- `pages/seguridad/SeguridadRolEditor.jsx`
+- `pages/seguridad/SeguridadRoles.jsx`
+- `pages/seguridad/SeguridadUsuarios.jsx`
+
+### Qué falta para poder declarar cierre
+
+1. Reconciliar estos 98 JSX con la memoria de revisión y comprobar especialmente los componentes compartidos que afectan a todas las rutas: Sidebar, MolsanStatCard, MolsanDetailField, MolsanSortableTh, SelectSJ, autenticación, notificaciones y layouts.
+2. Verificar que los 91 destinos de ruta quedan cubiertos por la revisión de componentes; incluir las vistas secundarias de Agenda, Fichajes, Seguridad y Herramientas que no tengan evidencia explícita.
+3. Ejecutar build sobre el HEAD actual y pruebas de navegación/modal/responsive en Preview. Para el HEAD actual `a2b042a8ccd1f0f0340cb06c84582c23cef45564`, GitHub no devuelve ejecuciones de workflow ni checks asociados. No se declara build ni despliegue de este HEAD.
+4. La revisión visual autenticada de todas las rutas no está certificada por la auditoría estática. No se marca como terminada por extrapolación desde un build anterior.
+
+**Conclusión de cobertura:** el inventario de rutas y el barrido estático de las 41 hojas CSS están documentados; la revisión individual de todos los JSX no puede darse por cerrada con la evidencia documental actual. Esta sección deja identificados los 98 ficheros cuya revisión necesita trazabilidad explícita, sin afirmar que el trabajo previo sobre ellos no haya existido.
+
+
+## 29. Primera pasada de componentes compartidos pendientes — 6 de noviembre de 2026
+
+Se ha iniciado la revisión individual de los componentes compartidos señalados en la sección 28. Esta pasada incorpora cambios concretos y acotados:
+
+- `components/layout/NotificacionesBadge.jsx`: eliminado el uso de `material-icons` para el icono de campana. Ahora utiliza `MolsanIcon`, conserva el contador reactivo del store y limita visualmente el valor mostrado a `99+` sin alterar el total real.
+- `components/ui/MolsanSortableTh.jsx`: sustituidos los caracteres Unicode de ordenación por los pictogramas corporativos `MolsanIcon` (`arrowUp`, `arrowDown`, `arrowUpDown`). Se mantienen `aria-sort`, el callback y la semántica del botón.
+- `components/PortalLogin.jsx`: corregida la clase raíz de `portal-login` a `portal-login-premium`, que es la clase realmente gobernada por `LayoutPortalesPremium.css`. Así el login profesional recibe los tokens de fondo, tipografía, superficie de formulario y foco visible definidos en la capa compartida.
+
+### Componentes inspeccionados sin modificación
+
+- `components/Sidebar.jsx`: iconografía principal ya centralizada en `MolsanIcon`; navegación y permisos conservados. Requiere aún revisión completa de todos los estados responsive y menús superpuestos.
+- `components/ui/MolsanStatCard.jsx`: componente común basado en clases `molsan-stat-card*`; no se ha reescrito porque la apariencia depende de sus reglas CSS compartidas y de las variantes consumidas por los portales.
+- `components/ui/MolsanDetailField.jsx`: estructura de campo de detalle con blanco/azul hielo, borde corporativo y jerarquía tipográfica coherente. No se modifica.
+- `components/ui/SelectSJ.jsx`: conserva gestión de foco, Escape, selección y cierre al hacer clic fuera. Pendiente contrastar todas sus variantes con el sistema de formularios y los consumidores.
+- `components/AuthenticatedPhoto.jsx`: mantiene descarga autenticada de fotografías protegidas mediante Bearer y URL Blob temporal, con revocación en cleanup. No se altera el origen/API ni la autenticación.
+- `components/SidebarPerfilModal.jsx`: delega el modal al componente compartido `ModalEmpleado`; no introduce una capa visual propia.
+- `components/ui/useAccessibleDialog.js`: implementa foco inicial, trampa de Tab, Escape, soporte de diálogos apilados y restauración del foco.
+- `components/auth/RequireAuth.jsx` y `RequireModule.jsx`: son guards funcionales, no superficies visuales de módulo; se preservan sin cambios de autorización.
+
+### Límite de validación
+
+Los cambios están escritos en la rama de trabajo y comprobados mediante lectura posterior del contenido guardado. Esta comprobación no equivale a ejecutar el build, pruebas automatizadas ni navegación visual autenticada. La revisión de Sidebar, StatCard, SelectSJ y los componentes de notificaciones no se considera globalmente cerrada hasta completar sus consumidores y variantes.
+
+
+## 30. Segunda pasada: vistas secundarias y clasificación de JavaScript — 6 de noviembre de 2026
+
+### Vistas inspeccionadas y correcciones
+
+- Agenda: inspeccionadas `VistaDia.jsx`, `VistaMes.jsx` y `VistaSemana.jsx`. Las tres consumen tokens ERP/Molsan para superficies, bordes y azul principal; los colores de reunión, firma pendiente y firma realizada se mantienen como estados semánticos. No se ha cambiado la lógica de calendario ni de citas.
+- Seguridad: inspeccionadas `SeguridadResumen.jsx` y `SeguridadUsuarios.jsx`. Las páginas ya usan `MolsanPageHeader`, contenedores `erp-card`, badges y controles compartidos; no se reescriben sus permisos ni sus operaciones.
+- Fichajes: inspeccionadas `FichajesResumen.jsx` y `SolicitudesAusencia.jsx`. El resumen usa `MolsanStatCard` y `MolsanPremiumCard`; no se alteran solicitudes ni endpoints.
+- Herramientas: `CatalogoOficinas.jsx` y `HonorariosGestoria.jsx` tenían colores Tailwind slate/blue/indigo específicos en tarjetas, tablas y acciones. Se han migrado esos colores de presentación a los tokens corporativos MOLSAN (azul principal, azul hielo, texto secundario, borde y cabecera de tabla). Se conservan los colores semánticos de éxito/error y los flujos de importación, paginación, tarifas y plantilla Word.
+- ApoderaGest: el título y subtítulo base de la cabecera local en `ApoderaGest.css` dejan de usar los tonos antiguos `#1b2a43` / `#7a879b` y pasan a `--molsan-primary` / `--molsan-text-secondary`. No se han borrado reglas estructurales ni estados funcionales.
+
+### Reconciliación de los 57 ficheros JavaScript
+
+El árbol documentado contiene 57 ficheros `.js`. La lectura del árbol Git recursivo ha localizado los 57 y se han leído los 57. Ninguno contiene JSX ni devuelve componentes visuales; por su ubicación y exportaciones se clasifican como capa de datos, hooks, estado o configuración. Los cuatro ficheros que no aparecían en el índice de búsqueda se localizaron directamente en el árbol Git y también se leyeron.
+
+**API (21 localizados):** `api/ctn.js`, `api/auth.js`, `api/logs.js`, `api/axios.js`, `api/config.js`, `api/agenda.js`, `api/intranet.js`, `api/maestros.js`, `api/mensajes.js`, `api/notarios.js`, `api/empleados.js`, `api/dashboard.js`, `api/auditoria.js`, `api/seguridad.js`, `api/fetchAuth.js`, `api/encargagest.js`, `api/expedientes.js`, `api/herramientas.js`, `api/monitorRealtime.js`, `api/expedienteDefectos.js`, `api/expedienteAcciones.js`.
+
+**Hooks (19 localizados):** `hooks/useCtn.js`, `hooks/useLogs.js`, `hooks/useAgenda.js`, `hooks/useAgendaWS.js`, `hooks/useIntranet.js`, `hooks/useNotarios.js`, `hooks/useDashboard.js`, `hooks/useEmpleados.js`, `hooks/useSeguridad.js`, `hooks/useAgendaData.js`, `hooks/useIntranetWS.js`, `hooks/useMensajesWS.js`, `hooks/useUtilidades.js`, `hooks/useEmpleadosWS.js`, `hooks/useHerramientas.js`, `hooks/useRealtimeGlobal.js`, `hooks/useNotificacionesWS.js`, `components/ui/useAccessibleDialog.js`, `hooks/useSortableData.js`.
+
+**Stores (12 localizados):** `store/ctnStore.js`, `store/logsStore.js`, `store/authStore.js`, `store/agendaStore.js`, `store/mensajesStore.js`, `store/intranetStore.js`, `store/notariasStore.js`, `store/dashboardStore.js`, `store/empleadosStore.js`, `store/seguridadStore.js`, `store/herramientasStore.js`, `store/notificacionesStore.js`.
+
+**Utilidades/configuración/realtime (5 localizados):** `utils/permisos.js`, `config/modulos.js`, `realtime/realtimeClient.js`, `utils/formatters.js`, `utils/sortRows.js`.
+
+### Build y CI
+
+Se ha comprobado `frontend-app/package.json`: el comando de compilación disponible es `npm run build` (Vite). Se han localizado siete workflows, pero los workflows de build existentes están limitados a PR hacia `main` o a rutas concretas; la PR #411 apunta a `fix/molsan-css-selector-audit-round1` y sus cambios no satisfacen los filtros de rutas de los otros workflows. El workflow de seguridad solo se activa al cambiar `frontend-app/package.json` o su propio YAML.
+
+Para el commit `0cdde89adb6c1cc8a4901c5afa4f20c5a45515a3`, GitHub devuelve cero ejecuciones asociadas y cero status checks. No se ha podido ejecutar `npm run build` desde esta sesión ni se declara build correcto. La compilación sigue siendo una condición pendiente, no un resultado supuesto.
+
+**Cobertura restante:** 98 JSX que al inicio de esta pasada carecían de trazabilidad individual inequívoca en la sección 28; 0 JS pendientes de localizar; quedan pendientes consumidores de componentes compartidos, modales, estados responsive y navegación visual autenticada en Preview.
+
+
+## 31. Tercera pasada de componentes compartidos y expedientes — 6 de noviembre de 2026
+
+- `components/mensajes/MensajesHeader.jsx`: sustituida la paleta slate/blue del encabezado de conversación por tokens Molsan de borde, superficie, sombra, texto principal y azul hielo. Se mantiene el verde de estado online/offline como indicador semántico.
+- `components/ui/MolsanDetailField.jsx`: sus valores de color literales se han sustituido por referencias a los tokens centrales `--molsan-border`, `--molsan-surface-soft`, `--molsan-text-secondary` y `--molsan-primary`; el resultado visual sigue usando la paleta corporativa acordada.
+- `components/expedientes/ProvisionesLauncher.jsx`: el acceso flotante deja de usar fondo slate casi negro y el símbolo monetario como icono; pasa al botón azul corporativo y a `MolsanIcon wallet`. Se conservan ruta, condición de visibilidad y apertura del modal.
+- `components/expedientes/ProvisionesModal.jsx`: el control de cierre deja de utilizar el carácter Unicode `×` y usa `MolsanIcon x`; no se modifica el flujo del modal.
+- Inspeccionados `AgendaToast.jsx`, `AutocompleteNotario.jsx`, `PortalAccessTabs.jsx`, `VisibilidadTablas.jsx`, `InformeApoderado.jsx`, `DocumentosTable.jsx`, `NoticiasFeed.jsx`, `TablaLogs.jsx`, `MensajeBubble.jsx`, `RealtimeGlobal.jsx`, `MolsanStatCard.jsx`, `MolsanPremiumCard.jsx` y `SelectSJ.jsx`. No se reescriben componentes cuyo estilo está gobernado por clases compartidas o tokens existentes sin tener confirmados todos sus consumidores. Continúa pendiente la comprobación visual y responsive.
+
+**Verificación de contenido tras escritura:** se recuperaron los ficheros modificados y se comprobaron las nuevas clases/tokens. Esto no equivale a compilación.
+
+
+## 32. Cuarta pasada de subpáginas operativas y herramientas — 6 de noviembre de 2026
+
+Se han inspeccionado y normalizado a tokens corporativos, sin cambiar sus operaciones:
+
+- Fichajes: `FestivosCompensaciones.jsx`, `Fichajes.jsx` y `SolicitudesAusencia.jsx`; se sustituyen paletas slate/blue/violet de controles, formularios, tablas y botones por los tokens Molsan. Los estados semánticos de aprobación, error y éxito se conservan.
+- Expedientes: `FichaExpedienteDemo.jsx` y componentes compartidos de provisiones; se alinean superficies y controles, el acceso flotante usa azul corporativo + icono wallet y el cierre del modal usa MolsanIcon.
+- ApoderaGest: `ControlApoderados.jsx` migra tarjetas, tablas, campos y botones a tokens; sus controles de mes usan iconos Molsan en lugar de flechas Unicode.
+- Herramientas: se normalizan `CambiosActividadAbsis.jsx`, `CatalogoAbsis.jsx`, `CatalogoFichajes.jsx`, `ComplementosSaldo.jsx`, `CorrespondenciaTipificada.jsx`, `DatosMolsan.jsx`, `FirmasEmail.jsx`, `ImportadorPostFirma.jsx`, `ImportarCTN.jsx`, `LecturaCancelaI.jsx`, `LecturaCopias.jsx`, `MantenimientoTecnico.jsx`, `ModelosDocumentos.jsx`, `Municipios.jsx`, `PPAD.jsx`, `ProcesoAbsis.jsx`, `ReasignarNotarioExpediente.jsx`, `RegistrosPropiedad.jsx`, `ReglasActividadesExpediente.jsx`, `SubirDocumento.jsx`, `TiposConceptoGastos.jsx`, `TiposImpositivos.jsx`, `Verifacti.jsx`, `importador_absis.jsx`, `AdministracionEmpleadoConfig.jsx`, `CrearNoticia.jsx` y `OficinasLiquidadoras.jsx`. Se migran tonos decorativos slate/blue/indigo/violet/cyan a variables corporativas; se conservan colores de estados, advertencias y acciones de riesgo cuando son semánticos. El signo de suma de «Nueva oficina» pasa a MolsanIcon.
+- Intranet y comunicación: `Intranet.jsx`, `MensajeriaProveedores.jsx`, `Mensajes.jsx` y `MensajesHeader.jsx` normalizan controles, superficies, tablas y texto a tokens Molsan.
+- Seguridad: `SeguridadFicha.jsx` y `SeguridadModulos.jsx` normalizan sus colores decorativos a la paleta corporativa; se mantienen badges/estados con significado.
+- ApoderaGest CSS: títulos y subtítulos base usan los tokens Molsan en lugar de los dos tonos antiguos.
+
+**Preservación funcional:** no se han cambiado endpoints, payloads, permisos, datos, reglas de negocio ni llamadas de guardado/importación. Son sustituciones de clases de presentación y de pictogramas de interfaz.
+
+**Validación:** cada fichero editado se recuperó de GitHub antes de escribir y las escrituras devolvieron commit SHA. No se ha ejecutado build ni inspección visual autenticada. Algunos componentes complejos (Maestros, Oficinas Liquidadoras, municipios y modales anidados) necesitan prueba visual específica antes de declararlos cerrados.
+
+
+## 33. Corrección de clases raíz desconectadas de CSS compartido — 6 de noviembre de 2026
+
+La lectura cruzada de `molsan-design-system.css` y los componentes detectó clases de alcance responsive/foco definidas en CSS pero no aplicadas en sus raíces JSX. Se han conectado y verificado por lectura posterior:
+
+- `AgendaToast.jsx` → `agenda-toast-premium`
+- `NotificacionesToast.jsx` → `notificaciones-toast-premium`
+- `TablaLogs.jsx` → `tabla-logs-premium`
+- `MensajeBubble.jsx` → `mensaje-bubble-premium`
+- `MensajesHeader.jsx` → `mensajes-header-premium`
+- `AutocompleteNotario.jsx` → `autocomplete-notario-premium`
+- `SelectSJ.jsx` → `select-sj-premium`
+
+Estas clases activan reglas compartidas de ancho mínimo, foco visible, tablas, listas de opciones, overflow táctil y reducción de movimiento donde corresponde. No se cambian sus handlers, store, autenticación ni navegación. Se ha comprobado que los siete nombres de clase están presentes en los ficheros guardados. Sigue pendiente la comprobación visual de cada estado y viewport.
+
+
+## 34. Cierre de reconciliación JavaScript — 6 de noviembre de 2026
+
+La consulta del árbol Git recursivo de la rama ha permitido localizar los cuatro ficheros que faltaban en el índice de búsqueda: `components/ui/useAccessibleDialog.js`, `hooks/useSortableData.js`, `utils/formatters.js` y `utils/sortRows.js`. Se han leído los cuatro.
+
+La cobertura JavaScript queda reconciliada: **57 de 57** ficheros leídos, clasificados como API (21), hooks (19), stores (12) y utilidades/configuración/realtime (5). Ninguno contiene JSX ni implementa una superficie visual; `useAccessibleDialog` sí gestiona foco/teclado de los modales y se conserva como comportamiento transversal de accesibilidad.
+
+La reconciliación JavaScript queda cerrada. La cobertura JSX y la validación de build/visual siguen abiertas.
+
+
+## 35. Última pasada de iconografía, clases Tailwind y componentes de formulario — 6 de noviembre de 2026
+
+- Se han conectado las clases raíz compartidas de toast, logs, mensajes, autocomplete y SelectSJ (sección 33).
+- En Catálogo ABSIS, Fichajes, Alta de expediente, Proceso ABSIS e Importaciones se han sustituido signos funcionales (`+`, flechas, doble chevrón y pictogramas de texto) por `MolsanIcon`; se conserva el texto accesible y las etiquetas aria.
+- Se ha corregido una familia de clases Tailwind que había quedado con modificador de opacidad después de una variable CSS arbitraria (forma inválida como `bg-[var(--token)]/40`). Se han eliminado los sufijos incompatibles en Fichajes, FichaExpedienteDemo, ComplementosSaldo, CorrespondenciaTipificada, ImportadorPostFirma, ImportarCTN, ModelosDocumentos, RegistrosPropiedad, ReglasActividadesExpediente, TiposConceptoGastos, Verifacti, Administración de empleados, Mensajes, SeguridadModulos y ControlApoderados.
+- La paleta de la vista previa de ModelosDocumentos se ha llevado a azul corporativo y azul hielo, preservando el significado de las zonas seleccionadas del editor.
+- Se ha comprobado por lectura posterior que los siete componentes de la sección 33 conservan su clase raíz compartida.
+
+**Límite:** esta pasada estática reduce clases inválidas conocidas y pictogramas inconsistentes, pero no sustituye el build de Vite ni la prueba real en navegador. El estado de compilación sigue sin confirmarse.
+
+
+## 37. Reconciliación final de JSX y validación de compilación — 6 de noviembre de 2026
+
+### Cobertura JSX cerrada a nivel de lectura estática
+
+Se han leído individualmente los 98 JSX enumerados inicialmente en la sección 28. Sumados a los 45 que ya tenían referencias explícitas en la auditoría anterior, queda revisado el conjunto documentado de **143/143 JSX** del árbol `frontend-app/src`.
+
+En esta última pasada se incluyeron:
+- Autenticación y navegación: `LoginPage`, `ModulosSelector`, `ModuloPendiente`, `Sidebar`, `SidebarPerfilModal`, guards y contexto.
+- Vistas de Agenda, CTN, Dashboard, empleados, expedientes, Fichajes, Fusiones, Intranet, Maestros, Mensajería, Mensajes, Notificaciones, Panel Técnico y todas las subpáginas de Seguridad.
+- Las 33 herramientas/catálogos enumerados en secciones 29–35.
+- Componentes compartidos de portales, notificaciones, logs, tablas, informes, formularios, modales y pictogramas.
+
+No se han forzado cambios en las superficies que ya responden al patrón acordado: el login se conserva porque su rediseño ya está consolidado; `ModulosSelector` se conserva como referencia visual de Espacios de trabajo; Dashboard, CTN, Seguridad y Maestros mantienen sus componentes/tokens compartidos. Los colores de estado y los controles de decisión se conservan por semántica, no como decoración.
+
+### Últimas conexiones CSS
+
+- `PortalAccessTabs.jsx` recibe `portal-access-tabs-premium`.
+- `DocumentosTable.jsx` recibe `intranet-documentos-table-premium`.
+- `NoticiasFeed.jsx` recibe `intranet-noticias-feed-premium`.
+- `InformeApoderado.jsx` recibe `informe-apoderado-premium`.
+- Los estilos de foco/reducción de movimiento de perfil se vinculan al selector real `.empleado-operativo-modal`.
+- La página operativa de `MantenimientoTecnico.jsx` y la raíz de `Verifacti.jsx` reciben sus clases premium compartidas.
+- `DocumentosAdmin.jsx` normaliza cabecera de tabla, inputs y botón de descarga con tokens Molsan; los botones Aprobar/Rechazar mantienen colores de resultado.
+
+### Compilación
+
+<badge color="success">Build frontend correcto</badge>
+
+Para el commit de código `b8baf97b85358ebdd028767154390ae7f54306fe`, la ejecución GitHub Actions `42293606642` terminó con:
+- Build del frontend: **success** (`npm install` + `npm run build`).
+- Sintaxis Python del backend de fichajes: **success**.
+
+El commit posterior de documentación no cambia código ejecutable. Se observan ejecuciones independientes de `supabase-schema-audit` que terminan en failure sin jobs; no son el workflow de compilación frontend y esta rama no ha modificado backend, esquema ni datos de Supabase.
+
+### Estado real de cierre
+
+- CSS: 41/41 hojas con pasada estática documentada.
+- JSX: 143/143 leídos individualmente.
+- JS: 57/57 leídos y clasificados.
+- Build: correcto en el último commit de código.
+- Pendiente externo: navegación visual autenticada y responsive en Render Preview. No se afirma que el aspecto final esté validado en navegador.
+- PR #411 continúa abierta y en Draft; no se fusiona ni se despliega a producción sin revisión visual y aprobación.
+
+
+## 38. Cruce focalizado de selectores CSS y consumidores JSX — 7 de noviembre de 2026
+
+Se ha realizado una pasada adicional de relación CSS→JSX sobre los portales y varias familias técnicas, buscando también consumidores fuera del JSX principal de cada módulo. El objetivo es distinguir selectores realmente huérfanos de selectores compartidos, utilidades de impresión y clases generadas por componentes comunes.
+
+### Portales profesionales
+
+- **ApoderaGest:** los seis nombres que no aparecían en el JSX principal se han localizado en sus consumidores reales: `ag-print-footer`, `molsan-print-agenda` y `ag-agenda-print-root` en `Agenda.jsx`; `molsan-icon-3d` en `MolsanIcon.jsx`; `molsan-stat-card` en `MolsanStatCard.jsx`. No se retiran.
+- **NotarGest:** el único selector no localizado en el JSX principal, `molsan-icon-3d`, pertenece al componente compartido `MolsanIcon.jsx`. El resto de selectores examinados tiene consumidor en `NotarGest.jsx`.
+- **EncargaGest:** `molsan-icon-3d` se resuelve en `MolsanIcon.jsx` y `encargagest-workspace-premium` en `EncargaGestWorkspace.jsx`. Permanecen como candidatos de comprobación global `molsan-print-encargos-lista` y `molsan-print-encargos-fichas`: aparecen en reglas `@media print` de `EncargaGest.css`, pero no en los dos JSX principales consultados. No se eliminan hasta descartar consumidores indirectos o activación dinámica fuera de esos archivos.
+
+### Módulos técnicos y subpáginas
+
+- **Catálogos/Maestros:** seis clases que inicialmente no aparecían en el subconjunto de páginas inspeccionado se han localizado en sus consumidores: `correspondencia-tipificada-premium`, `importar-ctn-premium`, `subir-documento-premium`, `cambiar-gestor-premium`, `tipos-concepto-gastos-premium` y `utilidades-premium-page`. No eran reglas huérfanas; el CSS agrupa varias subpáginas.
+- **Panel Técnico:** `panel-tecnico-premium` se consume en `PanelTecnico.jsx`; `panel-tecnico-submodulo-premium` en las cuatro subpáginas de Auditoría avanzada, Logs avanzados, Monitor Realtime y Monitor de sistema. `overflow-x-auto` aparece en las subpáginas que necesitan tablas desplazables. No se detecta selector huérfano en el conjunto contrastado.
+- **Expedientes:** la hoja de listado utiliza un grupo semántico `:is(.text-red-600, .text-red-700, .text-rose-600, .text-rose-700)` para mantener el peso de los mensajes de error. `text-rose-600` no aparece en los JSX seleccionados; no se elimina porque forma parte de una regla de compatibilidad para variantes de color y no de un bloque visual autónomo. La hoja de ficha no presenta clases sin consumidor en el conjunto de ficha y modales contrastado.
+
+### Resultado y límites
+
+- Se han resuelto falsos positivos causados por consumidores en páginas hermanas, componentes compartidos y subpáginas.
+- Se deja identificado el único candidato concreto de esta pasada: las dos clases de impresión de EncargaGest, pendientes de búsqueda en el conjunto completo de JSX y de comprobar cómo se activa la impresión.
+- No se han borrado selectores por coincidencia negativa parcial. La eliminación exige confirmar ausencia global de consumidor y revisar estados de impresión, modales y responsive.
+- Esta comprobación es estática y focalizada; no sustituye la inspección visual autenticada de Preview ni las pruebas interactivas de los modales.
+
+
+## 39. Eliminación de duplicidad en reglas de impresión de portales — 7 de noviembre de 2026
+
+Se ha contrastado el candidato de impresión de EncargaGest contra sus consumidores reales:
+
+- `molsan-print-encargos-lista` y `molsan-print-encargos-fichas` se activan dinámicamente desde `ApoderaGest.jsx` y sus reglas de visibilidad/raíz imprimible están centralizadas en `PortalProfesionalShared.css`, que importan ApoderaGest, NotarGest y EncargaGest.
+- `EncargaGest.css` repetía únicamente la ocultación global `visibility:hidden!important` para esos dos estados, creando una segunda fuente de control de impresión sin aportar comportamiento adicional.
+- Se han retirado solo esas dos reglas duplicadas de `EncargaGest.css`. Se conservan el formato A4 y los márgenes de página, así como `print-color-adjust: exact`. La visibilidad de la vista imprimible permanece en la hoja compartida.
+
+No se han eliminado las clases de impresión ni los selectores compartidos. La corrección es una deduplicación de cascada; requiere aún comprobación de impresión en navegador y no se considera validación visual completa.
+
+
+## 40. Centralización y recuperación de estilos de impresión — 7 de noviembre de 2026
+
+La reconciliación del árbol de la rama mostró que la antigua hoja `PortalProfesionalShared.css` ya no existe en esta rama y que la hoja activa es `PortalProfesionalPremium2027.css`. Los portales importan esta última desde `main.jsx`. La antigua lógica de impresión compartida no se había trasladado a la hoja activa.
+
+Se ha corregido la brecha en la capa canónica de portales:
+
+- Se han centralizado en `PortalProfesionalPremium2027.css` los estilos de impresión de Agenda y ApoderaGest, con la paleta Molsan para los controles de impresión y formato documental blanco/A4.
+- Se conservan los tres modos de impresión: agenda, listado de encargos y fichas detalladas.
+- Se asegura que el contenido imprimible sea visible y que el resto de la aplicación quede oculto durante la impresión.
+- Se ha añadido la clase `ag-print-ficha` a cada artículo de ficha para que las reglas de salto de página se apliquen al elemento real del JSX.
+- Se ha retirado de `EncargaGest.css` la regla local duplicada de ocultación, manteniendo allí los márgenes A4 y la impresión de colores. La gestión de visibilidad queda centralizada.
+
+### Verificación y límites
+
+- Los ficheros modificados se han recuperado de nuevo desde GitHub tras escritura.
+- La rama de la PR #411 apunta al commit de código `8e795ec04189efdb296944832fc2fc92eb7a7ddc`.
+- El workflow de validación asociado al último commit se encontraba en cola al documentar esta sección; no se declara todavía como correcto.
+- Sigue pendiente abrir Preview en navegador y probar realmente la impresión de agenda, listado y fichas, además de la inspección visual de los portales y modales. Esta corrección estática no se presenta como prueba visual.
+
+
+### Ajuste final de la centralización de impresión
+
+Una segunda comprobación de las hojas realmente importadas desde `main.jsx` localizó reglas residuales de ocultación e impresión en `molsan-module-styles.css` y `EncargaGest.css`. Se han retirado esas duplicidades: `PortalProfesionalPremium2027.css` queda como única fuente de reglas de impresión de Agenda y ApoderaGest. Se conserva la impresión A4, el ajuste de color, la ocultación de la aplicación y la presentación exclusiva de la raíz imprimible. La hoja global de portales está importada desde `main.jsx`, por lo que no depende de imports dinámicos de una página.
+
+
+## 41. Revisión de duplicidades entre capas globales — 7 de noviembre de 2026
+
+Se ha repetido el cruce estático de selectores en las diez hojas globales activas: Redesign, Premium, Global Consistency, Glass Luxe Unified, Canonical Visual, Design System, Module Styles, Tokens, Portal Profesional Premium y Cards Premium.
+
+- Antes de centralizar impresión se detectaban dos selectores globales repetidos entre hojas: la ocultación de contenido para impresión y el ajuste universal de color de impresión.
+- Tras mover ambas responsabilidades a `PortalProfesionalPremium2027.css` y retirar los bloques de `molsan-module-styles.css` y `EncargaGest.css`, el cruce exacto no encuentra selectores duplicados entre hojas globales distintas (0 coincidencias en esta comparación).
+- Se mantienen los selectores repetidos dentro de una misma hoja cuando son capas responsive, estados o refinamientos posteriores de cascada; no se borran automáticamente por igualdad textual sin analizar orden, media queries y especificidad.
+
+La comparación es estática y exacta; no prueba equivalencia semántica entre selectores distintos ni sustituye una inspección de cascada en navegador.
+
+
+## 42. Normalización de iconografía y auditoría de compatibilidad de cabeceras — 7 de noviembre de 2026
+
+### Corrección aplicada
+
+- frontend-app/src/layout/Layout.jsx: el botón común de retorno de subpágina utilizaba el carácter Unicode «←». Se ha sustituido por MolsanIcon name="arrowLeft", manteniendo el texto visible «Volver», el aria-label, el destino de navegación y la inserción del botón mediante portal.
+- Commit de la corrección: 40d6ec6c3e16b09a28fd599782c5d2e0374ef80b.
+
+### Riesgos estructurales identificados que no se eliminan sin prueba de consumidores
+
+- Layout.jsx conserva dos efectos de compatibilidad: uno detecta cabeceras estructurales heredadas y les añade las clases molsan-page-header y molsan-page-header--legacy; otro localiza la cabecera de subpágina, oculta controles «Volver» antiguos y monta el control común en su zona de acciones.
+- Ambos efectos utilizan MutationObserver para cubrir páginas que renderizan su cabecera de forma asíncrona. El primer efecto se desactiva cuando encuentra una cabecera Premium o una cabecera estructural heredada; el segundo se desactiva al localizar la primera .molsan-page-header.
+- La detección de cabecera heredada utiliza selectores estructurales y selectores específicos de herramientas. Aunque excluye diálogos en el elemento finalmente seleccionado, todavía requiere comprobar en cada ruta que el selector no alcance un encabezado interno de una sección, un panel o una vista hija.
+- El segundo efecto consulta .molsan-page-header en todo .erp-main-inner; no limita la búsqueda a .erp-route-content ni exige que la cabecera pertenezca al nivel principal de la página. En rutas con más de una cabecera Premium, la primera coincidencia del DOM podría ser una cabecera secundaria. No se cambia esta lógica sin inventariar las rutas y validar sus estructuras reales.
+- El botón de retorno se monta en .molsan-page-header__actions cuando existe; si no, se monta en el propio header. Se debe confirmar que no desplace acciones, no se duplique y no quede fuera del orden visual esperado en páginas con acciones propias.
+
+### Pruebas pendientes para retirar la compatibilidad heredada
+
+1. Inventariar por ruta la existencia y posición DOM de MolsanPageHeader, headers estructurales y acciones de retorno heredadas.
+2. Verificar las rutas principales y subpáginas de Expedientes, Agenda, CTN, Fusiones, Provisiones, Mensajería, Informes, Catálogos, Maestros, Herramientas y Seguridad.
+3. Probar carga inicial y render asíncrono, navegación entre rutas sin recarga, retorno al módulo padre, modales abiertos y cierre de modales.
+4. Confirmar ausencia de parpadeo, doble cabecera, doble botón, botones ocultos que sigan ocupando espacio y desplazamientos de las acciones.
+5. Solo después de esa matriz se podrá retirar MutationObserver y la capa legacy sin arriesgar páginas que todavía dependan de ella.
+
+### Estado de validación
+
+La corrección de iconografía está escrita en la rama de trabajo. Esta sección documenta un riesgo de compatibilidad y un plan de prueba; no afirma que la capa heredada esté ya retirada ni que la validación visual de Preview esté completada.
+
+
+## 43. Reconciliación del árbol completo, cascada de importación y build de la rama — 7 de noviembre de 2026
+
+### Inventario real del árbol
+
+Se ha consultado el árbol Git recursivo de molsan-premium-deep-cleanup-continuation. GitHub devuelve 241 archivos bajo frontend-app/src, con el siguiente desglose exacto: 143 JSX, 57 JS y 41 CSS. El árbol no está truncado. La cifra coincide con el inventario documentado anteriormente; no se ha usado el número de archivos modificados por el PR como sustituto del inventario total.
+
+### Cascada global de estilos
+
+Se ha leído main.jsx y se ha confirmado el orden de importación: index.css y tokens/design system primero; App; después MolsanFase3, molsan-module-styles y las hojas propias de ApoderaGest, EncargaGest y NotarGest; finalmente Redesign, Premium, Cards, Portal Profesional, Global Consistency, Glass Luxe y Canonical Visual. Canonical Visual es la última capa visual importada.
+
+Se identifica un frente de migración todavía abierto: index.css se describe expresamente como base heredada y mantiene bloques de compatibilidad SJ-2026 para layout, tarjetas, tablas, formularios, tabs y modales. Sus comentarios indican que se mantienen mientras existan consumidores legacy. No se elimina de forma global sin cruzar cada clase con JSX y comprobar que los estilos funcionales de esos consumidores ya están migrados.
+
+### Variantes de color detectadas
+
+Se ha realizado un muestreo de literales cromáticos en las 41 hojas CSS. Hay tonos antiguos slate/azul en varias hojas de módulos y portales (incluidas ApoderaGest.css, Cancelagest.css, CancelagestUnified.css, CtnListadoPage.css, EncargaGest.css, MolsanRedesign2027.css y SeguridadSubpaginasPremium.css). Parte de esos valores representa texto neutro o superficies heredadas; otros son estados semánticos de aprobación, error, advertencia, éxito, disponibilidad o riesgo. Por tanto, el mero hecho de no coincidir con los seis colores base no justifica sustituirlos todos.
+
+El siguiente criterio de normalización es: sustituir los tonos decorativos antiguos por tokens corporativos; mantener los colores de estado solo cuando su significado sea explícito y coherente; y no modificar colores de datos, estados o acciones destructivas sin revisar el componente que los produce.
+
+### Build verificado tras las últimas escrituras
+
+Para el HEAD 8353889c97fa37443460ba78956e6202910dc410, GitHub Actions ejecutó MOLSAN frontend premium build (run 42348344681). El job Vite production build terminó con success; tanto Install dependencies como Build frontend terminaron correctamente. La validación de Fichaje Molsan también terminó con success. El workflow supabase-schema-audit figura como failure separado y no forma parte de la compilación frontend; no se atribuye a este cambio de estilos.
+
+PR #411 continúa abierta y en Draft, con base fix/molsan-css-selector-audit-round1 y head molsan-premium-deep-cleanup-continuation. No se ha fusionado ni desplegado a producción.
+
+### Límite
+
+El árbol completo está reconciliado y el build del HEAD está correcto. Esto no equivale a una inspección semántica exhaustiva de cada regla CSS ni a validación visual autenticada de las 91 rutas/componentes, sus estados, modales y viewports. Esa comprobación continúa abierta y es condición para declarar la entrega visual cerrada.
+
+
+## 44. Corrección de contraste de subtítulos en cabeceras canónicas — 7 de noviembre de 2026
+
+La revisión de la cascada de MolsanCanonicalVisual2027.css encontró una regla tardía que sobrescribía el token de subtítulo de la cabecera con #496B82. El comentario asociado describía un fondo azul Glass, mientras que la cabecera canónica real usa superficie blanca. Esto producía una excepción cromática innecesaria frente al texto secundario corporativo acordado.
+
+Se ha sustituido el color literal y su -webkit-text-fill-color por var(--molsan-canon-header-muted, #617789), y se ha corregido el comentario para reflejar la superficie blanca. Se conservan los selectores de compatibilidad para subtítulos heredados, la opacidad, visibilidad, peso tipográfico y ausencia de sombra.
+
+Commit de código: 11e1c72f87d3236d425a0cc100413b39cfdcc9f9. Requiere nuevo build y actualización del Preview después de la corrección; la inspección visual de cabeceras en navegador sigue pendiente.
+
+## 45. Corrección de token efectivo, catálogo de iconos y aislamiento de alertas — 7 de noviembre de 2026
+
+### Token de subtítulo: corrección en la fuente
+La pasada anterior cambió la regla consumidora de MolsanCanonicalVisual2027.css para leer `--molsan-canon-header-muted`, pero el token seguía definido en molsan-tokens.css como `#496B82`. La variable tenía precedencia sobre el fallback `#617789`, por lo que la corrección no era efectiva por sí sola. Se ha corregido la definición raíz del token a `#617789`, manteniendo una única fuente semántica y evitando un override adicional.
+
+### Iconografía de navegación
+Se ha contrastado el catálogo MolsanIcon con los nombres literales utilizados en los componentes JSX y con los nombres dinámicos de los elementos de navegación. EncargaGestWorkspace enviaba `file-text` a Sidebar; ese nombre no tenía alias en MolsanIcon y caía en el pictograma genérico `activity`. Se ha añadido el alias `file-text: file`, sin alterar el contrato de navegación ni las acciones.
+
+### Cabeceras de NotarGest
+Las acciones «Actualizar datos» estaban dentro de las cabeceras principales de los dos modos de NotarGest (administración global y portal de notaría). Se han movido a una barra de acciones inmediatamente posterior a la cabecera. Se mantiene la función de actualización, el estado disabled, el indicador de carga y el texto accesible. La cabecera queda reservada al título, descripción y navegación contextual «Volver» cuando procede.
+
+### Alertas y avisos frente a tarjetas
+La regla de compatibilidad de tarjetas Tailwind en MolsanCanonicalVisual2027.css podía clasificar como tarjeta ordinaria un `section.rounded-2xl.border` con `role="status"` o `role="alert"`. Se han excluido expresamente los elementos con roles status/alert y los que llevan aria-live de las tres reglas genéricas de tarjeta, incluida la variante hover y la normalización de cabeceras internas. Así se evita que un aviso semántico pierda su tratamiento de estado y se convierta en una tarjeta de navegación.
+
+### Commits de código
+- `299eff61c1e3bd6367c86acfd5192ff484da958c`: token efectivo de subtítulo a #617789.
+- `9562cb45d34c13eedec50bda9f425ffb77ba2a01`: alias file-text a pictograma file.
+- `ebcb5cb5a19b3d8dc7d92498329f9f5e73d27162`: acciones de actualización fuera de cabeceras NotarGest.
+- `2c7649fa5fe1c161a71f39e1b57d71f0ed7f79ad`: barra de acciones NotarGest y adaptación responsive.
+- `acfa962f3944a2dc128277634fa63e883b5c64fb`: exclusión de avisos y alertas de la normalización genérica de tarjetas.
+
+### Validación pendiente
+Estas son correcciones estáticas de código. Deben pasar por build y despliegue de Preview, y después por navegación visual autenticada para comprobar las dos variantes de NotarGest, el icono de navegación de EncargaGest y que los avisos mantienen sus colores semánticos. No se afirma que esa inspección visual esté completada.
+
+## 46. Eliminación de tarjetas anidadas en el detalle individual de NotarGest — 7 de noviembre de 2026
+
+La revisión del árbol real de NotarGest encontró que la lista global de tarjetas de MolsanCanonicalVisual2027.css aplicaba borde, franja superior, sombra y hover tanto a `.ng-admin-notaria-card` como a sus descendientes estructurales `.ng-admin-resumen` y `.ng-admin-resumen-principal`. Esto podía producir tarjetas dentro de tarjetas y líneas interiores en el resumen de cada notaría, contrario al patrón visual acordado.
+
+Se han retirado únicamente esos dos contenedores internos de los siete grupos de selectores compartidos (base, hover, iconografía, focus y compatibilidad). Se conserva el estilo de la tarjeta real `.ng-admin-notaria-card` y del bloque exterior `.ng-admin-individual-panel`, que contiene el título «Detalle por notaría / Situación individual» y el conjunto de fichas.
+
+Commit: `e87b71fe32be19b17c3717c2182bbe77813265a1`.
+
+La comprobación es estática. Queda verificar en Preview que cada notaría tenga una sola tarjeta exterior, que los contadores interiores no reciban bordes/franjas adicionales y que el bloque general conserve su jerarquía.
+
+## 47. Segunda pasada de iconografía funcional y controles de tabla — 7 de noviembre de 2026
+
+Se ha extendido el contraste de iconografía a páginas y componentes de Expedientes, CTN, Catálogos, Mensajería, Provisiones, Seguridad, Empleados y componentes compartidos. Se han sustituido caracteres Unicode que actuaban como controles o pictogramas por MolsanIcon, manteniendo textos, handlers, estados y accesibilidad.
+
+### Correcciones aplicadas
+- Se amplía MolsanIcon con el glifo semántico `minus` y el alias `file-text` → `file`.
+- CTN: indicadores de ordenación, exportación Excel y estados de habilitación usan MolsanIcon.
+- Expedientes: ficha, checklist, fases, compensaciones PPAD, refresco, fusión, adjuntos, navegación y acciones de creación/edición usan iconos Molsan.
+- Listado de expedientes: flechas de acceso a filtros rápidos sustituidas por arrowRight.
+- Catálogo de entidades bancarias: paginación con arrowLeft/arrowRight.
+- Mensajería: confirmaciones del catálogo, navegación de solicitudes y acceso a mapas con check, arrowRight, pin y externalLink.
+- Provisiones: controles de ajuste fino con arrowUp/arrowDown/arrowLeft/arrowRight.
+- Seguridad: ordenación de logs y roles, confirmaciones de permisos/roles y enlaces a auditoría/logs con iconos canónicos.
+- Empleados: confirmaciones de guardado con check.
+- Componentes compartidos: tabla de datos con indicadores de ordenación Molsan; detalle CTN con enlace a Google Maps; traspasos de saldo con icono merge; ordenación manual de columnas con flechas Molsan.
+- Selector de módulos: acceso a NotarGest con arrowRight.
+
+Se mantienen flechas en frases que expresan una relación textual o un flujo de datos (por ejemplo, «Utilidades → Municipios», «Origen → destino» o el intervalo entre dos hitos); no son controles ni pictogramas.
+
+### Commits representativos
+- `6f56f21c3bf5ddb50a53fca646c6ad98ad830ab5`: glifo minus.
+- `71fb9dbdb38634280a84cddb1fb795f345231933`: iconografía CTN.
+- `4eecf6a3a27dd58cc8ed6f2bf6f00f4e323df25a` y `a49445e8ef7f6801b1ef68e3bd816b545e968278`: iconografía de ficha de expediente.
+- `38ed5bd3834fd65e706585c53d43bdd3e7f0dfb4`: flechas de navegación del listado.
+- `518c282986f8d9dc618a74cff71d18452df7f9d4`: paginación del catálogo bancario.
+- `f444ea9ae15adcb8a9f9c3a4f6052977320d00f9`: acciones de mapas en Mensajería.
+- `00359242f16c707e1e044b55c16ec83310d4c00a`: controles de Provisiones.
+- `961be42fb0b3d69b8b224f7a1847afb5055f2f7f`, `65f8270c59463b4837d59d778ac1de8cdcb52f21`, `f80fbf53821884620eab67743989f0ddf97c08b3`, `406ba953c89707e2d4aa75b63d81f54eb2b1edd7`: iconografía de Seguridad.
+- `fe8983be88f6ea5409bdbef5f162e28cb32d8dfe`, `4b269ab31b2bf654b4a0fc2f4dbab4d086e03cd3`, `179bdd74d0989a245d62f02ddc9b52437772c7fd`, `dd4165f4dbaa07b576c16f2aa37c1f44ec603a02`: componentes compartidos de CTN, tablas y Expedientes.
+
+### Estado
+Las sustituciones son cambios estáticos revisados sobre los componentes citados. La compilación completa del último HEAD y la inspección visual autenticada de los controles en Preview siguen pendientes; esta sección no las da por superadas.
+
+## 48. Normalización adicional de iconos en Herramientas, Mensajería y componentes — 7 de noviembre de 2026
+
+La revisión de caracteres de interfaz ha encontrado y corregido pictogramas Unicode residuales que todavía se utilizaban como controles o iconos en varias subpáginas. Se han sustituido por MolsanIcon en:
+- Herramientas: retorno a Utilidades/Catálogos, paginación de Municipios y Registros de la Propiedad, exportación y métricas de Proceso ABSIS, confirmaciones de importación ABSIS/CTN, alta de noticia, subida de documentos, paginación Post Firma, acciones de Complementos de saldo y Correspondencia tipificada.
+- Proceso ABSIS y Complementos de saldo: sus componentes KPI ya renderizan iconos mediante MolsanIcon, en vez de imprimir el nombre o el carácter recibido como texto.
+- Empleados: confirmaciones de guardado.
+- Componentes de Expedientes: transferencia de saldo y reordenación de columnas.
+- CTN y tablas compartidas: icono de mapa externo e indicadores de ordenación.
+- Seguridad y selector de módulos: ordenación, confirmaciones y navegación contextual.
+
+Se conservan flechas que expresan una relación dentro de una frase o dato (por ejemplo, «origen → destino», una ruta de navegación escrita en ayuda o el paso entre dos hitos), porque no actúan como iconos ni controles.
+
+Commits de esta pasada: `61e494dc15aa8a920e31a946683bc2ad8bb7dd9e`, `95bc7190bea662867432b0de56f743e99f29e677`, `66e9f9798ce70491847b91488b15f12e06ab6293`, `92a7d8cea730f8c473be5a79b573113acd6f360f`, `4656bf3b7928dc6101a16d43a6aa0be5997b9c34`, `d32d540291b05cb368bfddc5a03957fcdea6be71`, `4dfc554ab6c43b27e88c246c85b5910f2ac6624c`, `8e3affb0eb897192bb05ee9c7d8ff859bbc0e4e5`, `56f53f2ae35f61e453aed5079504f92ebe4aaf34`, `b35cb691cf2cf6af9f6b6c5a73a66730ef8b8da6`, `6b209b66806c5db35e3dee453c11c11511663bbc`, `e56094442802ead07b4d5d4e3e534293ccd9ae31`, `246a032e2ff030e225e956e6dc7ba3072f9a4c7b`, `0b7453cd9a9c0178e3ceb9965cb2b7828e211511`, `e2b58b40359f10b8ead629812c4be0e760ca121d`, `8bd20316c26a83ae16faca0e22b656f41d182551`, `f444ea9ae15adcb8a9f9c3a4f6052977320d00f9`, `fe8983be88f6ea5409bdbef5f162e28cb32d8dfe`, `4b269ab31b2bf654b4a0fc2f4dbab4d086e03cd3`, `179bdd74d0989a245d62f02ddc9b52437772c7fd` y `dd4165f4dbaa07b576c16f2aa37c1f44ec603a02`.
+
+El código de esta tanda queda pendiente de build y despliegue de Preview. La validación visual autenticada sigue abierta.
+
+## 49. Cierre de iconos residuales en utilidades y tablas — 7 de noviembre de 2026
+
+Se han eliminado los últimos pictogramas Unicode funcionales localizados en las subpáginas revisadas de Herramientas y en componentes de tabla:
+- Lectura Cancela I, Lectura Copias, Proceso ABSIS, Verifacti, Complementos de saldo y Correspondencia tipificada: iconos de retorno a la sección padre.
+- Municipios, Registros de la Propiedad y Post Firma: flechas de paginación.
+- Proceso ABSIS: las métricas KPI ahora renderizan sus iconos por MolsanIcon (antes imprimían literalmente el texto recibido en `icono`); el símbolo de descarga se sustituye por download.
+- Complementos de saldo: el componente Metrica ahora representa `clipboardList`, `euro`, `clock` y `check` con el catálogo corporativo.
+- Importador ABSIS, Importar CTN, Crear noticia y Subir documento: confirmaciones de éxito con check.
+- Traspaso de saldo, ordenación de columnas, DataTable y detalle CTN: merge, flechas de ordenación y enlaces externos con pictogramas Molsan.
+
+Se ha vuelto a pasar el detector de símbolos sobre los ficheros corregidos. En las pantallas revisadas, los caracteres de flecha que permanecen son parte de frases de ayuda, rutas escritas o relaciones entre valores; no se usan como iconos, botones ni indicadores visuales.
+
+Commits de cierre: `4dfc554ab6c43b27e88c246c85b5910f2ac6624c`, `8e3affb0eb897192bb05ee9c7d8ff859bbc0e4e5`, `56f53f2ae35f61e453aed5079504f92ebe4aaf34`, `b35cb691cf2cf6af9f6b6c5a73a66730ef8b8da6`, `6b209b66806c5db35e3dee453c11c11511663bbc`, `e56094442802ead07b4d5d4e3e534293ccd9ae31`, `246a032e2ff030e225e956e6dc7ba3072f9a4c7b`, `0b7453cd9a9c0178e3ceb9965cb2b7828e211511`, `e2b58b40359f10b8ead629812c4be0e760ca121d`, `8bd20316c26a83ae16faca0e22b656f41d182551`.
+
+Build y despliegue de Preview del último commit pendiente.
+
+## 50. Unificación de paneles operativos de los tres portales — 7 de noviembre de 2026
+
+El cruce de JSX con las hojas propias mostró que algunos paneles reales de ApoderaGest, EncargaGest y NotarGest seguían usando radios, bordes y sombras locales diferentes del patrón «Espacios de trabajo». No eran formularios ni paneles de calendario: eran contenedores de dashboard/listado con título, acciones, KPIs o tablas.
+
+Se han incorporado a la capa canónica compartida los selectores `.ag-panel`, `.eg-directorio` y `.ng-admin-global-resumen` en todos los grupos de tarjeta (superficie base, hover, transición de iconos y focus). El acabado usa el mismo borde azul hielo, franja superior, radio, sombra y hover Premium que el resto de tarjetas. Se conservan los estilos propios de distribución, filtros, tablas, contenido y responsive; la capa global solo normaliza la superficie exterior.
+
+Commit: `5c1c9a61553fb049e7fa419d592b0ecdc54ad3ee`.
+
+Requiere build y contraste visual en Preview para comprobar los paneles de encargos de ApoderaGest, directorio de EncargaGest y resumen global de NotarGest, especialmente el espacio entre el borde exterior y los componentes interiores.
+
+## 51. Retirada de overrides locales de superficie en ApoderaGest — 7 de noviembre de 2026
+
+Tras incorporar `.ag-panel` a la capa de tarjetas canónicas, se han retirado de ApoderaGest.css los bordes, radios, fondos y sombras duplicados que seguían compitiendo con la superficie global en `.ag-panel`, `.ag-panel-resumen-heading` y `.ag-panel-proximas`. También se ha limpiado el grupo compartido que repetía borde/radio/sombra sobre los hijos de la cuadrícula; se conservan las reglas de anchura mínima, overflow, padding, estructura interna y responsive.
+
+El estilo exterior de estos paneles pasa a tener una única fuente: MolsanCanonicalVisual2027.css. La regla local conserva únicamente responsabilidades estructurales. El dashboard KPI sigue usando MolsanStatCard y mantiene su propio componente canónico.
+
+Commit: `a6cf08c6866cd9cdb35be7efe016ef15e1e74b6d`.
+
+Pendiente validar visualmente el resumen de actividad, próximas citas, grupo de encargos y el panel de tabla para asegurar que el borde y la franja superior no desplazan contenido ni alteran el scroll.
+
+## 52. Normalización del bloque de icono de ficha de notaría — 7 de noviembre de 2026
+
+El icono principal de cada tarjeta de notaría en NotarGest conservaba un degradado y una sombra propios, distintos del bloque de icono plano azul hielo del patrón corporativo. Se ha normalizado a fondo `#F2F7FB`, borde corporativo existente, radio de 16 px y sin sombra adicional; se mantiene tamaño y se añade un desplazamiento/escala hover sutil.
+
+Commit: `cb2b32c3c440745aab16dac442eed942829ddc7a`.
+
+Pendiente comprobar visualmente la tarjeta de notaría en desktop y móvil junto con el hover de la tarjeta exterior.
+
+## 53. Eliminación del override tardío de paneles ApoderaGest en MolsanPremium2027.css — 7 de noviembre de 2026
+
+La auditoría de las 41 hojas CSS encontró un segundo override que podía neutralizar la normalización recién aplicada: MolsanPremium2027.css cargaba más tarde que ApoderaGest.css y definía con `!important` borde, radio, fondo y sombra para `.ag-panel`, KPIs y paneles del dashboard. Aunque MolsanCanonicalVisual2027.css es la última hoja, esa regla tardía tenía mayor especificidad que los selectores `:where()` canónicos.
+
+Se ha reducido ese bloque a la responsabilidad estructural `min-width: 0`. Se eliminan sus propiedades visuales duplicadas y se deja la superficie exterior bajo la hoja canónica. Las tarjetas KPI mantienen la presentación del componente MolsanStatCard.
+
+Commit: `c0d28a8b177c41a7d04becceaf3108ae8d03583f`.
+
+Debe verificarse en Preview que el bloque de paneles no recupere el radio/sombra antiguos al cambiar de ruta y que los KPI conserven su icono y acento.
+
+## 54. Token dedicado para cabeceras de tabla — 7 de noviembre de 2026
+
+La auditoría transversal de las 41 hojas CSS confirmó que la regla general de tablas estaba usando `--molsan-surface-soft` (#F2F7FB) para las cabeceras, aunque la paleta corporativa reserva `--molsan-table-head` (#EAF2F8) para esa función.
+
+Se ha corregido MolsanRedesign2027.css para consumir el token dedicado y se ha añadido una normalización final en MolsanCanonicalVisual2027.css para las cabeceras de tablas de los módulos y portales. Esta última fija texto secundario #617789, fondo #EAF2F8 y borde inferior #D8E4EC, sin cambiar las celdas ni la densidad de las tablas.
+
+Commits: `ffd19bc2f83e2df9dc7cea9935131edb9e9dd503` y `757260390a7d2a4e49b156c40356fe7fd8f108d6`.
+
+Pendiente de comprobar tablas normales, sticky headers, tablas dentro de modales y las vistas responsive.
+
+## 55. Normalización de neutros heredados en CSS de módulos — 7 de noviembre de 2026
+
+La pasada por las 41 hojas CSS identificó varios fallbacks antiguos de texto secundario (#526176 y #64748b) y superficies neutrales (#f7f9fc, #f8fafc, #f5f7fb) en ApoderaGest, EncargaGest, CTN, Agenda, Seguridad, Maestros, Empleados, Herramientas, Cancelagest e index.css.
+
+Se han actualizado los usos neutrales y de texto a los tokens corporativos: texto secundario #617789, panel suave #F2F7FB, cabecera de tabla #EAF2F8 y borde #D8E4EC. Se han mantenido sin cambios los colores semánticos de éxito, error, advertencia y estados habilitado/deshabilitado. En CTN se ha distinguido expresamente el fondo de cabecera de tabla del fondo de hover y del fondo de controles.
+
+Archivos corregidos: ApoderaGest.css, EncargaGest.css, CtnListadoPage.css, CancelagestUnified.css, HerramientasPremium.css, MolsanRedesign2027.css, index.css, Agenda.css, EmpleadosListadoPremium.css, Maestros.css y SeguridadSubpaginasPremium.css.
+
+Commits representativos: `50c1ec15d770b5bb9ac38ff608258e862f34c267`, `7523f098ded1fa73d7e80bc74297ad71834df394`, `a3d94197f827bce1e3cb021289f77369eac5015f`, `ba9543816b3ee0e147421d25ceaeea0a48255223`, `cb520cf961fe57d919e0bdc26ec5772729c5493d`, `c7436274a3bce6503e60903feb2badb471aa4274`, `7fdadead7128ef68fb15407b267cb878817b0e4f`, `d56a691f4cc740e6fae6feba532f0cf09537ae48`, `ab0ef7fd52d5a6a0ba6b7871233b3c660c6f49fb`, `fe4e9ff7bf0997dcfe9502a0c29274b1fcd31d91`, `c935c0dcd2e77fd10c8f739f73d662eaf3a20477`, `5afbb60aa46a50fcbaf640eea18ef663ed88520a`.
+
+Esta pasada es estática. El build y el despliegue de Preview deben ejecutarse sobre el HEAD actualizado; la validación visual de las tablas, chips y estados continúa pendiente.
+
+## 56. Retirada de compatibilidades SJ-2026 sin consumidores activos — 7 de noviembre de 2026
+
+Se ha cruzado el inventario de clases heredadas con las referencias del repositorio y se han retirado las reglas que solo existían en CSS y no tenían consumidores JSX activos:
+- `card-sj`, `card-sj-header`, `card-sj-footer`
+- `table-sj` y sus reglas de filas/celdas
+- `input-sj`, `select-sj`, `textarea-sj`, `label-sj`
+- `tabs-sj`, `tab-sj`
+- `modal-overlay-sj`, `modal-sj`, `modal-sj-header`, `modal-sj-footer`
+- `erp-table` y `erp-modal` / `erp-modal-header` / `erp-modal-panel`
+- estados `erp-warning`, `erp-danger` y `erp-info` sin consumidores detectados.
+
+Se han eliminado sus reglas en index.css y los overrides correspondientes de MolsanRedesign2027.css, MolsanPremium2027.css y MolsanCanonicalVisual2027.css. Se conservan `erp-page`, `erp-btn-*`, `erp-badge` y `erp-success`, que sí tienen consumidores activos en páginas de Seguridad, Expedientes y componentes de tabla. La limpieza no toca el sistema de modales vigente (`molsan-modal-panel`, `ctn-modal-panel`, `eg-modal-form`, `ng-modal`, etc.).
+
+Commits: `d1431868316b03641162366c6e752049d8238297` y `46c06200b87e208d256e55d306ca9aa6de4b6c51` (limpieza de index.css y Redesign), `bedded563e6f33ccfafdc19769ebd7b7e5513f5e`, `feae1107ca870cc814e8c9f63d48776785161b58`, `b6d021a00e9d7e2f79a0a3415c550c53d496ba8f`, `2dc6ab543e58f59481fe73775ec476178d9f9912`.
+
+El build de Vite debe confirmar que no quedan referencias dinámicas. La validación visual de formularios y modales modernos continúa pendiente.
+
+## 57. Normalización de la superficie modal común — 7 de noviembre de 2026
+
+Se ha unificado el panel exterior de los modales compartidos: borde `var(--molsan-border, #D8E4EC)`, radio `var(--molsan-canon-card-radius, 20px)`, fondo blanco y sombra más contenida `0 18px 42px rgba(6,70,117,.12)`. Se elimina el borde azul grisáceo #C5D8E5, el radio fijo de 22 px y la sombra excesiva anterior.
+
+La corrección se aplica en la regla común de MolsanPremium2027.css y en la normalización final de MolsanCanonicalVisual2027.css, manteniendo los overlays, estructura de cabecera, cuerpo, footer, focus y responsive. Los modales específicos siguen conservando sus clases funcionales.
+
+Commits: `8a1fbfe3ec77e02f563d532c844cd8dd640e62ab` y `519d59f30dac454b8a5858da50b8d1d4b6cc1c1c`.
+
+Pendiente validar visualmente modales de CTN, EncargaGest, NotarGest, ficha de expediente y empleados.
+
+## 58. Contraste de cabeceras de las 98 páginas JSX — 7 de noviembre de 2026
+
+Se ha revisado el inventario de las 98 páginas JSX de frontend buscando uso de MolsanPageHeader y cabeceras estructurales alternativas. No se han encontrado cabeceras de página independientes que sigan usando un encabezado heredado en lugar de MolsanPageHeader.
+
+Las dos coincidencias sin MolsanPageHeader son contextuales, no cabeceras de página:
+- ModulosSelector: encabezado de un diálogo de acceso de soporte.
+- FestivosCompensaciones: encabezado de sección interna dentro de la página de Fichajes.
+
+Se conserva la compatibilidad MutationObserver de Layout.jsx hasta completar la navegación visual y las rutas con renderizado asíncrono; no se elimina a ciegas porque puede seguir atendiendo contenido dinámico o diálogos no incluidos en el inventario de páginas.
+
+La revisión es estática de los 98 archivos. No sustituye el contraste visual de dimensiones, márgenes, parpadeo, acciones y responsive.
+
+
+## 59. Quinta pasada focalizada: residuos de paleta en los tres portales — 7 de noviembre de 2026
+
+Se han corregido inconsistencias concretas que seguían visibles en los JSX de NotarGest, ApoderaGest y EncargaGest, aunque las hojas globales ya definían los tokens Premium:
+
+- NotarGest: las acciones «Actualizar datos» estaban fuera de la cabecera corporativa en la administración global y en el portal. Se han integrado en `MolsanPageHeader.actions`, junto al botón contextual «Volver» cuando procede. Se han normalizado también los campos de seguridad del perfil a los tokens de superficie, texto y borde.
+- ApoderaGest: el modal de agrupación aún utilizaba neutros Slate en sus textos, bordes y hover; se han conectado a los tokens Molsan. La tabla ahora utiliza el token dedicado `--molsan-table-head` (#EAF2F8), no el fondo de panel #F2F7FB.
+- EncargaGest: se han migrado los neutros Slate y el acento Indigo heredado de bandeja, ficha, contratos, formularios y modales a los tokens corporativos. Los estados de incidencia, advertencia y éxito mantienen sus colores semánticos. Se ha corregido además una clase Tailwind de hover mal formada.
+- NotarGest: bordes de filas, hover de tabla y textos de pie ajustados a #D8E4EC, #F2F7FB y #617789; los colores de alertas y estados se conservan.
+- EncargaGest: se han normalizado superficies, textos y bordes residuales de su modal y ficha a la paleta corporativa.
+- LayoutPortalesPremium: las cabeceras de tabla de Documentos, CTN e Herramientas consumen `--molsan-table-head` (#EAF2F8), evitando que una regla específica las deje en #F2F7FB.
+- Se conserva la lógica funcional, endpoints, estados, operaciones, permisos y responsive.
+
+Esta pasada es estática. Requiere build sobre el nuevo HEAD y contraste visual autenticado de los tres portales, especialmente cabeceras con acciones, bandejas, tarjetas, tablas, formularios y modales.
+
+## 60. Reconciliación de bordes canónicos y última cascada de cabeceras de tabla — 7 de noviembre de 2026
+
+La lectura conjunta de los tokens y de las reglas efectivas de las 41 hojas CSS encontró dos restos de divergencia respecto de la paleta corporativa:
+- El token `--molsan-card-border` seguía en #C5D8E5, y la capa canónica repetía ese literal en cabeceras, tarjetas y tarjetas Tailwind heredadas.
+- Aunque la última capa ya fijaba #EAF2F8 en varias tablas, capas anteriores conservaban fondos #F2F7FB, #F3F6FB o #EEF3FA para cabeceras. También había una regla específica del Design System para las tablas de ApoderaGest, NotarGest y EncargaGest con #52617A.
+
+Correcciones:
+- `--molsan-card-border` ahora referencia `--molsan-border` (#D8E4EC).
+- Las tres superficies de cabecera/tarjeta de MolsanCanonicalVisual2027.css consumen el mismo token de borde.
+- Las cabeceras de tabla del Design System, incluidos los encabezados de la intranet, usan `--molsan-table-head` (#EAF2F8) y `--molsan-text-secondary` (#617789).
+- MolsanRedesign2027.css se ha reconciliado en las variantes de CancelaGest, páginas técnicas, CTN, portales, Expedientes y Empleados. Los fondos de hover de filas permanecen como superficie suave; no se han convertido en cabeceras.
+- Los bordes y sombras de controles y modales no se han sustituido indiscriminadamente: mantienen sus tokens de control y profundidad.
+
+El escaneo estático de las 41 hojas CSS no encuentra ya las familias de fallback antiguas revisadas (#526176, #64748b, #718096, #475569, #f8fafc, #f1f5f9, #e2e8f0 y #f7f9fc). Esto no significa que se hayan eliminado todos los colores literales: permanecen acentos y colores semánticos de éxito, advertencia, error, prioridad y estados, que no deben convertirse en neutros.
+
+Commits de código: `9c21da4fdc32cc34efb5e127d32435922315968b`, `ed27fa84e921d2754f07d0365af40c212a923e23`, `4fc91d213363b482d78a9eb124bd3e279348a020`, `fcd1a0e3355894727ff07e75f3b9cc5a43a7e9ba`, `19455f1678e99b44833285794446c077d60d4265`, `24b25cdf1b266864db1e8ca654fe324d2214a73d`.
+
+La validación visual de cabeceras normales, sticky, portales, modales y tablas responsive sigue pendiente. El build y el despliegue del nuevo HEAD deben confirmarse antes de pasar a navegación autenticada.
+
+## 61. Quinta pasada de colisiones de paneles y cabecera de Agenda — 7 de noviembre de 2026
+
+El cruce de JSX con las reglas genéricas de panel detectó dos elementos que no debían recibir superficie de tarjeta:
+- `.eg-modal-section` son columnas de contenido del formulario modal de EncargaGest, no tarjetas independientes.
+- `.agenda-list-table-wrap` es únicamente el contenedor de scroll horizontal de la tabla de citas, no un panel visual.
+
+Se han retirado ambos selectores de las reglas globales de borde/radio/sombra/hover y de movimiento reducido de MolsanPremium2027.css. Se conservan los estilos de estructura y espaciado locales. Se corrigieron además las listas de selectores CSS tras retirar las clases.
+
+En sentido inverso, `.ctn-detalle-panel` sí es un panel de contenido real de la ficha CTN (bloque «Notarios asociados»); se ha incorporado a los mismos grupos canónicos que `.ctn-detalle-stat`, para que no quede con una superficie distinta.
+
+### Cabecera y tablas
+- Agenda.jsx ya utiliza MolsanPageHeader, pero Agenda.css imponía sobre esa cabecera un degradado azul claro con una regla local de mayor especificidad. Se ha retirado el override y se deja la geometría/superficie a MolsanCanonicalVisual2027.css.
+- La tabla de Agenda y las tablas de detalle CTN usan ahora el token dedicado #EAF2F8 y el texto secundario #617789; los fondos hover permanecen en #F2F7FB.
+- En el modal CTN se han alineado el separador de sección, los títulos y el chip descriptivo con los tokens corporativos. Los botones secundarios también consumen el borde y el texto secundario acordados.
+
+Commits de código: `c2fe1803b6515e6cc755eda13e86b98da70d81cd`, `414de17188770ca1b5d7f004659504e0f3b6ff3b`, `b33b846492b87d1938d5e8597efb8b345082bcd8`, `dd565990ecf2a7dbedc4f5ab1e3adeebded0ad79`, `a41fa3a3cfd512b8510f6b52d443c7681e05bc14`, `9ddb45dcb40415d8b2b46678196a519aa82943aa`.
+
+La revisión sigue siendo estática. Se debe confirmar que el build del nuevo HEAD pasa y comprobar visualmente el modal de EncargaGest, la ficha CTN, la cabecera de Agenda y la tabla de citas en escritorio y móvil.
+
+## 62. Recuperación del panel modal de detalle CTN — 7 de noviembre de 2026
+
+El contraste entre `ModalCtnDetalle.jsx`, las hojas globales y CtnListadoPage.css reveló que el diálogo usa `molsan-modal molsan-modal--lg ctn-modal-dialog`, pero la capa común solo estilaba `.molsan-modal-panel` y `.ctn-modal-panel`. La clase real `.ctn-modal-dialog` no estaba incluida en ninguna de esas superficies y, además, MolsanFase3 la excluía indirectamente de la normalización genérica por llevar `role=dialog` y `.molsan-modal`.
+
+Se ha incorporado `.ctn-modal-dialog` al contrato de superficie modal compartida (borde, radio, fondo blanco y sombra) y se ha definido su geometría funcional: columna flex, ancho máximo 1240 px, altura limitada al viewport y scroll delegado al cuerpo del modal. En móvil ocupa el ancho disponible y respeta el margen de 8 px del overlay. La cabecera sigue usando la regla accesible común y el contenido conserva sus pestañas y scroll.
+
+Commits: `439df46ca76d8bdba549687abf441b573d0499ef` y `912551383f97d569fa77334d3b26a9935ed574f9`.
+
+Es una corrección basada en el contrato JSX/CSS, aún pendiente de build y verificación visual en escritorio y móvil.
+
+## 63. Unificación de cabeceras de modales compartidos — 7 de noviembre de 2026
+
+El cruce de los componentes de modal encontró dos convenciones activas para la cabecera: `.molsan-modal-header` y `.molsan-modal__header`. La primera recibía la normalización global; la segunda seguía dependiendo de utilidades Tailwind locales, aunque se usa en ModalEmpleado, CarpetaDigital, LiquidarExpediente y otros diálogos.
+
+Se han unificado ambas clases en los mismos selectores del contrato modal común: disposición flex, alineación, espaciado, padding, fondo blanco, ausencia de bandas y jerarquía de color. Se conserva el comportamiento funcional de cada diálogo, incluyendo scroll, pestañas, cierre y altura responsive.
+
+También se ha conectado la barra superior de cierre de EnviarANotarioModal a `.molsan-modal-header`, para que no conserve su borde inferior y fondo local como excepción.
+
+Commits: `a47c93724226591ad21b5db53580f13e6fc4b3e6` y `e718e13d9fe97acce170107ba6a02887dba04c87`.
+
+Pendiente comprobar visualmente los modales de Agenda, CTN, Enviar a notario, Carpeta digital, Liquidar expediente y Empleados en escritorio y móvil.
+
+## 64. Limpieza de neutros locales en modales operativos — 7 de noviembre de 2026
+
+Tras unificar el contrato de cabeceras, se ha extendido el cruce a las clases de presentación del cuerpo de los modales:
+- Agenda / ModalNuevaCita: panel y cabecera pasan a las clases compartidas `molsan-modal__panel` y `molsan-modal-header`. Los textos, bordes y superficies Slate del formulario se han sustituido por tokens Molsan; se conservan los colores de error y los acentos funcionales.
+- CarpetaDigitalModal, LiquidarExpedienteModal, ProvisionesModal y EnviarANotarioModal: se han reemplazado los neutros Slate de texto, bordes y fondos por `--molsan-text`, `--molsan-text-secondary`, `--molsan-border` y `--molsan-surface-soft`. Se conserva el fondo oscuro del overlay, los colores semánticos y las acciones.
+
+Commits: `3291c3bb7b6c85512db6e8c102569acc9eaf5bb8`, `acf1213492ae6695c223fc9163ebb26457c1a4c3`, `efba72ad87e0700bea320690fac2da4ad0fe2135`, `4e3d9b44df042ec28b6c074a52e41ccd766cfc1d`, `92d83c3dcb680272d8b0628693dc921a00032082`, `88604512c46ea562bb97c456b50866396b27e9a0`, `97c294105473a4e90f3dd560a30320fd4760abb6`.
+
+Pendiente build y comprobación visual de los formularios, errores, botones deshabilitados, scroll interno y comportamiento móvil.
+
+## 65. Eliminación de tarjetas anidadas dentro de la ficha modal CTN — 7 de noviembre de 2026
+
+La revisión del árbol JSX de `ModalCtnDetalle` confirmó que `.ctn-modal-seccion` agrupa contenido dentro del panel modal exterior. Su CSS local aún añadía a cada sección un segundo fondo blanco, borde, radio y sombra; el título de sección añadía además un separador horizontal. Esto producía tarjetas dentro del modal y líneas interiores.
+
+Se ha dejado `.ctn-modal-seccion` como bloque de contenido transparente, sin borde ni sombra, conservando padding y separación vertical. Se ha retirado el separador del encabezado de sección. Los chips de contexto y los datos conservan sus superficies suaves, pero consumen los tokens corporativos de texto, fondo y borde.
+
+Commit: `c2974deeb97d22a8f499847dfb5da56307c0fe7d`.
+
+Pendiente comprobar la ficha de notaría y la pestaña de ubicación en desktop y móvil, incluyendo scroll y tabla de asociaciones.
+
+## 66. Ajuste de especificidad para secciones internas del modal CTN — 7 de noviembre de 2026
+
+Al verificar la cascada completa después de retirar las tarjetas locales, se detectó que MolsanPremium2027.css aún contenía `.ctn-modal-seccion` en su selector genérico de superficies de contenido. Esa regla se carga después de CtnListadoPage.css y, por especificidad, podía volver a imponer borde y fondo sobre el reset local.
+
+Se han retirado tanto `.ctn-modal-seccion` como el selector redundante `.ctn-modal-panel .ctn-modal-seccion` de los grupos globales de superficie y movimiento. La sección de la ficha modal queda ahora gobernada por su regla estructural local: transparente, sin borde, sin sombra y con padding. El panel exterior del diálogo conserva la superficie modal canónica.
+
+Commit: `b78960b452e479b96f064c4f9bc0cef58fdc3faf`.
+
+El cambio requiere build y comprobación visual del modal CTN para confirmar que no quedan separadores ni fondos anidados.
+
+## 67. Aislamiento de los observadores de cabecera y botón Volver — 7 de noviembre de 2026
+
+La revisión del consumidor común `Layout.jsx` confirmó el riesgo ya señalado en la sección 42: el segundo observador buscaba la primera `.molsan-page-header` en `.erp-main-inner`, ámbito que incluye overlays y nodos fuera del contenido de ruta. Una cabecera de diálogo podía convertirse accidentalmente en destino del botón «Volver» o impedir localizar la cabecera real.
+
+Se han aplicado dos restricciones:
+- Ambos observadores quedan limitados a `.erp-route-content`.
+- La búsqueda de cabeceras existentes y candidatas excluye expresamente elementos dentro de `role=dialog`, `aria-modal`, `.molsan-modal`, `.ng-modal` y `[data-modal]`. La búsqueda usa `querySelectorAll + find` para saltar candidatos excluidos y poder localizar la cabecera válida siguiente.
+
+Se mantienen MutationObserver, el montaje dinámico del botón común, el destino de navegación y la compatibilidad de las rutas heredadas. No se ha retirado la capa de compatibilidad sin pruebas de ruta.
+
+Commit: `cda080ef0f1e18b29b96a15a0c3fa1fc8e5c49c7`.
+
+Pendiente comprobar cambios de ruta con carga diferida, subpáginas con y sin acciones, modales abiertos durante la navegación y anchuras móvil/tablet.
+
+## 68. Barrido adicional de paleta en CTN, portales, Seguridad y Expedientes — 7 de noviembre de 2026
+
+Se amplió el barrido de colores a las reglas efectivas de CTN y a los neutros locales de portales y subpáginas:
+- CtnListadoPage.css: normalizadas las cabeceras de la tabla principal y de las tablas del modal, texto de celdas, hover, bordes de tabla, campos, paginación y botones secundarios. Las cabeceras usan #EAF2F8; hover/superficie suave #F2F7FB; texto #617789; borde #D8E4EC.
+- CtnDetallePage.css: tabla de histórico y hover ajustados a los mismos tokens.
+- SeguridadSubpaginasPremium.css: reemplazados los neutros antiguos de fondos, bordes y texto; se conservan rojo/verde semánticos para error y éxito.
+- ApoderaGest.css, EncargaGest.css y NotarGest.css: fallbacks de texto principal #17243A alineados a #173247.
+- MolsanPremium2027.css: las cuatro superficies globales que aún usaban #C5D8E5 pasan al token #D8E4EC y el texto principal #17384D pasa a #173247.
+- ExpedientesListado.css: eliminado el último fallback #24324A detectado en el grupo de subpáginas revisado.
+
+El escaneo adicional de 11 hojas CSS de páginas técnicas (Expedientes, Ficha, Intranet, Logs, Maestros, Notificaciones, Panel Técnico, Provisiones y Empleados) no encontró otras coincidencias de la familia de neutros heredados revisada.
+
+Commits: `c826eff0adc3a2e52b71eb7d675f65676f5a70a4`, `fa2be814dae7ef81c7e5a140c0d4d91d3ba7ebaa`, `9e299053131c6a9cff7513fb3906ecfa8de458c6`, `36704f5e11e5dc11ffacf052b0c2b3e46f5fba99`, `e7c5fbd22f0352e84c3129ff09aecd6dfa4d6dd4`, `264345b9ae9ac71d038aaafceaab8e291c46c8d8`, `04f70a2fadc17d1c04b6b6dfea50dc214ba85c35`, `8da5851ef2e76c252d8460aaf14bad772ec9b6c2`.
+
+El build y el despliegue del HEAD más reciente deben confirmar estas correcciones antes de la validación visual.
+
+## 69. Corrección de sintaxis del observador y recuperación del build — 7 de noviembre de 2026
+
+El build de Vite detectó un paréntesis de cierre ausente en la expresión `Array.from(querySelectorAll(...))` del nuevo filtro de cabeceras en Layout.jsx. La compilación falló en el commit `73c4d310`; ese artefacto no se promovió a Preview y el servicio conservó el último despliegue correcto.
+
+Se corrigió el cierre de la expresión en `caa3be72ec126049f96fc08637c1fc48a9891439`. El workflow **MOLSAN frontend premium build** #42371102007 ha terminado con resultado `success` para ese commit.
+
+El siguiente despliegue debe usar el HEAD posterior a esta corrección. La validación visual autenticada sigue pendiente; la compilación correcta no sustituye esa comprobación.
+
+## 70. Reconciliación de la última cascada de tablas en los portales — 7 de noviembre de 2026
+
+Una nueva lectura de las reglas al final de las hojas locales encontró overrides heredados que aún declaraban azul corporativo como texto de cabecera de tabla, aunque la capa canónica posterior lo corregía por especificidad/importancia. Se han corregido también las fuentes locales para que no dependan de ese override final:
+- ApoderaGest: `.ag-panel table thead th` usa texto secundario #617789, fondo #EAF2F8 y borde #D8E4EC; las celdas usan el borde corporativo.
+- EncargaGest: tablas de panel y directorio usan los mismos tokens en encabezados y celdas; se elimina la última referencia a `--molsan-prof-blue` para el texto de cabecera.
+- NotarGest: la regla final de `.ng-tabla th` y tablas de panel se ha reconciliado en la sección 63 con los mismos tokens.
+
+Así la hoja local y la capa canónica expresan la misma presentación, sin depender de una regla `!important` de rescate.
+
+Commits: `5a74482db1fb69b43fa485c5cfd3f0a253a07bd2`, `d67ccea60cdf0489227e40da050091675f2f07a0`, `8216e3a5a0565a18478a8cd0f962f8c940ba1967`.
+
+Pendiente de build y verificación visual de las tablas en los tres portales.
+
+## 71. Última normalización de cabeceras de tabla en Seguridad — 7 de noviembre de 2026
+
+La revisión de las hojas de página encontró dos reglas locales de Seguridad que todavía usaban superficie blanca o azul hielo genérico en los encabezados. Se han cambiado ambas variantes —subpáginas de roles/permisos y editor de roles/usuarios— al token dedicado #EAF2F8 y texto secundario #617789. No se han cambiado los colores de estados ni el hover de filas.
+
+Commit: `8665fc7dd13e09378332694b1d890b0ea35cbc60`.
+
+Pendiente validar tablas sticky y responsive en Seguridad y sus subpáginas.
+
+
+## 72. Reconciliación de tarjetas, paneles y geometría exterior de páginas — 7 de noviembre de 2026
+
+Se ha contrastado la lista canónica de tarjetas con los consumidores JSX reales. Cinco tipos de panel de contenido se estaban tratando como tarjetas funcionales en siete listas repetidas de Canonical Visual. Se han retirado de esas listas, conservando su estilo estructural propio y sin quitar las tarjetas reales:
+- `.ag-panel` y `.ng-admin-global-resumen` (ApoderaGest / NotarGest).
+- `.ctn-detalle-panel` (panel de asociaciones de la ficha CTN).
+- `.ng-admin-individual-panel` (bloque “Detalle por notaría”).
+- `.notargest.ng-content .ng-dashboard-grafico` (paneles de gráficos de NotarGest).
+
+Se mantienen como tarjetas `.ag-grupo-notario`, `.ag-grupo-apoderado`, `.ag-carpeta-apoderado`, `.ctn-detalle-stat`, `.ng-admin-notaria-card` y las tarjetas de accesos/estadísticas que tienen consumidores reales. Tras la edición se comprobó que Canonical Visual no contiene separadores de selector dobles, no hay selectores que comiencen con una coma y las llaves CSS están equilibradas.
+
+### Geometría común y márgenes
+
+El Layout ya aporta el gutter exterior. Se retiraron paddings/max-width duplicados o se conectaron las raíces de página al reset común:
+- Fichajes (modo empleado y Control de Fichajes): se retiró `mx-auto`, `max-w-[1500px]` y el padding propio; se alineó la raíz con Dashboard y se añadió `.fichajes-premium-page` al contrato de geometría común.
+- EncargaGestWorkspace: su contenedor principal deja de añadir un segundo padding horizontal/vertical sobre el de Layout.
+- ControlApoderados: raíz semántica `.control-apoderados-page` y alta en la lista de geometría compartida.
+- Fusiones: `.fusiones-page` queda registrada en el reset común.
+- Subpáginas de Herramientas que tenían padding propio sin marcador común: FirmasEmail, DatosMolsan, CrearNoticia, AltaExpediente, TiposExpediente, Verifacti, TiposImpositivos, CatalogoAbsis, MantenimientoTecnico y AdministracionEmpleadoConfig. Se añadió `.herramientas-subpagina-premium` a sus raíces y a los estados de acceso restringido cuando procedía. Las clases de padding internas de contenido y tarjetas no se modifican.
+
+### Paleta y limpieza local de CancelaGest
+
+- Eliminada la repetición exacta de `.cg-section,.cg-panel{margin-bottom:0}`.
+- Los neutros heredados de kicker, títulos, etiquetas, ejes y bordes pasan a tokens Molsan (#064675, #617789, #173247, #D8E4EC y #F2F7FB). Se conservan los colores semánticos de error y los acentos de las gráficas.
+
+### Commits y validación
+
+Commits de código de esta tanda: `0fa37ed`, `a63fbc1`, `53ef6b1`, `a6d58ea`, `4f649bc`, `701828e`, `d1dd781`, `6e86573`, `c879863`, `78b40bc`, `6d8256b`, `23d2cc9`, `0906753`, `e52bf6f`, `21d4571`, `04efbde`, `1eef508`, `f20705f`, `da0a609`, `9ee6efe` (registro de `.fusiones-page` en la geometría compartida; la clase ya estaba en el JSX).
+
+- Build Vite: success para `9ee6efe1c8b1acde144e4833e508c52f8dfde5b2`.
+- Validación Fichajes: success para el mismo commit.
+- Render Preview: deploy `dep-dbnk1jm417fc73dvt3vg` en estado `live`, commit `9ee6efe1c8b1acde144e4833e508c52f8dfde5b2`.
+- URL del candidato Preview: https://molsan-premium-2027-candidate-preview.onrender.com
+- La inspección visual autenticada de rutas, estados y responsive continúa pendiente: el navegador de consulta no puede abrir el dominio Render. Build y deploy correctos no se presentan como validación visual.
+- PR #411 continúa en Draft y sin merge. Producción, API y bases de datos no se han tocado.
+
+
+
+## 73. Retirada de toolbar heredida sin consumidor en NotarGest — 7 de noviembre de 2026
+
+La revisión de `NotarGest.jsx` confirma que las acciones de actualización están integradas en `MolsanPageHeader` y que no existe consumidor JSX de `.ng-page-toolbar`. Se ha eliminado ese bloque CSS y actualizado el comentario de responsabilidad. Se conserva `.ng-icono-girando` y su animación porque sí tiene consumidor en el estado de carga.
+
+Validación:
+- Build Vite: success en `b5cd3d0f1ac1fe1e2f0cfd2b6bd21932700dcaf2`.
+- Validación Fichajes: success en el mismo commit.
+- Render Preview: deploy `dep-dbnk2i8u01pc73cvvkug` en estado `live`, commit `b5cd3d0f1ac1fe1e2f0cfd2b6bd21932700dcaf2`.
+- No se ha modificado producción ni el backend.
+
+La inspección visual autenticada de NotarGest y de los demás módulos sigue pendiente; no se declara cierre visual.
+
+
+## 74. Último ajuste de tokens de CancelaGest y despliegue actualizado — 7 de noviembre de 2026
+
+Se ha simplificado el fallback duplicado de `--molsan-text`, y se han normalizado el icono de flecha y el borde del icono de módulo a los tokens de texto secundario y borde. Se ha reducido también la precisión sobrante de un porcentaje en `color-mix`; se conservan los colores semánticos del estado de error y los acentos propios de las gráficas.
+
+- Build Vite: success para `e31cc6962bcd5f93de715c9f2899e6cc87d3f541`.
+- Validación Fichajes: success para el mismo commit.
+- Render Preview: deploy `dep-dbnk4ap5efls73bipa9g` en estado `live`, commit `e31cc6962bcd5f93de715c9f2899e6cc87d3f541`.
+- Producción y API siguen intactas.
+
+El Preview actual es el servicio `molsan-premium-2027-candidate-preview`; no debe confundirse con enlaces de Preview antiguos. La revisión visual autenticada sigue pendiente.
+
+
+## 75. Estado consolidado de cobertura y ruta de promoción — 7 de noviembre de 2026
+
+Este apartado actualiza las referencias históricas de cobertura de las primeras secciones del documento:
+
+- Árbol completo de `frontend-app/src`: 241 ficheros (143 JSX, 57 JS y 41 CSS).
+- Pasada estática individual: 143/143 JSX leídos y clasificados; 57/57 JS leídos y clasificados; 41/41 CSS contrastadas con sus importaciones y responsabilidades.
+- Navegación: inventario de 98 páginas/subpáginas y revisión de cabeceras; las rutas alias y los portales externos se mantienen identificados por separado.
+- La cobertura estática no equivale a validación visual ni a prueba funcional de cada estado/modal.
+
+### Estado verificable
+
+- Último commit de código desplegado en Preview: `e31cc6962bcd5f93de715c9f2899e6cc87d3f541`, deploy `dep-dbnk4ap5efls73bipa9g`, estado `live`.
+- Build frontend y validación Fichajes: success en ese commit.
+- Servicio Preview actual: `molsan-premium-2027-candidate-preview` (`https://molsan-premium-2027-candidate-preview.onrender.com`).
+- Producción identificada, sin cambios: frontend `agenda-intranet-f` en rama `main`; API `agenda-intranet-b` en rama `main`. El último deploy frontend observado en producción sigue siendo `e81d4ab9d571f9e266d7181db8bca57c49d98812`.
+- PR #411 continúa Draft y tiene como base `fix/molsan-css-selector-audit-round1`; PR #409 continúa Draft y tiene como base `integration/erp-molsan-supabase-ready`. La promoción debe respetar esta cadena y no saltar directamente a producción.
+
+### Condiciones aún abiertas para cierre
+
+1. Inspección visual autenticada de Preview: Dashboard, todos los departamentos, páginas/subpáginas, portales externos y alias.
+2. Prueba de modales y formularios: foco, Escape, cierre, scroll interno, errores, estados deshabilitados y responsive.
+3. Recorrido desktop/tablet/móvil, incluidas tablas sticky y desbordamientos.
+4. Corregir diferencias detectadas, repetir build y Preview, y solo entonces preparar la promoción secuencial de PRs.
+
+No se considera finalizada la auditoría global ni se autoriza inferir cierre visual a partir de build/deploy. Producción, API y datos permanecen intactos.
+
+
+## 76. Contraste estático de diálogos y ciclo de foco — 7 de noviembre de 2026
+
+Se ha contrastado el conjunto de ficheros JSX identificados por el marcado `role="dialog"` / `aria-modal="true"` en páginas y componentes: Sidebar, ModulosSelector, CTN detalle, NotarGest, ApoderaGest, EncargaGest, ControlApoderados, Catálogo ABSIS, Tipos de expediente, Informes, Mensajería Molsan, Mensajería Solicitudes, ExpedientesListado, ProvisionesFondosPage, ModalCtnDetalle, LiquidarExpedienteModal, ProvisionesModal, TraspasoSaldoPanel, CarpetaDigitalModal, VisibilidadTablas, EnviarANotarioModal, ModalEmpleado, ModalNuevaCita, ControlFichajesAdmin, SeguridadAuditoria, EmpleadosListado, AccionesExpediente, Municipios, TiposConceptoGastos, OficinasLiquidadoras, TiposCargaHipotecaria, EntidadesBancarias y RegistrosPropiedad.
+
+En los 33 ficheros se ha confirmado importación/uso de `useAccessibleDialog` y correspondencia entre llamadas al hook y diálogos declarados. El hook común:
+- devuelve el foco al elemento anterior al cerrar;
+- lleva el foco al primer control disponible al abrir;
+- limita Escape y Tab al diálogo superior cuando hay diálogos anidados;
+- mantiene el foco dentro del diálogo y filtra controles ocultos/deshabilitados.
+
+No se ha cambiado lógica de formularios ni operaciones. Esta comprobación es estática: siguen pendientes las pruebas manuales reales de teclado, lectores de pantalla, scroll interno, cierre anidado y viewport móvil/tablet.
+
+
+## 77. Barrido de paleta en Herramientas, Informes, Mensajería y modales — 7 de noviembre de 2026
+
+Se ha realizado un barrido de clases cromáticas heredadas en las **41 páginas JSX de Herramientas**. Los neutros slate y acentos blue/indigo/sky de la interfaz se han conectado a los tokens Molsan de texto, superficie, borde y acción. Se conservan:
+- los colores semánticos de estados (correcto, incidencia, aviso, cancelación, etc.);
+- los fondos oscuros de overlays de diálogo;
+- la paleta corporativa propia de las plantillas oficiales de documentos y sus vistas de impresión, sin confundir documento emitido con interfaz del editor.
+
+También se han normalizado las superficies de Informes, Mensajería, Expedientes, Fusiones, Control Apoderados y Control de Fichajes. Los botones primarios y estados de foco pasan al azul Molsan; tablas, formularios y textos secundarios usan los tokens comunes.
+
+### Superficie común de modales
+
+Se ha añadido `.molsan-modal__panel` como alias del panel canónico `.molsan-modal-panel` en el CSS compartido. Los diálogos de herramientas, mensajería, informes, expedientes, fichajes, seguridad, control de apoderados, empleados y selectores ahora reciben la misma superficie, radio, borde y sombra. El modal de alta de empleado se ha migrado explícitamente a `.molsan-modal-panel` y `.molsan-modal__header`, incluidos sus controles de formulario con tokens. Se mantienen las cabeceras específicas de los portales cuando ya están centralizadas por sus estilos de módulo.
+
+### Validación
+
+- Build frontend: success en `cb9cb1e344a0e84eab6d208bf7bc878b67a5c29d`.
+- Validación Fichajes: success en el mismo commit.
+- Render Preview: deploy `dep-dbnkff6c6qcc73e56170` en estado `live`, commit `cb9cb1e344a0e84eab6d208bf7bc878b67a5c29d`.
+- Producción y API sin cambios.
+
+Sigue pendiente la prueba visual autenticada y la comprobación manual de interacción/responsive antes de cerrar la auditoría y promover a producción.
+
+
+## 78. Continuación de limpieza transversal y actualización de Preview — 7 de noviembre de 2026
+
+Se ha continuado la revisión estática sobre las páginas y componentes compartidos después de la pasada 77:
+
+- Herramientas: se han sustituido los últimos glifos de acción localizados en navegación, altas, exportación, movimientos del diseñador y acciones de plantillas por `MolsanIcon`. Se mantienen las flechas que expresan transiciones de proceso o intervalos de datos, no usadas como iconos de acción.
+- NotarGest: se han retirado los botones «Actualizar datos» de las dos cabeceras, manteniendo la navegación «Volver» del espacio de trabajo.
+- Provisiones de fondos: se han migrado los neutros y acentos azules heredados a tokens Molsan en la página, editor y previsualización; se conservan los colores semánticos de estados, avisos y errores. Se ha normalizado también el botón de añadir garantía.
+- Fichajes: el resumen interno utiliza tokens de texto y superficie Molsan; las vistas hijas mantienen su estructura dentro de la cabecera común del módulo.
+- Seguridad y mensajería: se han migrado los últimos colores de foco, selección y texto detectados a tokens corporativos.
+- Modales compartidos de expedientes: se han alineado los textos, botones neutros y acciones de cierre/alta con los tokens Molsan.
+- Contraste de páginas y componentes: 143/143 JSX de `frontend-app/src` inspeccionados en cuanto a referencias de icono/cabecera y restos cromáticos; los 41 CSS siguen importados (41/41, sin hojas huérfanas ni imports sin fichero). La inspección es estática y no sustituye el recorrido visual autenticado.
+
+### Validación y despliegue
+
+- Build frontend: success, run `42388800298`, commit `74afcf8f03bcee49fdacf742419b9a8cff7d9677`.
+- Validación Fichajes: success, run `42388802518`, mismo commit.
+- Render Preview: deploy `dep-dbnkl0rrjlhs7393pe70` en estado `live`, commit `74afcf8f03bcee49fdacf742419b9a8cff7d9677`.
+- Servicio actualizado: `molsan-premium-2027-candidate-preview` (https://molsan-premium-2027-candidate-preview.onrender.com).
+- Producción, API y bases de datos sin cambios.
+
+Sigue pendiente la inspección visual autenticada de todas las rutas y estados, la comprobación manual de modales/teclado/responsive y la validación funcional de CTN y portales. No se declara cierre global ni promoción a producción.
+
+
+
+## 79. Continuación de portales y Control de Fichajes — 7 de noviembre de 2026
+
+Se ha iniciado una nueva pasada sobre Cancelagest, EncargaGest, ApoderaGest, NotarGest y Control de Fichajes, contrastando las cabeceras comunes, los componentes de acceso y las superficies de sus páginas.
+
+- Confirmado el uso de `MolsanPageHeader` en ApoderaGest y EncargaGest; ambas cabeceras centralizan título, descripción, marca e incluso acciones donde corresponde.
+- En ApoderaGest se conserva el encabezado común y se identifican sus subcabeceras internas como encabezados de sección, no como duplicados de página. Los encabezados de impresión y los de diálogo permanecen diferenciados.
+- En EncargaGest se conserva la cabecera común para el portal interno/externo y la acción de cierre de sesión en el slot de acciones. Las cabeceras de perfil y de configuración de accesos son cabeceras de diálogo.
+- En Cancelagest se confirma el uso de `MolsanPageHeader`, iconografía `MolsanIcon` y tarjetas estadísticas comunes; sus clases `cg-*` conservan estilos propios del dashboard y deben seguir contrastándose con el sistema compartido.
+- Control de Fichajes: el botón de envío de solicitud de vacaciones que aún usaba el violeta Tailwind se ha migrado a los tokens `--molsan-primary` y `--molsan-primary-hover`, con foco visible y estado deshabilitado coherentes con el ERP. No se ha cambiado la lógica ni la petición de datos.
+
+### Estado de esta pasada
+
+La revisión continúa abierta. Esta actualización no acredita inspección visual autenticada ni pruebas manuales de todas las rutas, portales y modales. No se han cambiado permisos, operaciones de negocio, API, base de datos ni producción. El cambio de Control de Fichajes queda pendiente de build y despliegue de Preview antes de considerarlo validado.

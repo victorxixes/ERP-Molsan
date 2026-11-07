@@ -150,7 +150,7 @@ export default function LogsAvanzados({ embedded = false } = {}) {
               "
               title="Limpiar búsqueda"
             >
-              ×
+              <MolsanIcon name="x" size={15} bare />
             </button>
           )}
         </div>

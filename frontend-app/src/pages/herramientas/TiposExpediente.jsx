@@ -5,7 +5,7 @@ import MolsanIcon from "../../components/ui/MolsanIcon";
 import useAccessibleDialog from "../../components/ui/useAccessibleDialog";
 
 const API = "/tipos-expediente";
-const CAMPO = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10";
+const CAMPO = "w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-text)] outline-none focus:border-[var(--molsan-primary)] focus:ring-4 focus:ring-[var(--molsan-primary)]/10";
 
 export default function TiposExpediente() {
   const [tipos, setTipos] = useState([]);
@@ -105,7 +105,7 @@ export default function TiposExpediente() {
   const activos = tipos.filter((t) => t.activo !== false).length;
 
   return (
-    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
+    <main className="herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
       <MolsanPageHeader
         mark="TIP"
         title="Tipos de expediente"
@@ -114,49 +114,49 @@ export default function TiposExpediente() {
       />
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 bg-white p-4"><p className="text-sm text-slate-500">Tipos registrados</p><p className="mt-1 text-2xl font-bold text-slate-800">{total}</p></div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-4"><p className="text-sm text-slate-500">Tipos activos</p><p className="mt-1 text-2xl font-bold text-emerald-700">{activos}</p></div>
-        <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-4"><p className="text-sm text-blue-700">Altas disponibles</p><p className="mt-1 text-sm font-semibold text-blue-900">Crear, editar y eliminar tipos</p></div>
+        <div className="rounded-2xl border border-[var(--molsan-border)] bg-white p-4"><p className="text-sm text-[var(--molsan-text-secondary)]">Tipos registrados</p><p className="mt-1 text-2xl font-bold text-[var(--molsan-text)]">{total}</p></div>
+        <div className="rounded-2xl border border-[var(--molsan-border)] bg-white p-4"><p className="text-sm text-[var(--molsan-text-secondary)]">Tipos activos</p><p className="mt-1 text-2xl font-bold text-emerald-700">{activos}</p></div>
+        <div className="rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] p-4"><p className="text-sm text-[var(--molsan-primary)]">Altas disponibles</p><p className="mt-1 text-sm font-semibold text-[var(--molsan-primary)]">Crear, editar y eliminar tipos</p></div>
       </section>
 
       {(error || mensaje) && <div role="status" className={`rounded-xl border px-4 py-3 text-sm ${error ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>{error || mensaje}</div>}
 
-      {mostrarModal && <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarModal(); }}><div ref={tipoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="tipo-expediente-modal-title" className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[24px] border border-slate-200 bg-white p-5 shadow-2xl sm:p-6">
+      {mostrarModal && <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarModal(); }}><div ref={tipoDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="tipo-expediente-modal-title" className="molsan-modal-panel max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[24px] border border-[var(--molsan-border)] bg-white p-5 shadow-2xl sm:p-6">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-          <div><h2 id="tipo-expediente-modal-title" className="text-lg font-bold text-slate-800">{editando ? "Editar tipo de expediente" : "Nuevo tipo de expediente"}</h2><p className="mt-1 text-sm text-slate-500">Los identificadores históricos se conservan; las nuevas altas reciben un ID automático.</p></div>
-          <button type="button" onClick={cerrarModal} disabled={guardando} aria-label="Cerrar ventana" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50">Cerrar <MolsanIcon name="x" size={15} tone="ocean" bare /></button>
+          <div><h2 id="tipo-expediente-modal-title" className="text-lg font-bold text-[var(--molsan-text)]">{editando ? "Editar tipo de expediente" : "Nuevo tipo de expediente"}</h2><p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Los identificadores históricos se conservan; las nuevas altas reciben un ID automático.</p></div>
+          <button type="button" onClick={cerrarModal} disabled={guardando} aria-label="Cerrar ventana" className="rounded-xl border border-[var(--molsan-border)] px-4 py-2 text-sm font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)] disabled:opacity-50">Cerrar <MolsanIcon name="x" size={15} tone="ocean" bare /></button>
         </div>
         <form onSubmit={guardar} className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-12">
-          <label className="text-sm font-semibold text-slate-700 md:col-span-5">Descripción
+          <label className="text-sm font-semibold text-[var(--molsan-text)] md:col-span-5">Descripción
             <input className={`${CAMPO} mt-2`} value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={250} required placeholder="Nombre del tipo de expediente" />
           </label>
-          <label className="text-sm font-semibold text-slate-700 md:col-span-4">Grupo
+          <label className="text-sm font-semibold text-[var(--molsan-text)] md:col-span-4">Grupo
             <select className={`${CAMPO} mt-2`} value={grupo} onChange={(e) => setGrupo(e.target.value)}>
               <option>Tipos de expediente</option><option>Provisiones fuera circuito GTG</option>
             </select>
           </label>
-          <label className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 md:col-span-2">
+          <label className="flex items-center gap-3 rounded-xl border border-[var(--molsan-border)] px-4 py-3 text-sm font-semibold text-[var(--molsan-text)] md:col-span-2">
             <input type="checkbox" checked={activo} onChange={(e) => setActivo(e.target.checked)} /> Activo
           </label>
-          <div className="flex items-end md:col-span-1"><button disabled={guardando || !nombre.trim()} className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" type="submit">{guardando ? "..." : editando ? "Guardar" : "Añadir"}</button></div>
+          <div className="flex items-end md:col-span-1"><button disabled={guardando || !nombre.trim()} className="w-full rounded-xl bg-[var(--molsan-primary)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--molsan-primary)] disabled:opacity-50" type="submit">{guardando ? "..." : editando ? "Guardar" : "Añadir"}</button></div>
         </form>
       </div></div>}
 
-      <section className="overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-sm">
-        <div className="flex flex-col gap-3 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
-          <div><h2 className="text-lg font-bold text-slate-800">Tabla de tipos de expediente</h2><p className="mt-1 text-sm text-slate-500">{tiposFiltrados.length} registros mostrados</p></div>
+      <section className="overflow-hidden rounded-[24px] border border-[var(--molsan-border)] bg-white shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-[var(--molsan-border)] p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div><h2 className="text-lg font-bold text-[var(--molsan-text)]">Tabla de tipos de expediente</h2><p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">{tiposFiltrados.length} registros mostrados</p></div>
           <div className="flex flex-col gap-2 sm:flex-row">
             <input className={CAMPO} value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar por ID o descripción" />
             <select className={CAMPO} value={grupoFiltro} onChange={(e) => setGrupoFiltro(e.target.value)}><option value="todos">Todos los grupos</option><option>Tipos de expediente</option><option>Provisiones fuera circuito GTG</option></select>
-            <button type="button" onClick={cargar} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">Actualizar</button>
+            <button type="button" onClick={cargar} className="rounded-xl border border-[var(--molsan-border)] px-4 py-2 text-sm font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]">Actualizar</button>
           </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-5 py-3">ID</th><th className="px-5 py-3">Descripción</th><th className="px-5 py-3">Grupo</th><th className="px-5 py-3">Estado</th><th className="px-5 py-3 text-right">Acciones</th></tr></thead>
+            <thead className="bg-[var(--molsan-surface-soft)] text-xs uppercase tracking-wide text-[var(--molsan-text-secondary)]"><tr><th className="px-5 py-3">ID</th><th className="px-5 py-3">Descripción</th><th className="px-5 py-3">Grupo</th><th className="px-5 py-3">Estado</th><th className="px-5 py-3 text-right">Acciones</th></tr></thead>
             <tbody className="divide-y divide-slate-100">
-              {cargando ? <tr><td colSpan="5" className="px-5 py-10 text-center text-slate-500">Cargando catálogo…</td></tr> : tiposFiltrados.length === 0 ? <tr><td colSpan="5" className="px-5 py-10 text-center text-slate-500">No hay tipos que coincidan con la búsqueda.</td></tr> : tiposFiltrados.map((tipo) => <tr key={tipo.id} className="hover:bg-blue-50/40">
-                <td className="px-5 py-3 font-mono font-semibold text-slate-500">{tipo.id}</td><td className="px-5 py-3 font-semibold text-slate-800">{tipo.nombre}</td><td className="px-5 py-3 text-slate-600">{tipo.grupo}</td><td className="px-5 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${tipo.activo ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{tipo.activo ? "Activo" : "Inactivo"}</span></td><td className="px-5 py-3"><div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(tipo)} className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100">Editar</button><button type="button" onClick={() => eliminar(tipo)} className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Eliminar</button></div></td>
+              {cargando ? <tr><td colSpan="5" className="px-5 py-10 text-center text-[var(--molsan-text-secondary)]">Cargando catálogo…</td></tr> : tiposFiltrados.length === 0 ? <tr><td colSpan="5" className="px-5 py-10 text-center text-[var(--molsan-text-secondary)]">No hay tipos que coincidan con la búsqueda.</td></tr> : tiposFiltrados.map((tipo) => <tr key={tipo.id} className="hover:bg-[var(--molsan-surface-soft)]">
+                <td className="px-5 py-3 font-mono font-semibold text-[var(--molsan-text-secondary)]">{tipo.id}</td><td className="px-5 py-3 font-semibold text-[var(--molsan-text)]">{tipo.nombre}</td><td className="px-5 py-3 text-[var(--molsan-text-secondary)]">{tipo.grupo}</td><td className="px-5 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${tipo.activo ? "bg-emerald-50 text-emerald-700" : "bg-[var(--molsan-surface-soft)] text-[var(--molsan-text-secondary)]"}`}>{tipo.activo ? "Activo" : "Inactivo"}</span></td><td className="px-5 py-3"><div className="flex justify-end gap-2"><button type="button" onClick={() => abrirEditar(tipo)} className="rounded-lg border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--molsan-primary)] hover:bg-[var(--molsan-surface-soft)]">Editar</button><button type="button" onClick={() => eliminar(tipo)} className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Eliminar</button></div></td>
               </tr>)}
             </tbody>
           </table>

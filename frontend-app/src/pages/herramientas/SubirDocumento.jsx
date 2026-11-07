@@ -74,7 +74,7 @@ export default function SubirDocumento() {
           max-w-3xl
           relative overflow-hidden
           rounded-[24px]
-          border border-slate-200/80
+          border border-[var(--molsan-border)]
           bg-white/85
           backdrop-blur-xl
           shadow-[0_18px_50px_rgba(15,23,42,0.08)]
@@ -88,7 +88,7 @@ export default function SubirDocumento() {
 
           <div>
 
-            <label className="block mb-2 text-sm font-medium text-slate-700">
+            <label className="block mb-2 text-sm font-medium text-[var(--molsan-text)]">
               Título
             </label>
 
@@ -104,11 +104,11 @@ export default function SubirDocumento() {
               className="
                 w-full
                 rounded-xl
-                border border-slate-200
-                bg-slate-50/80
+                border border-[var(--molsan-border)]
+                bg-[var(--molsan-surface-soft)]
                 px-4 py-3
-                text-slate-800
-                placeholder:text-slate-400
+                text-[var(--molsan-primary)]
+                placeholder:text-[var(--molsan-text-muted)]
                 outline-none
                 transition-all
                 focus:border-emerald-400
@@ -126,7 +126,7 @@ export default function SubirDocumento() {
 
           <div>
 
-            <label className="block mb-2 text-sm font-medium text-slate-700">
+            <label className="block mb-2 text-sm font-medium text-[var(--molsan-text)]">
               Concepto
             </label>
 
@@ -142,11 +142,11 @@ export default function SubirDocumento() {
               className="
                 w-full
                 rounded-xl
-                border border-slate-200
-                bg-slate-50/80
+                border border-[var(--molsan-border)]
+                bg-[var(--molsan-surface-soft)]
                 px-4 py-3
-                text-slate-800
-                placeholder:text-slate-400
+                text-[var(--molsan-primary)]
+                placeholder:text-[var(--molsan-text-muted)]
                 outline-none
                 transition-all
                 focus:border-emerald-400
@@ -164,7 +164,7 @@ export default function SubirDocumento() {
 
           <div>
 
-            <label className="block mb-2 text-sm font-medium text-slate-700">
+            <label className="block mb-2 text-sm font-medium text-[var(--molsan-text)]">
               Archivo
             </label>
 
@@ -176,8 +176,8 @@ export default function SubirDocumento() {
                 min-h-32
                 rounded-2xl
                 border-2 border-dashed
-                border-slate-200
-                bg-slate-50/70
+                border-[var(--molsan-border)]
+                bg-[var(--molsan-surface-soft)]
                 px-5
                 cursor-pointer
                 transition-all
@@ -190,14 +190,14 @@ export default function SubirDocumento() {
                 {file ? <MolsanIcon name="attachment" size={24} tone="ocean" /> : <MolsanIcon name="upload" size={24} tone="ocean" />}
               </span>
 
-              <span className="text-sm font-medium text-slate-600">
+              <span className="text-sm font-medium text-[var(--molsan-text-secondary)]">
                 {file
                   ? file.name
                   : "Selecciona un archivo"}
               </span>
 
               {!file && (
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-[var(--molsan-text-muted)]">
                   Haz clic para seleccionar el documento
                 </span>
               )}
@@ -284,7 +284,7 @@ export default function SubirDocumento() {
                 
               "
             >
-              <span>✓</span>
+              <span><MolsanIcon name="check" size={13} bare /></span>
               <span>Documento subido correctamente.</span>
             </div>
           )}

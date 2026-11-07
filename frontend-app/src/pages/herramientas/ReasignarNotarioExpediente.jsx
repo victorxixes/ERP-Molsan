@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
@@ -85,17 +86,17 @@ export default function ReasignarNotarioExpediente() {
 
   return (
     <main className="herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <MolsanPageHeader mark="UT" title="Reasignar expediente a notario" description="Busca el expediente para recuperar su ficha de Envío a notario, corregir sus datos y guardar la nueva asignación." actions={<Link to="/herramientas/utilidades" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
-            ← Volver a Utilidades
+      <MolsanPageHeader mark="UT" title="Reasignar expediente a notario" description="Busca el expediente para recuperar su ficha de Envío a notario, corregir sus datos y guardar la nueva asignación." actions={<Link to="/herramientas/utilidades" className="rounded-xl border border-[var(--molsan-border)] px-4 py-2 text-sm font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]">
+            <MolsanIcon name="arrowLeft" size={14} bare /> Volver a Utilidades
           </Link>}/>
 
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-3xl border border-[var(--molsan-border)] bg-white p-6 shadow-sm">
         <form onSubmit={consultar}>
-          <h2 className="text-lg font-bold text-slate-800">1. Buscar expediente</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <h2 className="text-lg font-bold text-[var(--molsan-primary)]">1. Buscar expediente</h2>
+          <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">
             Introduce el número de expediente. Se cargarán los datos notariales que ya están guardados, sin crear un expediente nuevo.
           </p>
-          <label htmlFor="numero-expediente-notario" className="mt-5 block text-sm font-semibold text-slate-700">
+          <label htmlFor="numero-expediente-notario" className="mt-5 block text-sm font-semibold text-[var(--molsan-text)]">
             Número de expediente
           </label>
           <div className="mt-2 flex flex-col gap-3 sm:flex-row">
@@ -109,12 +110,12 @@ export default function ReasignarNotarioExpediente() {
                 setError("");
               }}
               placeholder="Introduce el número de expediente"
-              className="min-w-0 flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="min-w-0 flex-1 rounded-xl border border-[var(--molsan-border-strong)] px-4 py-3 text-sm outline-none focus:border-[var(--molsan-border-strong)] focus:ring-2 focus:ring-[var(--molsan-primary-soft)]"
             />
             <button
               type="submit"
               disabled={consultando}
-              className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
+              className="rounded-xl bg-[var(--molsan-primary)] px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
             >
               {consultando ? "Buscando…" : "Cargar ficha de envío"}
             </button>
@@ -122,13 +123,13 @@ export default function ReasignarNotarioExpediente() {
         </form>
 
         {expediente && (
-          <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50/70 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Expediente encontrado</p>
-            <p className="mt-1 font-bold text-slate-800">{expediente.id_expediente}</p>
-            <p className="mt-1 text-sm text-slate-600">
+          <div className="mt-5 rounded-2xl border border-[var(--molsan-border)] bg-[var(--molsan-primary-soft)] p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--molsan-primary)]">Expediente encontrado</p>
+            <p className="mt-1 font-bold text-[var(--molsan-primary)]">{expediente.id_expediente}</p>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">
               Notario actual: <span className="font-semibold">{expediente.nombre_notario || expediente.notario || "Sin notario asignado"}</span>
             </p>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">
               Fecha de envío: <span className="font-semibold">{expediente.fecha_envio_notario || expediente.fecha_envio || "Sin fecha registrada"}</span>
             </p>
           </div>
@@ -136,17 +137,17 @@ export default function ReasignarNotarioExpediente() {
       </section>
 
       {expediente && (
-        <section className="rounded-3xl border border-indigo-100 bg-white p-6 shadow-sm space-y-4">
+        <section className="rounded-3xl border border-[var(--molsan-border)] bg-white p-6 shadow-sm space-y-4">
           <div>
-            <h2 className="text-lg font-bold text-slate-800">3. Cambiar actividad en NotarGest</h2>
-            <p className="mt-1 text-sm text-slate-500">Puedes mover el expediente libremente a cualquiera de las bandejas. El cambio no elimina la fecha de firma, el protocolo ni los documentos ya registrados.</p>
+            <h2 className="text-lg font-bold text-[var(--molsan-primary)]">3. Cambiar actividad en NotarGest</h2>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Puedes mover el expediente libremente a cualquiera de las bandejas. El cambio no elimina la fecha de firma, el protocolo ni los documentos ya registrados.</p>
           </div>
-          <div className="rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
+          <div className="rounded-xl bg-[var(--molsan-surface-soft)] px-4 py-3 text-sm text-[var(--molsan-text)]">
             Actividad actual: <strong>{actividadActualTexto || "Cargando…"}</strong>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <label className="block text-sm font-semibold text-slate-700">Actividad de destino
-              <select value={actividadDestino} onChange={e => setActividadDestino(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-normal">
+            <label className="block text-sm font-semibold text-[var(--molsan-text)]">Actividad de destino
+              <select value={actividadDestino} onChange={e => setActividadDestino(e.target.value)} className="mt-2 w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-4 py-3 font-normal">
                 <option value="recepcion">Pendientes de recepción · Nuevo encargo</option>
                 <option value="firma">Pendientes de firma</option>
                 <option value="factura">Pendientes de factura notarial · Firmado</option>
@@ -157,12 +158,12 @@ export default function ReasignarNotarioExpediente() {
                 <option value="cerrada">Escrituras cerradas inscritas</option>
               </select>
             </label>
-            <label className="block text-sm font-semibold text-slate-700">Motivo del cambio (obligatorio)
-              <input value={motivoActividad} onChange={e => setMotivoActividad(e.target.value)} maxLength={1000} placeholder="Indica por qué se mueve el expediente" className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 font-normal" />
+            <label className="block text-sm font-semibold text-[var(--molsan-text)]">Motivo del cambio (obligatorio)
+              <input value={motivoActividad} onChange={e => setMotivoActividad(e.target.value)} maxLength={1000} placeholder="Indica por qué se mueve el expediente" className="mt-2 w-full rounded-xl border border-[var(--molsan-border-strong)] px-4 py-3 font-normal" />
             </label>
           </div>
           <div className="flex justify-end">
-            <button type="button" onClick={guardarActividad} disabled={guardandoActividad || !actividadDestino || !motivoActividad.trim() || actividadDestino === actividadActual} className="rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">
+            <button type="button" onClick={guardarActividad} disabled={guardandoActividad || !actividadDestino || !motivoActividad.trim() || actividadDestino === actividadActual} className="rounded-xl bg-[var(--molsan-primary)] px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">
               {guardandoActividad ? "Guardando…" : "Guardar cambio de actividad"}
             </button>
           </div>
@@ -183,8 +184,8 @@ export default function ReasignarNotarioExpediente() {
       {expediente && (
         <section className="space-y-3">
           <div>
-            <h2 className="text-lg font-bold text-slate-800">2. Revisar y corregir el envío a notario</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <h2 className="text-lg font-bold text-[var(--molsan-primary)]">2. Revisar y corregir el envío a notario</h2>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">
               La ficha se abre con los datos actuales. Puedes cambiar el notario, la fecha de envío y los demás campos del formulario; los cambios se guardan en el expediente existente.
             </p>
           </div>

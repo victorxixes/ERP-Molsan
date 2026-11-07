@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { sortRows } from "../../utils/sortRows";
+import MolsanIcon from "./MolsanIcon";
 
 const sortKeyOf = (column) => column.sortKey || column.key;
 
@@ -151,7 +152,7 @@ export default function MolsanDataTable({
                         <button type="button" className="molsan-table-sort" onClick={() => handleSort(column)}>
                           <span>{column.header}</span>
                           <span className={`molsan-table-sort__indicator ${active ? "is-active" : ""}`} aria-hidden="true">
-                            {active ? (sort.direction === "asc" ? "↑" : "↓") : "↕"}
+                            {active ? <MolsanIcon name={sort.direction === "asc" ? "arrowUp" : "arrowDown"} size={13} bare /> : <MolsanIcon name="arrowUpDown" size={13} bare />}
                           </span>
                         </button>
                       )}

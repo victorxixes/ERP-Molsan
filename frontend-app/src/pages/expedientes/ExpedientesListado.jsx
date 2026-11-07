@@ -2573,7 +2573,7 @@ export default function ExpedientesListado() {
                 </div>
                 <div className="mt-3 font-bold text-[var(--erp-text)]">{estado.titulo}</div>
                 <div className="mt-1 text-xs text-[var(--erp-text-soft)]">Estado ABSIS: {estado.codigo}</div>
-                <div className="mt-2 text-xs font-semibold" style={{ color: activa ? estado.borde : "var(--erp-text-soft)" }}>{activa ? "Estado seleccionado · pulsa para quitar" : "Ver expedientes →"}</div>
+                <div className="mt-2 text-xs font-semibold" style={{ color: activa ? estado.borde : "var(--erp-text-soft)" }}>{activa ? "Estado seleccionado · pulsa para quitar" : <>Ver expedientes <MolsanIcon name="arrowRight" size={12} bare /></>}</div>
               </button>
             );
           })}
@@ -2640,7 +2640,7 @@ export default function ExpedientesListado() {
                   ) : null
                 )}
               </div>
-              <div className="mt-2 text-xs font-semibold" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text-soft)" }}>{activa ? "Actividad seleccionada · pulsa para quitar" : "Ver expedientes →"}</div>
+              <div className="mt-2 text-xs font-semibold" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text-soft)" }}>{activa ? "Actividad seleccionada · pulsa para quitar" : <>Ver expedientes <MolsanIcon name="arrowRight" size={12} bare /></>}</div>
             </button>;
           })}
         </div>
@@ -3209,7 +3209,7 @@ export default function ExpedientesListado() {
           />
 
           <section
-            className="relative z-10 w-full max-w-5xl max-h-[88vh] overflow-y-auto rounded-3xl border shadow-2xl"
+            className="molsan-modal-panel relative z-10 w-full max-w-5xl max-h-[88vh] overflow-y-auto rounded-3xl border shadow-2xl"
             style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
           >
             <div
@@ -3231,7 +3231,7 @@ export default function ExpedientesListado() {
                 style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)" }}
                 aria-label="Cerrar"
               >
-                ×
+                <MolsanIcon name="x" size={18} bare />
               </button>
             </div>
 
@@ -3336,15 +3336,15 @@ export default function ExpedientesListado() {
 
       {mostrarAyudaControlPlazos && (
         <div className="fixed inset-0 z-[11000] flex items-center justify-center bg-slate-950/60 p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setMostrarAyudaControlPlazos(false); }}>
-          <section ref={ayudaPlazosDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="titulo-control-plazos" className="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
-            <header className="flex items-start justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
+          <section ref={ayudaPlazosDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="titulo-control-plazos" className="molsan-modal-panel w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--molsan-border)] bg-white shadow-2xl">
+            <header className="flex items-start justify-between gap-4 border-b border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-5 py-4">
               <div>
-                <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Expedientes</p>
-                <h2 id="titulo-control-plazos" className="mt-1 text-lg font-extrabold text-slate-900"><MolsanIcon name="calendar" size={18} tone="ocean" bare /> Control de plazos</h2>
+                <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[var(--molsan-primary)]">MOLSAN ERP · Expedientes</p>
+                <h2 id="titulo-control-plazos" className="mt-1 text-lg font-extrabold text-[var(--molsan-text)]"><MolsanIcon name="calendar" size={18} tone="ocean" bare /> Control de plazos</h2>
               </div>
-              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} aria-label="Cerrar" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100"><MolsanIcon name="x" size={15} tone="ocean" bare /></button>
+              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} aria-label="Cerrar" className="rounded-lg border border-[var(--molsan-border)] bg-white px-3 py-2 text-sm font-bold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]"><MolsanIcon name="x" size={15} tone="ocean" bare /></button>
             </header>
-            <div className="space-y-3 px-5 py-5 text-sm leading-6 text-slate-700">
+            <div className="space-y-3 px-5 py-5 text-sm leading-6 text-[var(--molsan-text)]">
               <p>Los recuentos por actividad son independientes del SLA global:</p>
               <ul className="list-disc space-y-1 pl-5">
                 <li>Sede notarial: 5 días.</li>
@@ -3358,8 +3358,8 @@ export default function ExpedientesListado() {
               <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 font-semibold text-amber-900">SLA global superado: {formatearNumero(Number(alertasControl.find((item) => item.key === "sla_global")?.total || 0))} expedientes.</p>
               <p>El SLA global se calcula desde el envío hasta Fin actividad o hoy: 40 días para Propia entidad/Vinculada propia entidad y 70 días para Vinculada otra entidad/Otra entidad. Hipotecario y Crédito Stock se excluyen.</p>
             </div>
-            <footer className="flex justify-end border-t border-slate-200 bg-slate-50 px-5 py-3">
-              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white hover:bg-indigo-700">Cerrar</button>
+            <footer className="flex justify-end border-t border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] px-5 py-3">
+              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} className="rounded-lg bg-[var(--molsan-primary)] px-4 py-2 text-sm font-bold text-white hover:bg-[var(--molsan-primary)]">Cerrar</button>
             </footer>
           </section>
         </div>

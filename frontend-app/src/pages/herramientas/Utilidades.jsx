@@ -99,8 +99,8 @@ function Grupo({ titulo, descripcion, children }) {
   return (
     <section className="space-y-3">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-        <h2 className="text-lg font-bold tracking-tight text-slate-800">{titulo}</h2>
-        <p className="text-sm text-slate-500">{descripcion}</p>
+        <h2 className="text-lg font-bold tracking-tight text-[var(--molsan-text)]">{titulo}</h2>
+        <p className="text-sm text-[var(--molsan-text-secondary)]">{descripcion}</p>
       </div>
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">{children}</div>
     </section>
@@ -113,9 +113,9 @@ function Grupo({ titulo, descripcion, children }) {
 
 function MetricaAbsis({ titulo, valor, alerta = false }) {
   return (
-    <div className={`rounded-2xl border p-3.5 ${alerta ? "border-rose-100 bg-rose-50/60" : "border-slate-200 bg-white"}`}>
-      <p className="text-[11px] font-semibold leading-4 text-slate-500">{titulo}</p>
-      <p className={`mt-2 text-2xl font-bold ${alerta ? "text-rose-600" : "text-slate-800"}`}>{valor}</p>
+    <div className={`rounded-2xl border p-3.5 ${alerta ? "border-rose-100 bg-rose-50/60" : "border-[var(--molsan-border)] bg-white"}`}>
+      <p className="text-[11px] font-semibold leading-4 text-[var(--molsan-text-secondary)]">{titulo}</p>
+      <p className={`mt-2 text-2xl font-bold ${alerta ? "text-rose-600" : "text-[var(--molsan-text)]"}`}>{valor}</p>
     </div>
   );
 }
@@ -147,7 +147,7 @@ function Card({
       </span>
       <span className="workspace-app-title">{titulo}</span>
       <span className="workspace-app-description">{descripcion}</span>
-      {etapa && <span className="mt-3 inline-flex w-fit rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-xs font-bold text-sky-800">{etapa}</span>}
+      {etapa && <span className="mt-3 inline-flex w-fit rounded-full border border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] px-2.5 py-1 text-xs font-bold text-[var(--molsan-primary)]">{etapa}</span>}
       {aviso && (
         <span className="mt-3 block rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-5 text-amber-900">
           <span className="flex items-center gap-1 font-bold"><MolsanIcon name="alert" size={14} tone="amber" bare /> Pendiente de revisión técnica</span>

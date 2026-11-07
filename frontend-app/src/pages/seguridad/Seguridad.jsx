@@ -126,7 +126,7 @@ export default function Seguridad() {
  aria-label="Actividad reciente"
  >
  <div className="flex justify-end">
- <Link to="/auditoria" className="text-sm font-medium text-[var(--erp-primary)] hover:underline">Ver auditoría →</Link>
+ <Link to="/auditoria" className="text-sm font-medium text-[var(--erp-primary)] hover:underline">Ver auditoría <MolsanIcon name="arrowRight" size={13} bare /></Link>
  </div>
  {actividadReciente.length === 0 ? (
  <p className="px-2 py-6 text-center text-sm text-[var(--erp-text-soft)]">No hay eventos de auditoría disponibles para mostrar.</p>
@@ -162,7 +162,7 @@ export default function Seguridad() {
  className="seguridad-supervision-card"
  >
  <div className="flex justify-end">
- <Link to="/seguridad/logs" className="shrink-0 text-sm font-medium text-[var(--erp-primary)] hover:underline">Ver logs técnicos →</Link>
+ <Link to="/seguridad/logs" className="shrink-0 text-sm font-medium text-[var(--erp-primary)] hover:underline">Ver logs técnicos <MolsanIcon name="arrowRight" size={13} bare /></Link>
  </div>
  </MolsanPremiumCard>
  </div>

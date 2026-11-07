@@ -28,7 +28,7 @@ export default function PortalLogin({
   const idPassword = variant + "-password";
 
   return (
-    <div className="portal-login relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8">
+    <div className="portal-login-premium relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8">
       <div className="relative z-10 w-full max-w-[430px]">
         <div className="relative w-full p-7 sm:p-9">
 
@@ -52,7 +52,7 @@ export default function PortalLogin({
             <div>
               <label htmlFor={idUsuario} className="mb-2 block">{usernameLabel}</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none transition-colors" aria-hidden="true"><MolsanIcon name="person" size={20} bare /></span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--molsan-text-secondary)] pointer-events-none transition-colors" aria-hidden="true"><MolsanIcon name="person" size={20} bare /></span>
                 <input
                   id={idUsuario}
                   type="text"
@@ -71,7 +71,7 @@ export default function PortalLogin({
             <div>
               <label htmlFor={idPassword} className="mb-2 block">Contraseña</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" aria-hidden="true"><MolsanIcon name="lock" size={20} bare /></span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--molsan-text-secondary)] pointer-events-none" aria-hidden="true"><MolsanIcon name="lock" size={20} bare /></span>
                 <input
                   id={idPassword}
                   type={mostrarPass ? "text" : "password"}

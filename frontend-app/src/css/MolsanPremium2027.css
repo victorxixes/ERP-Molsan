@@ -118,8 +118,8 @@
   min-height: 0;
   overflow: hidden;
   padding: 18px 24px;
-  color: #17384D;
-  border: 1.5px solid #C5D8E5;
+  color: var(--molsan-text, #173247);
+  border: 1.5px solid var(--molsan-border, #D8E4EC);
   border-radius: 22px;
   background: #FFFFFF;
   box-shadow: 0 7px 20px rgba(6,70,117,.09), 0 1px 3px rgba(6,50,82,.045);
@@ -159,7 +159,7 @@
   height: 40px;
   place-items: center;
   color: #064675;
-  border: 1px solid #C5D8E5;
+  border: 1px solid var(--molsan-border, #D8E4EC);
   border-radius: 12px;
   background: #F2F7FB;
   box-shadow: 0 4px 12px rgba(6,70,117,.08);
@@ -416,7 +416,7 @@
   padding: 24px;
   text-align: left;
   color: var(--molsan-text);
-  border: 1.5px solid #C5D8E5;
+  border: 1.5px solid var(--molsan-border, #D8E4EC);
   border-radius: 21px;
   background: #FFFFFF;
   box-shadow: 0 7px 20px rgba(6,70,117,.09), 0 1px 3px rgba(6,50,82,.045);
@@ -743,8 +743,8 @@
   margin: 0 0 20px;
   padding: 18px 24px;
   overflow: hidden;
-  color: #17384D;
-  border: 1.5px solid #C5D8E5;
+  color: var(--molsan-text, #173247);
+  border: 1.5px solid var(--molsan-border, #D8E4EC);
   border-radius: 22px;
   background: #FFFFFF;
   box-shadow: 0 7px 20px rgba(6,70,117,.09), 0 1px 3px rgba(6,50,82,.045);
@@ -762,19 +762,28 @@
 
 /* Superficies de modales: un mismo panel y cabecera en todos los módulos. */
 .molsan-modal-panel,
+.molsan-modal__panel,
 .ctn-modal-panel,
+.ctn-modal-dialog,
 .eg-modal-form,
 .ng-modal,
 .ag-resumen-modal,
-.modal-sj,
 .expediente-operativo-modal [role="dialog"],
 .empleado-operativo-modal [role="dialog"] {
-  border: 1.5px solid #C5D8E5;
-  border-radius: 22px;
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: var(--molsan-canon-card-radius, 20px);
   background: #FFFFFF;
-  box-shadow: 0 22px 54px rgba(6,70,117,.18);
+  box-shadow: 0 18px 42px rgba(6,70,117,.12);
 }
-.molsan-modal-header,
+.ctn-modal-dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(1240px, 100%);
+  max-height: calc(100dvh - 44px);
+  min-height: 0;
+  overflow: hidden;
+}
+:is(.molsan-modal-header, .molsan-modal__header),
 .ctn-modal-header,
 .eg-modal-header,
 .ag-resumen-modal-cabecera,
@@ -805,7 +814,11 @@
   line-height: 1.5;
 }
 @media (max-width: 760px) {
-  .molsan-modal-header,
+  .ctn-modal-dialog {
+    width: 100%;
+    max-height: calc(100dvh - 16px);
+  }
+  :is(.molsan-modal-header, .molsan-modal__header),
   .ctn-modal-header,
   .eg-modal-header,
   .ag-resumen-modal-cabecera,
@@ -829,12 +842,12 @@
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
   .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
-  .eg-modal-section, .ng-admin-global-resumen,
-  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
+   .ng-admin-global-resumen,
+  .ctn-panel,   .ctn-detalle-panel,
   .expedientes-panel,
   .expedientes-filter-panel, .expedientes-table-panel,
   .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
-  .section-card, .agenda-calendar-card, .agenda-list-table-wrap,
+  .section-card, .agenda-calendar-card,
   .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .empleado-ficha-premium > section, .seguridad-premium-page > section, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, [data-panel="true"], [data-cg-panel="true"]
 ){
   min-width: 0;
@@ -857,12 +870,12 @@
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
   .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
-  .eg-modal-section, .ng-admin-global-resumen,
-  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
+   .ng-admin-global-resumen,
+  .ctn-panel,   .ctn-detalle-panel,
   .expedientes-panel,
   .expedientes-filter-panel, .expedientes-table-panel,
   .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
-  .section-card, .agenda-calendar-card, .agenda-list-table-wrap,
+  .section-card, .agenda-calendar-card,
   .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .empleado-ficha-premium > section, .seguridad-premium-page > section, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, [data-panel="true"], [data-cg-panel="true"]
 ) {
   border: 1px solid var(--molsan-border, #D8E4EC);
@@ -879,12 +892,12 @@
   .herramientas-subpagina-premium, .catalogos-maestros-premium
 ) :is(
   .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel, .eg-directorio,
-  .eg-modal-section, .ng-admin-global-resumen,
-  .ctn-panel, .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .ctn-detalle-panel,
+   .ng-admin-global-resumen,
+  .ctn-panel,   .ctn-detalle-panel,
   .expedientes-panel,
   .expedientes-filter-panel, .expedientes-table-panel,
   .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
-  .section-card, .agenda-calendar-card, .agenda-list-table-wrap,
+  .section-card, .agenda-calendar-card,
   .logs-panel, .maestros-panel, .dashboard-section-panel, .molsan-intranet-page > section, .panel-tecnico-premium > section:not(:first-child), .panel-tecnico-submodulo-premium section, .empleado-ficha-premium > section, .seguridad-premium-page > section, .provisiones-fondos-page > form > section, .provisiones-fondos-page > section, [data-panel="true"], [data-cg-panel="true"]
 ):hover {
   box-shadow: 0 19px 38px rgba(6, 50, 82, .13);
@@ -899,8 +912,8 @@
     .panel-tecnico-premium, .seguridad-premium-page) :is(
       .molsan-panel, .cg-panel, .cg-section, .ag-panel, .ng-panel, .eg-panel,
       .ctn-panel,
-      .ctn-modal-seccion, .ctn-modal-panel .ctn-modal-seccion, .expedientes-panel, .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
-      .section-card, .agenda-calendar-card, .agenda-list-table-wrap,
+        .expedientes-panel, .pf-card, .dashboard-panel, .panel-card, .ficha-panel, .ficha-seccion, .form-section,
+      .section-card, .agenda-calendar-card,
       .logs-panel, .maestros-panel
     ) {
     animation: none;
@@ -919,7 +932,7 @@
 .molsan-page-stack > * { min-width: 0; }
 
 /* Cabecera compacta de modal: no debe heredar la cabecera hero de página. */
-.molsan-modal-header {
+:is(.molsan-modal-header, .molsan-modal__header) {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -934,9 +947,9 @@
   background:#FFFFFF;
   box-shadow: none;
 }
-.molsan-modal-header::after { display: none; }
-.molsan-modal-header :is(h1, h2, h3) { color: #064675; }
-.molsan-modal-header :is(p, small) { color: #617789; }
+:is(.molsan-modal-header, .molsan-modal__header)::after { display: none; }
+:is(.molsan-modal-header, .molsan-modal__header) :is(h1, h2, h3) { color: #064675; }
+:is(.molsan-modal-header, .molsan-modal__header) :is(p, small) { color: #617789; }
 .molsan-page-toolbar {
   display: flex;
   align-items: center;
@@ -1004,7 +1017,7 @@
 
 /* Cabecera modal corporativa común para los distintos componentes heredados. */
 :is(
-  .molsan-modal-header, .erp-modal-header, .modal-sj-header,
+  :is(.molsan-modal-header, .molsan-modal__header), 
   .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
   .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
   .panel-modal-premium [role="dialog"] > header,
@@ -1026,7 +1039,7 @@
   margin-bottom: 0;
 }
 :is(
-  .molsan-modal-header, .erp-modal-header, .modal-sj-header,
+  :is(.molsan-modal-header, .molsan-modal__header), 
   .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
   .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
   .panel-modal-premium [role="dialog"] > header,
@@ -1037,7 +1050,7 @@
 }
 @media (max-width: 640px) {
   :is(
-    .molsan-modal-header, .erp-modal-header, .modal-sj-header,
+    :is(.molsan-modal-header, .molsan-modal__header), 
     .ctn-modal-header, .ctn-detalle-modal-header, .eg-modal-header, .ag-resumen-modal-cabecera,
     .ng-modal > header, .ng-resumen-expedientes-modal > header, .ctn-modal-panel > header,
     .panel-modal-premium [role="dialog"] > header,
@@ -1292,10 +1305,6 @@ button:hover .molsan-icon-3d,
 .apoderagest .ag-grid-secundario > *,
 .apoderagest .ag-dashboard-inferior-grid > * {
   min-width: 0 !important;
-  border: 1px solid #D8E4EC !important;
-  border-radius: 14px !important;
-  background: #FFFFFF !important;
-  box-shadow: 0 6px 18px rgba(6,50,82,.045) !important;
 }
 
 /* Navegación contextual común: destino explícito, bajo el título de página. */

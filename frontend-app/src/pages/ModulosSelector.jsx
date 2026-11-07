@@ -361,7 +361,7 @@ export default function ModulosSelector() {
       {modalSoporte && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !abriendoNotaria) setModalSoporte(null); }}>
           <section ref={soporteDialogRef} tabIndex={-1} className="flex max-h-[min(86vh,760px)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="soporte-notaria-titulo">
-            <header className="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5">
+            <header className="molsan-modal-panel flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5">
               <div>
                 <p className="text-[10px] font-extrabold tracking-[0.18em] text-blue-700">ACCESO DE SOPORTE</p>
                 <h2 id="soporte-notaria-titulo" className="mt-1 text-xl font-extrabold text-slate-900">{modalSoporte === "notargest" ? "NotarGest – Notarios" : "EncargaGest – Notarios"}</h2>
@@ -372,7 +372,7 @@ export default function ModulosSelector() {
             <div className="border-b border-slate-100 p-5">
               <label className="relative block">
                 <span className="sr-only">Buscar notaría</span>
-                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">⌕</span>
+                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400"><MolsanIcon name="search" size={16} bare /></span>
                 <input value={busquedaSoporte} onChange={(e) => setBusquedaSoporte(e.target.value)} autoFocus placeholder="Buscar por nombre, NIF, municipio o provincia…" className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm outline-none focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100" />
               </label>
             </div>
@@ -393,7 +393,7 @@ export default function ModulosSelector() {
                           <strong className="block truncate text-sm text-slate-900">{n.nombre || n.nombre_completo || ("Notaría " + n.id)}</strong>
                           <span className="mt-1 block text-xs text-slate-500">{[n.nif, n.municipio, n.provincia].filter(Boolean).join(" · ") || "Datos adicionales no disponibles"}</span>
                         </span>
-                        <span className="shrink-0 text-xs font-bold text-blue-700">{abriendoNotaria === n.id ? "Abriendo…" : "Acceder →"}</span>
+                        <span className="shrink-0 text-xs font-bold text-blue-700">{abriendoNotaria === n.id ? "Abriendo…" : <>Acceder <MolsanIcon name="arrowRight" size={12} bare /></>}</span>
                       </button>
                     </li>
                   ))}

@@ -80,7 +80,7 @@ function Chip({
       "border-[var(--erp-border)] bg-[var(--erp-bg)] text-[var(--erp-text-soft)]",
 
     primary:
-      "border-blue-200 bg-blue-50 text-blue-700",
+      "border-[var(--molsan-border)] bg-[var(--molsan-primary-soft)] text-[var(--molsan-primary)]",
 
     success:
       "border-emerald-200 bg-emerald-50 text-emerald-700",
@@ -786,9 +786,7 @@ export default function SeguridadRoles() {
             >
               Nombre{" "}
               {orden.campo === "nombre"
-                ? orden.asc
-                  ? "↑"
-                  : "↓"
+                ? <MolsanIcon name={orden.asc ? "arrowUp" : "arrowDown"} size={12} bare />
                 : ""}
             </button>
 
@@ -816,9 +814,7 @@ export default function SeguridadRoles() {
               Usuarios{" "}
               {orden.campo ===
                 "usuariosCount"
-                ? orden.asc
-                  ? "↑"
-                  : "↓"
+                ? <MolsanIcon name={orden.asc ? "arrowUp" : "arrowDown"} size={12} bare />
                 : ""}
             </button>
 
@@ -1015,7 +1011,7 @@ export default function SeguridadRoles() {
                         text-[var(--erp-text-soft)]
                       "
                     >
-                      {abierto ? "▲" : "▼"}
+                      {abierto ? <MolsanIcon name="arrowUp" size={12} bare /> : <MolsanIcon name="arrowDown" size={12} bare />}
                     </span>
 
                   </div>

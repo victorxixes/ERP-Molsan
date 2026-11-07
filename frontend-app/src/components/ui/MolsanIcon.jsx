@@ -73,6 +73,8 @@ const PATHS = {
   logout: <><path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 4h7a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-7"/></>,
   link: <><path d="m10 13 4-4M8 16H6a4 4 0 0 1 0-8h4M16 8h2a4 4 0 0 1 0 8h-4"/></>,
   plus: <><path d="M12 5v14M5 12h14"/></>,
+  printer: <><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/><path d="M18 12h.01"/></>,
+  minus: <><path d="M5 12h14"/></>,
   pause: <><circle cx="12" cy="12" r="9"/><path d="M10 8v8M14 8v8"/></>,
   truck: <><path d="M3 6h11v12H3zM14 10h4l3 4v4h-7z"/><circle cx="7" cy="19" r="1.5"/><circle cx="18" cy="19" r="1.5"/></>,
   scale: <><path d="M12 3v18M5 6h14M7 6l-4 7h8zM17 6l-4 7h8zM8 21h8"/></>,
@@ -94,6 +96,7 @@ const PATHS = {
 };
 const ALIASES = {
   chat: "message",
+  "file-text": "file",
   cog: "settings",
   package: "archive",
   wrench: "tools",

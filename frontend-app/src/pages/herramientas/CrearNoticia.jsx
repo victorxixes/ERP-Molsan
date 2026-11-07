@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useState, useCallback, useMemo } from "react";
 import { useUtilidades } from "../../hooks/useUtilidades";
 
@@ -51,7 +52,7 @@ export default function CrearNoticia() {
   ]);
 
   return (
-    <div className="crear-noticia-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 ">
+    <div className="herramientas-subpagina-premium crear-noticia-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 ">
 
       {/* =====================================================
           CABECERA
@@ -68,7 +69,7 @@ export default function CrearNoticia() {
           max-w-3xl
           relative overflow-hidden
           rounded-[24px]
-          border border-slate-200/80
+          border border-[var(--molsan-border)]
           bg-white
           
           
@@ -82,7 +83,7 @@ export default function CrearNoticia() {
 
           <div>
 
-            <label className="block mb-2 text-sm font-medium text-slate-700">
+            <label className="block mb-2 text-sm font-medium text-[var(--molsan-text)]">
               Título
             </label>
 
@@ -98,11 +99,11 @@ export default function CrearNoticia() {
               className="
                 w-full
                 rounded-xl
-                border border-slate-200
-                bg-slate-50/80
+                border border-[var(--molsan-border)]
+                bg-[var(--molsan-surface-soft)]
                 px-4 py-3
-                text-slate-800
-                placeholder:text-slate-400
+                text-[var(--molsan-primary)]
+                placeholder:text-[var(--molsan-text-muted)]
                 outline-none
                 transition-all
                 focus:border-purple-400
@@ -120,7 +121,7 @@ export default function CrearNoticia() {
 
           <div>
 
-            <label className="block mb-2 text-sm font-medium text-slate-700">
+            <label className="block mb-2 text-sm font-medium text-[var(--molsan-text)]">
               Descripción
             </label>
 
@@ -137,11 +138,11 @@ export default function CrearNoticia() {
                 w-full
                 resize-y
                 rounded-xl
-                border border-slate-200
-                bg-slate-50/80
+                border border-[var(--molsan-border)]
+                bg-[var(--molsan-surface-soft)]
                 px-4 py-3
-                text-slate-800
-                placeholder:text-slate-400
+                text-[var(--molsan-primary)]
+                placeholder:text-[var(--molsan-text-muted)]
                 outline-none
                 transition-all
                 focus:border-purple-400
@@ -218,7 +219,7 @@ export default function CrearNoticia() {
                 
               "
             >
-              <span>✓</span>
+              <span><MolsanIcon name="check" size={13} bare /></span>
               <span>Noticia creada correctamente.</span>
             </div>
           )}

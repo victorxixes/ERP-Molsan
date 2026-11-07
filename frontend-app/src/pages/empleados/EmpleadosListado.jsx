@@ -1042,7 +1042,7 @@ export default function EmpleadosListado({
               -translate-y-1/2
               text-[var(--erp-text-soft)]
             ">
-              ⌕
+              <MolsanIcon name="search" size={16} bare />
             </span>
 
             <input
@@ -1357,6 +1357,7 @@ export default function EmpleadosListado({
 
         <div
           className="
+            molsan-modal-overlay
             fixed
             inset-0
             z-[100]
@@ -1390,14 +1391,10 @@ export default function EmpleadosListado({
             aria-modal="true"
             aria-label="Formulario de alta de empleado"
             className="
+              molsan-modal-panel
               w-full
               max-w-4xl
               overflow-hidden
-              rounded-[24px]
-              border
-              border-white/80
-              bg-white/95
-              shadow-[0_25px_80px_rgba(15,23,42,0.22)]
             "
           >
 
@@ -1406,10 +1403,8 @@ export default function EmpleadosListado({
             ================================================= */}
 
             <div className="
-              border-b
-              border-slate-200
-              px-6
-              py-5
+              molsan-modal__header
+              shrink-0
             ">
 
               <div className="
@@ -1434,8 +1429,9 @@ export default function EmpleadosListado({
                       items-center
                       justify-center
                       rounded-xl
-                      bg-blue-50
-                      text-blue-600
+                      border border-[var(--molsan-border)]
+                      bg-[var(--molsan-surface-soft)]
+                      text-[var(--molsan-primary)]
                     ">
                       <MolsanIcon name="person" size={22} tone="ocean" />
                     </div>
@@ -1446,7 +1442,7 @@ export default function EmpleadosListado({
                         text-lg
                         font-bold
                         tracking-tight
-                        text-slate-800
+                        text-[var(--molsan-primary)]
                       ">
                         Nuevo empleado
                       </h2>
@@ -1454,7 +1450,7 @@ export default function EmpleadosListado({
                       <p className="
                         mt-0.5
                         text-xs
-                        text-slate-400
+                        text-[var(--molsan-text-secondary)]
                       ">
                         Alta de un nuevo empleado en el ERP
                       </p>
@@ -1482,20 +1478,20 @@ export default function EmpleadosListado({
                     justify-center
                     rounded-xl
                     border
-                    border-slate-200
+                    border-[var(--molsan-border)]
                     bg-white
                     text-lg
-                    text-slate-400
+                    text-[var(--molsan-text-secondary)]
                     transition
-                    hover:border-slate-300
-                    hover:bg-slate-50
-                    hover:text-slate-600
+                    hover:border-[var(--molsan-primary)]
+                    hover:bg-[var(--molsan-surface-soft)]
+                    hover:text-[var(--molsan-primary)]
                     disabled:cursor-not-allowed
                     disabled:opacity-50
                   "
                   title="Cerrar"
                 >
-                  ×
+                  <MolsanIcon name="x" size={18} bare />
                 </button>
 
               </div>
@@ -1535,7 +1531,7 @@ export default function EmpleadosListado({
                     <h3 className="
                       text-sm
                       font-bold
-                      text-slate-800
+                      text-[var(--molsan-primary)]
                     ">
                       Datos personales
                     </h3>
@@ -1543,7 +1539,7 @@ export default function EmpleadosListado({
                     <p className="
                       mt-1
                       text-xs
-                      text-slate-400
+                      text-[var(--molsan-text-secondary)]
                     ">
                       Información básica del empleado.
                     </p>
@@ -1640,7 +1636,7 @@ export default function EmpleadosListado({
                     <h3 className="
                       text-sm
                       font-bold
-                      text-slate-800
+                      text-[var(--molsan-primary)]
                     ">
                       Acceso al ERP
                     </h3>
@@ -1648,7 +1644,7 @@ export default function EmpleadosListado({
                     <p className="
                       mt-1
                       text-xs
-                      text-slate-400
+                      text-[var(--molsan-text-secondary)]
                     ">
                       Credenciales para iniciar sesión.
                     </p>
@@ -1713,7 +1709,7 @@ export default function EmpleadosListado({
                     <h3 className="
                       text-sm
                       font-bold
-                      text-slate-800
+                      text-[var(--molsan-primary)]
                     ">
                       Datos corporativos
                     </h3>
@@ -1721,7 +1717,7 @@ export default function EmpleadosListado({
                     <p className="
                       mt-1
                       text-xs
-                      text-slate-400
+                      text-[var(--molsan-text-secondary)]
                     ">
                       Información de contacto y empresa.
                     </p>
@@ -1821,8 +1817,8 @@ export default function EmpleadosListado({
                 flex-col-reverse
                 gap-3
                 border-t
-                border-slate-200
-                bg-slate-50/80
+                border-[var(--molsan-border)]
+                bg-[var(--molsan-surface-soft)]
                 px-6
                 py-4
                 sm:flex-row
@@ -1840,16 +1836,16 @@ export default function EmpleadosListado({
                   className="
                     rounded-xl
                     border
-                    border-slate-200
+                    border-[var(--molsan-border)]
                     bg-white
                     px-5
                     py-2.5
                     text-sm
                     font-semibold
-                    text-slate-600
+                    text-[var(--molsan-text-secondary)]
                     shadow-sm
                     transition
-                    hover:bg-slate-50
+                    hover:bg-[var(--molsan-surface-soft)]
                     disabled:cursor-not-allowed
                     disabled:opacity-50
                   "
@@ -1865,7 +1861,7 @@ export default function EmpleadosListado({
                   }
                   className="
                     rounded-xl
-                    bg-[var(--erp-primary)]
+                    bg-[var(--molsan-primary)]
                     px-5
                     py-2.5
                     text-sm
@@ -1923,7 +1919,7 @@ function CampoNuevoEmpleado({
         block
         text-xs
         font-semibold
-        text-slate-600
+        text-[var(--molsan-text-secondary)]
       ">
 
         {label}
@@ -1958,19 +1954,19 @@ function CampoNuevoEmpleado({
           w-full
           rounded-xl
           border
-          border-slate-200
+          border-[var(--molsan-border)]
           bg-white
           px-4
           text-sm
-          text-slate-700
+          text-[var(--molsan-text)]
           outline-none
           transition
-          placeholder:text-slate-300
-          focus:border-blue-400
+          placeholder:text-[var(--molsan-text-secondary)]/60
+          focus:border-[var(--molsan-primary)]
           focus:ring-4
-          focus:ring-blue-500/10
+          focus:ring-[var(--molsan-primary)]/10
           disabled:cursor-not-allowed
-          disabled:bg-slate-50
+          disabled:bg-[var(--molsan-surface-soft)]
           disabled:opacity-70
         "
       />

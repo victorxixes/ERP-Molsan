@@ -35,7 +35,7 @@ export default function ImportarCTN() {
           max-w-3xl
           relative overflow-hidden
           rounded-[24px]
-          border border-slate-200/80
+          border border-[var(--molsan-border)]
           bg-white
           
           
@@ -49,7 +49,7 @@ export default function ImportarCTN() {
 
           <div>
 
-            <label className="block mb-2 text-sm font-medium text-slate-700">
+            <label className="block mb-2 text-sm font-medium text-[var(--molsan-text)]">
               Archivo Excel
             </label>
 
@@ -61,13 +61,13 @@ export default function ImportarCTN() {
                 min-h-36
                 rounded-2xl
                 border-2 border-dashed
-                border-slate-200
-                bg-slate-50/70
+                border-[var(--molsan-border)]
+                bg-[var(--molsan-surface-soft)]
                 px-5
                 cursor-pointer
                 transition-all
-                hover:border-blue-300
-                hover:bg-blue-50/40
+                hover:border-[var(--molsan-primary)]
+                hover:bg-[var(--molsan-primary-soft)]
               "
             >
 
@@ -75,13 +75,13 @@ export default function ImportarCTN() {
                 {file ? <MolsanIcon name="chart" size={20} tone="ocean" bare /> : <MolsanIcon name="folder" size={20} tone="ocean" bare />}
               </span>
 
-              <span className="text-sm font-medium text-slate-700">
+              <span className="text-sm font-medium text-[var(--molsan-text)]">
                 {file
                   ? file.name
                   : "Selecciona el fichero Excel"}
               </span>
 
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-[var(--molsan-text-muted)]">
                 Formato permitido: .xlsx
               </span>
 
@@ -107,14 +107,14 @@ export default function ImportarCTN() {
               className="
                 flex items-center gap-3
                 rounded-xl
-                border border-blue-100
-                bg-blue-50/70
+                border border-[var(--molsan-border)]
+                bg-[var(--molsan-primary-soft)]
                 px-4 py-3
-                text-sm text-blue-700
+                text-sm text-[var(--molsan-primary)]
                 
               "
             >
-              <span>✓</span>
+              <span><MolsanIcon name="check" size={13} bare /></span>
 
               <div className="min-w-0">
 
@@ -122,7 +122,7 @@ export default function ImportarCTN() {
                   Archivo seleccionado
                 </div>
 
-                <div className="truncate text-xs text-blue-600/70">
+                <div className="truncate text-xs text-[var(--molsan-primary)]">
                   {file.name}
                 </div>
 
@@ -204,7 +204,7 @@ export default function ImportarCTN() {
                     font-bold
                   "
                 >
-                  ✓
+                  <MolsanIcon name="check" size={14} bare />
                 </div>
 
                 <div>

@@ -519,7 +519,7 @@ export default function AutocompleteNotario({
 
     <div
       ref={containerRef}
-      className="relative w-full"
+      className="autocomplete-notario-premium relative w-full"
     >
 
       {/* ====================================================

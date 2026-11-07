@@ -34,8 +34,7 @@ export default function DocumentosTable() {
 
   return (
     <div
-      className="w-full
- overflow-hidden"
+      className="intranet-documentos-table-premium w-full overflow-hidden"
     >
 
       {/* =====================================================

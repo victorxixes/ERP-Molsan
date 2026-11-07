@@ -152,7 +152,7 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
 
   return (
     <div className={modal ? "visibilidad-tablas-premium erp-page fixed inset-0 z-[12000] overflow-y-auto bg-slate-900/40 p-3 sm:p-6" : "visibilidad-tablas-premium erp-page w-full"} role={modal ? "dialog" : undefined} aria-modal={modal ? "true" : undefined} aria-label={titulo || "Visibilidad tablas"}>
-      <div ref={dialogRef} tabIndex={modal ? -1 : undefined} className={"mx-auto " + (modal ? "my-2 " : "") + "max-w-7xl overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-bg)] shadow-[var(--erp-shadow-lg)]"}>
+      <div ref={dialogRef} tabIndex={modal ? -1 : undefined} className={(modal ? "molsan-modal-panel " : "") + "mx-auto " + (modal ? "my-2 " : "") + "max-w-7xl overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-bg)] shadow-[var(--erp-shadow-lg)]"}>
         <header className="flex flex-wrap items-center gap-3 bg-[var(--erp-primary)] px-5 py-4 text-white">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-xl"><MolsanIcon name="settings" size={20} bare /></div>
           <div className="min-w-0 flex-1">
@@ -210,8 +210,8 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
                       const item = catalogo.columnas_excel.find((col) => col.key === key);
                       return <span key={key} className="inline-flex items-center gap-1 px-2 py-1">
                         {item?.label || key}
-                        <button type="button" aria-label={`Mover ${key} arriba`} disabled={index === 0} onClick={() => setColumnas((actual) => { const next = [...actual]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; return next; })} className="px-1">↑</button>
-                        <button type="button" aria-label={`Mover ${key} abajo`} disabled={index === columnas.length - 1} onClick={() => setColumnas((actual) => { const next = [...actual]; [next[index + 1], next[index]] = [next[index], next[index + 1]]; return next; })} className="px-1">↓</button>
+                        <button type="button" aria-label={`Mover ${key} arriba`} disabled={index === 0} onClick={() => setColumnas((actual) => { const next = [...actual]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; return next; })} className="px-1"><MolsanIcon name="arrowUp" size={12} bare /></button>
+                        <button type="button" aria-label={`Mover ${key} abajo`} disabled={index === columnas.length - 1} onClick={() => setColumnas((actual) => { const next = [...actual]; [next[index + 1], next[index]] = [next[index], next[index + 1]]; return next; })} className="px-1"><MolsanIcon name="arrowDown" size={12} bare /></button>
                       </span>;
                     })}
                   </div>

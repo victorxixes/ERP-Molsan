@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
@@ -126,8 +127,8 @@ export default function AltaExpediente() {
     }
   }
 
-  return <main className="min-h-full space-y-6 bg-[var(--molsan-surface-soft)] p-4 sm:p-6 lg:p-8">
-    <MolsanPageHeader mark="UT" title="Alta de expediente" description="Crea un expediente manual con facturación, contrato, múltiples fincas, hipotecas y notaría CTN." actions={<button type="button" onClick={() => navigate("/herramientas/utilidades")} className={botonSecundario}>← Volver a Utilidades</button>}/>
+  return <main className="herramientas-subpagina-premium min-h-full space-y-6 bg-[var(--molsan-surface-soft)] p-4 sm:p-6 lg:p-8">
+    <MolsanPageHeader mark="UT" title="Alta de expediente" description="Crea un expediente manual con facturación, contrato, múltiples fincas, hipotecas y notaría CTN." actions={<button type="button" onClick={() => navigate("/herramientas/utilidades")} className={botonSecundario}><MolsanIcon name="arrowLeft" size={15} tone="inherit" bare />Volver a Utilidades</button>}/>
 
     {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
     {resultado && <div role="status" className="flex flex-col gap-3 rounded-xl border border-[var(--molsan-border)] bg-[var(--molsan-primary-soft)] p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-bold text-[var(--molsan-primary-hover)]">Expediente creado correctamente</p><p className="mt-1 text-sm text-[var(--molsan-primary)]">{resultado.id_expediente} · {resultado.tipo_expediente}</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={imprimirFicha} disabled={imprimiendo} className="rounded-xl border border-[var(--molsan-primary)] bg-white px-4 py-2 text-sm font-semibold text-[var(--molsan-primary)] hover:bg-[var(--molsan-primary-soft)] disabled:opacity-60">{imprimiendo ? "Generando PDF…" : "Imprimir ficha PDF"}</button><button type="button" onClick={() => navigate("/expedientes")} className="rounded-xl bg-[var(--molsan-primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--molsan-primary-hover)]">Ir a expedientes</button></div></div>}
@@ -160,12 +161,12 @@ export default function AltaExpediente() {
 
       <Seccion numero="4" titulo="Fincas y registros" descripcion="Añade tantas fincas como sean necesarias para este expediente.">
         {fincas.map((f, i) => <div key={i} className="space-y-4 rounded-xl border border-[var(--molsan-border)] p-4"><div className="flex items-center justify-between"><h3 className="font-semibold text-[var(--molsan-text)]">Finca {i + 1}</h3>{fincas.length > 1 && <button type="button" className="text-sm font-semibold text-rose-600" onClick={() => setFincas((items) => items.filter((_, j) => j !== i))}>Eliminar finca</button>}</div><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"><Campo label="Número de finca" value={f.finca} onChange={(e) => cambiarFinca(i, "finca", e.target.value)} /><Campo label="CRU / IDUFIR" value={f.cru_idufir} onChange={(e) => cambiarFinca(i, "cru_idufir", e.target.value)} /><Campo label="Registro de la propiedad" value={f.registro} onChange={(e) => cambiarFinca(i, "registro", e.target.value)} /><Campo label="Provincia" value={f.provincia} onChange={(e) => cambiarFinca(i, "provincia", e.target.value)} /><Campo label="Población" value={f.poblacion} onChange={(e) => cambiarFinca(i, "poblacion", e.target.value)} /><Campo label="Sección" value={f.seccion} onChange={(e) => cambiarFinca(i, "seccion", e.target.value)} /><Campo label="Inscripción" value={f.inscripcion} onChange={(e) => cambiarFinca(i, "inscripcion", e.target.value)} /><Campo label="Cuantía" value={f.cuantia} onChange={(e) => cambiarFinca(i, "cuantia", e.target.value)} /><Campo label="Entidad original" value={f.entidad_original} onChange={(e) => cambiarFinca(i, "entidad_original", e.target.value)} /></div></div>)}
-        <button type="button" className={botonSecundario} onClick={() => setFincas((items) => [...items, fincaVacia()])}>＋ Añadir otra finca</button>
+        <button type="button" className={botonSecundario} onClick={() => setFincas((items) => [...items, fincaVacia()])}><MolsanIcon name="plus" size={14} bare /> Añadir otra finca</button>
       </Seccion>
 
       <Seccion numero="5" titulo="Hipotecas" descripcion="Registra una o varias hipotecas vinculadas al expediente.">
         {hipotecas.map((h, i) => <div key={i} className="space-y-4 rounded-xl border border-[var(--molsan-border)] p-4"><div className="flex items-center justify-between"><h3 className="font-semibold text-[var(--molsan-text)]">Hipoteca {i + 1}</h3>{hipotecas.length > 1 && <button type="button" className="text-sm font-semibold text-rose-600" onClick={() => setHipotecas((items) => items.filter((_, j) => j !== i))}>Eliminar hipoteca</button>}</div><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"><Campo label="Entidad acreedora" value={h.acreedor} onChange={(e) => cambiarHipoteca(i, "acreedor", e.target.value)} /><Campo label="Número de hipoteca" value={h.numero} onChange={(e) => cambiarHipoteca(i, "numero", e.target.value)} /><Campo label="Capital" type="number" value={h.capital} onChange={(e) => cambiarHipoteca(i, "capital", e.target.value)} /><Campo label="Contrato" value={h.contrato} onChange={(e) => cambiarHipoteca(i, "contrato", e.target.value)} /><Campo label="Observaciones" value={h.observaciones} onChange={(e) => cambiarHipoteca(i, "observaciones", e.target.value)} /></div></div>)}
-        <button type="button" className={botonSecundario} onClick={() => setHipotecas((items) => [...items, hipotecaVacia()])}>＋ Añadir otra hipoteca</button>
+        <button type="button" className={botonSecundario} onClick={() => setHipotecas((items) => [...items, hipotecaVacia()])}><MolsanIcon name="plus" size={14} bare /> Añadir otra hipoteca</button>
       </Seccion>
 
       <Seccion numero="6" titulo="Notaría CTN" descripcion="Selecciona una notaría del catálogo; NIF, población y provincia se rellenan automáticamente.">

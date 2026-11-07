@@ -28,8 +28,8 @@ const secciones = [
     ["datos_bancarios", "Datos bancarios para documentos (si procede)", "text", false],
   ]},
 ];
-const input = "mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
-const label = "block text-xs font-semibold uppercase tracking-wide text-slate-500";
+const input = "mt-1 w-full rounded-xl border border-[var(--molsan-border)] bg-white px-3 py-2.5 text-sm text-[var(--molsan-primary)] outline-none transition focus:border-[var(--molsan-border-strong)] focus:ring-2 focus:ring-[var(--molsan-primary-soft)]";
+const label = "block text-xs font-semibold uppercase tracking-wide text-[var(--molsan-text-secondary)]";
 
 export default function DatosMolsan() {
   const [datos, setDatos] = useState(VACIO);
@@ -81,14 +81,14 @@ export default function DatosMolsan() {
   };
 
   return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
+    <div className="herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
       <MolsanPageHeader mark="UT" title="Datos Molsan" description="Guarda los datos oficiales de la empresa en un único lugar para reutilizarlos en documentos y facturación. No introducimos valores por defecto para evitar datos fiscales incorrectos." />
 
-      {cargando ? <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-500">Cargando configuración…</div> : (
+      {cargando ? <div className="rounded-2xl border border-[var(--molsan-border)] bg-white p-6 text-sm text-[var(--molsan-text-secondary)]">Cargando configuración…</div> : (
         <form onSubmit={guardar} className="space-y-5">
           {secciones.map((seccion) => (
-            <section key={seccion.titulo} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-              <h2 className="text-lg font-bold text-slate-800">{seccion.titulo}</h2>
+            <section key={seccion.titulo} className="rounded-2xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm sm:p-6">
+              <h2 className="text-lg font-bold text-[var(--molsan-primary)]">{seccion.titulo}</h2>
               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {seccion.campos.map(([campo, titulo, tipo, requerido]) => (
                   <label key={campo} className={label}>
@@ -100,27 +100,27 @@ export default function DatosMolsan() {
             </section>
           ))}
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-            <h2 className="text-lg font-bold text-slate-800">Logotipo corporativo</h2>
-            <p className="mt-1 text-sm text-slate-500">Imagen PNG, JPG o WEBP de hasta 1 MB.</p>
+          <section className="rounded-2xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm sm:p-6">
+            <h2 className="text-lg font-bold text-[var(--molsan-primary)]">Logotipo corporativo</h2>
+            <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Imagen PNG, JPG o WEBP de hasta 1 MB.</p>
             <div className="mt-4 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-              {datos.logo_data_url ? <img src={datos.logo_data_url} alt="Logotipo Molsan" className="max-h-24 max-w-56 rounded-lg border border-slate-200 bg-white p-2 object-contain" /> : <div className="flex h-20 w-48 items-center justify-center rounded-xl border border-dashed border-slate-300 text-sm text-slate-400">Sin logotipo cargado</div>}
-              <label className={label}>Seleccionar logotipo<input className="mt-2 block max-w-full text-sm font-normal normal-case tracking-normal text-slate-600" type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => subirLogo(e.target.files?.[0])} /></label>
-              {datos.logo_data_url && <button type="button" onClick={() => cambiar("logo_data_url", "")} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">Quitar logotipo</button>}
+              {datos.logo_data_url ? <img src={datos.logo_data_url} alt="Logotipo Molsan" className="max-h-24 max-w-56 rounded-lg border border-[var(--molsan-border)] bg-white p-2 object-contain" /> : <div className="flex h-20 w-48 items-center justify-center rounded-xl border border-dashed border-[var(--molsan-border-strong)] text-sm text-[var(--molsan-text-muted)]">Sin logotipo cargado</div>}
+              <label className={label}>Seleccionar logotipo<input className="mt-2 block max-w-full text-sm font-normal normal-case tracking-normal text-[var(--molsan-text-secondary)]" type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => subirLogo(e.target.files?.[0])} /></label>
+              {datos.logo_data_url && <button type="button" onClick={() => cambiar("logo_data_url", "")} className="rounded-xl border border-[var(--molsan-border)] px-3 py-2 text-sm font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]">Quitar logotipo</button>}
             </div>
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-            <h2 className="text-lg font-bold text-slate-800">Texto habitual de factura</h2>
+          <section className="rounded-2xl border border-[var(--molsan-border)] bg-white p-5 shadow-sm sm:p-6">
+            <h2 className="text-lg font-bold text-[var(--molsan-primary)]">Texto habitual de factura</h2>
             <textarea className={input + " min-h-28"} value={datos.pie_factura || ""} onChange={(e) => cambiar("pie_factura", e.target.value)} maxLength={3000} placeholder="Texto o condiciones que deban aparecer habitualmente al pie de la factura…" />
-            <p className="mt-2 text-xs text-slate-500">La serie y los datos guardados aquí quedan centralizados; la emisión y numeración definitiva deberán validarse en el flujo de facturación antes de aplicarse a facturas emitidas.</p>
+            <p className="mt-2 text-xs text-[var(--molsan-text-secondary)]">La serie y los datos guardados aquí quedan centralizados; la emisión y numeración definitiva deberán validarse en el flujo de facturación antes de aplicarse a facturas emitidas.</p>
           </section>
 
           {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</div>}
           {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{mensaje}</div>}
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-xs text-slate-500">Los cambios se guardan en la base de datos compartida del ERP.</p>
-            <button type="submit" disabled={guardando} className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-50">{guardando ? "Guardando…" : "Guardar datos Molsan"}</button>
+            <p className="text-xs text-[var(--molsan-text-secondary)]">Los cambios se guardan en la base de datos compartida del ERP.</p>
+            <button type="submit" disabled={guardando} className="inline-flex items-center justify-center rounded-xl bg-[var(--molsan-primary)] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[var(--molsan-primary-hover)] disabled:opacity-50">{guardando ? "Guardando…" : "Guardar datos Molsan"}</button>
           </div>
         </form>
       )}

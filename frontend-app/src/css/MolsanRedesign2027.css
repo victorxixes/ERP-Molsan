@@ -415,8 +415,8 @@
 }
 
 :is(.cg-page, .cg-unified-workspace) table thead th {
-  color: #53637a;
-  background: #f3f6fb;
+  color: var(--molsan-text-secondary, #617789);
+  background: var(--molsan-table-head, #EAF2F8);
   font-weight: 750;
 }
 
@@ -504,7 +504,7 @@
   .agenda-vista-premium,
   .informe-apoderado-premium
 ) {
-  --molsan-card-border: #d8e1ef;
+  --molsan-card-border: var(--molsan-border, #D8E4EC);
   --molsan-card-shadow: 0 8px 24px rgba(25, 43, 74, .075);
   --molsan-card-shadow-hover: 0 12px 30px rgba(25, 43, 74, .11);
   min-width: 0;
@@ -699,9 +699,9 @@
   .provisiones-fondos-page,
   .herramientas-subpagina-premium
 ) table thead th {
-  color: var(--molsan-text-secondary, #53637a);
-  background: #eef3fa;
-  border-bottom-color: #d8e1ef;
+  color: var(--molsan-text-secondary, #617789);
+  background: var(--molsan-table-head, #EAF2F8);
+  border-bottom-color: var(--molsan-border, #D8E4EC);
   font-weight: 750;
 }
 
@@ -1033,9 +1033,9 @@
 
 /* CTN conservaba una cabecera de tabla azul intensa distinta del resto.
    La sustituimos por la cabecera clara usada en Expedientes y listados ERP. */
-.ctn-listado-page .ctn-tabla th {
+ .ctn-listado-page .ctn-tabla th {
   color: var(--molsan-text-secondary);
-  background: var(--molsan-surface-soft);
+  background: var(--molsan-table-head, #EAF2F8);
   border-bottom: 1px solid var(--molsan-border);
   font-size: var(--molsan-font-size-sm, 12px);
   font-weight: 700;
@@ -1289,7 +1289,7 @@
   .notificaciones-premium-page, .panel-tecnico-premium,
   .panel-tecnico-submodulo-premium, .informes-premium-page,
   .mensajes-premium-page, .molsan-intranet-page
-) :is(table:not([class*="calendar"]), .data-table, .erp-table) {
+) :is(table:not([class*="calendar"]), .data-table) {
   max-width: 100%;
   font-family: var(--molsan-font-family);
   border-color: var(--molsan-border-light);
@@ -1311,7 +1311,7 @@
   .mensajes-premium-page, .molsan-intranet-page
 ) :is(th, thead th) {
   color: var(--molsan-text-secondary);
-  background-color: var(--molsan-surface-soft);
+  background-color: var(--molsan-table-head, #EAF2F8);
   border-color: var(--molsan-border-light);
   font-family: var(--molsan-font-family);
   font-size: var(--molsan-font-size-sm);
@@ -1788,88 +1788,6 @@ body {
   }
 }
 
-.tabs-sj {
-  flex-wrap: wrap;
-  gap: 6px;
-  border-bottom: 1px solid var(--molsan-border);
-}
-
-.tabs-sj .tab-sj {
-  min-height: 34px;
-  padding: 8px 12px;
-  border: 1px solid transparent;
-  border-radius: 8px 8px 0 0;
-  box-shadow: none;
-}
-
-.tabs-sj .tab-sj:hover {
-  color: var(--molsan-primary);
-  background: var(--molsan-primary-soft);
-  box-shadow: none;
-}
-
-.tabs-sj .tab-sj.active {
-  color: var(--molsan-primary);
-  background: #fff;
-  border-color: var(--molsan-border) var(--molsan-border) #fff;
-  box-shadow: inset 0 2px 0 var(--molsan-primary);
-}
-
-.table-sj {
-  font-size: var(--molsan-font-size-md);
-}
-
-.table-sj th {
-  font-size: var(--molsan-font-size-sm);
-  letter-spacing: normal;
-}
-
-.input-sj,
-.select-sj,
-.textarea-sj {
-  min-height: var(--molsan-control-height);
-  border-radius: var(--molsan-radius-control);
-}
-
-.modal-overlay-sj {
-  z-index: 1000;
-  padding: 16px;
-  display: grid;
-  place-items: center;
-  overflow: auto;
-}
-
-.modal-sj {
-  width: min(100%, 1000px);
-  max-height: calc(100dvh - 32px);
-  overflow: auto;
-  border-radius: var(--molsan-radius-dialog);
-  padding: clamp(16px, 2vw, 24px);
-}
-
-@media (max-width: 640px) {
-  .tabs-sj {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    align-items: stretch;
-    overscroll-behavior-x: contain;
-  }
-
-  .tabs-sj .tab-sj {
-    flex: 0 0 auto;
-  }
-
-  .modal-overlay-sj {
-    padding: 8px;
-    place-items: start center;
-  }
-
-  .modal-sj {
-    width: 100%;
-    max-height: calc(100dvh - 16px);
-    padding: 14px;
-  }
-}
 
 :is(.notargest) .ng-tabla th,
 :is(.apoderagest) .ag-tabla th,
@@ -1877,7 +1795,7 @@ body {
 :is(.ctn-listado-page) table thead th,
 :is(.expedientes-listado-premium) table thead th {
   color: var(--molsan-text-secondary);
-  background: var(--molsan-surface-soft);
+  background: var(--molsan-table-head, #EAF2F8);
   border-bottom: 1px solid var(--molsan-border);
   font-size: var(--molsan-font-size-sm);
   font-weight: 700;
@@ -2201,7 +2119,7 @@ body {
 ) {
   padding: 11px 12px;
   color: var(--molsan-text-secondary);
-  background: var(--molsan-surface-soft);
+  background: var(--molsan-table-head, #EAF2F8);
   border-bottom: 1px solid var(--molsan-border);
   font-size: 12px;
   font-weight: 750;
@@ -2551,8 +2469,8 @@ table :is(th, td) {
 
 :where(.empleados-listado-premium, .seguridad-usuarios-premium, .ctn-listado-page, .ctn-detalle-page)
   :is(th, thead) {
-  color: var(--molsan-text-secondary, #526176);
-  background-color: var(--molsan-surface-soft, #F2F7FB);
+  color: var(--molsan-text-secondary, #617789);
+  background-color: var(--molsan-table-head, #EAF2F8);
   border-color: var(--molsan-border-light, #e8edf4);
 }
 
@@ -2664,8 +2582,8 @@ table :is(th, td) {
 
 :where(.expedientes-page, .agenda-premium-page, .ctn-detalle-page, .cg-page, .notargest, .apoderagest.notargest, .encargagest)
   :is(th, thead) {
-  color: var(--molsan-text-secondary, #526176);
-  background-color: var(--molsan-surface-soft, #F2F7FB);
+  color: var(--molsan-text-secondary, #617789);
+  background-color: var(--molsan-table-head, #EAF2F8);
   border-color: var(--molsan-border-light, #e8edf4);
 }
 
@@ -2691,8 +2609,8 @@ table :is(th, td) {
 }
 
 :where(.empleados-listado-premium, .empleados-premium-page, .empleado-ficha-premium) :is(th, thead th) {
-  color: var(--molsan-text-secondary, #526176) !important;
-  background: var(--molsan-surface-soft, #F2F7FB) !important;
+  color: var(--molsan-text-secondary, #617789) !important;
+  background: var(--molsan-table-head, #EAF2F8) !important;
   border-color: var(--molsan-border-light, #e8edf4) !important;
 }
 
@@ -2704,8 +2622,8 @@ table :is(th, td) {
 /* Controles y tablas de NotarGest: presentación centralizada tras retirar
    las reglas visuales repetidas de su hoja local. */
 .notargest .ng-tabla th {
-  color: var(--molsan-text-secondary, #526176) !important;
-  background: var(--molsan-surface-soft, #F2F7FB) !important;
+  color: var(--molsan-text-secondary, #617789) !important;
+  background: var(--molsan-table-head, #EAF2F8) !important;
   border-bottom-color: var(--molsan-border, #D8E4EC) !important;
 }
 .notargest .ng-tabla td {

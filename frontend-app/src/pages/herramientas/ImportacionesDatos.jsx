@@ -39,7 +39,7 @@ export default function ImportacionesDatos() {
                   <strong>{item.titulo}</strong>
                   <span>{item.detalle}</span>
                 </span>
-                <span className="importaciones-datos-card__arrow" aria-hidden="true">→</span>
+                <span className="importaciones-datos-card__arrow" aria-hidden="true"><MolsanIcon name="arrowRight" size={16} bare /></span>
               </Link>
             ))}
           </div>

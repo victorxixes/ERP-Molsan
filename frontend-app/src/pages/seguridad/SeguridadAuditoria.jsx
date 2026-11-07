@@ -201,7 +201,7 @@ function BadgeAccion({
   ) {
 
     clases =
-      "bg-blue-50 text-blue-700 border-blue-200";
+      "bg-[var(--molsan-primary-soft)] text-[var(--molsan-primary)] border-[var(--molsan-border)]";
   }
 
 
@@ -607,7 +607,7 @@ function ModalDetalle({
         role="dialog"
         aria-modal="true"
         aria-label="Detalle de registro de auditoría"
-        className="
+        className="molsan-modal-panel 
           w-full
           max-w-2xl
           max-h-[90vh]
@@ -707,7 +707,7 @@ function ModalDetalle({
             "
             aria-label="Cerrar"
           >
-            ×
+            <MolsanIcon name="x" size={18} bare />
           </button>
 
         </div>

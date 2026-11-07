@@ -348,10 +348,8 @@ function CabeceraOrden({
         >
 
           {activa
-            ? orden.asc
-              ? "▲"
-              : "▼"
-            : "↕"}
+            ? <MolsanIcon name={orden.asc ? "arrowUp" : "arrowDown"} size={13} bare />
+            : <MolsanIcon name="arrowUpDown" size={13} bare />}
 
         </span>
 
