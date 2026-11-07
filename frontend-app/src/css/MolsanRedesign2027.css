@@ -2551,7 +2551,7 @@ table :is(th, td) {
 
 :where(.empleados-listado-premium, .seguridad-usuarios-premium, .ctn-listado-page, .ctn-detalle-page)
   :is(th, thead) {
-  color: var(--molsan-text-secondary, #526176);
+  color: var(--molsan-text-secondary, #617789);
   background-color: var(--molsan-surface-soft, #F2F7FB);
   border-color: var(--molsan-border-light, #e8edf4);
 }
@@ -2664,7 +2664,7 @@ table :is(th, td) {
 
 :where(.expedientes-page, .agenda-premium-page, .ctn-detalle-page, .cg-page, .notargest, .apoderagest.notargest, .encargagest)
   :is(th, thead) {
-  color: var(--molsan-text-secondary, #526176);
+  color: var(--molsan-text-secondary, #617789);
   background-color: var(--molsan-surface-soft, #F2F7FB);
   border-color: var(--molsan-border-light, #e8edf4);
 }
@@ -2691,7 +2691,7 @@ table :is(th, td) {
 }
 
 :where(.empleados-listado-premium, .empleados-premium-page, .empleado-ficha-premium) :is(th, thead th) {
-  color: var(--molsan-text-secondary, #526176) !important;
+  color: var(--molsan-text-secondary, #617789) !important;
   background: var(--molsan-surface-soft, #F2F7FB) !important;
   border-color: var(--molsan-border-light, #e8edf4) !important;
 }
@@ -2704,7 +2704,7 @@ table :is(th, td) {
 /* Controles y tablas de NotarGest: presentación centralizada tras retirar
    las reglas visuales repetidas de su hoja local. */
 .notargest .ng-tabla th {
-  color: var(--molsan-text-secondary, #526176) !important;
+  color: var(--molsan-text-secondary, #617789) !important;
   background: var(--molsan-surface-soft, #F2F7FB) !important;
   border-bottom-color: var(--molsan-border, #D8E4EC) !important;
 }
