@@ -768,10 +768,10 @@
 .ag-resumen-modal,
 .expediente-operativo-modal [role="dialog"],
 .empleado-operativo-modal [role="dialog"] {
-  border: 1.5px solid #C5D8E5;
-  border-radius: 22px;
+  border: 1px solid var(--molsan-border, #D8E4EC);
+  border-radius: var(--molsan-canon-card-radius, 20px);
   background: #FFFFFF;
-  box-shadow: 0 22px 54px rgba(6,70,117,.18);
+  box-shadow: 0 18px 42px rgba(6,70,117,.12);
 }
 .molsan-modal-header,
 .ctn-modal-header,
