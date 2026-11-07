@@ -197,7 +197,7 @@ function ImprimirEncargos({ encargos = [] }) {
           {encargos.map((e, i) => {
             const fincas = Array.isArray(e.fincas) ? e.fincas : [];
             const docs = documentosDe(e);
-            return <article key={String(e.id_expediente || e.id || i)}>
+            return <article className="ag-print-ficha" key={String(e.id_expediente || e.id || i)}>
               <header><strong>MOLSAN ERP · APODERAGEST</strong><span>FICHA DE ENCARGO</span><h2>Expediente {texto(e.id_expediente || e.id)}</h2></header>
               <div>
                 <div><small>Solicitante</small><strong>{texto(e.nombre_solicitante || e.solicitante)}</strong></div>
