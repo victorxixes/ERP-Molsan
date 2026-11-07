@@ -2,6 +2,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Sidebar from "../components/Sidebar";
+import MolsanIcon from "../components/ui/MolsanIcon";
 import { useAuthStore } from "../store/authStore";
 import EmpleadoPerfilModal from "../components/SidebarPerfilModal";
 import { useNotificacionesWS } from "../hooks/useNotificacionesWS";
@@ -140,7 +141,7 @@ export default function Layout() {
 <Outlet />
       {cabeceraSubpagina ? createPortal(
         <button type="button" data-layout-back-button="true" className="molsan-page-back-button" onClick={volverSubpagina} aria-label="Volver a la página anterior">
-          <span aria-hidden="true">←</span> Volver
+          <MolsanIcon name="arrowLeft" size={15} /> Volver
         </button>,
         cabeceraSubpagina
       ) : null}
