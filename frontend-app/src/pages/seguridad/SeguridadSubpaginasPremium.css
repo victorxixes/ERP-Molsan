@@ -157,7 +157,7 @@
   --seguridad-shadow: 0 8px 24px rgba(24, 39, 75, .055);
 }
 :is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
-  border-color: var(--molsan-border, #d8e0ec);
+  border-color: var(--molsan-border, #D8E4EC);
   border-radius: 10px;
   background-color: var(--molsan-surface, #fff);
   color: var(--molsan-text, #172033);
@@ -169,8 +169,8 @@
   box-shadow: 0 4px 12px rgba(24, 39, 75, .09);
 }
 :is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) table thead th {
-  background: var(--molsan-surface-soft, #f3f6fb);
-  color: var(--molsan-text-muted, #526078);
+  background: var(--molsan-surface-soft, #F2F7FB);
+  color: var(--molsan-text-muted, #617789);
   font-size: .72rem;
   font-weight: 800;
   letter-spacing: .045em;
@@ -184,7 +184,7 @@
 }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-badge {
   display:inline-flex; align-items:center; justify-content:center; gap:.35rem; max-width:100%; padding:.35rem .7rem;
-  border:1px solid var(--molsan-border,#d7e0ec); border-radius:999px; background:var(--molsan-surface-soft,#f6f8fc);
+  border:1px solid var(--molsan-border,#D8E4EC); border-radius:999px; background:var(--molsan-surface-soft,#F2F7FB);
   color:var(--molsan-text-muted, #718696); font-size:.75rem; line-height:1.35; font-weight:700; white-space:normal;
 }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-badge-primary { border-color:#cbd8fb; background:#edf3ff; color:var(--molsan-primary); }
@@ -199,14 +199,14 @@
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; transform:none; }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-primary { border-color:var(--molsan-primary, #064675); background:var(--molsan-primary, #064675); color:#fff; }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-primary:hover:not(:disabled) { border-color:var(--molsan-primary-hover, #04375B); background:var(--molsan-primary-hover, #04375B); box-shadow:0 5px 14px color-mix(in srgb, var(--molsan-primary) 2%, transparent); transform:translateY(-1px); }
-:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-secondary { border-color:var(--molsan-border,#d7e0ec); background:var(--molsan-surface,#fff); color:var(--molsan-text,#24324a); }
-:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-secondary:hover:not(:disabled) { border-color:var(--molsan-border-strong,#c4d0df); background:var(--molsan-surface-soft,#f6f8fc); }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-secondary { border-color:var(--molsan-border,#D8E4EC); background:var(--molsan-surface,#fff); color:var(--molsan-text,#173247); }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-secondary:hover:not(:disabled) { border-color:var(--molsan-border-strong,#c4d0df); background:var(--molsan-surface-soft,#F2F7FB); }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-danger { border-color:var(--molsan-danger,#dc3545); background:var(--molsan-danger,#dc3545); color:#fff; }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-danger:hover:not(:disabled) { background:#b91c1c; border-color:#b91c1c; }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-success { border-color:var(--molsan-success,#198754); background:var(--molsan-success,#198754); color:#fff; }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea) {
-  width:100%; min-height:2.65rem; padding:.65rem .8rem; border:1px solid var(--molsan-border,#d7e0ec);
-  border-radius:.7rem; background:var(--molsan-surface,#fff); color:var(--molsan-text,#24324a); box-shadow:inset 0 1px 2px rgba(15,23,42,.025);
+  width:100%; min-height:2.65rem; padding:.65rem .8rem; border:1px solid var(--molsan-border,#D8E4EC);
+  border-radius:.7rem; background:var(--molsan-surface,#fff); color:var(--molsan-text,#173247); box-shadow:inset 0 1px 2px rgba(15,23,42,.025);
 }
 :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(input,select,textarea):focus { border-color:var(--molsan-primary, #064675); outline:3px solid color-mix(in srgb,var(--molsan-primary, #064675) 15%,transparent); }
 @media(prefers-reduced-motion:reduce) { :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn { transition:none; } }
@@ -225,19 +225,19 @@
 .seguridad-usuarios-premium table { border-collapse:separate; border-spacing:0; }
 .seguridad-rol-editor-premium table thead th,
 .seguridad-usuarios-premium table thead th {
-  padding:.85rem 1rem; background: var(--molsan-page-bg, #FFFFFF); color:#526078; text-align:left;
+  padding:.85rem 1rem; background: var(--molsan-page-bg, #FFFFFF); color:#617789; text-align:left;
   font-size:.7rem; font-weight:800; letter-spacing:.055em; text-transform:uppercase;
-  border-bottom:1px solid var(--molsan-border,#dbe3ef);
+  border-bottom:1px solid var(--molsan-border,#D8E4EC);
 }
 .seguridad-rol-editor-premium table tbody td,
 .seguridad-usuarios-premium table tbody td {
-  padding:.9rem 1rem; border-bottom:1px solid #edf1f6; vertical-align:middle;
-  color:var(--molsan-text,#24324a);
+  padding:.9rem 1rem; border-bottom:1px solid #D8E4EC; vertical-align:middle;
+  color:var(--molsan-text,#173247);
 }
 .seguridad-rol-editor-premium table tbody tr:last-child td,
 .seguridad-usuarios-premium table tbody tr:last-child td { border-bottom:0; }
 .seguridad-rol-editor-premium table tbody tr:hover,
-.seguridad-usuarios-premium table tbody tr:hover { background:#f8faff; }
+.seguridad-usuarios-premium table tbody tr:hover { background:#F2F7FB; }
 .seguridad-rol-editor-premium button:not(.erp-btn),
 .seguridad-usuarios-premium button:not(.erp-btn) {
   max-width:100%; border-radius:.65rem; font-family:inherit; font-weight:650;
