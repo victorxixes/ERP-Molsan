@@ -778,18 +778,18 @@ export default function SeguridadPermisos() {
           className="
             rounded-2xl
             border
-            border-blue-200
-            bg-blue-50
+            border-[var(--molsan-border)]
+            bg-[var(--molsan-primary-soft)]
             p-4
           "
         >
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-blue-600">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--molsan-primary)]">
             Disponibles
           </p>
-          <p className="mt-1 text-2xl font-bold text-blue-700">
+          <p className="mt-1 text-2xl font-bold text-[var(--molsan-primary)]">
             {totalPermisos}
           </p>
-          <p className="text-xs text-blue-600">
+          <p className="text-xs text-[var(--molsan-primary)]">
             permisos del catálogo
           </p>
         </div>
@@ -886,15 +886,15 @@ export default function SeguridadPermisos() {
               min-w-0
               rounded-xl
               border
-              border-slate-300
+              border-[var(--molsan-border-strong)]
               bg-white
               px-4
               py-2.5
               text-sm
-              text-slate-800
+              text-[var(--molsan-text)]
               shadow-sm
               outline-none
-              placeholder:text-slate-500
+              placeholder:text-[var(--molsan-text-muted)]
               focus:border-[var(--erp-primary)]
               focus:ring-2
               focus:ring-[var(--erp-primary-soft)]
