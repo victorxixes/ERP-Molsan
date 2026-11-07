@@ -1835,3 +1835,13 @@ Se ha vuelto a pasar el detector de símbolos sobre los ficheros corregidos. En 
 Commits de cierre: `4dfc554ab6c43b27e88c246c85b5910f2ac6624c`, `8e3affb0eb897192bb05ee9c7d8ff859bbc0e4e5`, `56f53f2ae35f61e453aed5079504f92ebe4aaf34`, `b35cb691cf2cf6af9f6b6c5a73a66730ef8b8da6`, `6b209b66806c5db35e3dee453c11c11511663bbc`, `e56094442802ead07b4d5d4e3e534293ccd9ae31`, `246a032e2ff030e225e956e6dc7ba3072f9a4c7b`, `0b7453cd9a9c0178e3ceb9965cb2b7828e211511`, `e2b58b40359f10b8ead629812c4be0e760ca121d`, `8bd20316c26a83ae16faca0e22b656f41d182551`.
 
 Build y despliegue de Preview del último commit pendiente.
+
+## 50. Unificación de paneles operativos de los tres portales — 7 de noviembre de 2026
+
+El cruce de JSX con las hojas propias mostró que algunos paneles reales de ApoderaGest, EncargaGest y NotarGest seguían usando radios, bordes y sombras locales diferentes del patrón «Espacios de trabajo». No eran formularios ni paneles de calendario: eran contenedores de dashboard/listado con título, acciones, KPIs o tablas.
+
+Se han incorporado a la capa canónica compartida los selectores `.ag-panel`, `.eg-directorio` y `.ng-admin-global-resumen` en todos los grupos de tarjeta (superficie base, hover, transición de iconos y focus). El acabado usa el mismo borde azul hielo, franja superior, radio, sombra y hover Premium que el resto de tarjetas. Se conservan los estilos propios de distribución, filtros, tablas, contenido y responsive; la capa global solo normaliza la superficie exterior.
+
+Commit: `5c1c9a61553fb049e7fa419d592b0ecdc54ad3ee`.
+
+Requiere build y contraste visual en Preview para comprobar los paneles de encargos de ApoderaGest, directorio de EncargaGest y resumen global de NotarGest, especialmente el espacio entre el borde exterior y los componentes interiores.
