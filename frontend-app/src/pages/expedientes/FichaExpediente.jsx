@@ -862,7 +862,7 @@ function EstadoBadge({
     "border-[var(--molsan-border-strong)] bg-[var(--molsan-surface-soft)] text-[var(--molsan-primary)]";
 
   let punto =
-    "bg-[var(--molsan-surface-soft)]0";
+    "bg-[var(--molsan-text-secondary)]";
 
   if (positivo) {
     clases =
@@ -877,7 +877,7 @@ function EstadoBadge({
       "border-[var(--molsan-border)] bg-[var(--molsan-surface-soft)] text-[var(--molsan-text-secondary)]";
 
     punto =
-      "bg-[var(--molsan-surface-soft)]0";
+      "bg-[var(--molsan-text-secondary)]";
   }
 
   if (negativo) {
