@@ -3097,7 +3097,7 @@ function ModalImportarExcel({
         role="dialog"
         aria-modal="true"
         aria-label="Importar Registros de la Propiedad"
-        className="
+        className="molsan-modal-panel 
           w-full
           max-w-3xl
           overflow-hidden
@@ -3776,7 +3776,7 @@ function ModalRegistroPropiedad({
         role="dialog"
         aria-modal="true"
         aria-label="Formulario de Registro de la Propiedad"
-        className="
+        className="molsan-modal-panel 
           max-h-[94vh]
           w-full
           max-w-4xl
