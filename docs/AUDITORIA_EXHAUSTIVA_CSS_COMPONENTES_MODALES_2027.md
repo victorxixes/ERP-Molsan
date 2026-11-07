@@ -2126,7 +2126,7 @@ El Layout ya aporta el gutter exterior. Se retiraron paddings/max-width duplicad
 
 ### Commits y validación
 
-Commits de código de esta tanda: `0fa37ed`, `a63fbc1`, `53ef6b1`, `a6d58ea`, `4f649bc`, `701828e`, `d1dd781`, `6e86573`, `c879863`, `78b40bc`, `6d8256b`, `23d2cc9`, `0906753`, `e52bf6f`, `21d4571`, `04efbde`, `1eef508`, `f20705f`, `da0a609`, `cbb9e63` (raíz Fusiones ya incluía `.fusiones-page`), `9ee6efe`.
+Commits de código de esta tanda: `0fa37ed`, `a63fbc1`, `53ef6b1`, `a6d58ea`, `4f649bc`, `701828e`, `d1dd781`, `6e86573`, `c879863`, `78b40bc`, `6d8256b`, `23d2cc9`, `0906753`, `e52bf6f`, `21d4571`, `04efbde`, `1eef508`, `f20705f`, `da0a609`, `9ee6efe` (registro de `.fusiones-page` en la geometría compartida; la clase ya estaba en el JSX).
 
 - Build Vite: success para `9ee6efe1c8b1acde144e4833e508c52f8dfde5b2`.
 - Validación Fichajes: success para el mismo commit.
