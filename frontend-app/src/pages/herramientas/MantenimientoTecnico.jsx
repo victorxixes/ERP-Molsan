@@ -263,7 +263,7 @@ export default function MantenimientoTecnico() {
 
   if (!accesoPermitido) {
     return (
-      <div className="mantenimiento-tecnico-premium p-6">
+      <div className="herramientas-subpagina-premium mantenimiento-tecnico-premium p-6">
         <div className="mx-auto max-w-3xl rounded-2xl border border-rose-200 bg-white p-6 shadow-sm">
           <div className="text-2xl"><MolsanIcon name="lock" size={22} tone="ocean" bare /> Acceso restringido</div>
           <p className="mt-2 text-sm text-[var(--molsan-text-secondary)]">
@@ -276,7 +276,7 @@ export default function MantenimientoTecnico() {
   }
 
   return (
-    <main className="mantenimiento-tecnico-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <main className="herramientas-subpagina-premium mantenimiento-tecnico-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <MolsanPageHeader
         mark="MT"
         title="Mantenimiento técnico"
