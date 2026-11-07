@@ -3209,7 +3209,7 @@ export default function ExpedientesListado() {
           />
 
           <section
-            className="relative z-10 w-full max-w-5xl max-h-[88vh] overflow-y-auto rounded-3xl border shadow-2xl"
+            className="molsan-modal-panel relative z-10 w-full max-w-5xl max-h-[88vh] overflow-y-auto rounded-3xl border shadow-2xl"
             style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
           >
             <div
