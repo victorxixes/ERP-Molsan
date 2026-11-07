@@ -1819,3 +1819,19 @@ Se conservan flechas que expresan una relación dentro de una frase o dato (por 
 Commits de esta pasada: `61e494dc15aa8a920e31a946683bc2ad8bb7dd9e`, `95bc7190bea662867432b0de56f743e99f29e677`, `66e9f9798ce70491847b91488b15f12e06ab6293`, `92a7d8cea730f8c473be5a79b573113acd6f360f`, `4656bf3b7928dc6101a16d43a6aa0be5997b9c34`, `d32d540291b05cb368bfddc5a03957fcdea6be71`, `4dfc554ab6c43b27e88c246c85b5910f2ac6624c`, `8e3affb0eb897192bb05ee9c7d8ff859bbc0e4e5`, `56f53f2ae35f61e453aed5079504f92ebe4aaf34`, `b35cb691cf2cf6af9f6b6c5a73a66730ef8b8da6`, `6b209b66806c5db35e3dee453c11c11511663bbc`, `e56094442802ead07b4d5d4e3e534293ccd9ae31`, `246a032e2ff030e225e956e6dc7ba3072f9a4c7b`, `0b7453cd9a9c0178e3ceb9965cb2b7828e211511`, `e2b58b40359f10b8ead629812c4be0e760ca121d`, `8bd20316c26a83ae16faca0e22b656f41d182551`, `f444ea9ae15adcb8a9f9c3a4f6052977320d00f9`, `fe8983be88f6ea5409bdbef5f162e28cb32d8dfe`, `4b269ab31b2bf654b4a0fc2f4dbab4d086e03cd3`, `179bdd74d0989a245d62f02ddc9b52437772c7fd` y `dd4165f4dbaa07b576c16f2aa37c1f44ec603a02`.
 
 El código de esta tanda queda pendiente de build y despliegue de Preview. La validación visual autenticada sigue abierta.
+
+## 49. Cierre de iconos residuales en utilidades y tablas — 7 de noviembre de 2026
+
+Se han eliminado los últimos pictogramas Unicode funcionales localizados en las subpáginas revisadas de Herramientas y en componentes de tabla:
+- Lectura Cancela I, Lectura Copias, Proceso ABSIS, Verifacti, Complementos de saldo y Correspondencia tipificada: iconos de retorno a la sección padre.
+- Municipios, Registros de la Propiedad y Post Firma: flechas de paginación.
+- Proceso ABSIS: las métricas KPI ahora renderizan sus iconos por MolsanIcon (antes imprimían literalmente el texto recibido en `icono`); el símbolo de descarga se sustituye por download.
+- Complementos de saldo: el componente Metrica ahora representa `clipboardList`, `euro`, `clock` y `check` con el catálogo corporativo.
+- Importador ABSIS, Importar CTN, Crear noticia y Subir documento: confirmaciones de éxito con check.
+- Traspaso de saldo, ordenación de columnas, DataTable y detalle CTN: merge, flechas de ordenación y enlaces externos con pictogramas Molsan.
+
+Se ha vuelto a pasar el detector de símbolos sobre los ficheros corregidos. En las pantallas revisadas, los caracteres de flecha que permanecen son parte de frases de ayuda, rutas escritas o relaciones entre valores; no se usan como iconos, botones ni indicadores visuales.
+
+Commits de cierre: `4dfc554ab6c43b27e88c246c85b5910f2ac6624c`, `8e3affb0eb897192bb05ee9c7d8ff859bbc0e4e5`, `56f53f2ae35f61e453aed5079504f92ebe4aaf34`, `b35cb691cf2cf6af9f6b6c5a73a66730ef8b8da6`, `6b209b66806c5db35e3dee453c11c11511663bbc`, `e56094442802ead07b4d5d4e3e534293ccd9ae31`, `246a032e2ff030e225e956e6dc7ba3072f9a4c7b`, `0b7453cd9a9c0178e3ceb9965cb2b7828e211511`, `e2b58b40359f10b8ead629812c4be0e760ca121d`, `8bd20316c26a83ae16faca0e22b656f41d182551`.
+
+Build y despliegue de Preview del último commit pendiente.
