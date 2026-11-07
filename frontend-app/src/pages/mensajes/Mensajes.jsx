@@ -1620,7 +1620,7 @@ export default function Mensajes({
 
                       placeholder:text-[var(--molsan-text-muted)]
 
-                      focus:border-blue-300
+                      focus:border-[var(--molsan-primary)]
                       focus:bg-white
                       focus:ring-2
                       focus:ring-[var(--molsan-primary-soft)]
