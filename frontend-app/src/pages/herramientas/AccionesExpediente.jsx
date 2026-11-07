@@ -2226,7 +2226,7 @@ export default function AccionesExpediente() {
             role="dialog"
             aria-modal="true"
             aria-label="Formulario de acción de expediente"
-            className="
+            className="molsan-modal-panel 
               w-full
               max-w-3xl
               rounded-2xl
@@ -2562,7 +2562,7 @@ export default function AccionesExpediente() {
             role="dialog"
             aria-modal="true"
             aria-label="Importar acciones de expediente"
-            className="
+            className="molsan-modal-panel 
               w-full
               max-w-xl
               rounded-2xl
