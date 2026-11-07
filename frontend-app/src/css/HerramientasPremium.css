@@ -6,7 +6,7 @@
   --tools-soft: var(--molsan-primary-soft, #EAF2F8);
   --tools-border: var(--molsan-border, #D8E4EC);
   --tools-text: var(--molsan-text, #17243a);
-  --tools-muted: var(--molsan-text-muted, #64748b);
+  --tools-muted: var(--molsan-text-muted, #617789);
   min-width: 0;
   color: var(--tools-text);
 }
