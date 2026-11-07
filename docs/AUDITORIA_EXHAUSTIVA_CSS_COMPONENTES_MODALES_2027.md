@@ -1659,3 +1659,14 @@ Se ha corregido la brecha en la capa canónica de portales:
 ### Ajuste final de la centralización de impresión
 
 Una segunda comprobación de las hojas realmente importadas desde `main.jsx` localizó reglas residuales de ocultación e impresión en `molsan-module-styles.css` y `EncargaGest.css`. Se han retirado esas duplicidades: `PortalProfesionalPremium2027.css` queda como única fuente de reglas de impresión de Agenda y ApoderaGest. Se conserva la impresión A4, el ajuste de color, la ocultación de la aplicación y la presentación exclusiva de la raíz imprimible. La hoja global de portales está importada desde `main.jsx`, por lo que no depende de imports dinámicos de una página.
+
+
+## 41. Revisión de duplicidades entre capas globales — 7 de noviembre de 2026
+
+Se ha repetido el cruce estático de selectores en las diez hojas globales activas: Redesign, Premium, Global Consistency, Glass Luxe Unified, Canonical Visual, Design System, Module Styles, Tokens, Portal Profesional Premium y Cards Premium.
+
+- Antes de centralizar impresión se detectaban dos selectores globales repetidos entre hojas: la ocultación de contenido para impresión y el ajuste universal de color de impresión.
+- Tras mover ambas responsabilidades a `PortalProfesionalPremium2027.css` y retirar los bloques de `molsan-module-styles.css` y `EncargaGest.css`, el cruce exacto no encuentra selectores duplicados entre hojas globales distintas (0 coincidencias en esta comparación).
+- Se mantienen los selectores repetidos dentro de una misma hoja cuando son capas responsive, estados o refinamientos posteriores de cascada; no se borran automáticamente por igualdad textual sin analizar orden, media queries y especificidad.
+
+La comparación es estática y exacta; no prueba equivalencia semántica entre selectores distintos ni sustituye una inspección de cascada en navegador.
