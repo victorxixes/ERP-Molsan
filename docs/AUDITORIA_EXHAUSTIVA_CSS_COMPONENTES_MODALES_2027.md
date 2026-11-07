@@ -1727,3 +1727,12 @@ PR #411 continúa abierta y en Draft, con base fix/molsan-css-selector-audit-rou
 ### Límite
 
 El árbol completo está reconciliado y el build del HEAD está correcto. Esto no equivale a una inspección semántica exhaustiva de cada regla CSS ni a validación visual autenticada de las 91 rutas/componentes, sus estados, modales y viewports. Esa comprobación continúa abierta y es condición para declarar la entrega visual cerrada.
+
+
+## 44. Corrección de contraste de subtítulos en cabeceras canónicas — 7 de noviembre de 2026
+
+La revisión de la cascada de MolsanCanonicalVisual2027.css encontró una regla tardía que sobrescribía el token de subtítulo de la cabecera con #496B82. El comentario asociado describía un fondo azul Glass, mientras que la cabecera canónica real usa superficie blanca. Esto producía una excepción cromática innecesaria frente al texto secundario corporativo acordado.
+
+Se ha sustituido el color literal y su -webkit-text-fill-color por var(--molsan-canon-header-muted, #617789), y se ha corregido el comentario para reflejar la superficie blanca. Se conservan los selectores de compatibilidad para subtítulos heredados, la opacidad, visibilidad, peso tipográfico y ausencia de sombra.
+
+Commit de código: 11e1c72f87d3236d425a0cc100413b39cfdcc9f9. Requiere nuevo build y actualización del Preview después de la corrección; la inspección visual de cabeceras en navegador sigue pendiente.
