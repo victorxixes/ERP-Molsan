@@ -1,4 +1,5 @@
 import MolsanPageHeader from "../../components/ui/MolsanPageHeader";
+import MolsanIcon from "../../components/ui/MolsanIcon";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
@@ -75,7 +76,7 @@ export default function AsignarExpedientesPromociones() {
 
   return (
     <div className="herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <MolsanPageHeader mark="UT" title="Asignar expedientes a promociones" description="Asocia cada expediente a un tipo activo del catálogo oficial. La ficha mostrará la promoción asignada automáticamente." actions={<Link to="/herramientas/utilidades" className="rounded-xl border border-[var(--molsan-border)] px-4 py-2 text-sm font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]">← Volver a Utilidades</Link>}/>
+      <MolsanPageHeader mark="UT" title="Asignar expedientes a promociones" description="Asocia cada expediente a un tipo activo del catálogo oficial. La ficha mostrará la promoción asignada automáticamente." actions={<Link to="/herramientas/utilidades" className="rounded-xl border border-[var(--molsan-border)] px-4 py-2 text-sm font-semibold text-[var(--molsan-text-secondary)] hover:bg-[var(--molsan-surface-soft)]"><MolsanIcon name="arrowLeft" size={14} bare /> Volver a Utilidades</Link>}/>
 
       {(error || mensaje) && (
         <div role="status" className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${error ? "border-rose-200 bg-rose-50 text-rose-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}>
