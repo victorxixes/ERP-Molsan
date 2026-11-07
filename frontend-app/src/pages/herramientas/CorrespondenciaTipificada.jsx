@@ -257,7 +257,7 @@ export default function CorrespondenciaTipificada() {
         className="correspondencia-page-header"
         actions={
           <>
-            <Link to="/herramientas/catalogos" className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]">← Volver a Catálogos</Link>
+            <Link to="/herramientas/catalogos" className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)]"><MolsanIcon name="arrowLeft" size={13} bare /> Volver a Catálogos</Link>
             <button type="button" onClick={nuevaPlantilla} className="molsan-btn molsan-btn--primary"><MolsanIcon name="plus" size={14} tone="inherit" bare /> Nueva plantilla</button>
           </>
         }
