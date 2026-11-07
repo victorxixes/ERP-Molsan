@@ -1968,3 +1968,22 @@ El escaneo estático de las 41 hojas CSS no encuentra ya las familias de fallbac
 Commits de código: `9c21da4fdc32cc34efb5e127d32435922315968b`, `ed27fa84e921d2754f07d0365af40c212a923e23`, `4fc91d213363b482d78a9eb124bd3e279348a020`, `fcd1a0e3355894727ff07e75f3b9cc5a43a7e9ba`, `19455f1678e99b44833285794446c077d60d4265`, `24b25cdf1b266864db1e8ca654fe324d2214a73d`.
 
 La validación visual de cabeceras normales, sticky, portales, modales y tablas responsive sigue pendiente. El build y el despliegue del nuevo HEAD deben confirmarse antes de pasar a navegación autenticada.
+
+## 61. Quinta pasada de colisiones de paneles y cabecera de Agenda — 7 de noviembre de 2026
+
+El cruce de JSX con las reglas genéricas de panel detectó dos elementos que no debían recibir superficie de tarjeta:
+- `.eg-modal-section` son columnas de contenido del formulario modal de EncargaGest, no tarjetas independientes.
+- `.agenda-list-table-wrap` es únicamente el contenedor de scroll horizontal de la tabla de citas, no un panel visual.
+
+Se han retirado ambos selectores de las reglas globales de borde/radio/sombra/hover y de movimiento reducido de MolsanPremium2027.css. Se conservan los estilos de estructura y espaciado locales. Se corrigieron además las listas de selectores CSS tras retirar las clases.
+
+En sentido inverso, `.ctn-detalle-panel` sí es un panel de contenido real de la ficha CTN (bloque «Notarios asociados»); se ha incorporado a los mismos grupos canónicos que `.ctn-detalle-stat`, para que no quede con una superficie distinta.
+
+### Cabecera y tablas
+- Agenda.jsx ya utiliza MolsanPageHeader, pero Agenda.css imponía sobre esa cabecera un degradado azul claro con una regla local de mayor especificidad. Se ha retirado el override y se deja la geometría/superficie a MolsanCanonicalVisual2027.css.
+- La tabla de Agenda y las tablas de detalle CTN usan ahora el token dedicado #EAF2F8 y el texto secundario #617789; los fondos hover permanecen en #F2F7FB.
+- En el modal CTN se han alineado el separador de sección, los títulos y el chip descriptivo con los tokens corporativos. Los botones secundarios también consumen el borde y el texto secundario acordados.
+
+Commits de código: `c2fe1803b6515e6cc755eda13e86b98da70d81cd`, `414de17188770ca1b5d7f004659504e0f3b6ff3b`, `b33b846492b87d1938d5e8597efb8b345082bcd8`, `dd565990ecf2a7dbedc4f5ab1e3adeebded0ad79`, `a41fa3a3cfd512b8510f6b52d443c7681e05bc14`, `9ddb45dcb40415d8b2b46678196a519aa82943aa`.
+
+La revisión sigue siendo estática. Se debe confirmar que el build del nuevo HEAD pasa y comprobar visualmente el modal de EncargaGest, la ficha CTN, la cabecera de Agenda y la tabla de citas en escritorio y móvil.
