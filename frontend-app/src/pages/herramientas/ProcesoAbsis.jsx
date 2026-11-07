@@ -81,7 +81,7 @@ export default function ProcesoAbsis() {
   }
 
   return <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-    <MolsanPageHeader mark="UT" title="Proceso de ABSIS" description="Seguimiento de expedientes enviados, incidencias y acciones de envío." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-[var(--molsan-primary)] hover:underline">← Volver a Utilidades</Link>}/>
+    <MolsanPageHeader mark="UT" title="Proceso de ABSIS" description="Seguimiento de expedientes enviados, incidencias y acciones de envío." actions={<Link to="/herramientas/utilidades" className="text-xs font-bold text-[var(--molsan-primary)] hover:underline"><MolsanIcon name="arrowLeft" size={13} bare /> Volver a Utilidades</Link>}/>
       <div className="flex justify-end">
         <button onClick={() => Promise.all([cargarActividades(), cargarItems()])} className="rounded-xl border border-[var(--molsan-border)] bg-white px-4 py-2.5 text-sm font-bold text-[var(--molsan-text)] hover:bg-[var(--molsan-surface-soft)]">Actualizar datos</button>
       </div>
