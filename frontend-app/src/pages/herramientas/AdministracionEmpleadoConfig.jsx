@@ -55,7 +55,7 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
 
   if (!esAdministrador) {
     return (
-      <div className="p-6">
+      <div className="herramientas-subpagina-premium p-6">
         <section className="max-w-2xl rounded-2xl border border-amber-200 bg-amber-50 p-6">
           <h1 className="text-xl font-bold text-amber-900">Acceso restringido</h1>
           <p className="mt-2 text-sm text-amber-800">Solo un administrador puede gestionar la visibilidad de tablas y las asignaciones de empleados.</p>
@@ -65,7 +65,7 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
   }
 
   return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
       <MolsanPageHeader mark="EM" title={titulo} description={descripcion} />
 
       <section className="overflow-hidden rounded-2xl border border-[var(--molsan-border)] bg-white shadow-sm">
