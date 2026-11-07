@@ -43,7 +43,7 @@ export default function FirmasEmail() {
     }
   }
 
-  return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
+  return <main className="herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
     <MolsanPageHeader
       mark="SIG"
       title="Firma corporativa de email"
