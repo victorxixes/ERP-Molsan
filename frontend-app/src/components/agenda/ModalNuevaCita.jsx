@@ -717,7 +717,7 @@ export default function ModalNuevaCita({
         aria-labelledby="modal-nueva-cita-title"
         tabIndex={-1}
         className="
-          molsan-modal__panel
+          molsan-modal-panel molsan-modal__panel
           bg-white
           border border-[var(--molsan-border)]
           rounded-2xl
