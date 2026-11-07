@@ -260,12 +260,12 @@
   }
 
 }
-.apoderagest .ag-encargo-subpanel{min-width:0;padding:14px;border:1px solid #e4eaf2;border-radius:12px;background:#fbfcfe}
+.apoderagest .ag-encargo-subpanel{min-width:0;padding:14px;border:1px solid #D8E4EC;border-radius:12px;background:#F2F7FB}
 .apoderagest .ag-encargo-subpanel h4{margin:0 0 12px;color:#1e355b;font-size:13px;font-weight:850}
-.apoderagest .ag-firmar-panel>p{margin:-4px 0 12px;color:#64748b;font-size:12px}
+.apoderagest .ag-firmar-panel>p{margin:-4px 0 12px;color:#617789;font-size:12px}
 .apoderagest .ag-firmar-controles{display:grid;grid-template-columns:minmax(180px,.65fr) minmax(220px,1fr) auto;align-items:end;gap:12px}
-.apoderagest .ag-firmar-controles label{display:grid;gap:6px;color:#5c6b82;font-size:11px;font-weight:800}
-.apoderagest .ag-firmar-controles input{width:100%;min-height:38px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#1e293b;font-size:13px}
+.apoderagest .ag-firmar-controles label{display:grid;gap:6px;color:#617789;font-size:11px;font-weight:800}
+.apoderagest .ag-firmar-controles input{width:100%;min-height:38px;padding:8px 10px;border:1px solid #D8E4EC;border-radius:8px;background:#fff;color:#1e293b;font-size:13px}
 .apoderagest .ag-firmar-controles button{min-height:38px;padding:9px 18px;border:1px solid #176b4a;border-radius:9px;background:#16805a;color:#fff;font-size:12px;font-weight:850;cursor:pointer}
 .apoderagest .ag-firmar-controles button:disabled{opacity:.6;cursor:wait}
 @media(max-width:900px){
@@ -382,7 +382,7 @@
 }
 .apoderagest{
   --ag-ink: var(--molsan-text, #17243a);
-  --ag-muted: var(--molsan-text-muted, #64748b);
+  --ag-muted: var(--molsan-text-muted, #617789);
   --ag-line: var(--molsan-border, #D8E4EC);
   --ag-panel: var(--molsan-surface, #fff);
   --ag-blue: var(--molsan-primary, #064675);
@@ -466,17 +466,17 @@
 .apoderagest .ag-print-header>strong,
 .apoderagest .ag-print-ficha header>strong{font-size:10px;letter-spacing:1.3px;color:var(--molsan-primary, #064675)}
 .apoderagest .ag-print-header h1{margin:8px 0 4px;font-size:24px;color:#17243a}
-.apoderagest .ag-print-header p{margin:0;color:#64748b;font-size:11px}
+.apoderagest .ag-print-header p{margin:0;color:#617789;font-size:11px}
 .apoderagest .ag-print-table{width:100%;border-collapse:collapse;font-size:10px;color:#1f2937}
 .apoderagest .ag-print-table th{background:#eef2fa;color:#25385a;text-align:left;font-weight:800}
 .apoderagest .ag-print-table th,
-.apoderagest .ag-print-table td{padding:7px 8px;border:1px solid #d9e0ea;vertical-align:top}
-.apoderagest .ag-print-table td small{display:block;margin-top:3px;color:#64748b;font-size:9px}
-.apoderagest .ag-print-footer{margin-top:18px;padding-top:8px;border-top:1px solid #d9e0ea;color:#64748b;font-size:9px}
+.apoderagest .ag-print-table td{padding:7px 8px;border:1px solid #D8E4EC;vertical-align:top}
+.apoderagest .ag-print-table td small{display:block;margin-top:3px;color:#617789;font-size:9px}
+.apoderagest .ag-print-footer{margin-top:18px;padding-top:8px;border-top:1px solid #D8E4EC;color:#617789;font-size:9px}
 .apoderagest .ag-print-fichas{display:none}
-.apoderagest .ag-print-ficha{padding:0 0 20px;margin:0 0 24px;border-bottom:1px solid #cbd5e1;break-inside:avoid-page;page-break-inside:avoid}
-.apoderagest .ag-print-ficha header{padding-bottom:10px;border-bottom:1px solid #d9e0ea}
-.apoderagest .ag-print-ficha header span{float:right;font-size:9px;font-weight:800;letter-spacing:1px;color:#64748b}
+.apoderagest .ag-print-ficha{padding:0 0 20px;margin:0 0 24px;border-bottom:1px solid #D8E4EC;break-inside:avoid-page;page-break-inside:avoid}
+.apoderagest .ag-print-ficha header{padding-bottom:10px;border-bottom:1px solid #D8E4EC}
+.apoderagest .ag-print-ficha header span{float:right;font-size:9px;font-weight:800;letter-spacing:1px;color:#617789}
 .apoderagest .ag-print-ficha h2{margin:8px 0 0;font-size:19px;color:#17243a}
 .apoderagest .ag-print-ficha h3{margin:14px 0 7px;font-size:12px;color:#243a63}
 @media print{
@@ -524,7 +524,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
 }
 .apoderagest .ag-resumen-modal-cerrar{
   display:grid;place-items:center;flex:0 0 auto;width:38px;height:38px;border:1px solid #dce5ef;
-  border-radius:var(--molsan-radius-control,9px);background:var(--molsan-surface,#fff);color:var(--molsan-text-secondary,#526176);font-size:17px;cursor:pointer;
+  border-radius:var(--molsan-radius-control,9px);background:var(--molsan-surface,#fff);color:var(--molsan-text-secondary,#617789);font-size:17px;cursor:pointer;
 }
 .apoderagest .ag-resumen-modal-cerrar:hover{background:var(--molsan-primary-soft, #EAF2F8)}
 .apoderagest .ag-resumen-ir-encargo{padding:7px 9px;border:1px solid #d6e7e5;border-radius:9px;background:#f0faf8;color:#22685f;font-size:10px;font-weight:850;white-space:nowrap;cursor:pointer}
@@ -564,7 +564,7 @@ body.molsan-print-encargos-fichas  .apoderagest .ag-print-ficha:last-child{break
   font-variant-numeric: tabular-nums;
 }
 .apoderagest table thead th{
-  color: var(--molsan-text-secondary, #526176);
+  color: var(--molsan-text-secondary, #617789);
   background-color: var(--molsan-surface-soft, #F2F7FB);
   font-size: 10px;
   font-weight: 800;
