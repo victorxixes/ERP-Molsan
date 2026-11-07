@@ -223,7 +223,7 @@ export default function CatalogoAbsis() {
       </section>
 
       {modalNuevaLista && <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/50 p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !creandoLista) setModalNuevaLista(false); }}>
-        <section ref={nuevaListaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-nueva-lista-titulo" className="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
+        <section ref={nuevaListaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-nueva-lista-titulo" className="molsan-modal-panel w-full max-w-lg rounded-2xl bg-white shadow-2xl">
           <form onSubmit={crearLista}>
             <div className="border-b border-[var(--molsan-border)] px-6 py-5">
               <h2 id="absis-nueva-lista-titulo" className="text-lg font-bold text-[var(--molsan-primary)]">Crear nueva lista ABSIS</h2>
@@ -244,7 +244,7 @@ export default function CatalogoAbsis() {
       </div>}
 
       {modal && <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/50 p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModal(false); }}>
-        <section ref={entradaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-modal-titulo" className="my-auto w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+        <section ref={entradaDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="absis-modal-titulo" className="molsan-modal-panel my-auto w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
           <form onSubmit={guardar}>
             <div className="border-b border-[var(--molsan-border)] px-6 py-5"><h2 id="absis-modal-titulo" className="text-lg font-bold text-[var(--molsan-primary)]">{editando ? "Editar entrada" : "Añadir entrada"} · {categoria}</h2><p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Elige la lista y rellena los datos. El código es opcional.</p></div>
             <div className="grid gap-4 p-6 sm:grid-cols-2">
