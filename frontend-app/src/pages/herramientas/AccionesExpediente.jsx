@@ -2018,7 +2018,7 @@ export default function AccionesExpediente() {
                             "
                             title="Eliminar"
                           >
-                            ×
+                            <MolsanIcon name="x" size={18} bare />
                           </button>
 
                         </div>
@@ -2291,7 +2291,7 @@ export default function AccionesExpediente() {
                   text-[var(--erp-text-soft)]
                 "
               >
-                ×
+                <MolsanIcon name="x" size={18} bare />
               </button>
 
             </div>
@@ -2625,7 +2625,7 @@ export default function AccionesExpediente() {
                   border-[var(--erp-border)]
                 "
               >
-                ×
+                <MolsanIcon name="x" size={18} bare />
               </button>
 
             </div>
