@@ -2098,3 +2098,40 @@ La revisión de las hojas de página encontró dos reglas locales de Seguridad q
 Commit: `8665fc7dd13e09378332694b1d890b0ea35cbc60`.
 
 Pendiente validar tablas sticky y responsive en Seguridad y sus subpáginas.
+
+
+## 72. Reconciliación de tarjetas, paneles y geometría exterior de páginas — 7 de noviembre de 2026
+
+Se ha contrastado la lista canónica de tarjetas con los consumidores JSX reales. Cinco tipos de panel de contenido se estaban tratando como tarjetas funcionales en siete listas repetidas de Canonical Visual. Se han retirado de esas listas, conservando su estilo estructural propio y sin quitar las tarjetas reales:
+- `.ag-panel` y `.ng-admin-global-resumen` (ApoderaGest / NotarGest).
+- `.ctn-detalle-panel` (panel de asociaciones de la ficha CTN).
+- `.ng-admin-individual-panel` (bloque “Detalle por notaría”).
+- `.notargest.ng-content .ng-dashboard-grafico` (paneles de gráficos de NotarGest).
+
+Se mantienen como tarjetas `.ag-grupo-notario`, `.ag-grupo-apoderado`, `.ag-carpeta-apoderado`, `.ctn-detalle-stat`, `.ng-admin-notaria-card` y las tarjetas de accesos/estadísticas que tienen consumidores reales. Tras la edición se comprobó que Canonical Visual no contiene separadores de selector dobles, no hay selectores que comiencen con una coma y las llaves CSS están equilibradas.
+
+### Geometría común y márgenes
+
+El Layout ya aporta el gutter exterior. Se retiraron paddings/max-width duplicados o se conectaron las raíces de página al reset común:
+- Fichajes (modo empleado y Control de Fichajes): se retiró `mx-auto`, `max-w-[1500px]` y el padding propio; se alineó la raíz con Dashboard y se añadió `.fichajes-premium-page` al contrato de geometría común.
+- EncargaGestWorkspace: su contenedor principal deja de añadir un segundo padding horizontal/vertical sobre el de Layout.
+- ControlApoderados: raíz semántica `.control-apoderados-page` y alta en la lista de geometría compartida.
+- Fusiones: `.fusiones-page` queda registrada en el reset común.
+- Subpáginas de Herramientas que tenían padding propio sin marcador común: FirmasEmail, DatosMolsan, CrearNoticia, AltaExpediente, TiposExpediente, Verifacti, TiposImpositivos, CatalogoAbsis, MantenimientoTecnico y AdministracionEmpleadoConfig. Se añadió `.herramientas-subpagina-premium` a sus raíces y a los estados de acceso restringido cuando procedía. Las clases de padding internas de contenido y tarjetas no se modifican.
+
+### Paleta y limpieza local de CancelaGest
+
+- Eliminada la repetición exacta de `.cg-section,.cg-panel{margin-bottom:0}`.
+- Los neutros heredados de kicker, títulos, etiquetas, ejes y bordes pasan a tokens Molsan (#064675, #617789, #173247, #D8E4EC y #F2F7FB). Se conservan los colores semánticos de error y los acentos de las gráficas.
+
+### Commits y validación
+
+Commits de código de esta tanda: `0fa37ed`, `a63fbc1`, `53ef6b1`, `a6d58ea`, `4f649bc`, `701828e`, `d1dd781`, `6e86573`, `c879863`, `78b40bc`, `6d8256b`, `23d2cc9`, `0906753`, `e52bf6f`, `21d4571`, `04efbde`, `1eef508`, `f20705f`, `da0a609`, `cbb9e63` (raíz Fusiones ya incluía `.fusiones-page`), `9ee6efe`.
+
+- Build Vite: success para `9ee6efe1c8b1acde144e4833e508c52f8dfde5b2`.
+- Validación Fichajes: success para el mismo commit.
+- Render Preview: deploy `dep-dbnk1jm417fc73dvt3vg` en estado `live`, commit `9ee6efe1c8b1acde144e4833e508c52f8dfde5b2`.
+- URL del candidato Preview: https://molsan-premium-2027-candidate-preview.onrender.com
+- La inspección visual autenticada de rutas, estados y responsive continúa pendiente: el navegador de consulta no puede abrir el dominio Render. Build y deploy correctos no se presentan como validación visual.
+- PR #411 continúa en Draft y sin merge. Producción, API y bases de datos no se han tocado.
+
