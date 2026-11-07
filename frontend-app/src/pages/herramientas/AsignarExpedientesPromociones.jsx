@@ -89,7 +89,7 @@ export default function AsignarExpedientesPromociones() {
           <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">Introduce el número tal como aparece en la ficha del expediente.</p>
           <label className="mt-5 block text-sm font-semibold text-[var(--molsan-text)]" htmlFor="numero-expediente-promocion">Número de expediente</label>
           <div className="mt-2 flex flex-col gap-3 sm:flex-row">
-            <input id="numero-expediente-promocion" value={numero} onChange={(event) => { setNumero(event.target.value); setExpediente(null); setTipoId(""); setMensaje(""); setError(""); }} placeholder="Ej. ALTA-24-00001" className="min-w-0 flex-1 rounded-xl border border-[var(--molsan-border-strong)] px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-[var(--molsan-primary-soft)]" />
+            <input id="numero-expediente-promocion" value={numero} onChange={(event) => { setNumero(event.target.value); setExpediente(null); setTipoId(""); setMensaje(""); setError(""); }} placeholder="Ej. ALTA-24-00001" className="min-w-0 flex-1 rounded-xl border border-[var(--molsan-border-strong)] px-4 py-3 text-sm outline-none focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary-soft)]" />
             <button type="submit" disabled={consultando} className="rounded-xl bg-[var(--molsan-primary)] px-5 py-3 text-sm font-semibold text-white disabled:opacity-60">{consultando ? "Buscando…" : "Consultar"}</button>
           </div>
           {expediente && (
@@ -107,7 +107,7 @@ export default function AsignarExpedientesPromociones() {
           <h2 className="text-lg font-bold text-[var(--molsan-primary)]">2. Seleccionar tipo de expediente</h2>
           <p className="mt-1 text-sm text-[var(--molsan-text-secondary)]">La promoción se toma directamente del catálogo Tipos de expediente; no se escribe manualmente en la ficha.</p>
           <label className="mt-5 block text-sm font-semibold text-[var(--molsan-text)]" htmlFor="tipo-promocion-destino">Tipo de expediente / promoción</label>
-          <select id="tipo-promocion-destino" value={tipoId} onChange={(event) => { setTipoId(event.target.value); setMensaje(""); }} disabled={cargandoTipos || !expediente} className="mt-2 w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-[var(--molsan-primary-soft)] disabled:bg-[var(--molsan-surface-soft)]">
+          <select id="tipo-promocion-destino" value={tipoId} onChange={(event) => { setTipoId(event.target.value); setMensaje(""); }} disabled={cargandoTipos || !expediente} className="mt-2 w-full rounded-xl border border-[var(--molsan-border-strong)] bg-white px-4 py-3 text-sm outline-none focus:border-[var(--molsan-primary)] focus:ring-2 focus:ring-[var(--molsan-primary-soft)] disabled:bg-[var(--molsan-surface-soft)]">
             <option value="">Sin asignar promoción</option>
             {tipos.map((tipo) => <option key={tipo.id} value={String(tipo.id)}>{tipo.nombre}</option>)}
           </select>
