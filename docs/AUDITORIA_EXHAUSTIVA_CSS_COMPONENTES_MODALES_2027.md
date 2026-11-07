@@ -2160,3 +2160,30 @@ Se ha simplificado el fallback duplicado de `--molsan-text`, y se han normalizad
 - Producción y API siguen intactas.
 
 El Preview actual es el servicio `molsan-premium-2027-candidate-preview`; no debe confundirse con enlaces de Preview antiguos. La revisión visual autenticada sigue pendiente.
+
+
+## 75. Estado consolidado de cobertura y ruta de promoción — 7 de noviembre de 2026
+
+Este apartado actualiza las referencias históricas de cobertura de las primeras secciones del documento:
+
+- Árbol completo de `frontend-app/src`: 241 ficheros (143 JSX, 57 JS y 41 CSS).
+- Pasada estática individual: 143/143 JSX leídos y clasificados; 57/57 JS leídos y clasificados; 41/41 CSS contrastadas con sus importaciones y responsabilidades.
+- Navegación: inventario de 98 páginas/subpáginas y revisión de cabeceras; las rutas alias y los portales externos se mantienen identificados por separado.
+- La cobertura estática no equivale a validación visual ni a prueba funcional de cada estado/modal.
+
+### Estado verificable
+
+- Último commit de código desplegado en Preview: `e31cc6962bcd5f93de715c9f2899e6cc87d3f541`, deploy `dep-dbnk4ap5efls73bipa9g`, estado `live`.
+- Build frontend y validación Fichajes: success en ese commit.
+- Servicio Preview actual: `molsan-premium-2027-candidate-preview` (`https://molsan-premium-2027-candidate-preview.onrender.com`).
+- Producción identificada, sin cambios: frontend `agenda-intranet-f` en rama `main`; API `agenda-intranet-b` en rama `main`. El último deploy frontend observado en producción sigue siendo `e81d4ab9d571f9e266d7181db8bca57c49d98812`.
+- PR #411 continúa Draft y tiene como base `fix/molsan-css-selector-audit-round1`; PR #409 continúa Draft y tiene como base `integration/erp-molsan-supabase-ready`. La promoción debe respetar esta cadena y no saltar directamente a producción.
+
+### Condiciones aún abiertas para cierre
+
+1. Inspección visual autenticada de Preview: Dashboard, todos los departamentos, páginas/subpáginas, portales externos y alias.
+2. Prueba de modales y formularios: foco, Escape, cierre, scroll interno, errores, estados deshabilitados y responsive.
+3. Recorrido desktop/tablet/móvil, incluidas tablas sticky y desbordamientos.
+4. Corregir diferencias detectadas, repetir build y Preview, y solo entonces preparar la promoción secuencial de PRs.
+
+No se considera finalizada la auditoría global ni se autoriza inferir cierre visual a partir de build/deploy. Producción, API y datos permanecen intactos.
