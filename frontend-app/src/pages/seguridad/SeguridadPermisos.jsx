@@ -1222,8 +1222,8 @@ export default function SeguridadPermisos() {
                           "
                         >
                           {abierto
-                            ? "▲"
-                            : "▼"}
+                            ? <MolsanIcon name="arrowUp" size={12} bare />
+                            : <MolsanIcon name="arrowDown" size={12} bare />}
                         </span>
 
                       </div>
