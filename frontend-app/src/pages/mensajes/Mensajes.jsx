@@ -809,9 +809,7 @@ export default function Mensajes({
                     "
                   >
 
-                    <span>
-                      ●
-                    </span>
+                    <span className="inline-block h-2 w-2 rounded-full bg-current" aria-hidden="true" />
 
                     <span>
                       {totalPendientes}
@@ -1065,9 +1063,7 @@ export default function Mensajes({
                             "
                           >
 
-                            <span>
-                              ●
-                            </span>
+                            <span className="inline-block h-2 w-2 rounded-full bg-current" aria-hidden="true" />
 
                             <span>
                               {pendientes === 1
