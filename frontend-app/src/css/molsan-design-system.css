@@ -469,7 +469,7 @@
 /* Tabla MOLSAN PREMIUM · cabecera, ordenación accesible y datos tabulares */
 .molsan-data-table-wrap { box-shadow:0 5px 18px rgba(6,50,82,.045); }
 .molsan-data-table { font-variant-numeric:tabular-nums; }
-.molsan-data-table th { padding:0; color:#064675; background:var(--molsan-table-head, #EAF2F8); }
+.molsan-data-table th { padding:0; color:var(--molsan-text-secondary, #617789); background:var(--molsan-table-head, #EAF2F8); }
 .molsan-data-table-sort,
 .molsan-table-sort {
   display:inline-flex; width:100%; min-height:42px; align-items:center; justify-content:flex-start;
