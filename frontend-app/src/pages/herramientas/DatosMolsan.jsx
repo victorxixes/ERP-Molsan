@@ -81,7 +81,7 @@ export default function DatosMolsan() {
   };
 
   return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
+    <div className="herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8 ">
       <MolsanPageHeader mark="UT" title="Datos Molsan" description="Guarda los datos oficiales de la empresa en un único lugar para reutilizarlos en documentos y facturación. No introducimos valores por defecto para evitar datos fiscales incorrectos." />
 
       {cargando ? <div className="rounded-2xl border border-[var(--molsan-border)] bg-white p-6 text-sm text-[var(--molsan-text-secondary)]">Cargando configuración…</div> : (
