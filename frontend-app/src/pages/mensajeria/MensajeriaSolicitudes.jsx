@@ -75,7 +75,7 @@ function SelectorUbicacion({ titulo, valor, onChange, notarias, registros, munic
   return <section className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/70 p-4">
     <div className="flex flex-wrap items-center justify-between gap-2">
       <h3 className="text-sm font-extrabold text-slate-800">{titulo}</h3>
-      {urlMapa(valor) && <a href={urlMapa(valor)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-50">⌖ Abrir mapa ↗</a>}
+      {urlMapa(valor) && <a href={urlMapa(valor)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-50"><MolsanIcon name="pin" size={13} bare /> Abrir mapa <MolsanIcon name="externalLink" size={12} bare /></a>}
     </div>
     <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Tipo de ubicación
       <select className={inputClass + " mt-1.5"} value={valor.tipo} onChange={(e) => { setBusqueda(""); onChange({ ...nuevaUbicacion(), tipo: e.target.value }); }}>
